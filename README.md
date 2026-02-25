@@ -1,119 +1,206 @@
-# 🧠 RAG PDF Uploader - Build Your Own Retrieval-Augmented Generation (RAG) Knowledge Base
+# Pestivid — Potato Leaf Disease Detection & Pesticide Recommendation
 
-This repository contains a **ready-to-use Python script** that processes your **local PDF files**, converts them into **embeddings**, and **uploads them to Pinecone** for building a **Retrieval-Augmented Generation (RAG) chatbot**.
-
----
-
-## 🚀 What This Script Does
-
-1. **Extracts Text** from your **PDF files** on your computer.
-2. **Splits the Text into Chunks** so that the chatbot can find small, relevant pieces of information.
-3. **Generates Embeddings** (mathematical representations of meaning) using OpenAI’s `text-embedding-ada-002` model.
-4. **Uploads the Embeddings** to your **Pinecone vector database**.
-5. **Supports Resume Functionality** in case your process is interrupted.
+An end-to-end deep learning system that **identifies potato leaf diseases from images** and **recommends targeted pesticide treatments** using Vision-Language Models (VLMs) and a Retrieval-Augmented Generation (RAG) chatbot.
 
 ---
 
-## 🛠️ Prerequisites
+## Table of Contents
 
-1. **Python 3.8+**
-2. **OpenAI API Key**  
-   Get your key here: https://platform.openai.com/api-keys
-3. **Pinecone API Key and Index**  
-   Set up your account here: https://www.pinecone.io/
+- [Overview](#overview)
+- [Project Architecture](#project-architecture)
+- [Notebooks](#notebooks)
+- [Dataset](#dataset)
+- [Technology Stack](#technology-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Environment Variables](#environment-variables)
+  - [Running the Notebooks](#running-the-notebooks)
+- [Results](#results)
+- [Repository Structure](#repository-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## 🧑‍💻 Installation
+## Overview
 
-1. **Clone this repository or download the script.**
+**Pestivid** addresses a critical agricultural challenge: rapid, accurate identification of potato leaf diseases and actionable treatment advice. The project consists of two tightly integrated components:
 
-2. **Install Dependencies:**
-   ```bash
-   pip install pinecone openai langchain pdfplumber tiktoken
+1. **Vision-Language Model (VLM) Pipeline** — Fine-tunes OpenAI's CLIP (`clip-vit-base-patch32`) and Salesforce's InstructBLIP (`instructblip-flan-t5-xl`) on 1,885 potato leaf images across 7 disease categories. A companion Text-to-Text (T2T) model (`google/flan-t5-small`) is trained to generate detailed pesticide recommendations from the predicted disease class.
 
-⚙️ Configuration
-In the script, update the following values:
+2. **RAG Chatbot** — Ingests a plant disease research PDF, embeds it with Cohere `embed-english-v3.0` (1024-dimensional), stores vectors in Pinecone, and answers natural language queries using Groq-hosted `llama3-70b-8192` orchestrated by LangGraph.
 
-openai_api_key = "YOUR_OPENAI_API_KEY"
-pinecone_api_key = "YOUR_PINECONE_API_KEY"
-index_name = "YOUR_INDEX_NAME"
-pdf_folder = r"YOUR_LOCAL_PDF_DIRECTORY_PATH"
+---
 
+## Project Architecture
 
-YOUR_OPENAI_API_KEY – From your OpenAI account.
+```
+┌─────────────────────────────────────────────────────────┐
+│                    User Input                           │
+│          (Leaf Image  or  Text Question)                │
+└────────────┬──────────────────────────┬─────────────────┘
+             │                          │
+             ▼                          ▼
+┌────────────────────────┐   ┌────────────────────────────┐
+│  VLM Classification    │   │   RAG Chatbot Pipeline     │
+│  (potatoleaf-vlm)      │   │   (nowwor.ipynb)           │
+│                        │   │                            │
+│  CLIP ViT-B/32         │   │  PDF → PyMuPDF → Chunks   │
+│      ↓                 │   │      ↓                    │
+│  Disease Prediction    │   │  Cohere embed-english-v3.0 │
+│      ↓                 │   │      ↓                    │
+│  Flan-T5-Small (T2T)   │   │  Pinecone index "hi"      │
+│      ↓                 │   │      ↓                    │
+│  Pesticide             │   │  LangGraph (Retrieve →    │
+│  Recommendation        │   │    Generate)              │
+│                        │   │      ↓                    │
+│                        │   │  Groq llama3-70b-8192     │
+└────────────────────────┘   └────────────────────────────┘
+```
 
-YOUR_PINECONE_API_KEY – From your Pinecone account.
+---
 
-YOUR_INDEX_NAME – The name of the index you created on Pinecone.
+## Notebooks
 
-YOUR_LOCAL_PDF_DIRECTORY_PATH – Full path to the folder where your PDFs are stored.
-Example for Windows:
-pdf_folder = r"C:\Users\YourName\Documents\MyPDFs"
+| Notebook | Purpose | Platform |
+|---|---|---|
+| `potatoleaf-vlm-fc93c1.ipynb` | CLIP fine-tuning, InstructBLIP LoRA fine-tuning, Flan-T5 pesticide recommendation training, combined inference | Kaggle (GPU P100) |
+| `nowwor.ipynb` | Full RAG chatbot — PDF ingestion, embedding, Pinecone upsert, LangGraph workflow, Q&A | Local / Any Python env |
+| `tes.ipynb` | Lightweight chatbot test harness — connects to existing Pinecone index and runs queries without re-ingesting the PDF | Local / Any Python env |
 
-▶️ How to Run
-Open Command Prompt or Terminal.
+---
 
-Navigate to the folder containing the script.
+## Dataset
 
-Run the script:
-python upload_to_pinecone.py
+**"Potato Leaf Disease Dataset in Uncontrolled Environment"** from Kaggle.
 
+| Class | Images |
+|---|---|
+| Bacteria | 342 |
+| Fungi | 452 |
+| Healthy | 175 |
+| Nematode | 47 |
+| Pest | 415 |
+| Phytophthora | 151 |
+| Virus | 303 |
+| **Total** | **1,885** |
 
+Images are RGB photographs of potato leaves captured in real-world (uncontrolled) field environments.
 
+> **Note:** The dataset is not included in this repository due to its size. Download it from [Kaggle](https://www.kaggle.com/datasets) and place it under the path expected by the VLM notebook.
 
-♻️ Resume Support
-If your process stops or your computer sleeps:
+---
 
-Note the last batch number printed in the logs.
+## Technology Stack
 
-Update the start_batch variable in the script:
+| Component | Technology |
+|---|---|
+| Image Classification | CLIP `clip-vit-base-patch32` (fine-tuned), InstructBLIP `instructblip-flan-t5-xl` (LoRA) |
+| Pesticide Recommendation | Flan-T5-Small (fine-tuned T2T) |
+| Embedding | Cohere `embed-english-v3.0` (1024-D) |
+| Vector Store | Pinecone (index `"hi"`, 1024 dimensions) |
+| LLM (Chatbot) | Groq `llama3-70b-8192` (temperature 0.1) |
+| RAG Orchestration | LangGraph `StateGraph` |
+| PDF Parsing | PyMuPDF (`fitz`) |
+| Text Chunking | LangChain `RecursiveCharacterTextSplitter` |
+| Deep Learning Framework | PyTorch, HuggingFace Transformers |
+| Quantization | BitsAndBytes 4-bit NF4 |
+| Parameter-Efficient Fine-Tuning | PEFT / LoRA |
 
-start_batch = YOUR_LAST_SUCCESSFUL_BATCH_NUMBER
+---
 
+## Getting Started
 
-📝 Example Use Case
-You have a folder with 500 legal PDFs.
-You want to make them searchable in your AI chatbot.
+### Prerequisites
 
-✅ This script will:
+```
+Python >= 3.9
+PyTorch >= 2.0 (with CUDA for VLM training)
+```
 
-Read all your PDFs.
+Install dependencies:
 
-Convert them into searchable AI-friendly data.
+```bash
+# For the VLM notebook (run on Kaggle or a GPU machine)
+pip install torch torchvision torchinfo transformers peft bitsandbytes accelerate \
+    scikit-learn matplotlib seaborn opencv-python pillow nltk tqdm
 
-Upload them to Pinecone for RAG-based chatbots or support agents.
+# For the RAG chatbot notebooks
+pip install langchain langchain-cohere langchain-pinecone langchain-groq \
+    langgraph pinecone-client python-dotenv PyMuPDF cohere
+```
 
-📖 What is RAG?
-RAG (Retrieval-Augmented Generation) is a method that:
+### Environment Variables
 
-Retrieves relevant data from your knowledge base.
+Create a `.env` file (used by the chatbot notebooks):
 
-Generates human-like answers using a Language Model (like GPT).
+```env
+COHERE_API_KEY=your_cohere_api_key
+PINECONE_API_KEY=your_pinecone_api_key
+GROQ_API_KEY=your_groq_api_key
+```
 
-This method prevents hallucinations and makes your chatbot fact-based and reliable.
+### Running the Notebooks
 
-✅ Why Use a Vector Database?
-Traditional databases search by exact keywords.
-Vector databases search by meaning.
+1. **VLM Training** — Open `potatoleaf-vlm-fc93c1.ipynb` on Kaggle with GPU acceleration enabled. Attach the Potato Leaf Disease dataset and run all cells.
 
-Example:
+2. **RAG Chatbot (Full Pipeline)** — Open `nowwor.ipynb`, set your API keys in `.env`, place `leaf_train.pdf` at the expected path, and run all cells. This will ingest the PDF, embed chunks, upsert to Pinecone, and start the Q&A system.
 
-Searching for "legal contracts" will also find "binding agreements" in a vector database.
+3. **RAG Chatbot (Query Only)** — Open `tes.ipynb` to query the already-populated Pinecone index without re-ingesting the PDF.
 
-That’s why Pinecone is essential for building AI-powered search systems.
+---
 
-💡 Next Steps
-Build a chatbot frontend to query your data.
+## Results
 
-Connect the retrieval pipeline using the same Pinecone index.
+### CLIP Fine-Tuning (25 Epochs)
 
-Implement grounded prompting to improve response accuracy.
+| Metric | Value |
+|---|---|
+| Test Accuracy | **84.10%** |
+| Best Validation Loss | 0.7833 (epoch 25) |
+| Best Validation Accuracy | 81.69% |
+| Trainable Parameters | 14,441,991 (9.53% of 151M total) |
 
-📬 Questions?
-Feel free to comment on my YouTube video or reach out to me on [Your Contact Channel].
+**Per-Class Performance (Test Set):**
 
-Happy Building! 🚀
+| Class | Precision | Recall | F1-Score | Support |
+|---|---|---|---|---|
+| Bacteria | 1.00 | 0.98 | 0.99 | 51 |
+| Fungi | 0.78 | 0.82 | 0.80 | 68 |
+| Healthy | 0.82 | 0.88 | 0.85 | 26 |
+| Nematode | 1.00 | 0.86 | 0.92 | 7 |
+| Pest | 0.71 | 0.81 | 0.76 | 63 |
+| Phytophthora | 1.00 | 0.64 | 0.78 | 22 |
+| Virus | 0.93 | 0.83 | 0.87 | 46 |
 
+### RAG Chatbot
 
+The chatbot successfully answers domain-specific questions about potato plant diseases with grounded, citation-backed responses from the ingested PDF research document.
 
+---
+
+## Repository Structure
+
+```
+├── potatoleaf-vlm-fc93c1.ipynb   # VLM training & pesticide recommendation
+├── nowwor.ipynb                  # Full RAG chatbot pipeline
+├── tes.ipynb                     # RAG chatbot query-only test harness
+├── README.md                     # This file
+└── TECHNICAL_DOCUMENTATION.md    # Exhaustive technical documentation
+```
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m 'Add your feature'`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+---
+
+## License
+
+This project is for educational and research purposes.
