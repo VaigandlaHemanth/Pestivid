@@ -1,0 +1,29 @@
+# Pestivid dependencies
+# Python >= 3.9
+
+# --- Vision-Language Model pipeline (vlm_training.ipynb) ---
+torch>=2.0
+torchvision
+torchinfo
+transformers>=4.38
+peft>=0.10
+bitsandbytes>=0.43
+accelerate>=0.29
+scikit-learn
+matplotlib
+seaborn
+opencv-python
+pillow
+nltk
+tqdm
+
+# --- RAG chatbot (rag_pipeline.ipynb, chatbot_demo.ipynb) ---
+langchain>=0.2
+langchain-cohere
+langchain-pinecone
+langchain-groq
+langgraph
+pinecone-client
+cohere
+PyMuPDF
+python-dotenv
