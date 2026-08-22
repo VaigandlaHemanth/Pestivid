@@ -1,0 +1,198 @@
+{
+  "version": 1,
+  "classes": [
+    "Bacteria",
+    "Fungi",
+    "Healthy",
+    "Nematode",
+    "Pest",
+    "Phytopthora",
+    "Virus"
+  ],
+  "feat_dim": 2304,
+  "hidden": 0,
+  "n_folds": 5,
+  "folds": [
+    {
+      "fold": 0,
+      "temperature": 5.9604387283325195
+    },
+    {
+      "fold": 1,
+      "temperature": 6.0677995681762695
+    },
+    {
+      "fold": 2,
+      "temperature": 6.055276393890381
+    },
+    {
+      "fold": 3,
+      "temperature": 5.617677211761475
+    },
+    {
+      "fold": 4,
+      "temperature": 5.548060417175293
+    }
+  ],
+  "backbone": {
+    "trained_with": "dinov2-base",
+    "onnx_model_id": "Xenova/dinov2-base",
+    "dtype": "fp16",
+    "approx_download_mb": 173.5,
+    "output": "pooler_output, then L2-normalised",
+    "views": [
+      "global_cls",
+      "tile2x2_mean_cls",
+      "tile2x2_mean_patch"
+    ],
+    "n_views": 3,
+    "view_dim": 768,
+    "feature_recipe": "global_cls + tile2x2_mean_cls + tile2x2_mean_patch",
+    "tiling": {
+      "grid": 2,
+      "enabled": true
+    }
+  },
+  "preprocessing": {
+    "resize_shortest_edge": 256,
+    "resample": "bicubic",
+    "center_crop": 224,
+    "rescale": 0.00392156862745098,
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ],
+    "note": "matches Xenova/dinov2-* preprocessor_config.json and the pinned transform in potato_infer.py / train_potato.py"
+  },
+  "head": {
+    "file": "head.bin",
+    "layout": [
+      {
+        "name": "f0_w",
+        "offset": 0,
+        "count": 16128,
+        "shape": [
+          7,
+          2304
+        ]
+      },
+      {
+        "name": "f0_b",
+        "offset": 16128,
+        "count": 7,
+        "shape": [
+          7
+        ]
+      },
+      {
+        "name": "f1_w",
+        "offset": 16135,
+        "count": 16128,
+        "shape": [
+          7,
+          2304
+        ]
+      },
+      {
+        "name": "f1_b",
+        "offset": 32263,
+        "count": 7,
+        "shape": [
+          7
+        ]
+      },
+      {
+        "name": "f2_w",
+        "offset": 32270,
+        "count": 16128,
+        "shape": [
+          7,
+          2304
+        ]
+      },
+      {
+        "name": "f2_b",
+        "offset": 48398,
+        "count": 7,
+        "shape": [
+          7
+        ]
+      },
+      {
+        "name": "f3_w",
+        "offset": 48405,
+        "count": 16128,
+        "shape": [
+          7,
+          2304
+        ]
+      },
+      {
+        "name": "f3_b",
+        "offset": 64533,
+        "count": 7,
+        "shape": [
+          7
+        ]
+      },
+      {
+        "name": "f4_w",
+        "offset": 64540,
+        "count": 16128,
+        "shape": [
+          7,
+          2304
+        ]
+      },
+      {
+        "name": "f4_b",
+        "offset": 80668,
+        "count": 7,
+        "shape": [
+          7
+        ]
+      }
+    ]
+  },
+  "ood": {
+    "file": "ood.bin",
+    "mode": "cholesky_upper",
+    "layout": [
+      {
+        "name": "means",
+        "offset": 0,
+        "count": 16128,
+        "shape": [
+          7,
+          2304
+        ]
+      },
+      {
+        "name": "Lt_upper",
+        "offset": 16128,
+        "count": 2655360,
+        "shape": [
+          2655360
+        ]
+      }
+    ]
+  },
+  "thresholds": {
+    "ood_mahalanobis_p99": 2712.8517002687113,
+    "abstain_below_confidence": 0.5573585331439972
+  },
+  "server_metrics": {
+    "macro_f1_mean": 0.8561482757010728,
+    "macro_f1_std": 0.030084259428519642,
+    "accuracy_mean": 0.8791499941906522,
+    "accuracy_std": 0.019807908671083226,
+    "ece_mean": 0.03694598949909542
+  },
+  "disclaimer": "Guidance only. Confirm any treatment with a licensed agronomist."
+}

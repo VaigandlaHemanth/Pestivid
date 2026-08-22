@@ -1,0 +1,43 @@
+# PestVid Python dependencies
+#
+# Six docs in this repo (INDEX.md, QUICK_START.md, ...) tell you to run
+# `pip install -r requirements.txt`, but the file was never committed.
+# This reconstructs it from what the Python sources actually import.
+#
+# The Node backend (backend/) is the only thing needed to run the website.
+# Everything here is for the optional Flask AI server.
+
+# --- Always required: flask_server_simple.py ---
+flask>=3.0
+flask-cors>=4.0
+python-dotenv>=1.0
+requests>=2.31
+
+# --- Disease prediction: flask_server.py ---
+# Needs best_vlm_model.pth and best_t2t_recommendation_model.pth, which are
+# gitignored and not in this repo. Train them with the Pestivid repo's
+# potatoleaf-vlm-fc93c1.ipynb, or skip these and let /api/ai/predict-proxy
+# fall back to Groq.
+torch>=2.0
+torchvision>=0.15        # potato_infer.py imports transforms; without it
+                         # the classifier import fails and /predict 503s forever
+transformers>=4.40,<5      # 5.x removed T5TokenizerFast
+pillow>=10.0
+numpy>=1.26
+sentencepiece          # required by the T5 tokenizer
+
+# --- RAG expert chat: flask_server.py /chat ---
+# Optional. flask_server.py degrades to a direct Groq call without these.
+# Needs COHERE_API_KEY + PINECONE_API_KEY and a populated Pinecone index "hi"
+# (build it with the Pestivid repo's nowwor.ipynb).
+langchain>=0.3,<0.4        # >=0.2 spans two majors of API drift
+langchain-core
+langchain-cohere
+langchain-pinecone         # requires python <3.14
+langchain-groq
+langgraph
+# pinecone-client REMOVED: renamed to `pinecone` at v5.1.0. The old name is now
+# a tombstone that raises a bare Exception on import, which bypasses the
+# ImportError guard in flask_server.py and kills the server at startup.
+# langchain-pinecone depends on `pinecone` already, so do not list both.
+cohere

@@ -1,0 +1,79 @@
+<!doctype html><meta charset="utf-8"><title>PIL resize byte parity</title>
+<style>
+ body{font:12px/1.55 ui-monospace,Consolas,monospace;background:#0e1116;color:#d7dde5;padding:16px;max-width:960px}
+ h3{color:#8ab4f8;font-size:14px;margin:0 0 6px}.m{color:#7c8798}
+ table{border-collapse:collapse;margin-top:12px;width:100%}
+ th,td{border:1px solid #262c36;padding:4px 8px;text-align:right}
+ th:first-child,td:first-child{text-align:left}
+ th{background:#161b22;color:#9aa5b4}.ok{color:#5ddb8f}.bad{color:#ff6b6b}.warn{color:#ffb84d}
+ pre{white-space:pre-wrap;color:#8b96a6;border-top:1px solid #262c36;padding-top:8px;margin-top:12px}
+</style>
+<h3>Does the JS resize reproduce PIL byte-for-byte?</h3>
+<div class="m">JS is fed the <b>same decoded source pixels PIL used</b>, so the JPEG decoder
+cannot contribute. Any difference here is the resampling code itself.</div>
+<div id="s" class="warn" style="margin-top:8px">running…</div>
+<div id="o"></div><pre id="l"></pre>
+<script type="module">
+const S = document.getElementById('s'), O = document.getElementById('o'), L = document.getElementById('l');
+const log = m => { L.textContent += m + '\n'; };
+window.__done = false; window.__res = null;
+try {
+  const { pilResizeRGB, preprocess } = await import('/js/pil-resize.js');
+  const idx = await (await fetch('/parity/pixels/index.json')).json();
+  const rows = [];
+  for (const it of idx) {
+    const src = new Uint8ClampedArray(
+      await (await fetch(`/parity/pixels/${it.name}.src.bin`)).arrayBuffer());
+    const refR = new Uint8Array(
+      await (await fetch(`/parity/pixels/${it.name}.r256.bin`)).arrayBuffer());
+    const refT = new Float32Array(
+      await (await fetch(`/parity/pixels/${it.name}.tensor.bin`)).arrayBuffer());
+
+    const t0 = performance.now();
+    const got = pilResizeRGB(src, it.src.w, it.src.h, it.r256.w, it.r256.h);
+    const ms = performance.now() - t0;
+
+    let diff = 0, maxd = 0, sum = 0;
+    for (let i = 0; i < refR.length; i++) {
+      const d = Math.abs(got.data[i] - refR[i]);
+      if (d) { diff++; sum += d; if (d > maxd) maxd = d; }
+    }
+
+    const pre = preprocess(src, it.src.w, it.src.h);
+    let tmax = 0;
+    for (let i = 0; i < refT.length; i++) {
+      const d = Math.abs(pre.data[i] - refT[i]);
+      if (d > tmax) tmax = d;
+    }
+
+    rows.push({ name: it.name.replace('parity_', ''), n: refR.length, diff, maxd,
+                mean: diff ? sum / diff : 0, tmax, ms });
+    log(`${it.name.replace('parity_', '').padEnd(13)} bytes differing ${String(diff).padStart(7)}/${refR.length}`
+      + `  max|Δ|=${maxd}  tensor max|Δ|=${tmax.toExponential(2)}  ${ms.toFixed(0)}ms`);
+  }
+  const worstByte = Math.max(...rows.map(r => r.maxd));
+  const worstFrac = Math.max(...rows.map(r => r.diff / r.n));
+  const worstT = Math.max(...rows.map(r => r.tmax));
+  // A handful of ±1 bytes is acceptable rounding; a systematic shift is not.
+  const pass = worstByte <= 1 && worstT < 1e-2;
+  O.innerHTML = '<table><tr><th>image</th><th>bytes differing</th><th>% of bytes</th>'
+    + '<th>max |Δ| byte</th><th>mean |Δ| where differing</th><th>tensor max |Δ|</th><th>ms</th></tr>'
+    + rows.map(r => `<tr><td>${r.name}</td>`
+      + `<td class="${r.diff === 0 ? 'ok' : r.maxd <= 1 ? 'warn' : 'bad'}">${r.diff}</td>`
+      + `<td>${(100 * r.diff / r.n).toFixed(4)}%</td>`
+      + `<td class="${r.maxd <= 1 ? 'ok' : 'bad'}">${r.maxd}</td>`
+      + `<td>${r.mean.toFixed(2)}</td>`
+      + `<td class="${r.tmax < 1e-2 ? 'ok' : 'bad'}">${r.tmax.toExponential(2)}</td>`
+      + `<td>${r.ms.toFixed(0)}</td></tr>`).join('') + '</table>';
+  S.textContent = pass
+    ? `RESIZE PARITY OK — max byte difference ${worstByte}, worst ${(100 * worstFrac).toFixed(4)}% of bytes, tensor max |Δ| ${worstT.toExponential(2)}`
+    : `RESIZE MISMATCH — max byte difference ${worstByte}, tensor max |Δ| ${worstT.toExponential(2)}`;
+  S.className = pass ? 'ok' : 'bad';
+  window.__res = { pass, worstByte, worstFrac, worstT, rows };
+  window.__done = true;
+} catch (e) {
+  S.textContent = 'ERROR: ' + e.message; S.className = 'bad';
+  log((e.stack || e) + '');
+  window.__res = { error: String(e.message) }; window.__done = true;
+}
+</script>

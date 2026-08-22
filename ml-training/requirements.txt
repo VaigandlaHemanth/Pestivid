@@ -1,0 +1,36 @@
+# Pestivid dependencies
+# Python >= 3.9
+
+# --- Vision-Language Model pipeline (vlm_training.ipynb) ---
+torch>=2.0
+torchvision
+torchinfo
+transformers>=4.38
+peft>=0.10
+bitsandbytes>=0.43
+accelerate>=0.29
+scikit-learn
+matplotlib
+seaborn
+opencv-python
+pillow
+nltk
+tqdm
+
+# --- RAG chatbot (rag_pipeline.ipynb, chatbot_demo.ipynb) ---
+langchain>=0.2
+langchain-cohere
+langchain-pinecone
+langchain-groq
+langgraph
+pinecone-client
+cohere
+PyMuPDF
+python-dotenv
+
+# --- Leak-free training pipeline (train_potato.py) ---
+# The backbone is frozen, so a Kaggle P100 / Colab T4 is ample.
+scikit-learn>=1.3        # StratifiedGroupKFold, macro-F1, classification_report
+transformers>=4.40,<5    # DINOv2 / CLIP feature extractors
+torchvision>=0.15        # TrivialAugmentWide
+matplotlib               # confusion matrix + reliability diagram (optional)

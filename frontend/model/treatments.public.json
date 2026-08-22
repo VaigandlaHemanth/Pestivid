@@ -1,0 +1,619 @@
+{
+ "Bacteria": {
+  "disease": "Bacteria",
+  "known": true,
+  "is_disease": true,
+  "common_name": "Bacterial disease (blackleg / soft rot / bacterial wilt)",
+  "pathogen": "commonly Pectobacterium / Dickeya spp., or Ralstonia solanacearum",
+  "severity": "high — and largely not curable in-season",
+  "summary": "Dark, water-soaked, often slimy or foul-smelling lesions; wilting that does not recover overnight; blackened stem bases. Spread by water, tools, insects and infected seed.",
+  "cultural_practices": [
+   "There is no effective chemical cure for bacterial disease in the field. Management is sanitation and exclusion.",
+   "Remove and destroy affected plants immediately, including tubers — do not compost them.",
+   "Disinfect knives, tools and boots between plants and between plots.",
+   "Use certified disease-free seed. Avoid cutting seed tubers where you can; if you must, disinfect between cuts.",
+   "Improve drainage and avoid overhead irrigation. Never irrigate from a source downstream of an affected field.",
+   "Rotate with non-solanaceous crops for 3–4 years; Ralstonia in particular persists in soil.",
+   "Do not handle plants when foliage is wet."
+  ],
+  "chemical_options": [
+   {
+    "active_ingredient": "copper-based bactericide (e.g. copper oxychloride / copper hydroxide)",
+    "type": "protectant",
+    "role": "suppressive only — reduces surface spread, does not cure infected plants",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection"
+    ],
+    "resistance_note": "Copper tolerance occurs in some bacterial populations. Repeated copper also accumulates in soil. Treat as an adjunct to sanitation, never a substitute.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   }
+  ],
+  "do_not": [
+   "Do not expect a spray to rescue a bacterial infection. Removing infected material and disinfecting tools does more than any product."
+  ],
+  "forecasting": null,
+  "escalate_if": "Always. Bacterial wilt in particular is a notifiable concern in some states and affects what you can plant next season — involve an extension officer.",
+  "disclaimer": "Guidance only, not a prescription. Confirm the product, dose, pre-harvest interval and legality for your crop and district with a licensed agronomist or your State Agricultural University extension officer before applying anything. Always read the product label — the label is the law.",
+  "jurisdiction": "IN",
+  "table_revision": "2026-08-21",
+  "sources": [
+   {
+    "name": "CIBRC — Major Uses of Pesticides (crop-wise / pest-wise)",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides"
+   },
+   {
+    "name": "CIBRC — Registered Products",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/registered-products"
+   },
+   {
+    "name": "CIBRC — Banned / restricted / refused registration",
+    "url": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee"
+   },
+   {
+    "name": "ICAR–Central Potato Research Institute, Shimla",
+    "url": "https://cpri.icar.gov.in/"
+   },
+   {
+    "name": "CABI Plantwise Knowledge Bank",
+    "url": "https://plantwiseplusknowledgebank.org/"
+   }
+  ]
+ },
+ "Fungi": {
+  "disease": "Fungi",
+  "known": true,
+  "is_disease": true,
+  "common_name": "Fungal leaf disease (early blight and similar)",
+  "pathogen": "commonly Alternaria solani; this class covers several foliar fungi",
+  "severity": "moderate to high",
+  "summary": "Dark lesions with concentric rings, often on older lower leaves first, on a yellowing background. Favoured by warm weather with alternating wet and dry spells.",
+  "cultural_practices": [
+   "Remove and destroy infected plant debris; do not leave haulm in the field.",
+   "Rotate away from solanaceous crops for at least 2–3 years.",
+   "Irrigate at soil level and avoid prolonged leaf wetness.",
+   "Maintain balanced nitrogen — deficient plants are markedly more susceptible.",
+   "Choose less susceptible varieties where available for your region.",
+   "Space rows for airflow so the canopy dries quickly."
+  ],
+  "chemical_options": [
+   {
+    "active_ingredient": "mancozeb",
+    "type": "protectant fungicide",
+    "role": "preventive",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection"
+    ],
+    "resistance_note": "Multi-site, low resistance risk.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   },
+   {
+    "active_ingredient": "chlorothalonil",
+    "type": "protectant fungicide",
+    "role": "preventive",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection",
+     "respirator where the label requires one"
+    ],
+    "resistance_note": "Multi-site. NOTE: restricted or withdrawn in some jurisdictions (including the EU) — confirm current Indian registration and any residue limits for your export market before use.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   },
+   {
+    "active_ingredient": "azoxystrobin",
+    "type": "systemic (QoI / strobilurin)",
+    "role": "curative and preventive",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection"
+    ],
+    "resistance_note": "Single-site, HIGH resistance risk. Limit applications per season as the label specifies, always alternate with a multi-site partner, and never use it curatively on its own.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   }
+  ],
+  "do_not": [],
+  "forecasting": null,
+  "escalate_if": "More than roughly 5% of leaf area is affected across the field, or lesions reach the upper canopy.",
+  "disclaimer": "Guidance only, not a prescription. Confirm the product, dose, pre-harvest interval and legality for your crop and district with a licensed agronomist or your State Agricultural University extension officer before applying anything. Always read the product label — the label is the law.",
+  "jurisdiction": "IN",
+  "table_revision": "2026-08-21",
+  "sources": [
+   {
+    "name": "CIBRC — Major Uses of Pesticides (crop-wise / pest-wise)",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides"
+   },
+   {
+    "name": "CIBRC — Registered Products",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/registered-products"
+   },
+   {
+    "name": "CIBRC — Banned / restricted / refused registration",
+    "url": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee"
+   },
+   {
+    "name": "ICAR–Central Potato Research Institute, Shimla",
+    "url": "https://cpri.icar.gov.in/"
+   },
+   {
+    "name": "CABI Plantwise Knowledge Bank",
+    "url": "https://plantwiseplusknowledgebank.org/"
+   }
+  ]
+ },
+ "Healthy": {
+  "disease": "Healthy",
+  "known": true,
+  "is_disease": false,
+  "common_name": "No disease detected",
+  "pathogen": null,
+  "severity": null,
+  "summary": "No visible symptoms of the seven tracked conditions. This is not a clean bill of health for the field — it is one leaf at one moment.",
+  "cultural_practices": [
+   "Keep scouting. Walk the field twice weekly, and after every rain, looking at lower and inner leaves where infection starts.",
+   "Maintain spacing and remove weeds so the canopy dries quickly after rain or irrigation.",
+   "Irrigate at soil level. Wet foliage is the single biggest driver of foliar disease.",
+   "Remove and destroy volunteer potato plants and cull piles — they carry inoculum between seasons.",
+   "Use certified seed and rotate away from solanaceous crops (potato, tomato, brinjal, chilli) for 3–4 years.",
+   "Record what you planted, when, and what you applied. Records are what make next season's decisions better than guesses."
+  ],
+  "chemical_options": [],
+  "do_not": [
+   "Do not spray a fungicide or insecticide because a scan came back healthy. Prophylactic spraying on a symptom-free crop wastes money, accelerates resistance, and harms beneficial insects."
+  ],
+  "forecasting": null,
+  "escalate_if": "Symptoms appear on more than a few plants, spread visibly between scouting visits, or you cannot identify what you are seeing.",
+  "disclaimer": "Guidance only, not a prescription. Confirm the product, dose, pre-harvest interval and legality for your crop and district with a licensed agronomist or your State Agricultural University extension officer before applying anything. Always read the product label — the label is the law.",
+  "jurisdiction": "IN",
+  "table_revision": "2026-08-21",
+  "sources": [
+   {
+    "name": "CIBRC — Major Uses of Pesticides (crop-wise / pest-wise)",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides"
+   },
+   {
+    "name": "CIBRC — Registered Products",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/registered-products"
+   },
+   {
+    "name": "CIBRC — Banned / restricted / refused registration",
+    "url": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee"
+   },
+   {
+    "name": "ICAR–Central Potato Research Institute, Shimla",
+    "url": "https://cpri.icar.gov.in/"
+   },
+   {
+    "name": "CABI Plantwise Knowledge Bank",
+    "url": "https://plantwiseplusknowledgebank.org/"
+   }
+  ]
+ },
+ "Nematode": {
+  "disease": "Nematode",
+  "known": true,
+  "is_disease": true,
+  "common_name": "Nematode infestation (cyst / root-knot / lesion)",
+  "pathogen": "Globodera spp., Meloidogyne spp., Pratylenchus spp.",
+  "severity": "high and persistent — soil-borne, and it builds up over seasons",
+  "summary": "Patchy stunting, yellowing and wilting in the heat that recovers overnight, with galls or cysts on roots. Above-ground symptoms are easily mistaken for drought or nutrient stress, so diagnosis needs a soil or root test.",
+  "cultural_practices": [
+   "Confirm with a soil test before acting. Nematode management is expensive and multi-season, so it is worth knowing the species and population first.",
+   "Rotate with non-host crops — cereals such as maize or wheat — for several seasons.",
+   "Plant resistant varieties where available; for potato cyst nematode this is the mainstay.",
+   "Use certified seed and clean equipment. Nematodes travel in soil on machinery and boots.",
+   "Add organic matter to support the soil's natural antagonists.",
+   "Solarise soil before planting where the climate allows.",
+   "Consider a trap or biofumigant crop (e.g. mustard) in the rotation.",
+   "Control volunteer potatoes, which let the population persist through a rotation."
+  ],
+  "chemical_options": [
+   {
+    "active_ingredient": "registered nematicide, or a bio-nematicide such as Purpureocillium lilacinum",
+    "type": "nematicide / bio-nematicide",
+    "role": "population suppression alongside rotation, not a standalone fix",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection",
+     "respirator — several conventional nematicides are highly toxic"
+    ],
+    "resistance_note": "Conventional nematicides are among the most acutely toxic agrochemicals in use and several are restricted or banned. Do not select one without professional advice. Verify current registration and restriction status before considering any product.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   }
+  ],
+  "do_not": [
+   "Do not apply a nematicide on a visual diagnosis alone. Confirm with a soil test first."
+  ],
+  "forecasting": null,
+  "escalate_if": "Always. Nematode management is a multi-season rotation decision, not a spray decision — involve an extension officer or your State Agricultural University.",
+  "disclaimer": "Guidance only, not a prescription. Confirm the product, dose, pre-harvest interval and legality for your crop and district with a licensed agronomist or your State Agricultural University extension officer before applying anything. Always read the product label — the label is the law.",
+  "jurisdiction": "IN",
+  "table_revision": "2026-08-21",
+  "sources": [
+   {
+    "name": "CIBRC — Major Uses of Pesticides (crop-wise / pest-wise)",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides"
+   },
+   {
+    "name": "CIBRC — Registered Products",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/registered-products"
+   },
+   {
+    "name": "CIBRC — Banned / restricted / refused registration",
+    "url": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee"
+   },
+   {
+    "name": "ICAR–Central Potato Research Institute, Shimla",
+    "url": "https://cpri.icar.gov.in/"
+   },
+   {
+    "name": "CABI Plantwise Knowledge Bank",
+    "url": "https://plantwiseplusknowledgebank.org/"
+   }
+  ]
+ },
+ "Pest": {
+  "disease": "Pest",
+  "known": true,
+  "is_disease": false,
+  "common_name": "Insect or mite damage",
+  "pathogen": "not a pathogen — chewing or sucking arthropod damage",
+  "severity": "variable — depends entirely on which pest and at what growth stage",
+  "summary": "Holes, notching, skeletonised tissue, mines, stippling or curling. Damage type identifies the culprit, and the culprit determines the response.",
+  "cultural_practices": [
+   "Identify the pest before treating. 'Pest' is not an actionable diagnosis — an aphid, a tuber moth and a mite need three different responses.",
+   "Practise IPM: scout and use thresholds, protect natural enemies, and treat only when damage justifies it.",
+   "Use pheromone traps for potato tuber moth to time any intervention.",
+   "Earth up well so tubers are not exposed to tuber moth.",
+   "Encourage beneficials — ladybirds, lacewings and parasitoid wasps — by avoiding broad-spectrum sprays.",
+   "Row covers help during vulnerable early growth.",
+   "Remove and destroy heavily infested plant parts."
+  ],
+  "chemical_options": [
+   {
+    "active_ingredient": "neem-based (azadirachtin) or insecticidal soap",
+    "type": "biopesticide / contact",
+    "role": "soft-bodied pests: aphids, mites, whitefly, early instars",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "eye protection"
+    ],
+    "resistance_note": "Lower impact on beneficials than broad-spectrum insecticides. Contact action — coverage matters, including leaf undersides.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   },
+   {
+    "active_ingredient": "selective insecticide matched to the identified pest",
+    "type": "insecticide",
+    "role": "only after the pest is identified and a threshold is exceeded",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection",
+     "respirator where the label requires one"
+    ],
+    "resistance_note": "Choose the narrowest-spectrum option that works. Rotate modes of action across the season. Broad-spectrum sprays commonly trigger secondary mite and aphid outbreaks by removing predators.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   }
+  ],
+  "do_not": [
+   "Do not spray a broad-spectrum insecticide on an unidentified pest. It often makes the problem worse by killing the predators that were holding it down."
+  ],
+  "forecasting": null,
+  "escalate_if": "You cannot identify the pest, or damage continues after an intervention.",
+  "disclaimer": "Guidance only, not a prescription. Confirm the product, dose, pre-harvest interval and legality for your crop and district with a licensed agronomist or your State Agricultural University extension officer before applying anything. Always read the product label — the label is the law.",
+  "jurisdiction": "IN",
+  "table_revision": "2026-08-21",
+  "sources": [
+   {
+    "name": "CIBRC — Major Uses of Pesticides (crop-wise / pest-wise)",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides"
+   },
+   {
+    "name": "CIBRC — Registered Products",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/registered-products"
+   },
+   {
+    "name": "CIBRC — Banned / restricted / refused registration",
+    "url": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee"
+   },
+   {
+    "name": "ICAR–Central Potato Research Institute, Shimla",
+    "url": "https://cpri.icar.gov.in/"
+   },
+   {
+    "name": "CABI Plantwise Knowledge Bank",
+    "url": "https://plantwiseplusknowledgebank.org/"
+   }
+  ]
+ },
+ "Phytophthora": {
+  "disease": "Phytophthora",
+  "known": true,
+  "is_disease": true,
+  "common_name": "Late blight",
+  "pathogen": "Phytophthora infestans",
+  "severity": "very high — can destroy a crop in under two weeks under cool, wet conditions",
+  "summary": "Water-soaked lesions with a pale halo, often starting at leaf tips and margins, with white sporulation on the underside in humid weather. Spreads explosively when nights are cool and humidity is high.",
+  "cultural_practices": [
+   "Destroy cull piles and volunteer plants before the season starts — they are the primary inoculum source.",
+   "Plant certified, disease-free seed tubers; avoid seed from an affected field.",
+   "Improve drainage and avoid overhead irrigation. Raised beds help in heavy soils.",
+   "Increase row spacing to speed canopy drying.",
+   "Destroy the haulm before harvest so tubers are not exposed to spores washing down.",
+   "Do not harvest in wet conditions; cure tubers dry before storage."
+  ],
+  "chemical_options": [
+   {
+    "active_ingredient": "mancozeb",
+    "type": "protectant fungicide",
+    "role": "preventive cover before infection",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection",
+     "respirator where the label requires one"
+    ],
+    "resistance_note": "Multi-site protectant, low resistance risk. Use as the partner in a mix rather than relying on single-site actives alone.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   },
+   {
+    "active_ingredient": "metalaxyl (+ mancozeb)",
+    "type": "systemic + protectant mixture",
+    "role": "curative, only once infection is present",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection"
+    ],
+    "resistance_note": "IMPORTANT: metalaxyl resistance in P. infestans is established in India. Do not use metalaxyl as a solo curative and do not repeat it in consecutive sprays. Alternate modes of action, and confirm local resistance status with your State Agricultural University before relying on it.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   },
+   {
+    "active_ingredient": "cymoxanil (+ mancozeb)",
+    "type": "systemic + protectant mixture",
+    "role": "curative alternative where metalaxyl resistance is suspected",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection"
+    ],
+    "resistance_note": "Rotate modes of action across the season. Never apply the same single-site active twice in succession.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   }
+  ],
+  "do_not": [],
+  "forecasting": "This is the disease where prediction beats reaction. INDO-BLIGHTCAST (ICAR-CPRI Shimla) forecasts late-blight risk from temperature and relative humidity for the Indo-Gangetic plains. A weather-driven warning is worth more than any post-hoc diagnosis.",
+  "escalate_if": "Lesions are spreading between scouting visits, or weather is forecast cool and wet. Late blight moves faster than an advice cycle — contact an extension officer the same day.",
+  "disclaimer": "Guidance only, not a prescription. Confirm the product, dose, pre-harvest interval and legality for your crop and district with a licensed agronomist or your State Agricultural University extension officer before applying anything. Always read the product label — the label is the law.",
+  "jurisdiction": "IN",
+  "table_revision": "2026-08-21",
+  "sources": [
+   {
+    "name": "CIBRC — Major Uses of Pesticides (crop-wise / pest-wise)",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides"
+   },
+   {
+    "name": "CIBRC — Registered Products",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/registered-products"
+   },
+   {
+    "name": "CIBRC — Banned / restricted / refused registration",
+    "url": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee"
+   },
+   {
+    "name": "ICAR–Central Potato Research Institute, Shimla",
+    "url": "https://cpri.icar.gov.in/"
+   },
+   {
+    "name": "CABI Plantwise Knowledge Bank",
+    "url": "https://plantwiseplusknowledgebank.org/"
+   }
+  ]
+ },
+ "Phytopthora": {
+  "disease": "Phytopthora",
+  "known": true,
+  "is_disease": true,
+  "common_name": "Late blight",
+  "pathogen": "Phytophthora infestans",
+  "severity": "very high — can destroy a crop in under two weeks under cool, wet conditions",
+  "summary": "Water-soaked lesions with a pale halo, often starting at leaf tips and margins, with white sporulation on the underside in humid weather. Spreads explosively when nights are cool and humidity is high.",
+  "cultural_practices": [
+   "Destroy cull piles and volunteer plants before the season starts — they are the primary inoculum source.",
+   "Plant certified, disease-free seed tubers; avoid seed from an affected field.",
+   "Improve drainage and avoid overhead irrigation. Raised beds help in heavy soils.",
+   "Increase row spacing to speed canopy drying.",
+   "Destroy the haulm before harvest so tubers are not exposed to spores washing down.",
+   "Do not harvest in wet conditions; cure tubers dry before storage."
+  ],
+  "chemical_options": [
+   {
+    "active_ingredient": "mancozeb",
+    "type": "protectant fungicide",
+    "role": "preventive cover before infection",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection",
+     "respirator where the label requires one"
+    ],
+    "resistance_note": "Multi-site protectant, low resistance risk. Use as the partner in a mix rather than relying on single-site actives alone.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   },
+   {
+    "active_ingredient": "metalaxyl (+ mancozeb)",
+    "type": "systemic + protectant mixture",
+    "role": "curative, only once infection is present",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection"
+    ],
+    "resistance_note": "IMPORTANT: metalaxyl resistance in P. infestans is established in India. Do not use metalaxyl as a solo curative and do not repeat it in consecutive sprays. Alternate modes of action, and confirm local resistance status with your State Agricultural University before relying on it.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   },
+   {
+    "active_ingredient": "cymoxanil (+ mancozeb)",
+    "type": "systemic + protectant mixture",
+    "role": "curative alternative where metalaxyl resistance is suspected",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection"
+    ],
+    "resistance_note": "Rotate modes of action across the season. Never apply the same single-site active twice in succession.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   }
+  ],
+  "do_not": [],
+  "forecasting": "This is the disease where prediction beats reaction. INDO-BLIGHTCAST (ICAR-CPRI Shimla) forecasts late-blight risk from temperature and relative humidity for the Indo-Gangetic plains. A weather-driven warning is worth more than any post-hoc diagnosis.",
+  "escalate_if": "Lesions are spreading between scouting visits, or weather is forecast cool and wet. Late blight moves faster than an advice cycle — contact an extension officer the same day.",
+  "disclaimer": "Guidance only, not a prescription. Confirm the product, dose, pre-harvest interval and legality for your crop and district with a licensed agronomist or your State Agricultural University extension officer before applying anything. Always read the product label — the label is the law.",
+  "jurisdiction": "IN",
+  "table_revision": "2026-08-21",
+  "sources": [
+   {
+    "name": "CIBRC — Major Uses of Pesticides (crop-wise / pest-wise)",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides"
+   },
+   {
+    "name": "CIBRC — Registered Products",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/registered-products"
+   },
+   {
+    "name": "CIBRC — Banned / restricted / refused registration",
+    "url": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee"
+   },
+   {
+    "name": "ICAR–Central Potato Research Institute, Shimla",
+    "url": "https://cpri.icar.gov.in/"
+   },
+   {
+    "name": "CABI Plantwise Knowledge Bank",
+    "url": "https://plantwiseplusknowledgebank.org/"
+   }
+  ]
+ },
+ "Virus": {
+  "disease": "Virus",
+  "known": true,
+  "is_disease": true,
+  "common_name": "Viral disease (PVY, PLRV, mosaic)",
+  "pathogen": "Potato virus Y, Potato leafroll virus and others",
+  "severity": "high — cumulative across seasons through infected seed",
+  "summary": "Mosaic mottling, crinkling, leaf rolling, stunting, vein clearing. Symptoms are often mistaken for nutrient deficiency or herbicide damage.",
+  "cultural_practices": [
+   "There is no cure. A virus-infected plant stays infected — management is removing sources and controlling vectors.",
+   "Rogue out symptomatic plants early, including tubers, and destroy them.",
+   "Use certified virus-tested seed. This is the single most effective control by a wide margin.",
+   "Control aphid vectors, which spread PVY and PLRV, and manage weed hosts along field margins.",
+   "Do not save seed from a field showing virus symptoms — infection compounds season on season.",
+   "Disinfect tools; PVY in particular transmits mechanically on blades.",
+   "Plant resistant varieties where available for your region."
+  ],
+  "chemical_options": [
+   {
+    "active_ingredient": "insecticide targeting aphid vectors (active depends on local resistance)",
+    "type": "insecticide",
+    "role": "vector suppression only — has no effect on the virus itself",
+    "ppe": [
+     "nitrile gloves",
+     "long sleeves and trousers",
+     "boots",
+     "eye protection",
+     "respirator where the label requires one"
+    ],
+    "resistance_note": "Aphid insecticide resistance is widespread and local. Ask your State Agricultural University which actives still work in your district. Rotate modes of action. Note that killing aphids does not stop non-persistent transmission of PVY, which happens within seconds of probing — seed health matters far more.",
+    "status": "needs_verification",
+    "verify_at": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides",
+    "dose": null,
+    "dose_withheld": "No dose or pre-harvest interval is shown because this entry has not been verified against the CIBRC register. Get the rate from the product label and confirm it is registered for potato in your district. Do not guess."
+   }
+  ],
+  "do_not": [],
+  "forecasting": null,
+  "escalate_if": "More than a few plants are affected, or you intend to save seed from this field — get the crop tested first.",
+  "disclaimer": "Guidance only, not a prescription. Confirm the product, dose, pre-harvest interval and legality for your crop and district with a licensed agronomist or your State Agricultural University extension officer before applying anything. Always read the product label — the label is the law.",
+  "jurisdiction": "IN",
+  "table_revision": "2026-08-21",
+  "sources": [
+   {
+    "name": "CIBRC — Major Uses of Pesticides (crop-wise / pest-wise)",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/major-uses-of-pesticides"
+   },
+   {
+    "name": "CIBRC — Registered Products",
+    "url": "https://ppqs.gov.in/divisions/cib-rc/registered-products"
+   },
+   {
+    "name": "CIBRC — Banned / restricted / refused registration",
+    "url": "https://ppqs.gov.in/divisions/central-insecticides-board-registration-committee"
+   },
+   {
+    "name": "ICAR–Central Potato Research Institute, Shimla",
+    "url": "https://cpri.icar.gov.in/"
+   },
+   {
+    "name": "CABI Plantwise Knowledge Bank",
+    "url": "https://plantwiseplusknowledgebank.org/"
+   }
+  ]
+ }
+}

@@ -1,0 +1,91 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tiled feature parity: browser vs server</title>
+<!--
+  Per-VIEW parity for the multi-view head.
+
+  The head is a linear map over global_cls + tile2x2_mean_cls +
+  tile2x2_mean_patch. A mismatch in one block is largely hidden in the cosine of
+  the concatenated 2304-d vector, so each 768-d block is compared separately.
+
+  The reference comes from potato_infer.PotatoClassifier._features -- the real
+  server path -- so this tests browser against production, not against a
+  reimplementation.
+
+  Threshold: cosine distance < 1e-3 per view. Above that, the server-measured
+  accuracy no longer describes what the browser does.
+-->
+<style>
+ body{font:13px/1.55 ui-monospace,Consolas,monospace;background:#0e1116;color:#d7dde5;padding:18px;max-width:960px}
+ h1{font-size:15px;color:#8ab4f8;margin:0 0 4px}.m{color:#7c8798}
+ table{border-collapse:collapse;margin-top:12px;width:100%}
+ th,td{border:1px solid #262c36;padding:4px 8px;text-align:right}
+ th:first-child,td:first-child{text-align:left}
+ th{background:#161b22;color:#9aa5b4;font-weight:600}
+ .ok{color:#5ddb8f}.bad{color:#ff6b6b}.warn{color:#ffb84d}
+ pre{white-space:pre-wrap;margin-top:12px;color:#8b96a6;border-top:1px solid #262c36;padding-top:10px}
+</style>
+<h1>Tiled feature parity — per view</h1>
+<div class="m">Each 768-d block compared separately against the server. A bad block is
+invisible in the 2304-d cosine, so they are checked one at a time.</div>
+<div id="s" class="warn" style="margin-top:8px">loading…</div>
+<div id="o"></div><pre id="l"></pre>
+<script type="module">
+const S=document.getElementById('s'),O=document.getElementById('o'),L=document.getElementById('l');
+const log=m=>{L.textContent+=m+'\n'};
+window.__done=false;window.__res=null;
+const cosd=(a,b)=>{let d=0,x=0,y=0;for(let i=0;i<a.length;i++){d+=a[i]*b[i];x+=a[i]*a[i];y+=b[i]*b[i];}return 1-d/Math.sqrt(x*y);};
+try{
+  await import('/js/potato-browser.js');
+  const ref=await (await fetch('/parity/parity_tiled.json')).json();
+  log(`reference recipe: ${ref.recipe.join(' + ')}  (${ref.feat_dim}-d)`);
+  log(`transform: ${ref.transform}`);
+
+  const pb=await window.PotatoBrowser.load({
+    modelDir:'/model', resizeUrl:'/js/pil-resize.js',
+    onProgress:(m,p)=>{S.textContent=`${m} (${Math.round(p)}%)`;}
+  });
+  log(`loaded: views=[${pb.views.join(', ')}] dim=${pb.dim} folds=${pb.info.folds}`);
+
+  if (pb.views.join(',') !== ref.recipe.join(',')) {
+    throw new Error(`manifest views [${pb.views}] != reference recipe [${ref.recipe}]`);
+  }
+
+  const rows=[]; let worst=0;
+  for (const r of ref.records) {
+    const img=new Image(); img.src='/parity/'+r.file; await img.decode();
+    const t0=performance.now();
+    const f=await pb.features(img);           // full 2304-d
+    const ms=performance.now()-t0;
+    const per={};
+    ref.recipe.forEach((v,i)=>{
+      const mine=f.slice(i*ref.view_dim,(i+1)*ref.view_dim);
+      const theirs=r.views[v];
+      const d=cosd(mine,theirs);
+      per[v]=d; worst=Math.max(worst,d);
+    });
+    const p=await pb.predict(img);
+    rows.push({cls:r.class,per,ms,
+      pred:p.status==='ok'?`${p.disease} ${(p.confidence*100).toFixed(0)}%`:p.status});
+    log(`${r.class.padEnd(13)} `+ref.recipe.map(v=>`${v.replace('tile2x2_','t_')}=${per[v].toExponential(2)}`).join('  ')
+        +`  ${ms.toFixed(0)}ms -> ${rows.at(-1).pred}`);
+  }
+
+  const pass=worst<1e-3;
+  O.innerHTML='<table><tr><th>image</th>'+ref.recipe.map(v=>`<th>${v}</th>`).join('')
+    +'<th>ms</th><th>browser prediction</th></tr>'
+    +rows.map(r=>`<tr><td>${r.cls}</td>`
+      +ref.recipe.map(v=>`<td class="${r.per[v]<1e-3?'ok':'bad'}">${r.per[v].toExponential(2)}</td>`).join('')
+      +`<td>${r.ms.toFixed(0)}</td><td>${r.pred}</td></tr>`).join('')+'</table>';
+  S.textContent=pass?`PARITY PASS — worst per-view cosine distance ${worst.toExponential(3)} < 1e-3`
+                    :`PARITY FAIL — worst per-view cosine distance ${worst.toExponential(3)}`;
+  S.className=pass?'ok':'bad';
+  const correct=rows.filter(r=>r.pred.startsWith(r.cls)).length;
+  log(`\ncorrect on these ${rows.length}: ${correct}/${rows.length}  (tiny sample, not a metric)`);
+  log(`median latency: ${rows.map(r=>r.ms).sort((a,b)=>a-b)[Math.floor(rows.length/2)].toFixed(0)}ms  (5 backbone passes)`);
+  window.__res={pass,worst,rows};window.__done=true;
+}catch(e){
+  S.textContent='ERROR: '+e.message;S.className='bad';
+  log((e.stack||e)+'');window.__res={error:String(e.message)};window.__done=true;
+}
+</script>

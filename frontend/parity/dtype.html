@@ -1,0 +1,86 @@
+<!doctype html><meta charset="utf-8"><title>dtype cost with exact preprocessing</title>
+<style>
+ body{font:12px/1.55 ui-monospace,Consolas,monospace;background:#0e1116;color:#d7dde5;padding:16px;max-width:900px}
+ h3{color:#8ab4f8;font-size:14px;margin:0 0 6px}.m{color:#7c8798}
+ table{border-collapse:collapse;margin-top:12px;width:100%}
+ th,td{border:1px solid #262c36;padding:4px 8px;text-align:right}
+ th:first-child,td:first-child{text-align:left}
+ th{background:#161b22;color:#9aa5b4}.ok{color:#5ddb8f}.bad{color:#ff6b6b}.warn{color:#ffb84d}
+ pre{white-space:pre-wrap;color:#8b96a6;border-top:1px solid #262c36;padding-top:8px;margin-top:10px}
+</style>
+<h3>What does quantisation actually cost, now that preprocessing is bit-exact?</h3>
+<div class="m">Earlier this looked free, but that reading was confounded: the canvas-resize error
+was large and identical across dtypes, so it masked the difference. With the resize fixed
+(0 of 196608 bytes differing vs PIL) the quantisation term is measurable on its own.</div>
+<div id="s" class="warn" style="margin-top:8px">running…</div>
+<div id="o"></div><pre id="l"></pre>
+<script type="module">
+const S = document.getElementById('s'), O = document.getElementById('o'), L = document.getElementById('l');
+const log = m => { L.textContent += m + '\n'; };
+window.__done = false; window.__res = [];
+const cosd = (a, b) => { let d = 0, x = 0, y = 0;
+  for (let i = 0; i < a.length; i++) { d += a[i] * b[i]; x += a[i] * a[i]; y += b[i] * b[i]; }
+  return 1 - d / Math.sqrt(x * y); };
+const l2 = v => { let n = 0; for (const t of v) n += t * t; n = Math.sqrt(n) || 1;
+  return Float32Array.from(v, t => t / n); };
+try {
+  const tjs = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.5');
+  const { toRGB, preprocess } = await import('/js/pil-resize.js');
+  const ref = await (await fetch('/parity/parity.json')).json();
+  const idx = await (await fetch('/parity/pixels/index.json')).json();
+
+  // Feed the SAME decoded source pixels PIL used, so the JPEG decoder is out too.
+  const inputs = [];
+  for (const it of idx) {
+    const src = new Uint8ClampedArray(
+      await (await fetch(`/parity/pixels/${it.name}.src.bin`)).arrayBuffer());
+    const pre = preprocess(src, it.src.w, it.src.h);
+    const rec = ref.records.find(r => 'parity_' + r.class === it.name);
+    inputs.push({ name: it.name.replace('parity_', ''), pre, py: rec.features });
+  }
+  log(`${inputs.length} images, preprocessed from PIL's own source pixels\n`);
+
+  const rows = [];
+  for (const dtype of ['fp32', 'fp16', 'q8', 'q4f16']) {
+    S.textContent = 'loading ' + dtype + ' …';
+    let model;
+    try {
+      model = await tjs.AutoModel.from_pretrained('Xenova/dinov2-base', { dtype });
+    } catch (e) { log(`${dtype.padEnd(7)} LOAD FAILED: ${e.message}`); continue; }
+
+    const ds = [];
+    let ms = 0;
+    for (const inp of inputs) {
+      const pv = new tjs.Tensor('float32', inp.pre.data, inp.pre.dims);
+      const t0 = performance.now();
+      const out = await model({ pixel_values: pv });
+      ms += performance.now() - t0;
+      const t = out.pooler_output || out.last_hidden_state;
+      const d = t.dims[t.dims.length - 1];
+      ds.push({ img: inp.name, cd: cosd(l2(t.data.slice(0, d)), inp.py),
+                keys: Object.keys(out).join('+'), dims: t.dims.join('x') });
+    }
+    const mean = ds.reduce((a, r) => a + r.cd, 0) / ds.length;
+    const max = Math.max(...ds.map(r => r.cd));
+    rows.push({ dtype, mean, max, ms: ms / inputs.length, keys: ds[0].keys, dims: ds[0].dims });
+    log(`${dtype.padEnd(7)} mean=${mean.toExponential(3)}  max=${max.toExponential(3)}  `
+      + `${(ms / inputs.length).toFixed(0)}ms/img  outputs=[${ds[0].keys}] ${ds[0].dims}`);
+    ds.forEach(r => log(`          ${r.img.padEnd(13)} ${r.cd.toExponential(3)}`));
+  }
+
+  O.innerHTML = '<table><tr><th>dtype</th><th>mean cosine dist</th><th>max</th>'
+    + '<th>ms / image</th><th>verdict</th></tr>'
+    + rows.map(r => `<tr><td>${r.dtype}</td>`
+      + `<td class="${r.mean < 1e-3 ? 'ok' : 'bad'}">${r.mean.toExponential(3)}</td>`
+      + `<td>${r.max.toExponential(3)}</td><td>${r.ms.toFixed(0)}</td>`
+      + `<td class="${r.mean < 1e-3 ? 'ok' : 'warn'}">${r.mean < 1e-3 ? 'parity' : 'drifted'}</td></tr>`)
+      .join('') + '</table>';
+  const best = rows.reduce((a, b) => a.mean <= b.mean ? a : b);
+  S.textContent = `lowest drift: ${best.dtype} at ${best.mean.toExponential(3)} mean cosine distance`;
+  S.className = best.mean < 1e-3 ? 'ok' : 'bad';
+  window.__res = rows; window.__done = true;
+} catch (e) {
+  S.textContent = 'ERROR: ' + e.message; S.className = 'bad';
+  log((e.stack || e) + ''); window.__done = true;
+}
+</script>

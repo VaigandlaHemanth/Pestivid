@@ -1,0 +1,51 @@
+{
+  "temperature_per_fold": [
+    5.9604387283325195,
+    6.0677995681762695,
+    6.055276393890381,
+    5.617677211761475,
+    5.548060417175293
+  ],
+  "ood_mahalanobis_threshold_p99": 2712.8517002687113,
+  "abstain_below_confidence": 0.5573585331439972,
+  "risk_coverage": [
+    {
+      "coverage": 1.0,
+      "n_answered": 3076,
+      "accuracy": 0.8790637191157347,
+      "confidence_threshold": 0.24293939769268036
+    },
+    {
+      "coverage": 0.95,
+      "n_answered": 2922,
+      "accuracy": 0.9014373716632443,
+      "confidence_threshold": 0.47951868176460266
+    },
+    {
+      "coverage": 0.9,
+      "n_answered": 2768,
+      "accuracy": 0.9226878612716763,
+      "confidence_threshold": 0.5579849481582642
+    },
+    {
+      "coverage": 0.85,
+      "n_answered": 2615,
+      "accuracy": 0.9380497131931166,
+      "confidence_threshold": 0.6402769684791565
+    },
+    {
+      "coverage": 0.8,
+      "n_answered": 2461,
+      "accuracy": 0.9516456724908574,
+      "confidence_threshold": 0.7092847228050232
+    },
+    {
+      "coverage": 0.7,
+      "n_answered": 2153,
+      "accuracy": 0.9688806316767301,
+      "confidence_threshold": 0.8201280832290649
+    }
+  ],
+  "coverage_at_abstain_threshold": 0.9,
+  "note": "Reject when the Mahalanobis score exceeds the threshold (not a potato leaf) or max prob falls below the confidence floor (uncertain). Route both to a human rather than returning a disease name and a pesticide."
+}

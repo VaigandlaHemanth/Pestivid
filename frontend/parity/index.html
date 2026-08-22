@@ -1,0 +1,67 @@
+<!doctype html><meta charset="utf-8"><title>Potato browser-inference parity</title>
+<style>
+ body{font:13px/1.55 ui-monospace,Consolas,monospace;background:#0e1116;color:#d7dde5;padding:18px;max-width:900px}
+ h1{font-size:15px;color:#8ab4f8;margin:0 0 4px} .m{color:#7c8798}
+ table{border-collapse:collapse;margin-top:12px;width:100%}
+ th,td{border:1px solid #262c36;padding:4px 8px;text-align:left}
+ th{background:#161b22;color:#9aa5b4;font-weight:600}
+ .ok{color:#5ddb8f}.bad{color:#ff6b6b}.warn{color:#ffb84d}
+ #log{white-space:pre-wrap;margin-top:14px;color:#8b96a6;border-top:1px solid #262c36;padding-top:10px}
+</style>
+<h1>Python &harr; JS feature parity</h1>
+<div class="m">Reference features come from train_potato.py's pinned transform on 7 real dataset images.
+Cosine distance must be &lt; 1e-3 for the head's measured accuracy to carry over to the browser.</div>
+<div id="status" class="warn" style="margin-top:10px">starting…</div>
+<div id="out"></div>
+<div id="log"></div>
+<script type="module">
+const S=document.getElementById('status'), O=document.getElementById('out'), L=document.getElementById('log');
+const log=m=>{L.textContent+=m+'\n';console.log(m)};
+window.__parityDone=false; window.__parityResult=null;
+try{
+  await import('/js/potato-browser.js');
+  const ref = await (await fetch('/parity/parity.json')).json();
+  log(`reference: ${ref.records.length} images, dim=${ref.feat_dim}`);
+  log(`transform: ${ref.transform}`);
+  const pb = await window.PotatoBrowser.load({
+    modelDir:'/model',
+    onProgress:(m,p)=>{S.textContent=`${m} (${Math.round(p)}%)`;S.className='warn';}
+  });
+  log('loaded: '+JSON.stringify(pb.info.backbone).slice(0,300)+' folds='+pb.info.folds+' ood='+pb.info.oodEnabled);
+  const rows=[]; let worst=0;
+  for(const r of ref.records){
+    const img=new Image(); img.src='/parity/'+r.file;
+    await img.decode();
+    const t0=performance.now();
+    const f=await pb.features(img);
+    const ms=performance.now()-t0;
+    const py=r.features;
+    if(f.length!==py.length) throw new Error(`dim ${f.length} vs ${py.length}`);
+    let dot=0,nj=0,np_=0,maxAbs=0;
+    for(let i=0;i<f.length;i++){dot+=f[i]*py[i];nj+=f[i]*f[i];np_+=py[i]*py[i];
+      maxAbs=Math.max(maxAbs,Math.abs(f[i]-py[i]));}
+    const cos=dot/(Math.sqrt(nj)*Math.sqrt(np_));
+    const cd=1-cos; worst=Math.max(worst,cd);
+    const p=await pb.predict(img);
+    rows.push({cls:r.class,cd,maxAbs,jsNorm:Math.sqrt(nj),ms,
+               pred:p.status==='ok'?`${p.disease} ${(p.confidence*100).toFixed(0)}%`:p.status});
+    log(`${r.class.padEnd(13)} cosdist=${cd.toExponential(3)}  maxabs=${maxAbs.toExponential(2)}  ${ms.toFixed(0)}ms  -> ${rows.at(-1).pred}`);
+  }
+  const pass=worst<1e-3;
+  O.innerHTML='<table><tr><th>class</th><th>cosine dist</th><th>max |Δ|</th><th>JS ‖f‖</th><th>ms</th><th>browser prediction</th></tr>'
+    +rows.map(r=>`<tr><td>${r.cls}</td><td class="${r.cd<1e-3?'ok':'bad'}">${r.cd.toExponential(3)}</td>`
+    +`<td>${r.maxAbs.toExponential(2)}</td><td>${r.jsNorm.toFixed(6)}</td><td>${r.ms.toFixed(0)}</td><td>${r.pred}</td></tr>`).join('')
+    +'</table>';
+  S.textContent = pass ? `PARITY PASS — worst cosine distance ${worst.toExponential(3)} < 1e-3`
+                       : `PARITY FAIL — worst cosine distance ${worst.toExponential(3)}`;
+  S.className = pass?'ok':'bad';
+  const corr = rows.filter(r=>r.pred.startsWith(r.cls)).length;
+  log(`\ncorrect on these 7: ${corr}/7  (tiny sample, not a metric)`);
+  log(`median latency: ${rows.map(r=>r.ms).sort((a,b)=>a-b)[3].toFixed(0)}ms`);
+  window.__parityResult={pass,worst,rows}; window.__parityDone=true;
+}catch(e){
+  S.textContent='ERROR: '+e.message; S.className='bad';
+  log('STACK:\n'+(e.stack||e)); window.__parityResult={error:String(e.message),stack:String(e.stack||'')};
+  window.__parityDone=true;
+}
+</script>

@@ -1,0 +1,31 @@
+# Secrets — never commit. The subtree .gitignores also cover these; this is the backstop.
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.local
+
+# Dependencies and build output
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv*/
+
+# Large model weights and datasets — these do not belong in git
+*.onnx
+*.pth
+*.safetensors
+# The 5 fold head weights are 66 KB each and inference needs them, so *.pt is NOT
+# blanket-ignored. The heavy caches are named explicitly instead.
+**/artifacts/features_*.npz
+**/artifacts/ood.npz
+**/artifacts/duplicate_groups.json
+dataset/
+data/
+
+# Local runtime junk
+backend/temp_uploads/
+*.log
+.DS_Store
+Thumbs.db

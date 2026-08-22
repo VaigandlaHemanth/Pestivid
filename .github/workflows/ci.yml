@@ -1,0 +1,345 @@
+name: CI
+
+# The project had no CI at all. These jobs are chosen to catch the specific
+# classes of defect the August 2026 audit found -- each one is a regression
+# guard for something that actually shipped broken.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend — parse, boot, audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - run: npm ci
+        working-directory: backend
+
+      # `node --check` passes on a file whose require() target is missing, because
+      # that fails at runtime. Deleting models/AvatarMessage.js during the audit
+      # broke seed.js exactly this way and it was only caught by booting. So:
+      # parse everything, THEN actually start the server.
+      - name: Parse every JS file
+        working-directory: backend
+        run: |
+          find . -path ./node_modules -prune -o -name '*.js' -print \
+            | xargs -I{} node --check {}
+
+      - name: Boot on an in-memory MongoDB and exercise the API
+        working-directory: backend
+        env:
+          JWT_SECRET: ci-secret-not-used-anywhere-real
+        run: |
+          node dev-server.js > /tmp/server.log 2>&1 &
+          for i in $(seq 1 60); do
+            grep -q 'Server running' /tmp/server.log && break
+            sleep 2
+          done
+          grep -q 'Server running' /tmp/server.log || { cat /tmp/server.log; exit 1; }
+
+          B=http://127.0.0.1:3001/api
+          fail() { echo "FAIL: $1"; cat /tmp/server.log; exit 1; }
+          code() { curl -s -o /dev/null -w '%{http_code}' "$@"; }
+
+          # public routes stay public
+          [ "$(code $B/listings)" = 200 ] || fail 'GET /listings should be public'
+          [ "$(code $B/funding-requests)" = 200 ] || fail 'GET /funding-requests should be public'
+
+          # protected routes stay protected
+          [ "$(code $B/videos)" = 401 ] || fail 'GET /videos must require auth'
+          [ "$(code $B/users/public)" = 401 ] || fail 'GET /users/public must require auth'
+
+          # deleted routes stay deleted
+          [ "$(code $B/conversations)" = 404 ] || fail '/api/conversations should be gone'
+          [ "$(code $B/avatarmessages)" = 404 ] || fail '/api/avatarmessages should be gone'
+
+          # no PII in the public browse payload
+          curl -s $B/listings | grep -q '"email"' && fail 'listings leaks email'
+
+          echo "backend smoke tests passed"
+
+      # The eight backend suites existed and CI never ran a single one of them,
+      # which is the most expensive kind of gap: the tests are written, they
+      # pass, and nothing notices when they stop passing. Each boots its own
+      # mongodb-memory-server, so they need no services here.
+      - name: Backend test suites
+        working-directory: backend
+        env:
+          JWT_SECRET: ci-secret-not-used-anywhere-real
+        run: |
+          fails=0
+          for t in test_upload test_merkle test_fingerprint test_eligibility \
+                   test_money test_video_scope test_provenance_integration \
+                   test_project_lifecycle test_settlement_flow \
+                   test_auth_revocation test_review_queue test_appeal; do
+            echo "=== $t ==="
+            node "$t.js" || { echo "SUITE FAILED: $t"; fails=$((fails+1)); }
+          done
+          [ "$fails" -eq 0 ] || { echo "$fails suite(s) failed"; exit 1; }
+
+      # Feature parity, headless.
+      #
+      # public/parity/tiled.html does the same comparison but only inside a
+      # browser, and in a hidden/non-compositing pane the renderer throttles WASM
+      # to a standstill -- so that check could not be run on demand at all, let
+      # alone in CI. This runs the same ONNX graph through onnxruntime-node against
+      # the server reference.
+      #
+      # It checks the OOD Mahalanobis score, not just per-view cosine distance,
+      # because cosine alone is too blunt: the normalisation-order bug moved the
+      # worst cosine to 6.4e-4 (inside any fp16-tolerant threshold) while moving
+      # the OOD score 7.95%, and it was the OOD score that flipped verdicts to
+      # "not a potato leaf" in production.
+      - name: Feature parity, browser code vs server (headless)
+        working-directory: backend
+        run: node test_feature_parity.mjs
+
+      # NOT `npm audit --audit-level=moderate`. That exits 1 on this project and
+      # always will: every advisory lives under `opentimestamps`, which has no
+      # maintained replacement and whose "fix" is uninstalling the anchoring
+      # feature. A check that can never pass gets ignored, and then it stops
+      # reporting the advisories that do matter. tools/audit-gate.js accepts that
+      # one subtree by VERSION -- our own form-data is the patched 4.0.6, only the
+      # 2.3.3 copy under `request` is vulnerable -- and fails on anything else,
+      # including a new package name appearing inside the accepted subtree.
+      - name: Dependency audit gate
+        working-directory: backend
+        run: |
+          node tools/audit-gate.js --self-test   # the gate can still fail
+          node tools/audit-gate.js
+
+  python:
+    name: Python — parse, logic tests, safety invariants
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'   # langchain-pinecone caps at <3.14
+      # Needed by the browser-preprocessing parity step below, which runs a Node
+      # script against a Python-generated reference.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: pip install numpy pillow scikit-learn requests flask flask-cors python-dotenv
+
+      - name: Compile every Python file
+        # -q is quiet on success but still reports failures; excluding the venv
+        # and cache dirs keeps this about OUR code.
+        run: |
+          python -m compileall -q -x '(\.venv|node_modules|__pycache__|\.git)' . \
+            && echo "all Python files compile"
+
+      # Regression guards for every defect class the audit found. This is a
+      # script rather than inline greps because the first grep version failed on
+      # the comments describing the bugs it prevents -- and two of the guards
+      # silently never fired, because the text they look for lives inside string
+      # literals. tools/guards.py strips comments but keeps strings where that
+      # matters, and its self-test proves each guard actually catches a regression.
+      - name: Regression guards
+        run: python tools/guards.py
+
+      # flask_server.py used RAGState in three places and defined it nowhere, so
+      # importing it raised NameError -- but ONLY where the optional RAG
+      # dependencies were installed, which is the one environment the feature was
+      # built for. compileall, py_compile and a dependency-free import all passed.
+      # This stubs the optional packages as PRESENT to force that branch to run.
+      - name: Flask server imports with RAG dependencies present
+        run: python test_flask_import.py
+
+      # Browser preprocessing must match torchvision EXACTLY, because the accuracy
+      # figures were measured on torchvision's tensors. This compares the input
+      # tensor rather than the features, so it needs no ONNX runtime and no
+      # browser, and it localises a transform bug instead of blurring it into a
+      # cosine distance.
+      #
+      # It caught a real one: every parity image was 1500x1500, so the centre-crop
+      # offset was always (256-224)/2 = 16 and the rounding RULE was never
+      # exercised. torchvision uses Python's round (ties to even); the browser used
+      # Math.round (ties up). Non-square photos -- i.e. every phone photo -- were
+      # cropped one pixel off. check_preprocess.mjs FAILS if the reference set
+      # contains no non-square image, so this cannot silently stop testing that.
+      - name: Browser preprocessing matches torchvision
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          python tools/dump_preprocess_ref.py public/parity /tmp/preref
+          node public/parity/check_preprocess.mjs /tmp/preref
+
+      # The dose-withholding invariant in treatments.py is the highest-stakes
+      # rule in the codebase: a plausible-looking agrochemical dose is the worst
+      # thing this app can emit. Assert it directly.
+      - name: Treatment table withholds unverified doses
+        run: |
+          python - <<'EOF'
+          import treatments as tr
+          leaked = []
+          for name in tr._load()["diseases"]:
+              for c in tr.get_treatment(name)["chemical_options"]:
+                  for f in tr._DOSE_FIELDS:
+                      if c.get(f) is not None:
+                          leaked.append((name, c["active_ingredient"], f))
+          assert not leaked, f"unverified dose fields emitted: {leaked}"
+
+          # adversarial: a dose typed in without status='reviewed' must not escape
+          d = tr._cache["diseases"]["Fungi"]["chemical"][0]
+          d["dose"], d["phi_days"] = "9 g/L", 99
+          out = tr.get_treatment("Fungi")["chemical_options"][0]
+          assert out.get("dose") is None, "SAFETY INVARIANT BROKEN"
+          assert "phi_days" not in out, "SAFETY INVARIANT BROKEN"
+          print("dose-withholding invariant holds")
+          EOF
+
+      - name: Blight-risk model logic
+        run: |
+          python - <<'EOF'
+          from blight_risk import DayWeather as D, assess, spray_window
+          assert not D("x", 9.9, 20, 12).is_smith_day()
+          assert     D("x", 10.0, 20, 11).is_smith_day()
+          assert not D("x", 10.0, 20, 10).is_smith_day()
+          assert assess([D("a",12,20,12), D("b",12,20,13)]).level == "high"
+          assert assess([D("a",22,34,3)]).level == "low"
+          assert assess([]).level == "unknown"
+          assert not spray_window(D("d",14,22,12, wind_kmh=25), 1)["suitable"]
+          assert     spray_window(D("d",14,22,12, wind_kmh=8, temp_c=18, rh_percent=70), 6)["suitable"]
+          print("blight-risk logic ok")
+          EOF
+
+      - name: Eval detectors (dose-leak + abstention)
+        run: |
+          python - <<'EOF'
+          import eval_rag as e
+          assert e.DOSE_PATTERN.search("apply at 2.5 g/L")
+          assert e.DOSE_PATTERN.search("2 kg/ha before flowering")
+          assert e.PHI_PATTERN.search("pre-harvest interval is 14 days")
+          assert not e.DOSE_PATTERN.search("read the label for the rate")
+          assert e.looks_like_abstention("I could not find anything relevant")
+          assert not e.looks_like_abstention("Late blight is caused by P. infestans")
+          print("eval detectors ok")
+          EOF
+
+  ml-leak-gate:
+    name: ML — label-leak gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The training pipeline (train_potato.py, extract_views.py,
+          # test_train_pipeline.py) lives in the SIBLING `Pestivid` directory,
+          # which is outside this repo root -- this workflow file sits at
+          # pestvid_complete_project/.github/workflows/, so the checkout contains
+          # pestvid_complete_project only.
+          #
+          # The steps below therefore skip rather than fail when those files are
+          # absent, and print why. A skipped step that explains itself is honest;
+          # a red build nobody can fix just trains people to ignore CI. If the two
+          # directories are ever published as one repo, the guards start running
+          # with no edit needed.
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+
+      # The reported 84.10% was invalid because the ground-truth label reached
+      # the model through a frozen text branch. This is a STRUCTURAL guard: if
+      # anyone reintroduces a label-derived input, the build fails. It is far
+      # cheaper than rediscovering the leak from a suspicious metric.
+      - name: Label-leak guard
+        run: python tools/guards.py     # in-repo; always runs
+
+      # The pipeline INTEGRATION test. Runs the whole of train_potato.py on
+      # synthetic images with a stubbed backbone -- no GPU, no dataset, no model
+      # download, a few seconds. This exists because two bugs got past static
+      # analysis and unit tests: numpy's int32 default on Windows crashed
+      # cross_entropy, and potato_infer.py's head had different state_dict keys
+      # from the trainer's, so inference could never load a real checkpoint.
+      # Both would have wasted an entire GPU training run.
+      - name: Training pipeline integration test
+        run: |
+          T=""
+          for c in Pestivid/test_train_pipeline.py test_train_pipeline.py \
+                   ../Pestivid/test_train_pipeline.py; do
+            [ -f "$c" ] && { T="$c"; break; }
+          done
+          if [ -z "$T" ]; then
+            echo "SKIPPED: test_train_pipeline.py is not in this checkout."
+            echo "It lives in the sibling Pestivid directory, which is outside"
+            echo "this repo root. Nothing to run, and nothing is broken."
+            exit 0
+          fi
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          cd "$(dirname "$T")" && python "$(basename "$T")"
+
+      # This guard caught a real bug once: potato_infer.py's head had different
+      # state_dict keys from the trainer's, so inference could never load a real
+      # checkpoint. It needs BOTH files, and the trainer is out of tree, so it
+      # skips when it cannot find one -- searching several plausible layouts
+      # first, because the previous version hardcoded a path that resolved from
+      # neither the repo root nor the sibling layout.
+      - name: Head definitions match between trainer and inference
+        run: |
+          python - <<'EOF'
+          import importlib.util, sys
+          from pathlib import Path
+
+          def find(*cands):
+              for c in cands:
+                  if Path(c).exists():
+                      return Path(c)
+              return None
+
+          tr = find('train_potato.py', 'Pestivid/train_potato.py',
+                    '../Pestivid/train_potato.py')
+          inf = find('potato_infer.py', 'pestvid_complete_project/potato_infer.py',
+                     '../pestvid_complete_project/potato_infer.py')
+          if tr is None or inf is None:
+              print('SKIPPED: need both train_potato.py and potato_infer.py.')
+              print(f'  trainer:   {tr}')
+              print(f'  inference: {inf}')
+              print('The trainer lives in the sibling Pestivid directory, outside')
+              print('this repo root. Nothing is broken.')
+              sys.exit(0)
+
+          def load(n, p):
+              sp = importlib.util.spec_from_file_location(n, p)
+              m = importlib.util.module_from_spec(sp); sp.loader.exec_module(m); return m
+
+          tp, pi = load('tp', tr), load('pi', inf)
+          for hidden in (0, 256):
+              a = sorted(tp.Head(64, 7, hidden).state_dict().keys())
+              b = sorted(pi._build_head(64, 7, hidden).state_dict().keys())
+              assert a == b, f'head state_dict mismatch at hidden={hidden}: {a} vs {b}'
+          print('head definitions match for both shapes')
+          EOF
+
+      - name: Training pipeline is import-clean and self-documenting
+        run: |
+          P=""
+          for c in train_potato.py Pestivid/train_potato.py ../Pestivid/train_potato.py; do
+            [ -f "$c" ] && { P="$c"; break; }
+          done
+          if [ -z "$P" ]; then
+            echo "SKIPPED: train_potato.py is not in this checkout (sibling dir)."
+            exit 0
+          fi
+          pip install numpy pillow scikit-learn
+          python -m py_compile "$P" && echo "compiles"
+          grep -q 'EXPECTED_TOTAL = 3076' "$P" \
+            || { echo 'FAIL: dataset-size assertion missing'; exit 1; }
+          grep -q 'StratifiedGroupKFold' "$P" \
+            || { echo 'FAIL: grouped CV missing — near-duplicates would leak'; exit 1; }
+          grep -q 'average="macro"' "$P" \
+            || { echo 'FAIL: macro-F1 missing — accuracy alone hides the rare class'; exit 1; }
+          echo ok
