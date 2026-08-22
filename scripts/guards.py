@@ -26,10 +26,21 @@ import io
 import re
 import sys
 import tokenize
+import pathlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv", "artifacts", "tools"}
+SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv", "artifacts"}
+
+# This file must exclude ITSELF from the scan.
+#
+# Every guard below carries the forbidden pattern as its own search string, so a
+# scan that includes this file always reports a false positive against itself. That
+# used to be handled by putting "tools" in SKIP_DIRS -- which silently stopped
+# working the moment the file moved to scripts/, because the exclusion was keyed on
+# the folder NAME rather than on the file. Keying on identity cannot break that way
+# again, wherever this file ends up.
+SELF = pathlib.Path(__file__).resolve()
 
 
 # ── comment / string stripping ──────────────────────────────────────────────
@@ -84,6 +95,8 @@ def walk(*suffixes: str):
         if p.suffix not in suffixes or not p.is_file():
             continue
         if any(part in SKIP_DIRS for part in p.parts):
+            continue
+        if p.resolve() == SELF:          # see the note on SELF above
             continue
         yield p
 

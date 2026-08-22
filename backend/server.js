@@ -60,7 +60,7 @@ app.use(cors(corsOptions));
 // Security headers. There were none.
 //
 // contentSecurityPolicy is disabled here because this server also serves the
-// single-file Vue frontend from ../public, which loads Tailwind, Vue, axios,
+// single-file Vue frontend from ../frontend, which loads Tailwind, Vue, axios,
 // marked, DOMPurify and the transformers.js runtime from CDNs and uses inline
 // handlers. A CSP tight enough to be worth having would break the app; one loose
 // enough to pass would be decoration. The frontend's CSP belongs on the static
@@ -83,7 +83,7 @@ app.use(express.json({ limit: '10mb' }));
 // Optional: Serve static files (like your index.html, CSS, JS bundles) from this backend.
 // If you put your frontend index.html in a public folder at the same level as the backend folder,
 // uncommenting the line below will make it accessible directly from this server (e.g., at http://localhost:3000).
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 
 // --- Database Connection ---
@@ -281,7 +281,7 @@ app.get('/', (req, res) => {
 // This is useful if you are serving your frontend build files from the backend server.
 // Make sure this comes after all your API routes.
 // app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, '../public/index.html')); // Adjust path as needed
+//   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 // });
 
 

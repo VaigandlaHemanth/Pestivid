@@ -16,7 +16,7 @@ the mass has to come from somewhere -- Pest.
 So the first thing to test is not "handle imbalance harder", it is "handle it
 less hard, or handle it after training instead of during".
 
-    python sweep_head.py --features ../pestvid_complete_project/artifacts/features_dinov2-base.npz
+    python sweep_head.py --features ../ml-service/artifacts/features_dinov2-base.npz
 
 Every configuration is evaluated with the SAME 5-fold StratifiedGroupKFold and
 the same inner split as train_potato.py, so the numbers are comparable to the

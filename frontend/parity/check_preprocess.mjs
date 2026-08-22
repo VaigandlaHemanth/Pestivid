@@ -21,7 +21,7 @@
  *
  *     node check_preprocess.mjs <ref-dir>
  *
- * where <ref-dir> is the output of Pestivid/dump_preprocess_ref.py.
+ * where <ref-dir> is the output of scripts/dump_preprocess_ref.py.
  */
 
 import { readFileSync } from 'node:fs';
@@ -91,7 +91,7 @@ console.log();
 if (ties === 0) {
     // A green run over squares only would prove nothing about the rounding rule.
     console.log('FAIL: no image in the reference set exercises the rounding tie.');
-    console.log('      Add a non-square image (see Pestivid/add_nonsquare_parity.py),');
+    console.log('      Add a non-square image (see ml-training/add_nonsquare_parity.py),');
     console.log('      or this check cannot detect a centre-crop offset bug.');
     process.exit(1);
 }

@@ -25,7 +25,9 @@ import numpy as np
 from PIL import Image
 
 HERE = Path(__file__).resolve().parent
-APP = HERE.parent / "pestvid_complete_project"
+REPO = HERE.parent
+ML = REPO / "ml-service"          # potato_infer.py, artifacts/
+WEB = REPO / "frontend"            # parity fixtures the browser also serves
 
 
 def load(path: Path, name: str):
@@ -40,8 +42,8 @@ def main() -> int:
     out = Path(sys.argv[2])
     out.mkdir(parents=True, exist_ok=True)
 
-    pi = load(APP / "potato_infer.py", "pi")
-    clf = pi.PotatoClassifier(APP / "artifacts")
+    pi = load(ML / "potato_infer.py", "pi")
+    clf = pi.PotatoClassifier(ML / "artifacts")
     print(f"  recipe: {' + '.join(clf.views)}  ({clf.feat_dim}-d)")
 
     classes = sorted(d.name for d in root.iterdir() if d.is_dir())

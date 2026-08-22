@@ -1,7 +1,7 @@
 """
 Inference for the potato leaf disease classifier.
 
-Consumes the artifacts produced by Pestivid/train_potato.py:
+Consumes the artifacts produced by ml-training/train_potato.py:
 
     artifacts/fold_0_head.pt      head weights + fitted temperature + class list
     artifacts/ood.npz             Mahalanobis means + precision
@@ -79,7 +79,7 @@ class PotatoClassifier:
         if not head_files:
             raise FileNotFoundError(
                 f"No fold_*_head.pt in {self.dir.resolve()}. Train first:\n"
-                "  python Pestivid/train_potato.py --data-root <dataset> --backbone dinov2")
+                "  python ml-training/train_potato.py --data-root <dataset> --backbone dinov2")
 
         # weights_only=True: a .pth is a pickle, and unpickling executes
         # arbitrary code. The old code called torch.load without it on a
@@ -176,7 +176,7 @@ class PotatoClassifier:
     def _tile_transform(self, grid: int):
         """The tiled transform: resize/crop grid-times larger, then cut.
 
-        Mirrors Pestivid/extract_views.py TiledImages exactly, because that is
+        Mirrors ml-training/extract_views.py TiledImages exactly, because that is
         what produced the features the head was fitted to.
         """
         import torchvision.transforms as T

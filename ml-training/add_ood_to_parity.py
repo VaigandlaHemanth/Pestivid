@@ -27,7 +27,9 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-APP = HERE.parent / "pestvid_complete_project"
+REPO = HERE.parent
+ML = REPO / "ml-service"          # potato_infer.py, artifacts/
+WEB = REPO / "frontend"            # parity fixtures the browser also serves
 
 
 def load(path: Path, name: str):
@@ -38,7 +40,7 @@ def load(path: Path, name: str):
 
 
 def main() -> int:
-    pdir = Path(sys.argv[1]) if len(sys.argv) > 1 else (APP / "public" / "parity")
+    pdir = Path(sys.argv[1]) if len(sys.argv) > 1 else (WEB / "parity")
     manifest = pdir / "parity_tiled.json"
     if not manifest.exists():
         print(f"  no {manifest}")
@@ -46,8 +48,8 @@ def main() -> int:
 
     data = json.loads(manifest.read_text(encoding="utf-8"))
 
-    pi = load(APP / "potato_infer.py", "pi")
-    clf = pi.PotatoClassifier(APP / "artifacts")
+    pi = load(ML / "potato_infer.py", "pi")
+    clf = pi.PotatoClassifier(ML / "artifacts")
     print(f"  ood threshold (p99): {clf.ood_threshold:.2f}")
 
     updated = 0

@@ -18,7 +18,8 @@ import torch
 import torchvision.transforms as T
 from PIL import Image
 
-PUB = Path(r"C:/Users/ASUS/Desktop/pestivid orginal/p_pro/pestvid_complete_project/public/parity")
+# Repo-relative, so this works on any checkout rather than only on one machine.
+PUB = Path(__file__).resolve().parent.parent / "frontend" / "parity"
 OUT = PUB / "pixels"
 OUT.mkdir(parents=True, exist_ok=True)
 

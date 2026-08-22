@@ -34,7 +34,7 @@ NO-LEAKAGE NOTE
     training and inflate every standardised arm — the exact mistake that would
     make this whole comparison worthless.
 
-    python ablate_underfit.py --features ../pestvid_complete_project/artifacts/features_dinov2-base.npz
+    python ablate_underfit.py --features ../ml-service/artifacts/features_dinov2-base.npz
 """
 
 from __future__ import annotations

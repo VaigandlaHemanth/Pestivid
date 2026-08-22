@@ -256,8 +256,8 @@ exactly how a model deletion once broke `seed.js` and silently disabled login.
 ## Training the classifier
 
 ```bash
-python Pestivid/train_potato.py     --data-root "<dataset>/Potato Leaf Disease Dataset in Uncontrolled Environment"     --backbone dinov2 --folds 5 --tta 4 --out artifacts
-cp -r artifacts pestvid_complete_project/
+python ml-training/train_potato.py     --data-root "<dataset>/Potato Leaf Disease Dataset in Uncontrolled Environment"     --backbone dinov2 --folds 5 --tta 4 --out artifacts
+cp -r artifacts 
 ```
 
 Two things to expect, both intended:

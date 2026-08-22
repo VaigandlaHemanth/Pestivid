@@ -367,7 +367,7 @@ def ask(question: str, history=None):
 print("\n--- Loading Models ---")
 
 # --- Disease classifier -----------------------------------------------------
-# Loads the artifacts produced by Pestivid/train_potato.py. The previous loader
+# Loads the artifacts produced by ml-training/train_potato.py. The previous loader
 # instantiated CLIPFineTuner, whose forward() mixed image features with a FROZEN
 # text branch selected by the ground-truth label -- so the model was handed the
 # answer at train and test time, and its reported 84.10% never measured image
@@ -387,7 +387,7 @@ try:
             print("WARNING: no OOD gate -- non-leaf images would be classified anyway.")
     else:
         print("No trained classifier in ./%s -- /predict will return 503." % ARTIFACTS_DIR)
-        print("Train one: python Pestivid/train_potato.py --data-root <dataset>")
+        print("Train one: python ml-training/train_potato.py --data-root <dataset>")
 except Exception as e:
     print("Classifier import failed: %s" % e)
 

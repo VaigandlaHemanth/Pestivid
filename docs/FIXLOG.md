@@ -621,7 +621,7 @@ out of scope. Everything below is **prepared and statically verified**, ready to
 run on Kaggle or Colab. The pure-logic functions were unit-tested against
 synthetic data, which found one real bug (see below).
 
-### New: `Pestivid/train_potato.py`
+### New: `ml-training/train_potato.py`
 
 A single leak-free pipeline replacing the notebook's two competing ones. The
 notebook had 111 cells with a duplicate pipeline starting around cell 45, so
@@ -640,7 +640,7 @@ patching it in place would have left two versions of every decision.
 Also emits `model_card.md` with the honest numbers, the per-class table, the
 abstention thresholds, and an explicit "supersedes" note.
 
-### New: `pestvid_complete_project/potato_infer.py`
+### New: `ml-service/potato_infer.py`
 
 Inference that matches training — which the old code did not:
 
@@ -710,7 +710,7 @@ to calibrate on.
 ### What still needs a GPU
 
 ```bash
-python Pestivid/train_potato.py \
+python ml-training/train_potato.py \
     --data-root "<kaggle>/Potato Leaf Disease Dataset in Uncontrolled Environment" \
     --backbone dinov2 --folds 5 --tta 4 --out artifacts
 ```
@@ -1103,7 +1103,7 @@ on disk, and running ML code was explicitly out of scope. What was closeable was
 the verification gap: `train_potato.py` had only ever been statically checked and
 unit-tested per function. The orchestration had never executed once.
 
-### New: `Pestivid/test_train_pipeline.py`
+### New: `ml-training/test_train_pipeline.py`
 
 Runs the entire pipeline on CPU in seconds, with no GPU, no dataset and no model
 download:
@@ -1168,7 +1168,7 @@ Two new steps in the `ml-leak-gate` job so neither bug can return silently:
 | Guarded in CI | **done** |
 | Trained on the real dataset | **yours** — one Colab/Kaggle session |
 
-The remaining step is `python Pestivid/train_potato.py --data-root <dataset>
+The remaining step is `python ml-training/train_potato.py --data-root <dataset>
 --backbone dinov2 --folds 5 --tta 4 --out artifacts`, then copy `artifacts/`
 next to `flask_server.py`. Expect the honest macro-F1 to be lower than 84.10%,
 and expect `collect_images()` to report 3,076 images — if it warns, fix the path

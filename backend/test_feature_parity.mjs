@@ -17,7 +17,7 @@
  * normalisation ORDER, the crop offset, the feature recipe, stale cached features)
  * is covered, and those are the failures that silently changed predictions.
  *
- * The reference is Pestivid/dump_parity_tiled.py's output: per-VIEW blocks from
+ * The reference is ml-training/dump_parity_tiled.py's output: per-VIEW blocks from
  * potato_infer.PotatoClassifier._features, i.e. the real server path. Per-view
  * matters -- a wrong 768-d block hides inside the cosine of the concatenated
  * 2304-d vector, which is how the normalisation-order bug survived for a while.
@@ -30,14 +30,14 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const APP = resolve(HERE, '..');
-const PARITY_DIR = join(APP, 'public', 'parity');
+const REPO = resolve(HERE, '..');
+const PARITY_DIR = join(REPO, 'frontend', 'parity');
 
 const refPath = process.argv[2] || join(PARITY_DIR, 'parity_tiled.json');
 
 if (!existsSync(refPath)) {
     console.log(`  SKIP  no reference at ${refPath}`);
-    console.log('        Generate it with: python Pestivid/dump_parity_tiled.py <dataset> '
+    console.log('        Generate it with: python ml-training/dump_parity_tiled.py <dataset> '
               + 'public/parity');
     process.exit(0);
 }
@@ -54,10 +54,10 @@ try {
 // pathToFileURL, not a raw path: on Windows the ESM loader parses "C:" as a URL
 // scheme and refuses an absolute path outright.
 const { preprocess, preprocessTiles } = await import(
-    pathToFileURL(join(APP, 'public', 'js', 'pil-resize.js')).href);
+    pathToFileURL(join(REPO, 'frontend', 'js', 'pil-resize.js')).href);
 
 const ref = JSON.parse(readFileSync(refPath, 'utf8'));
-const manifest = JSON.parse(readFileSync(join(APP, 'public', 'model', 'manifest.json'), 'utf8'));
+const manifest = JSON.parse(readFileSync(join(REPO, 'frontend', 'model', 'manifest.json'), 'utf8'));
 
 // The recipe is read from the manifest, not hardcoded, so a recipe change cannot
 // pass by comparing against the wrong thing.
@@ -88,7 +88,7 @@ console.log('  backbone loaded\n');
 // answer "not a potato leaf" for genuine potato leaves. The decision flipped; the
 // cosine barely moved. So the decision is what gets checked.
 function loadOod() {
-    const mpath = join(APP, 'public', 'model', 'ood.bin');
+    const mpath = join(REPO, 'frontend', 'model', 'ood.bin');
     if (!existsSync(mpath) || !manifest.ood) return null;
     const buf = readFileSync(mpath);
     const f32 = new Float32Array(buf.buffer, buf.byteOffset, buf.byteLength / 4);

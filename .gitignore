@@ -29,3 +29,76 @@ backend/temp_uploads/
 *.log
 .DS_Store
 Thumbs.db
+
+# ---- folded in from the old pestvid_complete_project/.gitignore ----
+# Large AI Models
+*.pth
+best_t2t_recommendation_model.pth
+best_vlm_model.pth
+
+# Datasets
+Potato Leaf Disease Dataset in Uncontrolled Environment/
+
+# Node
+node_modules/
+
+# Secrets
+.env
+backend/.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# OS
+.DS_Store
+
+# Local runtime data (added during Phase 0 audit remediation)
+backend/.local-mongo-data/
+backend/temp_uploads/
+temp_image.jpg
+
+# Backup / duplicate frontend copies (contained live Pinata JWTs)
+*.bak
+public/index_new.html
+public/index_original.html.bak
+
+# Local JSON datastore with real password hashes
+backend/db/*.json
+
+# Trained model artifacts (rebuild with Pestivid/train_potato.py).
+# features_*.npz and ood.npz are multi-MB; the head checkpoints are small but
+# derived. Keep metrics.json and model_card.md if you want the numbers in git --
+# they are the only files here worth reviewing.
+artifacts/*
+# 'artifacts/*' not 'artifacts/' -- git cannot re-include a file inside an
+# excluded DIRECTORY, so the negations below only work if the directory itself
+# is never excluded.
+# Keep what INFERENCE needs plus the result record. These are small.
+!artifacts/metrics.json
+!artifacts/model_card.md
+!artifacts/calibration.json
+!artifacts/fold_*_head.pt
+!artifacts/confusion_matrix.png
+!artifacts/reliability.png
+# Deliberately still excluded, with the reason:
+#   features_*.npz  (8.6 MB + 17.3 MB) intermediate extracted features. Pure
+#                   cache -- regenerate with Pestivid/extract_views.py.
+#   ood.npz         (38.8 MB) fitted Mahalanobis means + precision. Too heavy for
+#                   git. The BROWSER path does not need it -- it reads the fp16
+#                   public/model/ood.bin (10.2 MB), which IS committed -- so
+#                   on-device inference works from a clean clone. Server-side
+#                   potato_infer.py will log that the is-this-a-potato-leaf gate
+#                   is disabled until you regenerate it with train_potato.py.
+#   duplicate_groups.json  (741 KB) dataset-specific grouping, useless without
+#                   the dataset.
+
+# Browser-parity test fixtures. The 50 MB of raw pixel dumps under
+# public/parity/pixels/ are REGENERABLE (Pestivid/dump_pixels.py) and must never
+# be committed or deployed; public/parity/parity.json is small and IS committed,
+# because it is the reference the JS feature parity check compares against.
+public/parity/pixels/
+public/parity/*.jpg

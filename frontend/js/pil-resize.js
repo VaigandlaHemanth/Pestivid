@@ -254,7 +254,7 @@ export function preprocessTiles(rgb, inW, inH, opts) {
   const std = o.std || [0.229, 0.224, 0.225];
 
   // Resize and crop grid-times larger, then cut. Same arithmetic as
-  // Pestivid/extract_views.py TiledImages, which produced the training features.
+  // ml-training/extract_views.py TiledImages, which produced the training features.
   const bigShort = shortestEdge * grid;
   const bigCrop = crop * grid;
 

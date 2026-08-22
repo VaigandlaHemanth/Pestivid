@@ -42,8 +42,8 @@ Running it turned up three things that were not guesses:
 
 ## Running it
 
-    python Pestivid/dump_parity.py <dataset-root> pestvid_complete_project/public/parity
-    python Pestivid/dump_pixels.py          # writes public/parity/pixels/ (~50 MB)
+    python ml-training/dump_parity.py <dataset-root> frontend/parity
+    python ml-training/dump_pixels.py          # writes public/parity/pixels/ (~50 MB)
     # serve public/ on a static server, then open:
     #   /parity/           end-to-end feature parity, real JPEG decode  (expect ~3e-4)
     #   /parity/pixels.html  resize vs PIL, byte-for-byte               (expect 0 differing)

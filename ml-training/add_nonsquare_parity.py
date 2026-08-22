@@ -32,7 +32,9 @@ import numpy as np
 from PIL import Image, ImageOps
 
 HERE = Path(__file__).resolve().parent
-APP = HERE.parent / "pestvid_complete_project"
+REPO = HERE.parent
+ML = REPO / "ml-service"          # potato_infer.py, artifacts/
+WEB = REPO / "frontend"            # parity fixtures the browser also serves
 
 
 def load(path: Path, name: str):
@@ -43,7 +45,7 @@ def load(path: Path, name: str):
 
 
 def main() -> int:
-    out = Path(sys.argv[1]) if len(sys.argv) > 1 else (APP / "public" / "parity")
+    out = Path(sys.argv[1]) if len(sys.argv) > 1 else (WEB / "parity")
     manifest = out / "parity_tiled.json"
     if not manifest.exists():
         print(f"  no {manifest} -- run dump_parity_tiled.py first")
@@ -102,8 +104,8 @@ def main() -> int:
         print("  WARNING: this image does not hit the tie, so it does not test the fix")
 
     # Server-side reference, through the real inference path.
-    pi = load(APP / "potato_infer.py", "pi")
-    clf = pi.PotatoClassifier(APP / "artifacts")
+    pi = load(ML / "potato_infer.py", "pi")
+    clf = pi.PotatoClassifier(ML / "artifacts")
     if clf.views != data["recipe"]:
         print(f"  recipe drift: {clf.views} vs {data['recipe']}")
         return 1

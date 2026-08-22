@@ -6,8 +6,8 @@ has an ONNX export on the Hub (Xenova/dinov2-base), and everything after it is
 tiny — a Linear head, one temperature scalar, and a Mahalanobis distance. So the
 browser can do the whole prediction and there is no ML server to host at all.
 
-    python export_browser.py --artifacts ../pestvid_complete_project/artifacts \
-                             --out ../pestvid_complete_project/public/model
+    python export_browser.py --artifacts ../ml-service/artifacts \
+                             --out ../frontend/model
 
 Writes:
     manifest.json      classes, dims, thresholds, backbone id, preprocessing
