@@ -147,7 +147,15 @@ router.get('/investor/:investorId', authenticateToken, async (req, res) => {
         // Find investment documents for the specified investor
         // Populate related project and farmer details for display in the portfolio
         const investments = await Investment.find({ investorWallet: investorId })
-                                           .populate('projectId', 'title status fundedAmount amount updates') // Populate related project details
+                                           // The farmer comes through the project when the
+                                           // investment's own farmerWallet was never written --
+                                           // which is every seeded row, so the portfolio said
+                                           // "Unknown Farmer" against every season.
+                                           .populate({
+                                               path: 'projectId',
+                                               select: 'title status fundedAmount amount updates farmerWallet',
+                                               populate: { path: 'farmerWallet', select: 'name displayIdentifier' },
+                                           })
                                            .populate('farmerWallet', 'name role displayIdentifier') // Populate farmer details
                                             // Note: Redundant fields like projectTitle, crop, roi etc. are stored directly in Investment
                                             // document, so we don't need to populate them here if that's sufficient.
@@ -163,9 +171,17 @@ router.get('/investor/:investorId', authenticateToken, async (req, res) => {
                  _id: investment._id.toString(),
                  investorWallet: investment.investorWallet.toString(), // Investor user ID string
                  projectId: investment.projectId ? investment.projectId._id.toString() : null, // Project ID string
-                 projectTitle: investment.projectTitle, // Redundant field
+                 // projectTitle is denormalised onto the Investment, and it is
+                 // empty on anything not written through the create route -- so
+                 // the portfolio table's primary column read "Season" on every
+                 // row. projectId is already populated with the title; use it
+                 // when the copy is missing rather than discarding it.
+                 projectTitle: investment.projectTitle
+                     || (investment.projectId && investment.projectId.title)
+                     || null,
                  farmerWallet: investment.farmerWallet ? investment.farmerWallet._id.toString() : null, // Farmer user ID string
-                 farmerName: firstName(investment.farmerWallet, 'Unknown Farmer'),
+                 farmerName: firstName(investment.farmerWallet,
+                     firstName(investment.projectId && investment.projectId.farmerWallet, 'Unknown Farmer')),
                  crop: investment.crop, // Redundant field
                  method: investment.method, // Redundant field
                  description: investment.description, // Redundant field
