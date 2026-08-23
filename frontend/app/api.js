@@ -1,0 +1,160 @@
+// The API client. One place that knows the routes, the token and what a failure
+// means, so no page has to.
+
+const BASE = location.port === '3000' || location.port === '3001'
+  ? '/api' : (localStorage.getItem('pv.api') || '/api');
+const TIMEOUT = 15000;
+
+export const session = {
+  get token() { return localStorage.getItem('pv.token'); },
+  get user() { try { return JSON.parse(localStorage.getItem('pv.user')); } catch { return null; } },
+  set(token, user) {
+    localStorage.setItem('pv.token', token);
+    localStorage.setItem('pv.user', JSON.stringify(user));
+  },
+  clear() { localStorage.removeItem('pv.token'); localStorage.removeItem('pv.user'); },
+};
+
+export class ApiError extends Error {
+  constructor(status, body, url) {
+    super(body?.message || `${status} on ${url}`);
+    this.status = status; this.body = body; this.url = url;
+    // A free inference tier rate-limits per minute and per day. A screen that
+    // asks questions has to be able to say so rather than showing nothing.
+    this.rateLimited = status === 429;
+    this.offline = status === 0;
+  }
+}
+
+async function request(method, pathname, body) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), TIMEOUT);
+  let res;
+  try {
+    res = await fetch(BASE + pathname, {
+      method,
+      signal: ctl.signal,
+      headers: {
+        ...(body ? { 'content-type': 'application/json' } : {}),
+        ...(session.token ? { authorization: `Bearer ${session.token}` } : {}),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch (e) {
+    clearTimeout(timer);
+    throw new ApiError(0, { message: e.name === 'AbortError' ? 'That took too long.' : 'No connection.' }, pathname);
+  }
+  clearTimeout(timer);
+
+  const text = await res.text();
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch { data = { message: text.slice(0, 200) }; }
+
+  if (res.status === 401) {
+    // The server revokes a token by bumping tokenVersion, so a 401 here means
+    // the session is genuinely dead, not that this one call failed.
+    session.clear();
+    if (!/\/auth\/(login|register)$/.test(pathname)) location.href = './signin.html';
+  }
+  if (!res.ok) throw new ApiError(res.status, data, pathname);
+  return data;
+}
+
+const get = p => request('GET', p);
+const post = (p, b) => request('POST', p, b);
+const put = (p, b) => request('PUT', p, b);
+const del = p => request('DELETE', p);
+
+export const api = {
+  auth: {
+    login: (email, password) => post('/auth/login', { email, password }),
+    register: (b) => post('/auth/register', b),
+    me: () => get('/auth/me'),
+    changePassword: (currentPassword, newPassword) => post('/auth/change-password', { currentPassword, newPassword }),
+    signOutEverywhere: () => post('/auth/sign-out-everywhere', {}),
+  },
+  videos: {
+    mine: (farmerId) => get(`/videos/farmer/${farmerId}`),
+    all: () => get('/videos'),
+    provenance: (cid) => get(`/videos/${cid}/provenance`),
+    anchor: (cid) => get(`/videos/${cid}/anchor`),
+    // Uploading through the API is not possible on the free tier: a function
+    // request body caps at 4.5 MB and a 40-second clip is about 10 MB. The
+    // handset asks for a one-use URL, sends the file straight to storage, and
+    // the server then pulls the object back and hashes it itself -- which is
+    // what keeps "the server hashes the bytes it received" true.
+    requestUpload: (meta) => post('/videos/upload-url', meta),
+    finishUpload: (b) => post('/videos', b),
+  },
+  projects: {
+    open: () => get('/funding-requests'),
+    one: (id) => get(`/funding-requests/${id}`),
+    mine: (farmerId) => get(`/funding-requests/farmer/${farmerId}`),
+    create: (b) => post('/funding-requests', b),
+    reportHarvest: (id, b) => post(`/funding-requests/${id}/harvest`, b),
+  },
+  investments: {
+    mine: (investorId) => get(`/investments/investor/${investorId}`),
+    onProject: (projectId) => get(`/investments/project/${projectId}`),
+    create: (b) => post('/investments', b),
+  },
+  listings: {
+    all: () => get('/listings'),
+    mine: (farmerId) => get(`/listings/farmer/${farmerId}`),
+    media: (id) => get(`/listings/${id}/media`),
+    create: (b) => post('/listings', b),
+  },
+  purchases: {
+    asBuyer: (buyerId) => get(`/purchases/buyer/${buyerId}`),
+    asFarmer: (farmerId) => get(`/purchases/farmer/${farmerId}`),
+    create: (b) => post('/purchases', b),
+  },
+  messages: {
+    threads: (userId) => get(`/messaging/conversations/${userId}`),
+    inThread: (conversationId) => get(`/messaging/conversations/${conversationId}/messages`),
+    send: (conversationId, b) => post(`/messaging/conversations/${conversationId}/messages`, b),
+    markRead: (conversationId) => put(`/messaging/conversations/${conversationId}/messages/read`),
+    open: (b) => post('/messaging/conversations', b),
+  },
+  notifications: {
+    mine: (userId) => get(`/notifications/user/${userId}`),
+    read: (id) => put(`/notifications/${id}/read`),
+    dismiss: (id) => del(`/notifications/${id}`),
+  },
+  money: { transactions: (userId) => get(`/transactions/user/${userId}`) },
+  ai: {
+    ask: (question, history) => post('/ai/chatbot', { question, history }),
+    leaf: (b) => post('/ai/analyze-plant', b),
+  },
+  admin: { flagged: () => get('/videos/review-queue') },
+};
+
+// ---- formatting, in one place so two screens cannot disagree ----------------
+
+/** Indian grouping, no decimals, and a real rupee sign. */
+export const rupees = (n) => n == null ? '—'
+  : '₹' + Math.round(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+
+export const dayMonth = (iso) => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
+};
+
+/** "Today, 8:40 am" reads faster in a field than a date does. */
+export const whenShort = (iso) => {
+  if (!iso) return '—';
+  const d = new Date(iso), now = new Date();
+  const t = d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+  const days = Math.round((new Date(now.toDateString()) - new Date(d.toDateString())) / 86400000);
+  if (days === 0) return `Today, ${t}`;
+  if (days === 1) return `Yesterday, ${t}`;
+  return `${dayMonth(iso)}, ${t}`;
+};
+
+/** The three states a video's date can be in, in the words the screens use. */
+export function dateState(v) {
+  if (v?.anchored && v?.blockHeight) return { kind: 'proved', text: `Date stamped · block ${Number(v.blockHeight).toLocaleString('en-IN')}` };
+  if (v?.cid) return { kind: 'waiting', text: 'On our server · date being written, usually by tomorrow' };
+  return { kind: 'phone', text: 'Not sent yet' };
+}

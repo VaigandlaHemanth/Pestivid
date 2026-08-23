@@ -58,9 +58,9 @@
       </div>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
-      <div style="font-size: 14px; color: #4a443d;">Charlie</div>
+      <div data-bind="me.name" style="font-size: 14px; color: #4a443d;">Charlie</div>
       <div style="width: 32px; height: 32px; background: #d3ccc5; display: flex; align-items: center; justify-content: center; border-radius: 16px;">
-        <div style="font-size: 13px; font-weight: 600;">C</div>
+        <div data-bind="me.initial" style="font-size: 13px; font-weight: 600;">C</div>
       </div>
     </div>
   </div>
@@ -71,18 +71,18 @@
     <div style="background: #fff; display: flex; flex-direction: column; overflow: hidden;">
       <div style="padding: 20px 24px 14px;">
         <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">Open for funding</div>
-        <div style="font-size: 14px; color: #4a443d; margin-top: 3px;">Four seasons looking for money</div>
+        <div data-bind="openCount" style="font-size: 14px; color: #4a443d; margin-top: 3px;">Four seasons looking for money</div>
       </div>
 
-      <sc-for list="{{projects}}" as="p" hint-placeholder-count="4">
+      <sc-for data-list="projects" list="{{projects}}" as="p" hint-placeholder-count="4">
         <div style="padding: 16px 24px; background: {{p.bg}}; border-left: {{p.sel}};">
           <div style="display: flex; gap: 14px;">
             <div style="width: 78px; height: 58px; flex-shrink: 0; background: {{p.t1}}; overflow: hidden; position: relative;">
               <div style="position: absolute; left: -10%; top: 46%; width: 120%; height: 54%; background: {{p.t2}};"></div>
             </div>
             <div style="flex-grow: 1;">
-              <div style="font-size: 17px; font-weight: 600; letter-spacing: -0.01em;">{{p.title}}</div>
-              <div style="font-size: 13.5px; color: #4a443d; margin-top: 2px;">{{p.meta}}</div>
+              <div data-bind="title" style="font-size: 17px; font-weight: 600; letter-spacing: -0.01em;">{{p.title}}</div>
+              <div data-bind="meta" style="font-size: 13.5px; color: #4a443d; margin-top: 2px;">{{p.meta}}</div>
             </div>
           </div>
 
@@ -91,8 +91,8 @@
               <div style="width: {{p.pct}}; height: 100%; background: #01579b;"></div>
             </div>
             <div style="display: flex; justify-content: space-between; margin-top: 7px; align-items: baseline;">
-              <div class="num" style="font-size: 15px; font-weight: 600;">{{p.raised}}</div>
-              <div class="num" style="font-size: 13px; color: #4a443d;">of {{p.goal}}</div>
+              <div data-bind="raised" class="num" style="font-size: 15px; font-weight: 600;">{{p.raised}}</div>
+              <div data-bind="goal" class="num" style="font-size: 13px; color: #4a443d;">of {{p.goal}}</div>
             </div>
           </div>
         </div>
@@ -104,20 +104,20 @@
 
       <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 30px;">
         <div>
-          <div style="font-size: 14px; color: #4a443d;">Rabi season, week 11 of 18</div>
-          <h1 style="margin: 6px 0 0; font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;">Canal plot &mdash; two acres of potato</h1>
+          <div data-bind="lot.season" style="font-size: 14px; color: #4a443d;">Rabi season, week 11 of 18</div>
+          <h1 data-bind="lot.title" style="margin: 6px 0 0; font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;">Canal plot &mdash; two acres of potato</h1>
           <div style="display: flex; align-items: center; gap: 10px; margin-top: 11px;">
             <div style="width: 28px; height: 28px; background: #d3ccc5; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
               <div style="font-size: 12px; font-weight: 600;">A</div>
             </div>
-            <div style="font-size: 15px;">Alice Farmer</div>
-            <div style="font-size: 14px; color: #4a443d;">&middot; member since June</div>
+            <div data-bind="lot.farmer" style="font-size: 15px;">Alice Farmer</div>
+            <div data-bind="lot.since" style="font-size: 14px; color: #4a443d;">&middot; member since June</div>
           </div>
         </div>
         <div style="text-align: right; flex-shrink: 0;">
           <div style="font-size: 14px; color: #4a443d;">Still needed</div>
-          <div class="num" style="font-size: 32px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1;">&#8377;3,20,000</div>
-          <div class="num" style="font-size: 14px; color: #4a443d;">of &#8377;5,00,000</div>
+          <div data-bind="lot.needed" class="num" style="font-size: 32px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1;">&#8377;3,20,000</div>
+          <div data-bind="lot.goal" class="num" style="font-size: 14px; color: #4a443d;">of &#8377;5,00,000</div>
         </div>
       </div>
 

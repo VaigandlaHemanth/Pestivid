@@ -66,4 +66,5 @@ export function wire(slug) {
   promoteControls(root);
   links(root);
   document.documentElement.dataset.ready = slug;
+  return root;
 }

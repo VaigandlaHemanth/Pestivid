@@ -57,18 +57,22 @@ const WALK = (rootSel) => {
       await Promise.all(fams.flatMap(f => [400, 500, 600, 700, 800]
         .map(w => document.fonts.load(`${w} 20px "${f}"`).catch(() => {}))));
       await document.fonts.ready;
-      const deadline = performance.now() + 4000;
-      let last = -1, stable = 0;
-      while (performance.now() < deadline && stable < 3) {
-        const h = document.documentElement.scrollHeight + document.body.scrollWidth;
-        stable = h === last ? stable + 1 : 0;
-        last = h;
-        await new Promise(r => setTimeout(r, 120));
+      // Wait for the geometry itself to stop moving. scrollHeight can be
+      // stable while a webfont is still swapping inside a fixed-height hero,
+      // and a `ch` measure changes the moment the face lands -- so watch the
+      // widths that actually depend on it.
+      const probe = () => [...document.querySelectorAll('*')]
+        .reduce((a, e) => a + e.getBoundingClientRect().width, 0).toFixed(2);
+      const deadline = performance.now() + 6000;
+      let last = '', stable = 0;
+      while (performance.now() < deadline && stable < 4) {
+        const p = probe();
+        stable = p === last ? stable + 1 : 0;
+        last = p;
+        await new Promise(r => setTimeout(r, 100));
       }
     });
-    // a Google-hosted face can still be swapping after all of that; a flat
-    // wait is inelegant and it is the only thing that makes the run repeatable
-    await pg.waitForTimeout(1500);
+
   };
 
 const only = process.argv.slice(2);
@@ -87,6 +91,11 @@ for (const slug of slugs) {
   await a.close();
 
   const b = await browser.newPage({ viewport: { width: size.w, height: size.h } });
+  // Compare the page as drawn. With no API reachable a page module correctly
+  // replaces the screen with a failure state, which is right behaviour and
+  // useless for measuring fidelity -- so the module is blocked on purpose
+  // rather than by the accident of file:// refusing to load it.
+  await b.route('**/pages/*.js', r => r.abort());
   await b.goto(pathToFileURL(path.join(APP, slug + '.html')).href, { waitUntil: 'load' });
   await settle(b);
   const B = await b.evaluate(WALK, 'body > div');

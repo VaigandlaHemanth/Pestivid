@@ -42,6 +42,7 @@
     });
     var frag = document.createElement('div');
     frag.style.display = 'contents';
+    if (node.getAttribute('data-list')) frag.setAttribute('data-list', node.getAttribute('data-list'));
     frag.innerHTML = out;
     node.parentNode.replaceChild(frag, node);
   });

@@ -32,7 +32,7 @@
   <div style="background: #f6f3ef; padding: 16px 20px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
     <div>
       <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
-      <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Alice · Kadapa</div>
+      <div data-bind="whoWhere" style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Alice · Kadapa</div>
     </div>
     <div style="display: flex; gap: 16px; align-items: center;">
       <div style="position: relative;">
@@ -46,7 +46,7 @@
   <!-- the one thing that needs them today, above the menu -->
   <div style="background: #1d1a17; padding: 18px 20px; flex-shrink: 0;">
     <div style="font-size: 14.5px; color: #b5ada6;">Needs you today</div>
-    <div style="font-size: 20px; font-weight: 700; color: #f6f3ef; line-height: 1.28; margin-top: 4px;">
+    <div data-bind="todo.headline" style="font-size: 20px; font-weight: 700; color: #f6f3ef; line-height: 1.28; margin-top: 4px;">
       Canal plot is ready to harvest
     </div>
     <div style="background: #016abe; height: 56px; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -75,7 +75,7 @@
       <div style="flex-grow: 1;">
         <div class="lab">My plots</div>
       </div>
-      <div class="m" style="font-size: 15px; font-weight: 700; color: #01579b;">2 waiting</div>
+      <div data-bind="plots.waiting" class="m" style="font-size: 15px; font-weight: 700; color: #01579b;">2 waiting</div>
     </div>
 
     <div class="row" style="background: #f6f3ef;">

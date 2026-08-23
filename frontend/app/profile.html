@@ -41,10 +41,10 @@
       <div style="width: 56px; height: 56px; flex-shrink: 0; background: #e7e1db; border-radius: 28px; display: flex; align-items: center; justify-content: center;">
         <div style="font-size: 22px; font-weight: 700;">A</div>
       </div>
-      <div>
+      <div data-bind="name">
         <div style="font-size: 20px; font-weight: 700;">Alice Farmer</div>
-        <div class="m" style="font-size: 15px; color: #605a53; margin-top: 2px;">+91 98765 43210</div>
-        <div class="m" style="font-size: 14px; color: #605a53;">Kadapa, Andhra Pradesh</div>
+        <div data-bind="phone" class="m" style="font-size: 15px; color: #605a53; margin-top: 2px;">+91 98765 43210</div>
+        <div data-bind="where" class="m" style="font-size: 14px; color: #605a53;">Kadapa, Andhra Pradesh</div>
       </div>
     </div>
 
@@ -105,7 +105,7 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M12 20c6-1 9-5.5 9-12-6.5 0-11 3-12 9"></path><path d="M5 20c1.5-5 4-8 9-9.5"></path></svg>
       <div style="flex-grow: 1;">
         <div class="lab">Leaf checker</div>
-        <div class="m val">173 MB downloaded · works offline</div>
+        <div data-bind="model.state" class="m val">173 MB downloaded · works offline</div>
         <div style="font-size: 14.5px; color: #01579b; font-weight: 600; margin-top: 7px;">Remove it to free space</div>
       </div>
     </div>
