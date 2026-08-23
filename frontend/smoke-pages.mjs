@@ -15,10 +15,10 @@ const server = createServer((req, res) => {
   const rel = decodeURIComponent(req.url.split('?')[0]).replace(/^\//, '') || 'landing.html';
   const file = path.join(APP, rel);
   if (!file.startsWith(APP)) { res.writeHead(403).end(); return; }
-  try {
-    res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream' });
-    res.end(readFileSync(file));
-  } catch { res.writeHead(404).end('not found'); }
+  let body;
+  try { body = readFileSync(file); } catch { res.writeHead(404).end('not found'); return; }
+  res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream' });
+  res.end(body);
 });
 await new Promise(r => server.listen(0, '127.0.0.1', r));
 const base = `http://127.0.0.1:${server.address().port}/`;
@@ -29,9 +29,16 @@ let bad = 0, n = 0;
 for (const f of readdirSync(APP).filter(x => x.endsWith('.html'))) {
   const p = await browser.newPage();
   const errs = [];
-  p.on('console', m => { if (m.type() === 'error') errs.push(m.text().slice(0, 100)); });
+  // This harness serves files only. A page reaching for /api is doing the right
+  // thing and getting the right answer, so its 404 is not a page defect.
+  const ignorable = t => /\/api\//.test(t) || /fonts\.(googleapis|gstatic)/.test(t);
+  p.on('console', m => {
+    // the message text of a failed fetch does not carry the URL; its location does
+    const where = m.location()?.url || '';
+    if (m.type() === 'error' && !ignorable(m.text()) && !ignorable(where)) errs.push(m.text().slice(0, 100));
+  });
   p.on('pageerror', e => errs.push('JS: ' + String(e).slice(0, 100)));
-  p.on('requestfailed', r => { if (!/fonts\.(googleapis|gstatic)/.test(r.url())) errs.push('missing ' + r.url().split('/').pop()); });
+  p.on('requestfailed', r => { if (!ignorable(r.url())) errs.push('missing ' + r.url().split('/').pop()); });
   await p.goto(base + f, { waitUntil: 'load' });
   await p.waitForTimeout(350);
   const ready = await p.evaluate(() => document.documentElement.dataset.ready || null);

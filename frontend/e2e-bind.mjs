@@ -43,6 +43,14 @@ const CHECKS = [
   ['confirm-investment', 'investor', 'No season chosen'],
   ['orders',         'buyer',    'not bought a lot yet'],
   ['market',         'buyer',    null],
+  // the nine that were placeholders until now
+  ['landing',        'farmer',   'A field you can see'],
+  ['home-empty',     'farmer',   null],
+  ['setup-language', 'farmer',   'Choose your language'],
+  ['setup-identity', 'farmer',   'phone number is your account name'],
+  ['ask-money-video','farmer',   'Film the field first'],
+  ['leaf-result',    'farmer',   'Take a photo of one leaf'],
+  ['leaf-refusal',   'farmer',   'Take a photo of one leaf'],
 ];
 
 const browser = await chromium.launch();

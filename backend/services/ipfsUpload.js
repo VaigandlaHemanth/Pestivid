@@ -187,34 +187,46 @@ function gatewayUrl(cid) {
  * Streams to disk and refuses anything over the size limit rather than reading
  * an unbounded response into memory.
  */
-async function fetchToTemp(cid, maxBytes = MAX_BYTES) {
+async function fetchToTemp(cid, maxBytes = MAX_BYTES, attempt = 0) {
     const dest = path.join(os.tmpdir(), `pv_${Date.now()}_${Math.random().toString(36).slice(2)}.bin`);
-    const resp = await axios.get(gatewayUrl(cid), {
-        responseType: 'stream',
-        timeout: Number(process.env.PINATA_TIMEOUT_MS || 180000),
-        maxRedirects: 3,
-    });
-    let seen = 0;
-    const out = fs.createWriteStream(dest);
-    await new Promise((resolve, reject) => {
-        resp.data.on('data', (chunk) => {
-            seen += chunk.length;
-            if (seen > maxBytes) {
-                resp.data.destroy();
-                out.destroy();
-                reject(Object.assign(new Error('Stored object is larger than the limit.'), { code: 'TOO_BIG' }));
-            }
+    try {
+        const resp = await axios.get(gatewayUrl(cid), {
+            responseType: 'stream',
+            timeout: Number(process.env.PINATA_TIMEOUT_MS || 180000),
+            maxRedirects: 3,
         });
-        resp.data.on('error', reject);
-        out.on('error', reject);
-        out.on('finish', resolve);
-        resp.data.pipe(out);
-    }).catch(async (e) => { await cleanup(dest); throw e; });
-    if (seen === 0) {
+        let seen = 0;
+        const out = fs.createWriteStream(dest);
+        await new Promise((resolve, reject) => {
+            resp.data.on('data', (chunk) => {
+                seen += chunk.length;
+                if (seen > maxBytes) {
+                    resp.data.destroy();
+                    out.destroy();
+                    reject(Object.assign(new Error('Stored object is larger than the limit.'), { code: 'TOO_BIG' }));
+                }
+            });
+            resp.data.on('error', reject);
+            out.on('error', reject);
+            out.on('finish', resolve);
+            resp.data.pipe(out);
+        });
+        if (seen === 0) throw new Error('Stored object was empty.');
+        return { path: dest, bytes: seen };
+    } catch (e) {
         await cleanup(dest);
-        throw new Error('Stored object was empty.');
+        // A gateway does not always serve an object the instant it is pinned.
+        // That is a timing problem, not a missing file, so back off and try
+        // again before telling a farmer their upload failed.
+        const status = e.response && e.response.status;
+        const retriable = e.code !== 'TOO_BIG'
+            && (status === undefined || [404, 408, 425, 429, 500, 502, 503, 504].includes(status));
+        if (retriable && attempt < 4) {
+            await new Promise(r => setTimeout(r, 900 * (attempt + 1)));
+            return fetchToTemp(cid, maxBytes, attempt + 1);
+        }
+        throw e;
     }
-    return { path: dest, bytes: seen };
 }
 
 module.exports = {

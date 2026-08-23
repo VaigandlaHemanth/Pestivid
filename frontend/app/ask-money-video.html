@@ -48,7 +48,7 @@
 
         <div style="flex-grow: 1; padding: 18px;">
           <div style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
-          <div style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+          <div data-bind="step1.hint" style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
             Pick a video of it. You cannot ask for money without one.
           </div>
 
@@ -73,12 +73,15 @@
                 </div>
               </div>
             </div>
-            <!-- not selectable yet, and told why rather than just dimmed -->
+            <!-- not selectable yet, and told why rather than just dimmed. The bar is
+                 that we have hashed and analysed the file, NOT that its Bitcoin
+                 date has landed: that arrives later and is not what the server
+                 checks. See services/videoEligibility.js. -->
             <div style="background: #e4dfd9; padding: 12px 13px; display: flex; gap: 12px; align-items: center;">
               <div style="width: 62px; height: 46px; background: #4a443d; flex-shrink: 0;"></div>
               <div style="flex-grow: 1;">
                 <div class="m" style="font-size: 15.5px; font-weight: 600; color: #4a443d;">Canal plot · today</div>
-                <div style="font-size: 13px; color: #4a443d; margin-top: 2px;">Date still being written — ready in a few hours</div>
+                <div style="font-size: 13px; color: #4a443d; margin-top: 2px;">We are still checking this one — usually a minute</div>
               </div>
             </div>
           </div>

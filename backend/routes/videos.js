@@ -182,6 +182,17 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
              pesticideCompany: video.pesticideCompany,
              purpose: video.purpose,
              uploadTimestamp: video.uploadTimestamp ? video.uploadTimestamp.toISOString() : null, // Send timestamp as ISO string
+
+             // A farmer's own list has to carry the two facts that decide
+             // whether a video can back a funding request, or the app cannot
+             // tell them why one is greyed out and has to guess -- which is how
+             // it ended up inventing a stricter rule than the server's. Same
+             // pair GET /videos already returns for own scope. The bar is here,
+             // not the Bitcoin date: see services/videoEligibility.js.
+             hashComputedBy: video.hashComputedBy,
+             fingerprinted: Boolean(video.fingerprint
+                 && Array.isArray(video.fingerprint.frameHashes)
+                 && video.fingerprint.frameHashes.length >= 4),
          }));
 
         // Send the list of video metadata for this farmer

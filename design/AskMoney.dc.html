@@ -60,7 +60,7 @@
 
         <div style="flex-grow: 1; padding: 18px;">
           <div style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
-          <div style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+          <div data-bind="step1.hint" style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
             Pick a video of it. You cannot ask for money without one.
           </div>
 
@@ -85,12 +85,15 @@
                 </div>
               </div>
             </div>
-            <!-- not selectable yet, and told why rather than just dimmed -->
+            <!-- not selectable yet, and told why rather than just dimmed. The bar is
+                 that we have hashed and analysed the file, NOT that its Bitcoin
+                 date has landed: that arrives later and is not what the server
+                 checks. See services/videoEligibility.js. -->
             <div style="background: #e4dfd9; padding: 12px 13px; display: flex; gap: 12px; align-items: center;">
               <div style="width: 62px; height: 46px; background: #4a443d; flex-shrink: 0;"></div>
               <div style="flex-grow: 1;">
                 <div class="m" style="font-size: 15.5px; font-weight: 600; color: #4a443d;">Canal plot &middot; today</div>
-                <div style="font-size: 13px; color: #4a443d; margin-top: 2px;">Date still being written &mdash; ready in a few hours</div>
+                <div style="font-size: 13px; color: #4a443d; margin-top: 2px;">We are still checking this one &mdash; usually a minute</div>
               </div>
             </div>
           </div>
@@ -144,7 +147,7 @@
 
         <div style="flex-grow: 1; padding: 18px;">
           <div class="lb">Amount</div>
-          <div class="bx m" style="height: 64px; font-size: 23px; font-weight: 700; box-shadow: inset 0 0 0 2px #1d1a17;">&#8377;5,00,000</div>
+          <div data-bind="amount" class="bx m" style="height: 64px; font-size: 23px; font-weight: 700; box-shadow: inset 0 0 0 2px #1d1a17;">&#8377;5,00,000</div>
           <div class="hint">Seed, fertiliser, labour, water, transport for the whole season.</div>
 
           <div style="margin-top: 18px;">
@@ -253,8 +256,8 @@
           <div style="background: #f2e6cd; padding: 15px 16px; margin-top: 18px;">
             <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">What do you think they will get back?</div>
             <div style="display: flex; align-items: baseline; gap: 9px; margin-top: 9px;">
-              <div class="m" style="font-size: 26px; font-weight: 700;">34%</div>
-              <div style="font-size: 14.5px; color: #4a443d;">worked out from your own last season</div>
+              <div data-bind="roi.value" class="m" style="font-size: 26px; font-weight: 700;">34%</div>
+              <div data-bind="roi.basis" style="font-size: 14.5px; color: #4a443d;">worked out from your own last season</div>
             </div>
             <div style="font-size: 14px; line-height: 1.55; margin-top: 8px; color: #4a443d;">
               You sold &#8377;9,32,000 and spent &#8377;2,58,400 last Rabi. We filled this in from those

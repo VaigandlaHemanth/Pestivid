@@ -30,16 +30,16 @@
 
       <div style="min-height: 140px; background: #37322d; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 8px; border: 1px solid #605a53;"></div>
-        <div style="position: absolute; left: 18px; top: 16px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #ded7d0;">IMG_20260822_0914_IST.jpg<br>3024×4032 · 2.4 MB</div>
+        <div data-bind="shot.file" style="position: absolute; left: 18px; top: 16px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #ded7d0;">IMG_20260822_0914_IST.jpg<br>3024×4032 · 2.4 MB</div>
         <div style="position: absolute; left: 12px; bottom: 11px; background: rgba(12,11,10,.9); padding: 5px 10px;">
-          <div style="font-size: 12px; font-weight: 600; color: #f6f3ef;">Checked on your phone</div>
+          <div data-bind="shot.where" style="font-size: 12px; font-weight: 600; color: #f6f3ef;">Checked on your phone</div>
         </div>
       </div>
 
       <div style="background: #fff; padding: 20px;">
         <div style="font-size: 15px; color: #605a53;">Most likely</div>
-        <div style="font-size: 27px; font-weight: 700; letter-spacing: -0.028em; margin-top: 3px; line-height: 1.1;">Early blight</div>
-        <div class="sub" style="margin-top: 7px;">
+        <div data-bind="verdict.name" style="font-size: 27px; font-weight: 700; letter-spacing: -0.028em; margin-top: 3px; line-height: 1.1;">Early blight</div>
+        <div data-bind="verdict.note" class="sub" style="margin-top: 7px;">
           Dark rings on the older, lower leaves. Common, and treatable.
         </div>
       </div>
