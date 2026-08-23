@@ -47,6 +47,9 @@
     .a1 { animation: rise 320ms var(--e-smooth) both; }
     .a2 { animation: rise 320ms var(--e-smooth) 70ms both; }
     .a3 { animation: rise 320ms var(--e-smooth) 140ms both; }
+    .r1 { animation: rise 320ms var(--e-smooth) both; }
+    .r2 { animation: rise 320ms var(--e-smooth) 90ms both; }
+    .r3 { animation: rise 320ms var(--e-smooth) 170ms both; }
     /* Press feedback was 378ms, the settle time of the press spring. The budget
        for a button press is 100-160ms: at 378ms the tap feels sluggish because
        the finger is already gone. And it was symmetric, which is wrong twice
@@ -54,7 +57,7 @@
     .tap { transition: transform 260ms var(--e-press); }
     .tap:active { transform: scale(.97); transition-duration: 120ms; }
     @media (prefers-reduced-motion: reduce) {
-      .a1,.a2,.a3 { animation: none; }
+      .a1,.a2,.a3,.r1,.r2,.r3 { animation: none; }
       .tap { transition: none; }
     }
 

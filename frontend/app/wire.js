@@ -106,34 +106,42 @@ export function asField(el, opts = {}) {
  * element has children and an element-level scan skips it entirely.
  */
 export function deClaimProps(root) {
-  const SWAP = [
-    [/VID_\d{8}_\d{6}_IST\.mp4/g, 'the video file'],
-    [/IMG_\d{8}_\d{4}_IST\.jpg/g, 'your photo'],
-    [/sha256\s+[0-9a-f]{8}(?:…|\.\.\.)?[0-9a-f]{0,4}/gi, 'sha256 of the file itself'],
-    [/\b[0-9a-f]{8}…[0-9a-f]{4}\b/g, '—'],
-    [/\bbafybeih…?[0-9a-z]*/gi, '—'],
-    [/\bblock\s*(?:9xx,xxx|[\d,]{4,})/gi, 'block number once its date lands'],
-    [/\bBlock\s*(?:9xx,xxx|[\d,]{4,})/g, 'Block number once its date lands'],
-    [/\b(?:0:41|0:38|0:36|0:44|0:29|0:35|0:22)\b/g, '—'],
-    [/\b1080×1920\b/g, ''],
-    [/\b30fps\b/g, ''],
-    [/\b10\.1 MB\b/g, ''],
-    [/no\.\s*0{3,}\d+/gi, 'no. —'],
-    // the boards also write it bare, and inside a sentence
-    [/\b8(?:81|78),\d{3}\b/g, 'the block'],
-    [/\bCanal plot\b/g, 'a plot'],
-    [/ICAR-CPRI Technical Bulletin 78, p\.34/g, 'the document the answer came from'],
-    [/\bEarly blight\b/g, 'the diagnosis'],
-  ];
+  // Token-by-token substitution turned the prop into word salad
+  // ("the video file - . sha256 of the file itself block number on"), which is
+  // worse than the invented figures it replaced. So: if a run of text is made
+  // ONLY of prop tokens, the whole run goes and one honest line takes its
+  // place. A token sitting inside a real sentence is still swapped in place.
+  const PROP = /VID_\d{8}_\d{6}_IST\.mp4|IMG_\d{8}_\d{4}_IST\.jpg|sha256\s+[0-9a-f]{4,}(?:…|\.\.\.)?[0-9a-f]*|[0-9a-f]{8}…[0-9a-f]{4}|bafybeih…?[0-9a-z]*|[Bb]lock\s*(?:9xx,xxx|[\d,]{4,})|8(?:81|78),\d{3}|1080×1920|30fps|10\.1 MB|0:\d\d|no\.\s*0{3,}\d+/g;
+  const FILLER = /^[\s·,.\-–|/]*$/;
+
   const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes = [];
   while (walk.nextNode()) nodes.push(walk.currentNode);
+
+  // group the runs that belong to one prop: same parent, nothing but tokens
+  const holders = new Set();
   for (const n of nodes) {
-    let v = n.nodeValue;
-    if (!v || !v.trim()) continue;
-    let out = v;
-    for (const [re, to] of SWAP) out = out.replace(re, to);
-    if (out !== v) n.nodeValue = out.replace(/\s*·\s*·\s*/g, ' · ').replace(/\s{2,}/g, ' ');
+    const v = n.nodeValue;
+    if (!v || !v.trim() || !PROP.test(v)) { PROP.lastIndex = 0; continue; }
+    PROP.lastIndex = 0;
+    const rest = v.replace(PROP, '');
+    if (FILLER.test(rest)) holders.add(n.parentElement);
+    else n.nodeValue = v.replace(PROP, (m) => IN_SENTENCE(m));
+    PROP.lastIndex = 0;
+  }
+
+  for (const el of holders) {
+    // the whole prop is decoration; say what would be there and stop
+    el.textContent = 'The file, its fingerprint and the block its date went into';
+    el.setAttribute('data-declaimed', '');
+  }
+
+  function IN_SENTENCE(m) {
+    if (/^sha256/i.test(m)) return 'its fingerprint';
+    if (/^[Bb]lock/.test(m)) return m[0] === 'B' ? 'Block number, once its date lands' : 'block number, once its date lands';
+    if (/^VID_/.test(m)) return 'the video file';
+    if (/^IMG_/.test(m)) return 'your photo';
+    return '';
   }
 }
 

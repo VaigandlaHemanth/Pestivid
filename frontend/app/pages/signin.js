@@ -14,19 +14,32 @@ const pass = asField(oneByText('••••••••', root), {
   placeholder: 'Your password', label: 'Password',
 });
 
-const button = oneByText('Sign in', root);
-const shell = button?.parentElement;
+// The label is a leaf div inside the filled box, and the box is what looks like
+// the button, so the box is what takes the handler. Its PARENT was taking it
+// before, which is the whole card: clicking the email field submitted the form.
+const label = oneByText('Sign in', root);
+const box = label?.parentElement;
+const button = box && getComputedStyle(box).backgroundColor !== 'rgba(0, 0, 0, 0)' ? box : label;
 button?.setAttribute('data-act', '');
 button?.setAttribute('role', 'button');
 if (button) button.tabIndex = 0;
 
-// "Show" has to do something or it should not be there
+// Errors go in their own slot inside the card. state() replaces whatever it is
+// handed, so handing it the page root deleted the form and left a lone message
+// on an empty page.
+const errorSlot = document.createElement('div');
+button?.after(errorSlot);
+const fail = (head, body) => state(errorSlot, 'failed', head, body);
+const clearError = () => errorSlot.replaceChildren();
+
+// "Show" has to do something or it should not be drawn.
 const show = oneByText('Show', root);
 if (show && pass) {
   show.setAttribute('data-act', '');
   show.setAttribute('role', 'switch');
   show.setAttribute('aria-checked', 'false');
-  show.addEventListener('click', () => {
+  show.addEventListener('click', (e) => {
+    e.stopPropagation();
     const on = pass.type === 'password';
     pass.type = on ? 'text' : 'password';
     show.textContent = on ? 'Hide' : 'Show';
@@ -36,33 +49,32 @@ if (show && pass) {
 
 let busy = false;
 async function submit() {
-  if (busy || !email || !pass) return;
+  if (busy || !email || !pass || !button) return;
+  if (!email.value.trim() || !pass.value) {
+    return fail('Both fields, please', 'We cannot check an address without a password.');
+  }
   busy = true;
-  const label = button.textContent;
-  button.textContent = 'Signing in…';
+  clearError();
+  const was = label.textContent;
+  label.textContent = 'Signing in…';
   try {
     const r = await api.auth.login(email.value.trim(), pass.value);
     session.set(r.token, r.user);
     const home = { farmer: 'home', investor: 'invest', buyer: 'market', admin: 'admin' }[r.user.role] || 'home';
     location.href = `./${home}.html`;
   } catch (err) {
-    button.textContent = label;
+    label.textContent = was;
     const bad = err.status === 400 || err.status === 401;
-    // Which of the two was wrong is not said, on purpose: saying it tells an
-    // attacker whether the address exists.
-    state(root, 'failed',
-      bad ? 'That did not match' : 'Could not sign you in',
-      bad ? 'Check the address and the password.' : err.message);
+    // Which of the two was wrong is not said, on purpose: saying it tells
+    // somebody guessing whether the address exists.
+    fail(bad ? 'That did not match' : 'Could not sign you in',
+         bad ? 'Check the address and the password, then try again.' : err.message);
   } finally { busy = false; }
 }
 
 button?.addEventListener('click', submit);
-shell?.addEventListener('click', submit);
 for (const f of [email, pass]) {
   f?.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+  f?.addEventListener('input', clearError);
 }
 email?.focus();
-
-// The hero carries a "record of evidence" prop with a filename, a hash and a
-// block number on it. On a public page those are invented figures dressed as
-// proof, which is the one thing this product must not do. Replace them with a

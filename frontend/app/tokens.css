@@ -41,6 +41,12 @@
   --attention-fill:#f2e6cd;   /* eNAM warning pair */
   --attention-ink: #7c4a12;   /* amber as text measures 2.05:1 -- fill only */
 
+  /* The same two hues, lightened only enough to read on a dark scrim. #006934
+     and #7c4a12 are unreadable there, and inventing a new green would break the
+     rule that green means one thing. */
+  --proved-on-dark:    #5fbe8a;   /* from #006934, 6.7:1 on the hero scrim */
+  --attention-on-dark: #d8a86a;   /* from #7c4a12, 7.0:1 */
+
   /* --- media. a video slot is neutral, never a hue: a coloured rectangle
          claims to be a photograph of a crop and is not --- */
   --media:         #37322d;

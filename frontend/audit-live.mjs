@@ -16,7 +16,11 @@ const APPDIR = path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url
 // are also seeded users -- Alice Farmer, Bob Buyer, Lakshmi Devi and the rest
 // are real rows, and flagging them made the audit cry wolf.
 const PLACEHOLDERS = [
-  '98765 43210', 'Kadapa, Andhra Pradesh', 'Canal plot',
+  '98765 43210', 'Kadapa, Andhra Pradesh',
+  // 'Canal plot' was here. It appears inside the landing page's specimen
+  // card, which says on its face that it is an example. A plot name in a
+  // labelled specimen is not a false claim, and scrubbing it made the card
+  // unreadable.
   '9,32,000', '2,58,400', '6,73,600', '4,04,160', '2,69,440', '18.4L',
   '881,204', '878,410', '3f9c2a1e', 'VID_2026', 'IMG_2026',
   'ICAR-CPRI Technical Bulletin', 'Early blight', 'bafybeih',
