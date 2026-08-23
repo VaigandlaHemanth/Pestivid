@@ -202,7 +202,18 @@ export const whenShort = (iso) => {
 
 /** The three states a video's date can be in, in the words the screens use. */
 export function dateState(v) {
-  if (v?.anchored && v?.blockHeight) return { kind: 'proved', text: `Date stamped · block ${Number(v.blockHeight).toLocaleString('en-IN')}` };
-  if (v?.cid) return { kind: 'waiting', text: 'On our server · date being written, usually by tomorrow' };
-  return { kind: 'phone', text: 'Not sent yet' };
+  // `text` is the full line for a detail screen. `short` is for a row in a
+  // list, where the same sentence on every row says it three times too often --
+  // the group note above the list carries the explanation once.
+  if (v?.anchored && v?.blockHeight) return {
+    kind: 'proved',
+    text: `Date stamped · block ${Number(v.blockHeight).toLocaleString('en-IN')}`,
+    short: `Block ${Number(v.blockHeight).toLocaleString('en-IN')}`,
+  };
+  if (v?.cid) return {
+    kind: 'waiting',
+    text: 'On our server · date being written, usually by tomorrow',
+    short: 'Date being written',
+  };
+  return { kind: 'phone', text: 'Not sent yet', short: 'Not sent yet' };
 }

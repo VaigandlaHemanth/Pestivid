@@ -193,6 +193,11 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
              fingerprinted: Boolean(video.fingerprint
                  && Array.isArray(video.fingerprint.frameHashes)
                  && video.fingerprint.frameHashes.length >= 4),
+             // The thumbnail on the plots screen is drawn with a duration in the
+             // corner. It was showing the artboard's "0:38" for every video
+             // because this never left the server, so the one honest number the
+             // tile could carry was replaced by the same invented one each time.
+             durationSeconds: video.fingerprint && video.fingerprint.durationSeconds,
          }));
 
         // Send the list of video metadata for this farmer

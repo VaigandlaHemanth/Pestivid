@@ -60,7 +60,11 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) await build();
 
 export async function build() {
   const shim = readFileSync(path.join(DESIGN, 'audit', 'shim.js'), 'utf8');
-  const boards = readdirSync(DESIGN).filter(f => f.endsWith('.dc.html'));
+  // A leading underscore means scratch. A copy of a board left in design/ still
+  // declares the same data-page slugs, and whichever the directory listed first
+  // became that page's origin -- so a throwaway file silently decided what a
+  // real page was generated from.
+  const boards = readdirSync(DESIGN).filter(f => f.endsWith('.dc.html') && !f.startsWith('_'));
   const browser = await chromium.launch();
   const found = {};
 

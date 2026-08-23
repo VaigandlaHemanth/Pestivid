@@ -1,16 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#f6f3ef">
-  <title>My plots</title>
-  <!-- generated from design/Plots.dc.html by frontend/build-pages.mjs -- do not edit -->
-  
-  <link rel="stylesheet" href="./tokens.css">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
   <style>
-
     body { margin: 0; }
     a { color: #01579b; } a:hover { color: #013f70; }
 
@@ -30,9 +27,9 @@
     .lbl  { font-size: 13px; color: #4a443d; }
     .ttl  { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: #1d1a17; }
   </style>
-</head>
-<body data-page="plots" data-role="farmer" data-design-width="360" data-design-height="900">
-<div class="f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+</helmet>
+
+<div data-page="plots" class="f" style="width: 360px; min-height: 900px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
   <!-- header: no border, just a background change and weight -->
   <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
@@ -41,16 +38,16 @@
       <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">My plots</div>
     </div>
     <div style="display: flex; gap: 16px; align-items: center;">
-      <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+      <div style="position: relative;">
         <!-- concrete depiction, not an abstract glyph: an envelope -->
-        <div style="display: flex; align-items: center; justify-content: center;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg></div>
-        <div data-readout="" class="num" style="position: absolute; top: 1px; right: -1px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        <div data-chrome="mail" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg></div>
+        <div data-readout class="num" style="position: absolute; top: 1px; right: -1px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
       </div>
       <div data-chrome="you" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg></div>
     </div>
   </div>
 
-  <div>
+  <div style="flex-grow: 1;">
 
     <!-- ── group 1: still on the phone ─────────────────────────────
          Attention colour is OCHRE, not green. Green is reserved for one
@@ -66,10 +63,10 @@
     </div>
 
     <div class="row zeb">
-      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:38</div></div>
+      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:38</div></div>
       <div style="flex-grow: 1;">
         <div class="ttl">North plot</div>
-        <div class="lbl num" style="margin-top: 3px;">Today 8:40 am · 38 sec</div>
+        <div class="lbl num" style="margin-top: 3px;">Today 8:40 am &middot; 38 sec</div>
         <div style="display: flex; align-items: center; gap: 7px; margin-top: 10px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.2"><path d="M12 20v-8"></path><path d="M8 15l4-4 4 4"></path><path d="M5 5h14"></path></svg>
           <div style="font-size: 14.5px; font-weight: 600; color: #01579b;">Waiting for signal</div>
@@ -78,15 +75,15 @@
     </div>
 
     <div class="row zeb2">
-      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:44</div></div>
+      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:44</div></div>
       <div style="flex-grow: 1;">
         <div class="ttl">North plot</div>
-        <div class="lbl num" style="margin-top: 3px;">Yesterday 6:15 pm · 44 sec</div>
+        <div class="lbl num" style="margin-top: 3px;">Yesterday 6:15 pm &middot; 44 sec</div>
         <div style="margin-top: 11px;">
           <div style="min-height: 10px; background: #e4e0d8; overflow: hidden;">
             <div style="width: 40%; height: 100%; background: #01579b;"></div>
           </div>
-          <div class="num" style="font-size: 14.5px; font-weight: 600; margin-top: 6px; color: #01579b;">Sending — 40 of 100</div>
+          <div class="num" style="font-size: 14.5px; font-weight: 600; margin-top: 6px; color: #01579b;">Sending &mdash; 40 of 100</div>
         </div>
       </div>
     </div>
@@ -103,10 +100,10 @@
     </div>
 
     <div class="row zeb">
-      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:41</div></div>
+      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:41</div></div>
       <div style="flex-grow: 1;">
         <div class="ttl">Canal plot</div>
-        <div class="lbl num" style="margin-top: 3px;">18 August · 41 sec</div>
+        <div class="lbl num" style="margin-top: 3px;">18 August &middot; 41 sec</div>
         <div style="display: flex; align-items: center; gap: 7px; margin-top: 10px;">
           <!-- a stamp, not a tick: a tick would read as "we verified the field" -->
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
@@ -121,10 +118,10 @@
     <!-- flagged: ochre, worded as a check and not an accusation -->
     <div class="row zeb2">
       <div style="display: flex; gap: 14px; align-items: flex-start;">
-        <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:36</div></div>
+        <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:36</div></div>
         <div style="flex-grow: 1;">
           <div class="ttl">Back field</div>
-          <div class="lbl num" style="margin-top: 3px;">11 August · 36 sec</div>
+          <div class="lbl num" style="margin-top: 3px;">11 August &middot; 36 sec</div>
           <div style="display: flex; align-items: center; gap: 7px; margin-top: 10px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
             <div style="font-size: 14.5px; font-weight: 600; color: #37322d;">Date stamped</div>
@@ -148,8 +145,16 @@
 
 
   <!-- everything below this line needs a scroll on a 360x800 handset -->
-  
+  <div data-fold style="position: absolute; left: 0; right: 0; top: 800px; height: 0; border-top: 1px dashed rgba(167,25,48,.45); pointer-events: none;">
+    <div style="position: absolute; right: 0; top: -8px; background: rgba(167,25,48,.82); color: #fff; font: 600 9.5px/1 system-ui, sans-serif; letter-spacing: .06em; padding: 3px 5px;">FOLD</div>
+  </div>
 </div>
-<script type="module" src="./pages/plots.js"></script>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
 </body>
 </html>

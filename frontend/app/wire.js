@@ -43,7 +43,11 @@ function links(root) {
     const el = e.target.closest('[data-go]');
     if (!el) return;
     const to = el.dataset.go;
-    location.href = /^https?:|^\//.test(to) ? to : `./${to}.html`;
+    if (/^https?:|^\//.test(to)) { location.href = to; return; }
+    // A destination may carry a query -- data-go="plot?cid=bafy..." -- and the
+    // extension belongs on the slug, not on the end of the whole string.
+    const q = to.indexOf('?');
+    location.href = q < 0 ? `./${to}.html` : `./${to.slice(0, q)}.html${to.slice(q)}`;
   });
 }
 
@@ -111,7 +115,7 @@ export function deClaimProps(root) {
   // worse than the invented figures it replaced. So: if a run of text is made
   // ONLY of prop tokens, the whole run goes and one honest line takes its
   // place. A token sitting inside a real sentence is still swapped in place.
-  const PROP = /VID_\d{8}_\d{6}_IST\.mp4|IMG_\d{8}_\d{4}_IST\.jpg|sha256\s+[0-9a-f]{4,}(?:…|\.\.\.)?[0-9a-f]*|[0-9a-f]{8}…[0-9a-f]{4}|bafybeih…?[0-9a-z]*|[Bb]lock\s*(?:9xx,xxx|[\d,]{4,})|8(?:81|78),\d{3}|1080×1920|30fps|10\.1 MB|0:\d\d|no\.\s*0{3,}\d+/g;
+  const PROP = /VID_\d{8}_\d{6}_IST\.mp4|IMG_\d{8}_\d{4}_IST\.jpg|sha256\s+[0-9a-f]{4,}(?:…|\.\.\.)?[0-9a-f]*|[0-9a-f]{8}…[0-9a-f]{4}|bafybeih…?[0-9a-z]*|[Bb]lock\s*(?:9xx,xxx|[\d,]{4,})|8(?:81|78),\d{3}|1080×1920|30fps|10\.1 MB|no\.\s*0{3,}\d+/g;
   const FILLER = /^[\s·,.\-–|/]*$/;
 
   const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -131,7 +135,16 @@ export function deClaimProps(root) {
   }
 
   for (const el of holders) {
-    // the whole prop is decoration; say what would be there and stop
+    // The replacement is a sentence and needs room for one. Inside a 68px
+    // thumbnail it rendered as a wrapped fragment of itself, which is worse
+    // than the invented figure it replaced -- so in a box that narrow the
+    // decoration is removed instead of re-lettered.
+    const box = el.getBoundingClientRect();
+    const holder = el.closest('[style*="overflow: hidden"]');
+    if (box.width < 190 || (holder && holder.getBoundingClientRect().width < 190)) {
+      el.remove();
+      continue;
+    }
     el.textContent = 'The file, its fingerprint and the block its date went into';
     el.setAttribute('data-declaimed', '');
   }

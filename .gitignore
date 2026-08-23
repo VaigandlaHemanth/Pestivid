@@ -111,3 +111,11 @@ design/audit/*.png
 design/audit/measurements.json
 
 frontend/.verify/
+design/audit/tmp/
+
+# scratch left by audit runs
+_probe/
+design/_*
+design/audit/_*
+design/audit/tmp/
+design/audit/*.png
