@@ -20,6 +20,17 @@
     .th  { width: 66px; height: 50px; flex-shrink: 0; background: #37322d; position: relative; }
     .dur { position: absolute; bottom: 3px; right: 3px; background: rgba(29,26,23,.82); color: #f6f3ef;
            font-size: 11px; padding: 1px 4px; font-variant-numeric: tabular-nums; }
+    /* Press, declared here so the artboard shows the behaviour rather than
+       leaving it to be discovered in the product. Same spring and the same
+       asymmetry as tokens.css: 120ms down because a press budget is 100-160ms,
+       260ms back so the surface settles instead of flicking. */
+    :root { --e-press: linear(0,0.0239,0.082,0.1588,0.244,0.3306,0.4142,0.4923,0.5634,0.6271,0.6833,0.7324,0.7748,0.8112,0.8423,0.8687,0.8909,0.9096,0.9253,0.9383,0.9492,0.9582,0.9657,0.9719,0.977,0.9812,0.9846,0.9875,0.9898,0.9917,0.9932,0.9945,0.9955,0.9964,0.9971,0.9976,0.9981,0.9984,0.9987,0.999,1); }
+    .tap { transition: transform 260ms var(--e-press); }
+    .tap:active { transform: scale(.97); transition-duration: 120ms; }
+    @media (prefers-reduced-motion: reduce) {
+      .tap { transition: none; }
+      .tap:active { transform: none; opacity: .72; }
+    }
   </style>
 </helmet>
 
@@ -38,11 +49,11 @@
     <!-- where the season is. a bar, because a week number alone means nothing -->
     <div style="background: #eae4de; padding: 17px 20px;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <div data-bind="plot.stage" class="m" style="font-size: 16px; font-weight: 600;">Week 11 of 18</div>
-        <div style="font-size: 15px; color: #605a53;">Ready to harvest</div>
+        <div data-bind="plot.stage" class="m" style="font-size: 16px; font-weight: 600;">3 videos on this plot</div>
+        <div data-bind="plot.dates" class="m" style="font-size: 15px; color: #605a53;">2 of 3 dates written</div>
       </div>
       <div style="height: 10px; background: #d3ccc5; margin-top: 9px; display: flex;">
-        <div style="width: 61%; background: #1d1a17;"></div>
+        <div data-progress style="width: 100%; background: #1d1a17; transform-origin: left; transform: scaleX(.66);"></div>
       </div>
     </div>
 
@@ -50,7 +61,7 @@
     <div data-bind="plot.videosLabel" class="sec">Videos of this plot</div>
 
     <div class="vid">
-      <div class="th"><div class="dur">0:41</div></div>
+      <div class="th"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:41</div></div>
       <div style="flex-grow: 1;">
         <div class="m" style="font-size: 16px; font-weight: 600;">18 August, 6:44 am</div>
         <div style="display: flex; align-items: center; gap: 5px; margin-top: 3px;">
@@ -62,7 +73,7 @@
     </div>
 
     <div class="vid" style="background: #eae4de;">
-      <div class="th"><div class="dur">0:36</div></div>
+      <div class="th"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:36</div></div>
       <div style="flex-grow: 1;">
         <div class="m" style="font-size: 16px; font-weight: 600;">11 August, 7:02 am</div>
         <div style="display: flex; align-items: center; gap: 5px; margin-top: 3px;">
@@ -75,7 +86,7 @@
 
     <!-- waiting, and told how long. the wait is the product working, not a fault -->
     <div class="vid">
-      <div class="th"><div class="dur">0:29</div></div>
+      <div class="th"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:29</div></div>
       <div style="flex-grow: 1;">
         <div class="m" style="font-size: 16px; font-weight: 600;">Today, 8:12 am</div>
         <div style="font-size: 14px; color: #4a443d; margin-top: 3px;">On our server &middot; date being written, usually by tomorrow</div>
@@ -84,9 +95,9 @@
     </div>
 
     <div style="padding: 14px 20px 0;">
-      <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
-        <div style="font-size: 17px; font-weight: 700; color: #fff;">Record another one here</div>
+      <div class="tap" style="background: #f6f3ef; box-shadow: inset 0 0 0 1.5px #1d1a17; height: 58px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
+        <div style="font-size: 17px; font-weight: 600; color: #1d1a17;">Record another one here</div>
       </div>
     </div>
 
@@ -105,7 +116,7 @@
       <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
         They are waiting on you to report what you sold it for. Nothing is paid until you do.
       </div>
-      <div style="background: #016abe; height: 56px; margin-top: 13px; display: flex; align-items: center; justify-content: center;">
+      <div class="tap" style="background: #016abe; height: 56px; margin-top: 13px; display: flex; align-items: center; justify-content: center;">
         <div style="font-size: 17px; font-weight: 700; color: #fff;">Report the harvest</div>
       </div>
     </div>

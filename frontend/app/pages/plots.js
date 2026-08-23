@@ -83,7 +83,7 @@ if (ctx) {
       }
 
       // A row about one video has to open that video.
-      goes(el, `plot?cid=${encodeURIComponent(row.v.cid || row.v._id)}`, `${row.name}, ${row.when}`);
+      goes(el, `plot?name=${encodeURIComponent(row.name)}`, `${row.name}, ${row.when}`);
     });
 
     press(ctx.root);

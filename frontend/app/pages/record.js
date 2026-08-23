@@ -5,6 +5,7 @@
 // real choice rather than a request to delete something already sent.
 import { requireUser, load, state } from './_guard.js';
 import { bind } from '../bind.js';
+import { acts, press } from '../wire.js';
 
 const ctx = requireUser('record', ['farmer']);
 if (ctx) load(ctx.root, async () => {
@@ -42,17 +43,18 @@ if (ctx) load(ctx.root, async () => {
   const rec = new MediaRecorder(stream, { mimeType: mime });
   rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
 
+  // [data-progress], not a colour match. The record dot is #a71930 too and sits
+  // earlier in the document, so the colour selector returned the dot and the
+  // elapsed bar never moved once.
+  const bar = ctx.root.querySelector('[data-progress]');
+
   const tick = () => {
     const secs = (Date.now() - started) / 1000;
     const bytes = chunks.reduce((a, c) => a + c.size, 0);
     bind(ctx.root, { clip: { size: `${(bytes / 1e6).toFixed(1)} MB` } });
     // scaleX, never width: a bar animated on width relayouts its parent every
-    // frame, and this runs while the camera already owns the CPU
-    const bar = ctx.root.querySelector('div[style*="background: #a71930"]');
-    if (bar) {
-      bar.style.transformOrigin = 'left';
-      bar.style.transform = `scaleX(${Math.min(1, secs / 45)})`;
-    }
+    // frame, and this runs while the camera already owns the CPU.
+    if (bar) bar.style.transform = `scaleX(${Math.min(1, secs / 45)})`;
   };
 
   let thrown = false;
@@ -71,20 +73,37 @@ if (ctx) load(ctx.root, async () => {
 
   started = Date.now();
   rec.start(1000);
+  tick();                       // the board draws the bar part-filled; zero it
   timer = setInterval(tick, 500);
 
   const byLabel = (t) => [...ctx.root.querySelectorAll('div')]
     .find(d => d.children.length === 0 && d.textContent.trim() === t);
 
-  const stop = byLabel('Stop');
-  stop?.setAttribute('data-act', '');
-  stop?.addEventListener('click', () => { if (rec.state !== 'inactive') rec.stop(); });
+  const control = (t) => byLabel(t)?.parentElement || null;
 
-  const bin = byLabel('Throw away');
-  bin?.setAttribute('data-act', '');
-  bin?.addEventListener('click', () => {
+  acts(control('Stop'), 'Stop recording', () => {
+    if (rec.state !== 'inactive') rec.stop();
+  });
+
+  // Throwing the take away is irreversible and sits 56px from Stop, on a phone
+  // held one-handed while walking. It asks once.
+  let armed = false;
+  const binLabel = byLabel('Throw away');
+  acts(control('Throw away'), 'Throw this recording away', () => {
+    if (!armed) {
+      armed = true;
+      binLabel.textContent = 'Tap again to lose it';
+      setTimeout(() => {
+        if (!armed) return;
+        armed = false;
+        if (binLabel.isConnected) binLabel.textContent = 'Throw away';
+      }, 4000);
+      return;
+    }
     thrown = true;
     chunks = [];
     if (rec.state !== 'inactive') rec.stop(); else location.href = './home.html';
   });
+
+  press(ctx.root);
 });
