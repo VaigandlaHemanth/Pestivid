@@ -24,6 +24,13 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 
 const DB_PATH = path.join(__dirname, '.local-mongo-data');
+
+// The memory server persists to DB_PATH, and seedIfEmpty() skips when any user
+// exists -- so anything a test writes lives in the dev database for good. An
+// e2e run left a farmer called "Phone Farmer" and two funding requests behind,
+// and every screenshot afterwards showed "Phone told us" and "Ask Phone a
+// question". `node dev-server.js --fresh` throws the directory away and reseeds.
+const FRESH = process.argv.includes('--fresh');
 const MONGO_PORT = 27017;
 
 // Stable secret so tokens issued before a restart still validate afterwards.
@@ -33,6 +40,10 @@ const DEV_JWT_SECRET = process.env.JWT_SECRET
 let mongod;
 
 async function main() {
+    if (FRESH && fs.existsSync(DB_PATH)) {
+        console.log(`--fresh: removing ${DB_PATH}`);
+        fs.rmSync(DB_PATH, { recursive: true, force: true });
+    }
     fs.mkdirSync(DB_PATH, { recursive: true });
 
     console.log('--- Starting local MongoDB (mongodb-memory-server) ---');

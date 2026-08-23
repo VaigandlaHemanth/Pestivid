@@ -1,54 +1,107 @@
+// The screen where money actually moves.
+//
+// The gate on the whole transaction was a 22px empty square: under the 24px
+// desktop floor, with the 293px label outside the hit area, no keyboard path
+// even though the JS set role=checkbox, and "ticked" communicated by a red
+// square appearing inside an already-red panel. The enable moment -- the most
+// consequential state change in this product -- was a hard cut from #c9ced4 to
+// #016abe, two hexes in no token, and it introduced a third primary colour to a
+// single flow: the button that leads here is ink on Invest, and this one turned
+// blue.
 import { requireUser, api, load, state } from './_guard.js';
 import { bind } from '../bind.js';
 import { rupees } from '../api.js';
+import { acts, goes, press } from '../wire.js';
 
 const ctx = requireUser('confirm-investment', ['investor']);
-if (ctx) load(ctx.root, async () => {
-  const q = new URLSearchParams(location.search);
-  const id = q.get('project'), amount = Number(q.get('amount')) || 0;
-  if (!id) return state(ctx.root, 'empty', 'No season chosen', 'Open this from a season you were reading.',
+
+if (ctx) {
+  const root = ctx.root;
+  goes(root.querySelector('[data-back]'), 'invest', 'Go back without sending');
+  press(root);
+
+  load(root, async () => {
+    const q = new URLSearchParams(location.search);
+    const id = q.get('project');
+    const amount = Number(q.get('amount')) || 0;
+    if (!id) {
+      return state(root, 'empty', 'No season chosen',
+        'Open this from a season you were reading.',
         { label: 'See what is open', go: 'invest' });
-  const p = await api.projects.one(id);
-  bind(ctx.root, {
-    lot: {
-      title: p.title,
-      meta: [p.farmerName, p.acres && `${p.acres} acres`, p.crop].filter(Boolean).join(' · '),
-      needed: rupees(Math.max(0, (p.amount || 0) - (p.fundedAmount || 0))),
-    },
-    amount: rupees(amount),
-  });
-
-  // The button stays inactive until the loss is acknowledged. That is the point
-  // of the screen, so it is enforced here and not merely drawn.
-  const box = ctx.root.querySelector('div[style*="inset 0 0 0 2px #a71930"]');
-  const btn = [...ctx.root.querySelectorAll('div')]
-    .find(d => /^Send /.test(d.textContent.trim()) && !d.children.length);
-  const shell = btn?.parentElement;
-  let agreed = false;
-
-  const paint = () => {
-    if (!shell) return;
-    shell.style.background = agreed ? '#016abe' : '#c9ced4';
-    if (btn) btn.style.color = agreed ? '#fff' : '#6b7278';
-    shell.setAttribute('aria-disabled', String(!agreed));
-  };
-  box?.setAttribute('data-act', '');
-  box?.setAttribute('role', 'checkbox');
-  box?.addEventListener('click', () => {
-    agreed = !agreed;
-    box.setAttribute('aria-checked', String(agreed));
-    box.style.background = agreed ? '#a71930' : '#fff';
-    paint();
-  });
-  paint();
-
-  shell?.addEventListener('click', async () => {
-    if (!agreed) return;
-    try {
-      await api.investments.create({ projectId: id, amount });
-      location.href = './portfolio.html';
-    } catch (err) {
-      state(ctx.root, 'failed', 'The money did not move', err.message);
     }
+
+    const p = await api.projects.one(id);
+    bind(root, {
+      lot: {
+        title: p.title,
+        meta: [p.farmerName, p.acres && `${p.acres} acres`, p.crop].filter(Boolean).join(' · '),
+        needed: rupees(Math.max(0, (p.amount || 0) - (p.fundedAmount || 0))),
+      },
+      amount: rupees(amount),
+    });
+
+    // The acknowledgement. The whole row is the control, so the sentence is part
+    // of the target rather than decoration beside it.
+    const ackRow = root.querySelector('[data-ack]');
+    const box = ackRow?.querySelector('[data-box]');
+    const tick = box?.querySelector('svg');
+    const send = root.querySelector('[data-send]');
+    const label = send?.querySelector('div');
+    let agreed = false;
+
+    const paint = () => {
+      if (send) {
+        send.style.background = agreed ? '#1d1a17' : '#d3ccc5';
+        send.setAttribute('aria-disabled', String(!agreed));
+        send.style.cursor = agreed ? 'pointer' : 'default';
+      }
+      if (label) label.style.color = agreed ? '#f6f3ef' : '#4a443d';
+      if (box) box.style.background = agreed ? '#a71930' : '#fff';
+      if (tick) {
+        tick.style.opacity = agreed ? '1' : '0';
+        tick.style.transform = agreed ? 'scale(1)' : 'scale(.6)';
+      }
+    };
+
+    if (ackRow) {
+      ackRow.setAttribute('role', 'checkbox');
+      ackRow.setAttribute('aria-checked', 'false');
+      acts(ackRow, 'I understand I could lose this money', () => {
+        agreed = !agreed;
+        ackRow.setAttribute('aria-checked', String(agreed));
+        paint();
+      });
+    }
+    paint();
+
+    let busy = false;
+    acts(send, `Send ${rupees(amount)}`, async () => {
+      // Refusing silently is what a disabled button does, and this one is not
+      // visibly a button until it is armed -- so say why nothing happened.
+      if (!agreed) {
+        ackRow?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        if (box) {
+          // one nudge on the box, not a colour change: the panel is already red
+          box.style.transform = 'scale(1.12)';
+          setTimeout(() => { box.style.transform = 'scale(1)'; }, 180);
+        }
+        return;
+      }
+      if (busy) return;
+      busy = true;
+      const was = label?.textContent;
+      if (label) label.textContent = 'Sending…';
+      try {
+        await api.investments.create({ projectId: id, amount });
+        if (label) label.textContent = 'Sent';
+        location.href = './portfolio.html';
+      } catch (err) {
+        if (label) label.textContent = was;
+        busy = false;
+        state(send.parentElement, 'failed', 'The money did not move', err.message);
+      }
+    });
+
+    press(root);
   });
-});
+}
