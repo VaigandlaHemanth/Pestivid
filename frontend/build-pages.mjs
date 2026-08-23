@@ -26,6 +26,7 @@ export const PAGES = {
   'landing':            { title: 'Pestivid', role: 'public' },
   'signin':             { title: 'Sign in', role: 'public' },
   'signin-farmer':      { title: 'Sign in', role: 'public' },
+  'signup':             { title: 'Create an account', role: 'public' },
   'setup-language':     { title: 'Choose your language', role: 'public' },
   'setup-identity':     { title: 'Who are you?', role: 'public' },
   'home-empty':         { title: 'Pestivid', role: 'farmer' },

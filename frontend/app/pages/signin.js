@@ -77,4 +77,10 @@ for (const f of [email, pass]) {
   f?.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
   f?.addEventListener('input', clearError);
 }
+// "Create an account" pointed nowhere; the page it needs now exists.
+const create = oneByText('Create an account', root);
+if (create) { create.setAttribute('data-act', ''); create.dataset.go = 'signup'; }
+const phoneApp = oneByText('Get the phone app', root);
+if (phoneApp) { phoneApp.setAttribute('data-act', ''); phoneApp.dataset.go = 'setup-language'; }
+
 email?.focus();

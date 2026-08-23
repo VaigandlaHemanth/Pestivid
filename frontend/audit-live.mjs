@@ -35,7 +35,7 @@ const ROLE_PAGES = {
   buyer: ['market', 'orders'],
   admin: ['admin'],
 };
-const PUBLIC = ['landing', 'signin', 'signin-farmer', 'setup-language', 'setup-identity'];
+const PUBLIC = ['landing', 'signin', 'signup', 'signin-farmer', 'setup-language', 'setup-identity'];
 
 const login = async (email) => {
   const r = await fetch(API + '/auth/login', {

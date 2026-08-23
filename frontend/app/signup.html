@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
+  <title>Create an account</title>
+  <!-- generated from design/Login.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&amp;display=swap">
+  <link rel="stylesheet" href="./tokens.css">
+  <style>
+
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .sys { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+
+    /* .fld was used four times and never defined, so every field on this card
+       rendered as an icon on one line and the value under it, with no height.
+       A field is a row: icon, value, and whatever sits at the end. 56px clears
+       the 44px target floor with room for a focus ring outside the box. */
+    .fld {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 56px;
+      padding: 0 14px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .fld > svg { flex-shrink: 0; }
+    .lift2 { box-shadow: 0 2px 4px rgba(28,26,23,.10), 0 16px 44px rgba(28,26,23,.16); }
+
+    /* The same springs the motion board runs. One staged entrance, nothing
+       loops, and the button answers the finger rather than the click.
+
+       320ms, not the 746ms the landing hero uses: this is a sign-in card,
+       which is UI, and the budget for a panel arriving is 200-500ms. A
+       marketing hero is allowed to take its time; a form is not. */
+    :root {
+      --e-smooth: linear(0,0.0234,0.0805,0.1562,0.2403,0.326,0.409,0.4867,0.5576,0.6213,0.6777,0.727,0.7697,0.8065,0.838,0.8647,0.8874,0.9065,0.9225,0.9359,0.9471,0.9564,0.9641,0.9705,0.9758,0.9802,0.9838,0.9867,0.9892,0.9911,0.9928,0.9941,0.9952,0.9961,0.9968,0.9974,0.9979,0.9983,0.9986,0.9989,1);
+      --e-press:  linear(0,0.0239,0.082,0.1588,0.244,0.3306,0.4142,0.4923,0.5634,0.6271,0.6833,0.7324,0.7748,0.8112,0.8423,0.8687,0.8909,0.9096,0.9253,0.9383,0.9492,0.9582,0.9657,0.9719,0.977,0.9812,0.9846,0.9875,0.9898,0.9917,0.9932,0.9945,0.9955,0.9964,0.9971,0.9976,0.9981,0.9984,0.9987,0.999,1);
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .a1 { animation: rise 320ms var(--e-smooth) both; }
+    .a2 { animation: rise 320ms var(--e-smooth) 70ms both; }
+    .a3 { animation: rise 320ms var(--e-smooth) 140ms both; }
+    .r1 { animation: rise 320ms var(--e-smooth) both; }
+    .r2 { animation: rise 320ms var(--e-smooth) 90ms both; }
+    .r3 { animation: rise 320ms var(--e-smooth) 170ms both; }
+    /* Press feedback was 378ms, the settle time of the press spring. The budget
+       for a button press is 100-160ms: at 378ms the tap feels sluggish because
+       the finger is already gone. And it was symmetric, which is wrong twice
+       over. The press snaps, the release eases back. */
+    .tap { transition: transform 260ms var(--e-press); }
+    .tap:active { transform: scale(.97); transition-duration: 120ms; }
+    @media (prefers-reduced-motion: reduce) {
+      .a1,.a2,.a3,.r1,.r2,.r3 { animation: none; }
+      .tap { transition: none; }
+    }
+
+    /* GLASS — desktop sign-in card only.
+       It floats over a real field photograph, indoors, on a laptop. The card's
+       CHROME is translucent; every input and every piece of text sits on an
+       opaque fill inside it, because contrast over an arbitrary backdrop cannot
+       be certified. */
+    /* GLASS — one recipe, used on three surfaces, all of them desktop and all of
+       them over the frame grid so there is genuine per-cell variation to sample.
+       A translucent panel over a FLAT fill is a no-op blur and a pointless panel,
+       which is what this looked like before the grid went in.
+
+       Nothing on glass carries a money figure, a verification claim or body copy.
+       Labels get their own shadow so legibility never depends on the backdrop. */
+    .glass {
+      background: rgba(246,243,239,.13);
+      backdrop-filter: blur(18px) saturate(125%);
+      -webkit-backdrop-filter: blur(18px) saturate(125%);
+      box-shadow: inset 0 1px 0 rgba(246,243,239,.22);
+    }
+    @supports not (backdrop-filter: blur(1px)) { .glass { background: rgba(29,26,23,.86); } }
+    @media (prefers-reduced-transparency: reduce) {
+      .glass { background: rgba(29,26,23,.90); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    }
+    .ots { text-shadow: 0 1px 5px rgba(0,0,0,.55); }
+  </style>
+</head>
+<body data-page="signup" data-role="public" data-design-width="1280" data-design-height="1215">
+<div class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #ddd7d1; color: #1d1a17; box-sizing: border-box;">
+
+    <div class="r1" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 56px; box-shadow: inset 0 -1px 0 #c3bcb6;">
+      <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.024em;">Pestivid</div>
+      <div style="font-size: 14.5px; color: #4a443d;">Already have an account? <span style="color: #01579b; font-weight: 600;">Sign in</span></div>
+    </div>
+
+    <div style="max-width: 880px; margin: 0 auto; padding: 46px 24px 56px;">
+
+      <div class="r1">
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.034em; line-height: 1.06; max-width: 24ch;">
+          Before you make an account.
+        </h1>
+        <p style="font-size: 17px; line-height: 1.5; margin: 12px 0 0; max-width: 64ch; color: #4a443d;">
+          Two paragraphs, then three fields. The first paragraph is the one that
+          matters, and it is here rather than on a confirmation screen because by
+          then you have already decided.
+        </p>
+      </div>
+
+      <!-- The risk. Alarm as a fill with dark ink on it, not as coloured body
+           text, and it is the first thing on the page for a reason. -->
+      <div class="r2" style="margin-top: 32px; background: #f7e9e6; padding: 22px 24px;">
+        <div style="display: flex; gap: 13px; align-items: flex-start;">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#a71930" stroke-width="2.1" style="flex-shrink: 0; margin-top: 2px;"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9.5v5M12 17.5v.01"></path></svg>
+          <div>
+            <div style="font-size: 18px; font-weight: 700; color: #a71930;">Funding a season is not saving money</div>
+            <div style="font-size: 16px; line-height: 1.55; margin-top: 6px; max-width: 70ch;">
+              Crops fail. When one does there may be no profit to share, and a total
+              loss can return less than you put in. There is no capital protection,
+              no guaranteed return, and no projected return shown anywhere in this
+              product, because the profit does not exist yet.
+            </div>
+            <div style="font-size: 15px; line-height: 1.55; margin-top: 8px; color: #4a443d;">
+              We are not a bank, not a broker, and not licensed to advise you. Only
+              commit money you can afford to lose.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="r2" style="margin-top: 20px; background: #f6f3ef; padding: 22px 24px;">
+        <div style="font-size: 17px; font-weight: 700;">What we hold, and what we do not ask for</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 12px;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #605a53;">WE HOLD</div>
+            <div style="font-size: 15.5px; line-height: 1.6; margin-top: 6px; color: #1d1a17;">
+              Your name, an email address, and a record of every season you funded,
+              including the ones that failed. That record does not get quietly tidied.
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #605a53;">WE DO NOT ASK</div>
+            <div style="font-size: 15.5px; line-height: 1.6; margin-top: 6px; color: #1d1a17;">
+              For a PAN, an Aadhaar, or a bank account. Not until money actually has
+              to move, and you will be asked then, on purpose.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Role, then the three fields. Two roles, so radio cards rather than a
+           select: a select hides one of two options behind a click. -->
+      <div class="r3" style="margin-top: 40px; display: grid; grid-template-columns: 1fr 372px; gap: 44px; align-items: start; padding-top: 30px; box-shadow: inset 0 1px 0 #c3bcb6;">
+        <div>
+          <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">What are you here to do?</div>
+          <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div data-role-pick="investor" style="background: #f6f3ef; padding: 15px 17px; box-shadow: inset 0 0 0 2px #1d1a17;">
+              <div style="display: flex; gap: 11px; align-items: flex-start;">
+                <div style="width: 19px; height: 19px; flex-shrink: 0; border-radius: 10px; background: #1d1a17; margin-top: 2px;"></div>
+                <div>
+                  <div style="font-size: 16.5px; font-weight: 600;">Fund a season</div>
+                  <div style="font-size: 14.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+                    You put money into a crop and are paid from the harvest, or not.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div data-role-pick="buyer" style="background: #f6f3ef; padding: 15px 17px;">
+              <div style="display: flex; gap: 11px; align-items: flex-start;">
+                <div style="width: 19px; height: 19px; flex-shrink: 0; border-radius: 10px; box-shadow: inset 0 0 0 2px #78716a; margin-top: 2px;"></div>
+                <div>
+                  <div style="font-size: 16.5px; font-weight: 600;">Buy produce</div>
+                  <div style="font-size: 14.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+                    You buy lots outright, with the dated video the lot was sold on.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size: 14.5px; line-height: 1.55; margin-top: 14px; max-width: 46ch; color: #4a443d;">
+            If you farm, neither of these is you. The phone app is the way in: it
+            works with no signal and reads every screen aloud.
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 14.5px; font-weight: 600;">Your name</div>
+          <div class="fld" style="margin-top: 6px; box-shadow: inset 0 0 0 1px #c3bcb6;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg>
+            <div style="font-size: 16px; color: #1d1a17;">Ravi Kumar</div>
+          </div>
+
+          <div style="font-size: 14.5px; font-weight: 600; margin-top: 16px;">Email</div>
+          <div class="fld" style="margin-top: 6px; box-shadow: inset 0 0 0 1px #c3bcb6;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+            <div style="font-size: 16px; color: #1d1a17;">ravi@example.com</div>
+          </div>
+
+          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 16px;">
+            <div style="font-size: 14.5px; font-weight: 600;">Password</div>
+            <div style="font-size: 13.5px; color: #605a53;">Eight or more</div>
+          </div>
+          <div class="fld" style="margin-top: 6px; box-shadow: inset 0 0 0 1px #c3bcb6;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8"><rect x="4" y="10" width="16" height="10"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+            <div class="num" style="font-size: 18px; letter-spacing: .16em; color: #1d1a17;">••••••••</div>
+            <div style="flex-grow: 1;"></div>
+            <div style="font-size: 14px; font-weight: 600; color: #01579b;">Show</div>
+          </div>
+
+          <!-- Not a tick-box for terms. An explicit sentence, because a checkbox
+               next to a link nobody opens is consent theatre. -->
+          <div data-ack="" style="margin-top: 18px; background: #f6f3ef; padding: 14px 16px; display: flex; gap: 11px; align-items: flex-start;">
+            <div style="width: 21px; height: 21px; flex-shrink: 0; background: #fff; box-shadow: inset 0 0 0 2px #a71930; margin-top: 1px;"></div>
+            <div style="font-size: 15px; line-height: 1.5; font-weight: 600;">
+              I understand a season can lose money and that nothing here is a
+              guaranteed return.
+            </div>
+          </div>
+
+          <div class="tap" style="background: #c9ced4; min-height: 56px; margin-top: 16px; display: flex; align-items: center; justify-content: center;">
+            <div style="font-size: 16.5px; font-weight: 600; color: #6b7278;">Create the account</div>
+          </div>
+          <div style="font-size: 13.5px; line-height: 1.5; margin-top: 10px; color: #605a53;">
+            Inactive until the line above is ticked. Nothing is charged and no money
+            moves when you create an account.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script type="module" src="./pages/signup.js"></script>
+</body>
+</html>
