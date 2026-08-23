@@ -49,23 +49,81 @@
                       70% { opacity: 1; transform: scale(.97) rotate(-5deg); }
                      100% { opacity: 1; transform: scale(1) rotate(-5.5deg); } }
     @keyframes grow  { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-    .e1 { animation: rise .55s cubic-bezier(.2,.7,.3,1) both; }
-    .e2 { animation: rise .55s cubic-bezier(.2,.7,.3,1) .09s both; }
-    .e3 { animation: rise .55s cubic-bezier(.2,.7,.3,1) .18s both; }
-    .e4 { animation: rise .55s cubic-bezier(.2,.7,.3,1) .27s both; }
-    .stamp { animation: stamp .6s cubic-bezier(.3,1.5,.5,1) 1.0s both; }
-    .bar   { animation: grow .9s cubic-bezier(.2,.8,.3,1) .5s both; transform-origin: left; }
+    /* The same five springs the motion board runs, solved from response and
+       damping and emitted as linear(). Verified against the analytic solution
+       to 0.35% of travel, so the page and the spec cannot drift apart. */
+    :root {
+      --e-smooth: linear(0,0.0234,0.0805,0.1562,0.2403,0.326,0.409,0.4867,0.5576,0.6213,0.6777,0.727,0.7697,0.8065,0.838,0.8647,0.8874,0.9065,0.9225,0.9359,0.9471,0.9564,0.9641,0.9705,0.9758,0.9802,0.9838,0.9867,0.9892,0.9911,0.9928,0.9941,0.9952,0.9961,0.9968,0.9974,0.9979,0.9983,0.9986,0.9989,1);
+      --e-snappy: linear(0,0.0218,0.0768,0.1523,0.2388,0.3293,0.4187,0.5039,0.5826,0.6536,0.7164,0.7711,0.818,0.8576,0.8905,0.9176,0.9395,0.9571,0.9708,0.9814,0.9895,0.9954,0.9997,1.0026,1.0045,1.0056,1.0062,1.0063,1.0061,1.0057,1.0052,1.0047,1.0041,1.0036,1.003,1.0025,1.0021,1.0017,1.0014,1.0011,1);
+      --e-bouncy: linear(0,0.0299,0.1054,0.2083,0.3244,0.4432,0.5571,0.6613,0.7527,0.8302,0.8936,0.9437,0.9816,1.009,1.0276,1.0389,1.0445,1.046,1.0444,1.0408,1.036,1.0306,1.0251,1.0199,1.0152,1.011,1.0075,1.0047,1.0024,1.0007,0.9995,0.9987,0.9982,0.9979,0.9979,0.998,0.9981,0.9984,0.9986,0.9989,1);
+      --e-press:  linear(0,0.0239,0.082,0.1588,0.244,0.3306,0.4142,0.4923,0.5634,0.6271,0.6833,0.7324,0.7748,0.8112,0.8423,0.8687,0.8909,0.9096,0.9253,0.9383,0.9492,0.9582,0.9657,0.9719,0.977,0.9812,0.9846,0.9875,0.9898,0.9917,0.9932,0.9945,0.9955,0.9964,0.9971,0.9976,0.9981,0.9984,0.9987,0.999,1);
+    }
+    .e1 { animation: rise 746ms var(--e-smooth) both; }
+    .e2 { animation: rise 746ms var(--e-smooth) 70ms both; }
+    .e3 { animation: rise 746ms var(--e-smooth) 140ms both; }
+    .e4 { animation: rise 746ms var(--e-smooth) 210ms both; }
+    .stamp { animation: stamp 830ms var(--e-bouncy) 900ms both; }
+    .bar   { animation: grow 900ms var(--e-smooth) 400ms both; transform-origin: left; }
+
+    /* Below the fold nothing moved at all, which made the page feel like a
+       screenshot. Scroll-driven, so there is no scroll listener and no
+       library: the browser ties the animation to the element's own view
+       progress. Chrome 115+ and Safari 26+; everywhere else the content is
+       simply already in place, which is the correct fallback. */
+    @supports (animation-timeline: view()) {
+      @media (prefers-reduced-motion: no-preference) {
+        /* A step pane comes up, holds while it is the subject, and dims as it
+           leaves. Driven by the pane's own view progress. */
+        @keyframes hold { 0% { opacity: .3; } 22%, 74% { opacity: 1; } 100% { opacity: .3; } }
+        .step {
+          animation: hold linear both;
+          animation-timeline: view();
+          animation-range: cover 0% cover 100%;
+        }
+        .reveal {
+          animation: rise 1ms linear both;
+          animation-timeline: view();
+          animation-range: entry 8% cover 26%;
+        }
+      }
+    }
+
+    /* Press answers on the finger, not on the click. */
+    .tap { transition: transform 378ms var(--e-press); }
+    .tap:active { transform: scale(.97); }
+
     @media (prefers-reduced-motion: reduce) {
-      .e1,.e2,.e3,.e4,.stamp,.bar { animation: none; }
+      .e1,.e2,.e3,.e4,.stamp,.bar,.reveal,.step { animation: none; opacity: 1; }
+      .tap { transition: none; }
     }
   </style>
 </head>
-<body data-page="landing" data-role="public" data-design-width="1320" data-design-height="2633">
+<body data-page="landing" data-role="public" data-design-width="1320" data-design-height="3849">
 <div class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #ddd7d1; color: #1d1a17; box-sizing: border-box;">
 
   <!-- ══ HERO over a field, with glass nav ══ -->
   <div style="height: 660px; position: relative; overflow: hidden;">
-    <div style="position: absolute; inset: 0; background: #37322d;"><div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(14, 1fr); grid-template-rows: repeat(8, 1fr);"><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(133,133,133);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(133,133,133);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(133,133,133);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(122,122,122);"></div></div><div style="position: absolute; inset: 0; background: rgba(29,26,23,.34);"></div><div style="position: absolute; inset: 22px; border: 1px solid rgba(246,243,239,.16);"></div><div data-bind="evidence.meta" style="position: absolute; right: 40px; bottom: 34px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.9; color: #ded7d0; text-align: right;">VID_20260818_064410_IST.mp4<br>0:41 · 1080×1920 · 30fps<br>sha256 3f9c2a1e…d21b<br>block 881,204 · 18 Aug 2026</div></div>
+    <div style="position: absolute; inset: 0; background: #37322d;">
+      <!-- Rows running to a horizon, in the neutral media ramp. Three bands of
+           decreasing frequency read as perspective without pretending to be a
+           photograph, and they give the glass above genuine per-band variation
+           to sample: a translucent panel over a flat fill is a no-op blur. -->
+      <div style="position: absolute; left: 0; right: 0; top: 0; height: 34%;
+                  background: linear-gradient(180deg, #8d857a 0%, #9c9388 55%, #a9a094 100%);"></div>
+      <div style="position: absolute; left: 0; right: 0; top: 34%; height: 2px; background: #9a9188;"></div>
+      <div style="position: absolute; left: -12%; right: -12%; top: 35%; height: 14%;
+                  background: repeating-linear-gradient(177deg, #4d463e 0 5px, #3a352f 5px 11px);"></div>
+      <div style="position: absolute; left: -18%; right: -18%; top: 49%; height: 20%;
+                  background: repeating-linear-gradient(178.5deg, #574f45 0 11px, #3b362f 11px 24px);"></div>
+      <div style="position: absolute; left: -26%; right: -26%; top: 69%; bottom: 0;
+                  background: repeating-linear-gradient(180.5deg, #625a4e 0 24px, #3d3831 24px 52px);"></div>
+      <!-- a hedge line, so the horizon is not a ruler -->
+      <div style="position: absolute; left: 0; right: 0; top: 30.5%; height: 4.5%;
+                  background: repeating-linear-gradient(87deg, #2b2823 0 34px, #3a3530 34px 71px);"></div>
+    <!-- The wash used to cover the whole frame, which flattened the rows into
+         grey mush. A scrim only where the text sits keeps the headline at
+         contrast and lets the field read on the right. -->
+    <div style="position: absolute; inset: 0; background: linear-gradient(100deg, rgba(24,21,18,.88) 0%, rgba(24,21,18,.74) 40%, rgba(24,21,18,.26) 70%, rgba(24,21,18,.14) 100%);"></div><div style="position: absolute; inset: 22px; border: 1px solid rgba(246,243,239,.16);"></div><div data-bind="evidence.meta" style="position: absolute; right: 40px; bottom: 34px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.9; color: #ded7d0; text-align: right;">VID_20260818_064410_IST.mp4<br>0:41 · 1080×1920 · 30fps<br>sha256 3f9c2a1e…d21b<br>block 881,204 · 18 Aug 2026</div></div>
 
     <!-- glass nav -->
     <div class="glass e1" style="position: absolute; left: 0; right: 0; top: 0; border-left: none; border-right: none; border-top: none; padding: 0 44px; height: 66px; display: flex; align-items: center; justify-content: space-between;">
@@ -80,42 +138,49 @@
       </div>
     </div>
 
-    <div style="position: absolute; left: 72px; top: 150px; width: 620px;">
-      <h1 class="e2 ots" style="margin: 0; font-size: 68px; font-weight: 800; letter-spacing: -0.042em; line-height: 0.96; color: #fff;">
-        A field you can see.<br>A date nobody<br>can move.
+    <div style="position: absolute; left: 72px; top: 146px; width: 760px;">
+      <h1 class="e2 ots" style="margin: 0; font-size: 62px; font-weight: 800; letter-spacing: -0.038em; line-height: 1.02; color: #fff;">
+        A field you can see.<br>A date nobody can move.
       </h1>
       <p class="e3 ots" style="font-size: 19.5px; line-height: 1.5; margin: 22px 0 0; max-width: 530px; color: rgba(255,255,255,.96);">
         Farmers film their crop. We fingerprint the file the moment it arrives and write that fingerprint
-        into Bitcoin — so its date cannot be changed afterwards, by the farmer or by us. Investors fund
+        into Bitcoin, so its date cannot be changed afterwards, by the farmer or by us. Investors fund
         the season and are paid from the harvest.
       </p>
       <div class="e4" style="display: flex; gap: 12px; margin-top: 30px;">
-        <div style="background: #1d1a17; padding: 16px 28px;" class="lift2">
-          <div style="font-size: 16.5px; font-weight: 600; color: #fff;">I farm — get funded</div>
+        <div style="background: #1d1a17; padding: 16px 28px;" class="lift2 tap">
+          <div style="font-size: 16.5px; font-weight: 600; color: #fff;">I farm, get funded</div>
         </div>
-        <div class="glass" style="padding: 16px 28px;">
+        <div class="glass tap" style="padding: 16px 28px;">
           <div class="ots" style="font-size: 16.5px; font-weight: 600; color: #fff;">I want to invest</div>
         </div>
       </div>
     </div>
 
-    <!-- glass stat strip -->
-    <div class="glass e4" style="position: absolute; left: 0; right: 0; bottom: 0; border-left: none; border-right: none; border-bottom: none; padding: 20px 44px; display: flex; gap: 56px; align-items: flex-start;">
+  </div>
+
+    <!-- ══ what the evidence is worth, on its own band ══
+       This sat inside the hero. A hero gets a headline, a line of subtext and
+       its buttons; a claim about somebody else's trial is a separate section
+       and it needs room for its own citation. -->
+  <div class="reveal" style="background: #e7e1db; padding: 34px 72px; box-shadow: inset 0 -1px 0 #c3bcb6;">
+    <div style="display: flex; align-items: flex-start; gap: 64px;">
       <div>
-        <div class="num ots" style="font-size: 27px; font-weight: 700; color: #fff;">7×</div>
-        <div class="ots" style="font-size: 14px; line-height: 1.4; margin-top: 2px; max-width: 26ch; color: rgba(255,255,255,.92);">
+        <div class="num" style="font-size: 34px; font-weight: 700; letter-spacing: -0.02em; color: #1d1a17;">7×</div>
+        <div style="font-size: 15px; line-height: 1.45; margin-top: 4px; max-width: 28ch; color: #4a443d;">
           adoption when farm advice arrives by video, against conventional extension
         </div>
       </div>
       <div>
-        <div class="num ots" style="font-size: 27px; font-weight: 700; color: #fff;">₹4 <span style="font-size: 15px; font-weight: 400;">vs ₹38</span></div>
-        <div class="ots" style="font-size: 14px; line-height: 1.4; margin-top: 2px; max-width: 26ch; color: rgba(255,255,255,.92);">
+        <div class="num" style="font-size: 34px; font-weight: 700; letter-spacing: -0.02em; color: #1d1a17;">₹4 <span style="font-size: 17px; font-weight: 400; color: #4a443d;">vs ₹38</span></div>
+        <div style="font-size: 15px; line-height: 1.45; margin-top: 4px; max-width: 28ch; color: #4a443d;">
           cost per additional farmer adopting a practice
         </div>
       </div>
       <div style="flex-grow: 1;"></div>
-      <div class="ots" style="font-size: 12.5px; line-height: 1.55; max-width: 30ch; color: rgba(255,255,255,.80);">
-        Digital Green / IFPRI randomised evaluation, India. Their numbers, not ours — we have not run a trial.
+      <div style="font-size: 13.5px; line-height: 1.6; max-width: 34ch; color: #605a53;">
+        Digital Green / IFPRI randomised evaluation, India. Their numbers, not ours. We have not run a trial,
+        and we are not claiming these are our results.
       </div>
     </div>
   </div>
@@ -207,48 +272,81 @@
     </div>
   </div>
 
-  <!-- ══ three steps, as a ledger not three cards ══ -->
-  <div style="padding: 8px 72px 60px;">
-    <div style="display: contents;">
-      <div style="display: grid; grid-template-columns: 92px 1fr 1fr; gap: 34px; padding: 30px 0; align-items: start; background: #f6f3ef;">
-        <div class="num" style="font-size: 44px; font-weight: 700; line-height: .88; color: #8d857e;">01</div>
-        <div>
-          <h3 style="margin: 0; font-size: 25px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">The farmer films the plot</h3>
-          <p style="font-size: 16.5px; line-height: 1.55; margin: 9px 0 0; color: #4a443d;">Inside the app, never picked from the gallery. It saves to the handset first so it works with no signal, then sends itself when there is some.</p>
-        </div>
-        <div>
-          <div style="font-size: 15px; font-weight: 700;">This proves</div>
-          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">That this exact file reached us unaltered, and when it did.</p>
-          <div style="font-size: 15px; font-weight: 700; margin-top: 14px; color: #01579b;">This does not</div>
-          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">Where the camera was standing. A phone’s reported location can be faked in one tap, so we label it as claimed.</p>
-        </div>
+  <!-- ══ how it works, as a sticky scroll reveal ══
+       The components board picked this Aceternity pattern for this exact
+       section, and the reason is in the note there: three identical cards in a
+       row is the most mechanically detectable slop layout there is.
+
+       The left column pins while the right column scrolls, so each step gets
+       the whole pane to itself. Sticky positioning plus one scroll-driven
+       opacity change: no library, no scroll listener, and where
+       animation-timeline is unsupported all three steps are simply legible at
+       once, which is the correct fallback rather than a broken one. -->
+  <div class="reveal" style="padding: 8px 72px 72px;">
+    <div style="display: grid; grid-template-columns: 340px 1fr; gap: 72px; align-items: start;">
+
+      <div style="position: sticky; top: 96px;">
+        <h2 style="margin: 0; font-size: 31px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.08;">
+          Three steps, and what each one is worth
+        </h2>
+        <p style="font-size: 16px; line-height: 1.55; margin: 12px 0 0; color: #4a443d;">
+          Two of them are ours to get right. The third is the weather, and nobody
+          controls that.
+        </p>
       </div>
-    
-      <div style="display: grid; grid-template-columns: 92px 1fr 1fr; gap: 34px; padding: 30px 0; align-items: start; background: #f6f3ef;">
-        <div class="num" style="font-size: 44px; font-weight: 700; line-height: .88; color: #8d857e;">02</div>
-        <div>
-          <h3 style="margin: 0; font-size: 25px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">We fingerprint it and anchor the date</h3>
-          <p style="font-size: 16.5px; line-height: 1.55; margin: 9px 0 0; color: #4a443d;">The server hashes the bytes it actually received — never a number the phone sends us — batches the day’s hashes into a tree, and writes the root into Bitcoin.</p>
-        </div>
-        <div>
-          <div style="font-size: 15px; font-weight: 700;">This proves</div>
-          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">That the date cannot be moved later. Not by the farmer, and not by us either.</p>
-          <div style="font-size: 15px; font-weight: 700; margin-top: 14px; color: #01579b;">This does not</div>
-          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">Anything about what the video contains. A timestamp is a clock, not a witness.</p>
-        </div>
-      </div>
-    
-      <div style="display: grid; grid-template-columns: 92px 1fr 1fr; gap: 34px; padding: 30px 0; align-items: start; background: #f6f3ef;">
-        <div class="num" style="font-size: 44px; font-weight: 700; line-height: .88; color: #8d857e;">03</div>
-        <div>
-          <h3 style="margin: 0; font-size: 25px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">Investors fund, the harvest pays</h3>
-          <p style="font-size: 16.5px; line-height: 1.55; margin: 9px 0 0; color: #4a443d;">The farmer reports what the crop sold for and what it cost to grow. The server computes each share from those two numbers and pays principal plus that share.</p>
-        </div>
-        <div>
-          <div style="font-size: 15px; font-weight: 700;">This proves</div>
-          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">That every payout traces to one reported harvest and one percentage agreed up front.</p>
-          <div style="font-size: 15px; font-weight: 700; margin-top: 14px; color: #01579b;">This does not</div>
-          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">That the harvest figures are true. They are the farmer’s report — which is why investors see the reported numbers, not just the result.</p>
+
+      <div>
+        <div style="display: contents;">
+          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: center; padding: 26px 0;">
+            <div class="num" style="font-size: 40px; font-weight: 700; line-height: .9; color: #605a53;">01</div>
+            <div>
+              <h3 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">The farmer films the plot</h3>
+              <p style="font-size: 16.5px; line-height: 1.55; margin: 10px 0 0; max-width: 54ch; color: #4a443d;">Inside the app, never picked from the gallery. It saves to the handset first so it works with no signal, then sends itself when there is some.</p>
+
+              <div style="margin-top: 20px; background: #f6f3ef; padding: 16px 18px;">
+                <div style="font-size: 14.5px; font-weight: 700; color: #006934;">This proves</div>
+                <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">That this exact file reached us unaltered, and when it did.</div>
+              </div>
+              <div style="margin-top: 10px; background: #f6f3ef; padding: 16px 18px;">
+                <div style="font-size: 14.5px; font-weight: 700; color: #01579b;">This does not</div>
+                <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">Where the camera was standing. A phone’s reported location can be faked in one tap, so we label it as claimed.</div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: center; padding: 26px 0;">
+            <div class="num" style="font-size: 40px; font-weight: 700; line-height: .9; color: #605a53;">02</div>
+            <div>
+              <h3 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">We fingerprint it and anchor the date</h3>
+              <p style="font-size: 16.5px; line-height: 1.55; margin: 10px 0 0; max-width: 54ch; color: #4a443d;">The server hashes the bytes it actually received, never a number the phone sends us, batches the day’s hashes into a tree, and writes the root into Bitcoin.</p>
+
+              <div style="margin-top: 20px; background: #f6f3ef; padding: 16px 18px;">
+                <div style="font-size: 14.5px; font-weight: 700; color: #006934;">This proves</div>
+                <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">That the date cannot be moved later. Not by the farmer, and not by us either.</div>
+              </div>
+              <div style="margin-top: 10px; background: #f6f3ef; padding: 16px 18px;">
+                <div style="font-size: 14.5px; font-weight: 700; color: #01579b;">This does not</div>
+                <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">Anything about what the video contains. A timestamp is a clock, not a witness.</div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: center; padding: 26px 0;">
+            <div class="num" style="font-size: 40px; font-weight: 700; line-height: .9; color: #605a53;">03</div>
+            <div>
+              <h3 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">Investors fund, the harvest pays</h3>
+              <p style="font-size: 16.5px; line-height: 1.55; margin: 10px 0 0; max-width: 54ch; color: #4a443d;">The farmer reports what the crop sold for and what it cost to grow. The server computes each share from those two numbers and pays principal plus that share.</p>
+
+              <div style="margin-top: 20px; background: #f6f3ef; padding: 16px 18px;">
+                <div style="font-size: 14.5px; font-weight: 700; color: #006934;">This proves</div>
+                <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">That every payout traces to one reported harvest and one percentage agreed up front.</div>
+              </div>
+              <div style="margin-top: 10px; background: #f6f3ef; padding: 16px 18px;">
+                <div style="font-size: 14.5px; font-weight: 700; color: #01579b;">This does not</div>
+                <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">That the harvest figures are true. They are the farmer’s report, which is why investors see the reported numbers and not just the result.</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
