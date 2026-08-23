@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
+  <title>Pestivid</title>
+  <!-- generated from design/Main.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="./tokens.css">
+  <style>
+
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+    .lift1 { box-shadow: 0 1px 2px rgba(28,26,23,.06), 0 3px 10px rgba(28,26,23,.05); }
+    .lift2 { box-shadow: 0 2px 5px rgba(28,26,23,.10), 0 18px 48px rgba(28,26,23,.17); }
+
+    /* GLASS — the nav, and the stat strip over the field. Marketing surface,
+       desktop, indoors, over real imagery, carrying no money and no
+       verification claim. Text on it gets a shadow so it never depends on the
+       backdrop for legibility. */
+    /* GLASS — one recipe, used on three surfaces, all of them desktop and all of
+       them over the frame grid so there is genuine per-cell variation to sample.
+       A translucent panel over a FLAT fill is a no-op blur and a pointless panel,
+       which is what this looked like before the grid went in.
+
+       Nothing on glass carries a money figure, a verification claim or body copy.
+       Labels get their own shadow so legibility never depends on the backdrop. */
+    .glass {
+      background: rgba(246,243,239,.13);
+      backdrop-filter: blur(18px) saturate(125%);
+      -webkit-backdrop-filter: blur(18px) saturate(125%);
+      box-shadow: inset 0 1px 0 rgba(246,243,239,.22);
+    }
+    @supports not (backdrop-filter: blur(1px)) { .glass { background: rgba(29,26,23,.86); } }
+    @media (prefers-reduced-transparency: reduce) {
+      .glass { background: rgba(29,26,23,.90); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    }
+    .ots { text-shadow: 0 1px 5px rgba(0,0,0,.55); }
+    .ots { text-shadow: 0 1px 6px rgba(0,0,0,.45); }
+
+    /* Motion: one staged entrance, and the receipt stamp. Nothing loops,
+       nothing moves after it settles. */
+    @keyframes rise  { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    @keyframes stamp { 0% { opacity: 0; transform: scale(1.5) rotate(-9deg); }
+                      70% { opacity: 1; transform: scale(.97) rotate(-5deg); }
+                     100% { opacity: 1; transform: scale(1) rotate(-5.5deg); } }
+    @keyframes grow  { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    .e1 { animation: rise .55s cubic-bezier(.2,.7,.3,1) both; }
+    .e2 { animation: rise .55s cubic-bezier(.2,.7,.3,1) .09s both; }
+    .e3 { animation: rise .55s cubic-bezier(.2,.7,.3,1) .18s both; }
+    .e4 { animation: rise .55s cubic-bezier(.2,.7,.3,1) .27s both; }
+    .stamp { animation: stamp .6s cubic-bezier(.3,1.5,.5,1) 1.0s both; }
+    .bar   { animation: grow .9s cubic-bezier(.2,.8,.3,1) .5s both; transform-origin: left; }
+    @media (prefers-reduced-motion: reduce) {
+      .e1,.e2,.e3,.e4,.stamp,.bar { animation: none; }
+    }
+  </style>
+</head>
+<body data-page="landing" data-role="public" data-design-width="1320" data-design-height="2633">
+<div class="a" style="box-sizing: border-box; width: 100%; max-width: 1320px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #ddd7d1; color: #1d1a17; box-sizing: border-box;">
+
+  <!-- ══ HERO over a field, with glass nav ══ -->
+  <div style="height: 660px; position: relative; overflow: hidden;">
+    <div style="position: absolute; inset: 0; background: #37322d;"><div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(14, 1fr); grid-template-rows: repeat(8, 1fr);"><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(133,133,133);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(133,133,133);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(133,133,133);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(122,122,122);"></div></div><div style="position: absolute; inset: 0; background: rgba(29,26,23,.34);"></div><div style="position: absolute; inset: 22px; border: 1px solid rgba(246,243,239,.16);"></div><div style="position: absolute; right: 40px; bottom: 34px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.9; color: #ded7d0; text-align: right;">VID_20260818_064410_IST.mp4<br>0:41 · 1080×1920 · 30fps<br>sha256 3f9c2a1e…d21b<br>block 881,204 · 18 Aug 2026</div></div>
+
+    <!-- glass nav -->
+    <div class="glass e1" style="position: absolute; left: 0; right: 0; top: 0; border-left: none; border-right: none; border-top: none; padding: 0 44px; height: 66px; display: flex; align-items: center; justify-content: space-between;">
+      <div class="ots" style="font-size: 22px; font-weight: 700; letter-spacing: -0.028em; color: #fff;">Pestivid</div>
+      <div style="display: flex; align-items: center; gap: 26px;">
+        <div class="ots" style="font-size: 15px; color: rgba(255,255,255,.94);">How it works</div>
+        <div class="ots" style="font-size: 15px; color: rgba(255,255,255,.94);">For farmers</div>
+        <div class="ots" style="font-size: 15px; color: rgba(255,255,255,.94);">For investors</div>
+        <div style="background: #fff; padding: 9px 18px;">
+          <div style="font-size: 15px; font-weight: 600; color: #1d1a17;">Sign in</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position: absolute; left: 72px; top: 150px; width: 620px;">
+      <h1 class="e2 ots" style="margin: 0; font-size: 68px; font-weight: 800; letter-spacing: -0.042em; line-height: 0.96; color: #fff;">
+        A field you can see.<br>A date nobody<br>can move.
+      </h1>
+      <p class="e3 ots" style="font-size: 19.5px; line-height: 1.5; margin: 22px 0 0; max-width: 48ch; color: rgba(255,255,255,.96);">
+        Farmers film their crop. We fingerprint the file the moment it arrives and write that fingerprint
+        into Bitcoin — so its date cannot be changed afterwards, by the farmer or by us. Investors fund
+        the season and are paid from the harvest.
+      </p>
+      <div class="e4" style="display: flex; gap: 12px; margin-top: 30px;">
+        <div style="background: #1d1a17; padding: 16px 28px;" class="lift2">
+          <div style="font-size: 16.5px; font-weight: 600; color: #fff;">I farm — get funded</div>
+        </div>
+        <div class="glass" style="padding: 16px 28px;">
+          <div class="ots" style="font-size: 16.5px; font-weight: 600; color: #fff;">I want to invest</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- glass stat strip -->
+    <div class="glass e4" style="position: absolute; left: 0; right: 0; bottom: 0; border-left: none; border-right: none; border-bottom: none; padding: 20px 44px; display: flex; gap: 56px; align-items: flex-start;">
+      <div>
+        <div class="num ots" style="font-size: 27px; font-weight: 700; color: #fff;">7×</div>
+        <div class="ots" style="font-size: 14px; line-height: 1.4; margin-top: 2px; max-width: 26ch; color: rgba(255,255,255,.92);">
+          adoption when farm advice arrives by video, against conventional extension
+        </div>
+      </div>
+      <div>
+        <div class="num ots" style="font-size: 27px; font-weight: 700; color: #fff;">₹4 <span style="font-size: 15px; font-weight: 400;">vs ₹38</span></div>
+        <div class="ots" style="font-size: 14px; line-height: 1.4; margin-top: 2px; max-width: 26ch; color: rgba(255,255,255,.92);">
+          cost per additional farmer adopting a practice
+        </div>
+      </div>
+      <div style="flex-grow: 1;"></div>
+      <div class="ots" style="font-size: 12.5px; line-height: 1.55; max-width: 30ch; color: rgba(255,255,255,.80);">
+        Digital Green / IFPRI randomised evaluation, India. Their numbers, not ours — we have not run a trial.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ the receipt: the thing you remember ══ -->
+  <div style="padding: 64px 72px; display: grid; grid-template-columns: 1fr 440px; gap: 64px; align-items: center;">
+    <div>
+      <div style="font-size: 15px; color: #605a53;">What an investor actually reads</div>
+      <h2 style="margin: 8px 0 0; font-size: 40px; font-weight: 700; letter-spacing: -0.032em; line-height: 1.06;">
+        We separate what is proved<br>from what you are being told.
+      </h2>
+      <p style="font-size: 17.5px; line-height: 1.55; margin: 18px 0 0; max-width: 52ch; color: #4a443d;">
+        Most platforms give you a green tick and leave you to assume what it covers. A timestamp proves a
+        file existed and has not changed. It cannot prove whose land is in the frame, and it does not
+        pretend to.
+      </p>
+      <div style="margin-top: 26px; display: flex; flex-direction: column; gap: 14px;">
+        <div style="display: flex; gap: 13px; align-items: flex-start;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
+          <div>
+            <div style="font-size: 16.5px; font-weight: 700;">Proved, and you can check it yourself</div>
+            <div style="font-size: 15.5px; line-height: 1.5; color: #4a443d; margin-top: 2px;">The file, its fingerprint, and the block it went into.</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 13px; align-items: flex-start;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
+          <div>
+            <div style="font-size: 16.5px; font-weight: 700; color: #01579b;">The farmer's word, labelled as such</div>
+            <div style="font-size: 15.5px; line-height: 1.5; color: #4a443d; margin-top: 2px;">Acreage, crop, sowing date, and the location their phone reported.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position: relative;">
+      <div class="lift2" style="background: #f6f3ef; padding: 0;">
+        <div style="padding: 16px 22px; display: flex; justify-content: space-between; align-items: baseline; box-shadow: inset 0 -1px 0 #c3bcb6;">
+          <div style="font-size: 15px; font-weight: 700;">Record of evidence</div>
+          <div class="num" style="font-size: 13px; color: #4a443d;">no. 0000418</div>
+        </div>
+
+        <div style="height: 200px; background: #37322d; position: relative; overflow: hidden;">
+        </div>
+
+        <div style="padding: 18px 22px;">
+          <div style="display: contents;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; box-shadow: inset 0 -1px 0 #c3bcb6;">
+              <div style="font-size: 14.5px; color: #605a53;">Plot</div>
+              <div class="num" style="font-size: 14.5px; font-weight: 600;">Canal plot, 2 acres</div>
+            </div>
+          
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; box-shadow: inset 0 -1px 0 #c3bcb6;">
+              <div style="font-size: 14.5px; color: #605a53;">Crop</div>
+              <div class="num" style="font-size: 14.5px; font-weight: 600;">Potato, Rabi 2026</div>
+            </div>
+          
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; box-shadow: inset 0 -1px 0 #c3bcb6;">
+              <div style="font-size: 14.5px; color: #605a53;">Filed by</div>
+              <div class="num" style="font-size: 14.5px; font-weight: 600;">Alice Farmer</div>
+            </div>
+          
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; box-shadow: inset 0 -1px 0 #c3bcb6;">
+              <div style="font-size: 14.5px; color: #605a53;">Fingerprint</div>
+              <div class="num" style="font-size: 14.5px; font-weight: 600;">sha256 3f9c…d21b</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 16px; background: #eef0f4; padding: 14px 16px;">
+            <div style="font-size: 15px; font-weight: 700;">Written into Bitcoin</div>
+            <div class="num" style="font-size: 14.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+              Block 9xx,xxx · 18 August 2026
+            </div>
+          </div>
+
+          <div style="font-size: 13px; line-height: 1.6; margin-top: 14px; color: #4a443d;">
+            Proves when this file existed and that it has not changed. Does not prove whose land it shows.
+          </div>
+        </div>
+      </div>
+
+      <!-- the stamp: the one animated moment on the page -->
+      <div class="stamp" style="position: absolute; right: -22px; top: 232px; width: 132px; height: 132px; border-radius: 50%; border: 3px solid #01579b; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,253,249,.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); transform: rotate(-5.5deg);">
+        <div style="font-size: 12px; font-weight: 700; color: #01579b;">DATE PROVED</div>
+        <div class="num" style="font-size: 19px; font-weight: 800; color: #01579b; letter-spacing: -0.01em; margin-top: 2px;">18 AUG</div>
+        <div class="num" style="font-size: 12px; font-weight: 600; color: #01579b;">2026</div>
+        <div style="width: 62px; height: 2px; background: #01579b; margin-top: 6px;"></div>
+        <div style="font-size: 11px; font-weight: 600; color: #01579b; margin-top: 4px;">NOT WHOSE FIELD</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ three steps, as a ledger not three cards ══ -->
+  <div style="padding: 8px 72px 60px;">
+    <div style="display: contents;">
+      <div style="display: grid; grid-template-columns: 92px 1fr 1fr; gap: 34px; padding: 30px 0; align-items: start; background: #f6f3ef;">
+        <div class="num" style="font-size: 44px; font-weight: 700; line-height: .88; color: #8d857e;">01</div>
+        <div>
+          <h3 style="margin: 0; font-size: 25px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">The farmer films the plot</h3>
+          <p style="font-size: 16.5px; line-height: 1.55; margin: 9px 0 0; color: #4a443d;">Inside the app, never picked from the gallery. It saves to the handset first so it works with no signal, then sends itself when there is some.</p>
+        </div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700;">This proves</div>
+          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">That this exact file reached us unaltered, and when it did.</p>
+          <div style="font-size: 15px; font-weight: 700; margin-top: 14px; color: #01579b;">This does not</div>
+          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">Where the camera was standing. A phone’s reported location can be faked in one tap, so we label it as claimed.</p>
+        </div>
+      </div>
+    
+      <div style="display: grid; grid-template-columns: 92px 1fr 1fr; gap: 34px; padding: 30px 0; align-items: start; background: #f6f3ef;">
+        <div class="num" style="font-size: 44px; font-weight: 700; line-height: .88; color: #8d857e;">02</div>
+        <div>
+          <h3 style="margin: 0; font-size: 25px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">We fingerprint it and anchor the date</h3>
+          <p style="font-size: 16.5px; line-height: 1.55; margin: 9px 0 0; color: #4a443d;">The server hashes the bytes it actually received — never a number the phone sends us — batches the day’s hashes into a tree, and writes the root into Bitcoin.</p>
+        </div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700;">This proves</div>
+          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">That the date cannot be moved later. Not by the farmer, and not by us either.</p>
+          <div style="font-size: 15px; font-weight: 700; margin-top: 14px; color: #01579b;">This does not</div>
+          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">Anything about what the video contains. A timestamp is a clock, not a witness.</p>
+        </div>
+      </div>
+    
+      <div style="display: grid; grid-template-columns: 92px 1fr 1fr; gap: 34px; padding: 30px 0; align-items: start; background: #f6f3ef;">
+        <div class="num" style="font-size: 44px; font-weight: 700; line-height: .88; color: #8d857e;">03</div>
+        <div>
+          <h3 style="margin: 0; font-size: 25px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">Investors fund, the harvest pays</h3>
+          <p style="font-size: 16.5px; line-height: 1.55; margin: 9px 0 0; color: #4a443d;">The farmer reports what the crop sold for and what it cost to grow. The server computes each share from those two numbers and pays principal plus that share.</p>
+        </div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700;">This proves</div>
+          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">That every payout traces to one reported harvest and one percentage agreed up front.</p>
+          <div style="font-size: 15px; font-weight: 700; margin-top: 14px; color: #01579b;">This does not</div>
+          <p style="font-size: 16px; line-height: 1.5; margin: 5px 0 0; color: #4a443d;">That the harvest figures are true. They are the farmer’s report — which is why investors see the reported numbers, not just the result.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ two audiences ══ -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0;">
+    <div style="padding: 48px 56px 52px 72px; background: #f6f3ef;">
+      <div style="font-size: 15px; color: #605a53;">If you farm</div>
+      <h3 style="margin: 7px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.026em; line-height: 1.1;">Your phone is the paperwork</h3>
+      <p style="font-size: 17px; line-height: 1.55; margin: 13px 0 0; color: #4a443d;">
+        Film the plot and it saves to the handset immediately — no signal needed. It sends itself when
+        you have a bar, and you always see which videos are still only on the phone.
+      </p>
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: contents;">
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <div style="width: 7px; height: 7px; background: #01579b; margin-top: 9px; flex-shrink: 0;"></div>
+            <div style="font-size: 16.5px; line-height: 1.45;">Works with no signal. It queues and sends itself.</div>
+          </div>
+        
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <div style="width: 7px; height: 7px; background: #01579b; margin-top: 9px; flex-shrink: 0;"></div>
+            <div style="font-size: 16.5px; line-height: 1.45;">Every screen in your language, and read aloud if you want.</div>
+          </div>
+        
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <div style="width: 7px; height: 7px; background: #01579b; margin-top: 9px; flex-shrink: 0;"></div>
+            <div style="font-size: 16.5px; line-height: 1.45;">A free leaf check that says when it is unsure instead of guessing.</div>
+          </div>
+        
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <div style="width: 7px; height: 7px; background: #01579b; margin-top: 9px; flex-shrink: 0;"></div>
+            <div style="font-size: 16.5px; line-height: 1.45;">If a video gets queried, you get told why and you get to reply.</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 24px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <div style="font-size: 15px; color: #605a53;">हिन्दी</div>
+        <div style="font-size: 15px; color: #605a53;">· తెలుగు</div>
+        <div style="font-size: 15px; color: #605a53;">· தமிழ்</div>
+        <div style="font-size: 15px; color: #605a53;">· বাংলা</div>
+        <div style="font-size: 15px; color: #605a53;">· ಕನ್ನಡ</div>
+        <div style="font-size: 15px; color: #605a53;">· मराठी</div>
+      </div>
+    </div>
+
+    <div style="padding: 48px 72px 52px 56px; background: #e7e1db;">
+      <div style="font-size: 15px; color: #605a53;">If you invest</div>
+      <h3 style="margin: 7px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.026em; line-height: 1.1;">Read it, then decide</h3>
+      <p style="font-size: 17px; line-height: 1.55; margin: 13px 0 0; color: #4a443d;">
+        You are paid your principal plus your agreed share of the profit that actually materialised —
+        never a rate we promised you in advance.
+      </p>
+
+      <div style="margin-top: 22px; background: #f2e6cd; padding: 18px 20px;">
+        <div style="font-size: 16.5px; font-weight: 700; color: #013f70;">You can lose money here</div>
+        <div style="font-size: 16px; line-height: 1.5; margin-top: 5px; color: #4a443d;">
+          Crops fail. When one does there may be no profit to share, and a total loss can return less than
+          you put in. There is no capital protection and no guaranteed return. Only commit what you can
+          afford to lose.
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 15px; color: #605a53;">Funded so far</div>
+        <div style="flex-grow: 1; height: 8px; background: #c3bcb6; overflow: hidden;">
+          <div class="bar" style="width: 62%; height: 100%; background: #01579b;"></div>
+        </div>
+        <div class="num" style="font-size: 15px; font-weight: 700;">₹18.4L</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ footer ══ -->
+  <div style="padding: 36px 72px 46px; background: #1d1a17; display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+      <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #ddd7d1;">Pestivid</div>
+      <div style="font-size: 14px; line-height: 1.7; margin-top: 8px; color: #ded7d0;">
+        Crop funding on evidence you can check.<br>
+        Nothing on this site is agronomic or financial advice.
+      </div>
+    </div>
+    <div style="font-size: 13.5px; line-height: 1.8; text-align: right; color: #ded7d0;">
+      [PLACEHOLDER: registered entity]<br>
+      [PLACEHOLDER: SEBI / regulatory status]<br>
+      [PLACEHOLDER: grievance officer and contact]
+    </div>
+  </div>
+
+</div>
+<script type="module" src="./pages/landing.js"></script>
+</body>
+</html>

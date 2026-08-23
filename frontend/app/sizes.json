@@ -1,0 +1,122 @@
+{
+ "landing": {
+  "w": 1320,
+  "h": 2633
+ },
+ "signin": {
+  "w": 1280,
+  "h": 720
+ },
+ "signin-farmer": {
+  "w": 360,
+  "h": 640
+ },
+ "setup-language": {
+  "w": 360,
+  "h": 800
+ },
+ "setup-identity": {
+  "w": 360,
+  "h": 800
+ },
+ "home-empty": {
+  "w": 360,
+  "h": 800
+ },
+ "home": {
+  "w": 360,
+  "h": 908
+ },
+ "record": {
+  "w": 360,
+  "h": 800
+ },
+ "sent": {
+  "w": 360,
+  "h": 1238
+ },
+ "plots": {
+  "w": 360,
+  "h": 900
+ },
+ "plot": {
+  "w": 360,
+  "h": 1040
+ },
+ "ask-money-video": {
+  "w": 360,
+  "h": 863
+ },
+ "ask-money-amount": {
+  "w": 360,
+  "h": 925
+ },
+ "ask-money-terms": {
+  "w": 360,
+  "h": 860
+ },
+ "money": {
+  "w": 360,
+  "h": 1241
+ },
+ "payout": {
+  "w": 360,
+  "h": 1004
+ },
+ "messages": {
+  "w": 360,
+  "h": 985
+ },
+ "thread-farmer": {
+  "w": 360,
+  "h": 800
+ },
+ "thread-investor": {
+  "w": 360,
+  "h": 806
+ },
+ "ask": {
+  "w": 360,
+  "h": 1263
+ },
+ "profile": {
+  "w": 360,
+  "h": 1449
+ },
+ "leaf-result": {
+  "w": 360,
+  "h": 1397
+ },
+ "leaf-refusal": {
+  "w": 360,
+  "h": 1397
+ },
+ "invest": {
+  "w": 1320,
+  "h": 940
+ },
+ "confirm-investment": {
+  "w": 824,
+  "h": 789
+ },
+ "report-harvest": {
+  "w": 380,
+  "h": 789
+ },
+ "portfolio": {
+  "w": 1320,
+  "h": 960
+ },
+ "market": {
+  "w": 1320,
+  "h": 948
+ },
+ "orders": {
+  "w": 1320,
+  "h": 1188
+ },
+ "admin": {
+  "w": 1320,
+  "h": 1679
+ }
+}

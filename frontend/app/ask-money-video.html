@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f6f3ef">
+  <title>Ask for money</title>
+  <!-- generated from design/AskMoney.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&amp;display=swap">
+  <link rel="stylesheet" href="./tokens.css">
+  <style>
+
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    .ph  { width: 360px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column;
+           box-sizing: border-box; }
+    .hd  { background: #f6f3ef; padding: 14px 18px 13px; flex-shrink: 0; }
+    .stp { font-size: 13px; color: #605a53; letter-spacing: .04em; }
+    .cap { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px; max-width: 45ch; }
+    .lb  { font-size: 16px; font-weight: 600; }
+    .bx  { background: #f6f3ef; height: 58px; margin-top: 7px; display: flex; align-items: center;
+           padding: 0 15px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 18px; font-weight: 600; }
+    .cp  { padding: 10px 13px; font-size: 15px; background: #eae4de; }
+    .cpOn{ padding: 10px 13px; font-size: 15px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
+    .hint{ font-size: 13.5px; line-height: 1.45; margin-top: 6px; color: #605a53; }
+    /* the three tiers of the investor page, reused verbatim so the farmer can see
+       which of her answers becomes which kind of claim */
+    .tier{ background: #fff; padding: 18px 20px; }
+  </style>
+</head>
+<body data-page="ask-money-video" data-role="farmer" data-design-width="360" data-design-height="863">
+<div class="ph f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto; ">
+        <div class="hd">
+          <div style="display: flex; align-items: center; gap: 11px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+            <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">Ask for money</div>
+          </div>
+          <div style="display: flex; gap: 5px; margin-top: 12px;">
+            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
+            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
+            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
+          </div>
+        </div>
+
+        <div style="flex-grow: 1; padding: 18px;">
+          <div style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
+          <div style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+            Pick a video of it. You cannot ask for money without one.
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+            <div style="background: #f6f3ef; padding: 12px 13px; display: flex; gap: 12px; align-items: center; box-shadow: inset 0 0 0 2px #1d1a17;">
+              <div style="width: 62px; height: 46px; background: #37322d; flex-shrink: 0;"></div>
+              <div style="flex-grow: 1;">
+                <div class="m" style="font-size: 15.5px; font-weight: 600;">Canal plot · 18 August</div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.8"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+                  <div class="m" style="font-size: 13px; color: #006934; font-weight: 600;">Date proved</div>
+                </div>
+              </div>
+            </div>
+            <div style="background: #f6f3ef; padding: 12px 13px; display: flex; gap: 12px; align-items: center;">
+              <div style="width: 62px; height: 46px; background: #37322d; flex-shrink: 0;"></div>
+              <div style="flex-grow: 1;">
+                <div class="m" style="font-size: 15.5px; font-weight: 600;">Canal plot · 11 August</div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.8"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+                  <div class="m" style="font-size: 13px; color: #006934; font-weight: 600;">Date proved</div>
+                </div>
+              </div>
+            </div>
+            <!-- not selectable yet, and told why rather than just dimmed -->
+            <div style="background: #e4dfd9; padding: 12px 13px; display: flex; gap: 12px; align-items: center;">
+              <div style="width: 62px; height: 46px; background: #4a443d; flex-shrink: 0;"></div>
+              <div style="flex-grow: 1;">
+                <div class="m" style="font-size: 15.5px; font-weight: 600; color: #4a443d;">Canal plot · today</div>
+                <div style="font-size: 13px; color: #4a443d; margin-top: 2px;">Date still being written — ready in a few hours</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <div class="lb">What are you growing?</div>
+            <div class="bx">Potato</div>
+          </div>
+          <div style="margin-top: 15px;">
+            <div class="lb">How much land?</div>
+            <div class="bx m">2 acres</div>
+          </div>
+
+          <div style="background: #eae4de; padding: 14px 15px; margin-top: 18px;">
+            <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d;">
+              The video is the only thing on your whole page that an investor can check without
+              trusting you. Everything else below is your word, and it will say so.
+            </div>
+          </div>
+        </div>
+
+        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+          <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center;">
+            <div style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
+          </div>
+        </div>
+      </div>
+<script type="module" src="./pages/ask-money-video.js"></script>
+</body>
+</html>

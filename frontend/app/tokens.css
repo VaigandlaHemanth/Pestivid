@@ -1,0 +1,137 @@
+/* Pestivid tokens.
+ *
+ * These are the values the artboards actually use, read back out of them rather
+ * than invented here -- naming a colour must not move it. The type ramp is wide
+ * (33 sizes) and the neutral ramp is long; both are recorded as they are,
+ * because the brief was that nothing may change. Consolidating either is a
+ * separate decision with visible consequences.
+ *
+ * Loaded before each page's own <style>, which came from its artboard.
+ */
+
+:root {
+  /* --- ground and surfaces: one hue family, anchor 68 --- */
+  --ground:        #ddd7d1;   /* Case IH surface base, L88, darker than cards */
+  --ground-2:      #e7e1db;
+  --ground-3:      #d3ccc5;
+  --surface:       #f6f3ef;
+  --surface-alt:   #eae4de;
+  --rule:          #c3bcb6;
+
+  /* --- ink --- */
+  --ink:           #1d1a17;
+  --ink-2:         #4a443d;
+  --ink-3:         #605a53;
+  --on-ink:        #f6f3ef;
+  --on-ink-2:      #c4bdb6;   /* Lc 66 on --ink; #a9a29b measured 51 and failed */
+
+  /* --- action --- */
+  --action:        #016abe;   /* tirpal blue */
+  --action-navy:   #012169;   /* ADM navy, 14.76:1 on white */
+  --link:          #01579b;
+  --link-hover:    #013f70;
+  --action-on-dark:#8ec5ec;   /* #016abe on near-black measured Lc 25 */
+
+  /* --- meaning. green appears for one thing only: anchored in a block --- */
+  --proved:        #006934;   /* india.gov.in */
+  --proved-fill:   #dfeee6;
+  --proved-ink:    #024c26;
+  --alarm:         #a71930;   /* caseih.com primary */
+  --alarm-fill:    #f7e9e6;
+  --attention-fill:#f2e6cd;   /* eNAM warning pair */
+  --attention-ink: #7c4a12;   /* amber as text measures 2.05:1 -- fill only */
+
+  /* --- media. a video slot is neutral, never a hue: a coloured rectangle
+         claims to be a photograph of a crop and is not --- */
+  --media:         #37322d;
+  --media-2:       #4a443d;
+  --media-3:       #544e47;
+  --media-ink:     #ded7d0;   /* Lc 77 on --media; #78716a measured 23 */
+
+  /* --- desktop investor/buyer surface --- */
+  --page-cool:     #f3f6f9;
+  --card:          #ffffff;
+  --rule-cool:     #e4e9ee;
+  --rule-cool-2:   #e0e6ec;
+
+  /* --- type --- */
+  --font-ui:   system-ui, "Anek Latin", "Noto Sans", sans-serif;
+  --font-doc:  'Anek Latin', system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+
+  /* --- depth --- */
+  --lift-1: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05);
+  --lift-2: 0 2px 5px rgba(29,26,23,.10), 0 18px 44px rgba(29,26,23,.16);
+
+  /* --- motion. Springs solved from response and damping the way iOS states
+         them, emitted as linear() so the browser interpolates the real curve.
+         Verified against the analytic solution to 0.35% of travel. --- */
+  --e-smooth: linear(0,0.0234,0.0805,0.1562,0.2403,0.326,0.409,0.4867,0.5576,0.6213,0.6777,0.727,0.7697,0.8065,0.838,0.8647,0.8874,0.9065,0.9225,0.9359,0.9471,0.9564,0.9641,0.9705,0.9758,0.9802,0.9838,0.9867,0.9892,0.9911,0.9928,0.9941,0.9952,0.9961,0.9968,0.9974,0.9979,0.9983,0.9986,0.9989,1);
+  --e-snappy: linear(0,0.0218,0.0768,0.1523,0.2388,0.3293,0.4187,0.5039,0.5826,0.6536,0.7164,0.7711,0.818,0.8576,0.8905,0.9176,0.9395,0.9571,0.9708,0.9814,0.9895,0.9954,0.9997,1.0026,1.0045,1.0056,1.0062,1.0063,1.0061,1.0057,1.0052,1.0047,1.0041,1.0036,1.003,1.0025,1.0021,1.0017,1.0014,1.0011,1);
+  --e-bouncy: linear(0,0.0299,0.1054,0.2083,0.3244,0.4432,0.5571,0.6613,0.7527,0.8302,0.8936,0.9437,0.9816,1.009,1.0276,1.0389,1.0445,1.046,1.0444,1.0408,1.036,1.0306,1.0251,1.0199,1.0152,1.011,1.0075,1.0047,1.0024,1.0007,0.9995,0.9987,0.9982,0.9979,0.9979,0.998,0.9981,0.9984,0.9986,0.9989,1);
+  --e-press:  linear(0,0.0239,0.082,0.1588,0.244,0.3306,0.4142,0.4923,0.5634,0.6271,0.6833,0.7324,0.7748,0.8112,0.8423,0.8687,0.8909,0.9096,0.9253,0.9383,0.9492,0.9582,0.9657,0.9719,0.977,0.9812,0.9846,0.9875,0.9898,0.9917,0.9932,0.9945,0.9955,0.9964,0.9971,0.9976,0.9981,0.9984,0.9987,0.999,1);
+  --t-smooth: 746ms;
+  --t-snappy: 568ms;
+  --t-bouncy: 830ms;
+  --t-press:  378ms;
+}
+
+/* ------------------------------------------------------------------ *
+ * Behaviour the artboards imply but a static board cannot carry.
+ * None of it paints anything at rest, so the generated pages stay
+ * pixel-identical to the boards they were cut from.
+ * ------------------------------------------------------------------ */
+
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); }
+
+/* A page whose board was drawn on the cool desktop ground keeps it */
+body[data-role="investor"], body[data-role="buyer"], body[data-role="admin"] { background: var(--page-cool); }
+body[data-role="public"] { background: var(--ground); }
+
+/* Never remove a focus ring without replacing it. Two rings so it survives on
+   both the pale ground and the near-black surfaces. */
+:focus-visible {
+  outline: 3px solid var(--action);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(246,243,239,.9);
+}
+[data-dark] :focus-visible { box-shadow: 0 0 0 5px rgba(29,26,23,.9); }
+
+/* Anything that acts like a control behaves like one: no double-tap zoom
+   delay, no blue flash, a cursor, and a real accessible name in the markup. */
+[data-act] {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: transform var(--t-press) var(--e-press);
+}
+/* Press answers on pointerdown, not on click. A 300ms wait for the tap to
+   resolve is the difference between a surface that answers and one that lags. */
+[data-act][data-pressed] { transform: scale(.97); }
+
+/* Progress is the one place easing would lie about the rate, and it rides on
+   scaleX so it never relayouts its parent. */
+[data-progress] { transform-origin: left; transition: transform 240ms linear; }
+
+/* Someone who asked their system for less movement gets the state change and
+   not the journey -- a cross-fade, never nothing at all. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 80ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-act] { transition: none; }
+}
+
+/* Long user content must not break a row */
+[data-clip] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+/* Screen-reader-only text, for the names icon-only controls need */
+.sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f6f3ef">
+  <title>Ask a question</title>
+  <!-- generated from design/Ask.dc.html by frontend/build-pages.mjs -- do not edit -->
+  
+  <link rel="stylesheet" href="./tokens.css">
+  <style>
+
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    .them { background: #f6f3ef; padding: 14px 16px; max-width: 285px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 16px; max-width: 250px; margin-left: auto; }
+    .p    { font-size: 15.5px; line-height: 1.5; }
+    /* Suggestion CHIPS, not a rotating placeholder. See the note on the
+       components board: a placeholder that cycles is moving text, and NN/g's
+       lower-literacy guidance says avoid text that moves or changes. A chip
+       stays still, can be read at leisure, and is tappable — which also spares
+       a farmer typing Telugu on a phone keyboard. */
+    .chip { background: #e7e1db; min-height: 46px; box-sizing: border-box; display: flex; align-items: center; padding: 11px 14px; font-size: 15px; line-height: 1.35; }
+  </style>
+</head>
+<body data-page="ask" data-role="farmer" data-design-width="360" data-design-height="1263">
+<div class="f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+
+  <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+    <div>
+      <div style="font-size: 21px; font-weight: 700; letter-spacing: -0.02em;">Ask a question</div>
+      <div style="font-size: 14px; color: #605a53;">Answers come from ICAR and CIBRC documents</div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px;">
+
+    <div class="them">
+      <div class="p">What do you want to ask? I answer from government farming documents, and I will tell you when they do not cover something.</div>
+    </div>
+
+    <div class="me">
+      <div class="p">What do I do with the diseased leaves?</div>
+    </div>
+
+    <div class="them">
+      <div class="p">Pull off the badly affected leaves and burn them away from the field. Do not leave them lying between the rows and do not put them in the compost — the spores survive.</div>
+      <!-- every answer carries where it came from -->
+      <div style="margin-top: 11px; padding-top: 10px; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; box-shadow: inset 0 1px 0 #dcd6c9;">
+        <div style="display: flex; gap: 8px; align-items: flex-start;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M5 3h11l3 3v15H5z"></path><path d="M16 3v3h3"></path></svg>
+          <div class="m" style="font-size: 12.5px; line-height: 1.5; color: #605a53;">
+            ICAR-CPRI Technical Bulletin 78, p.34
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="me">
+      <div class="p">How much medicine should I use?</div>
+    </div>
+
+    <!-- the refusal. same shape as an answer, no alarm styling: refusing is the
+         system working, not an error. -->
+    <div class="them" style="max-width: 300px;">
+      <div class="p" style="font-weight: 700;">I will not give you a quantity.</div>
+      <div class="p" style="margin-top: 5px;">
+        The amount depends on the exact product in your hand and on what is registered for potato in
+        your district. Read it off the bottle. If the label is torn or you cannot read it, take the
+        bottle to your extension officer — do not estimate, and do not let a shopkeeper estimate
+        for you.
+      </div>
+      <div style="margin-top: 12px; background: #e7e1db; padding: 12px 13px;">
+        <div style="font-size: 15px; font-weight: 600;">Kisan Call Centre</div>
+        <div class="m" style="font-size: 15px; margin-top: 3px;">1800&nbsp;180&nbsp;1551</div>
+        <div style="font-size: 14px; color: #605a53; margin-top: 3px;">Free · 6 am to 10 pm · speaks Telugu</div>
+      </div>
+    </div>
+
+    <div style="flex-grow: 1;"></div>
+
+    <!-- static suggestion chips -->
+    <div>
+      <div style="font-size: 14px; color: #605a53; margin-bottom: 8px;">Or tap one of these</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="chip">When should I water after spraying?</div>
+        <div class="chip">Which potato variety resists blight?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- input: voice first, because typing Telugu on a phone is the barrier -->
+  <div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 18px;">
+    <div style="display: flex; gap: 10px; align-items: stretch;">
+      <div style="flex-grow: 1; background: #ddd7d1; display: flex; align-items: center; padding: 0 15px; min-height: 58px;">
+        <div style="font-size: 16px; color: #4a443d;">Type your question</div>
+      </div>
+      <div style="width: 58px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"></path></svg>
+      </div>
+    </div>
+    <div style="font-size: 13.5px; line-height: 1.45; margin-top: 10px; color: #605a53;">
+      Hold the blue button and speak. This is not a doctor or an agronomist — check anything
+      important with your extension officer.
+    </div>
+  </div>
+
+
+  <!-- everything below this line needs a scroll on a 360x800 handset -->
+  
+</div>
+<script type="module" src="./pages/ask.js"></script>
+</body>
+</html>

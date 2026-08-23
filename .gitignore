@@ -109,3 +109,5 @@ design/pestivid-website.html
 design/pestivid-frontend-plan.html
 design/audit/*.png
 design/audit/measurements.json
+
+frontend/.verify/

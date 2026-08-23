@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f6f3ef">
+  <title>My plots</title>
+  <!-- generated from design/Plots.dc.html by frontend/build-pages.mjs -- do not edit -->
+  
+  <link rel="stylesheet" href="./tokens.css">
+  <style>
+
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+
+    /* Farmer surface uses the SYSTEM stack, deliberately.
+       Google Fonts for Telugu costs 35.6 KB for one weight and 123.8 KB for two;
+       AOSP already ships Noto Sans Telugu/Devanagari/Tamil as variable fonts at
+       400-700. Spending a farmer's metered data to re-deliver a font already on
+       the phone is not a design decision, it is a mistake. */
+    .f  { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+
+    /* Hierarchy comes from size and weight. Hairlines only where a boundary
+       carries meaning; grouping is done with background and space instead. */
+    .row  { padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; }
+    .zeb  { background: #f6f3ef; }
+    .zeb2 { background: #f6f3ef; }
+    .lbl  { font-size: 13px; color: #4a443d; }
+    .ttl  { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: #1d1a17; }
+  </style>
+</head>
+<body data-page="plots" data-role="farmer" data-design-width="360" data-design-height="900">
+<div class="f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+
+  <!-- header: no border, just a background change and weight -->
+  <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+      <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">My plots</div>
+    </div>
+    <div style="display: flex; gap: 16px; align-items: center;">
+      <div style="position: relative;">
+        <!-- concrete depiction, not an abstract glyph: an envelope -->
+        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+        <div class="num" style="position: absolute; top: -5px; right: -6px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+      </div>
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1;">
+
+    <!-- ── group 1: still on the phone ─────────────────────────────
+         Attention colour is OCHRE, not green. Green is reserved for one
+         thing only in this app: a healthy leaf verdict. -->
+    <div style="padding: 18px 20px 12px;">
+      <div style="display: flex; align-items: baseline; gap: 9px;">
+        <div style="font-size: 17px; font-weight: 700; color: #01579b;">Still on your phone</div>
+        <div class="num" style="font-size: 17px; font-weight: 700; color: #01579b;">2</div>
+      </div>
+      <div style="font-size: 14.5px; line-height: 1.5; margin-top: 5px; color: #605a53; max-width: 32ch;">
+        Not sent yet. If this phone breaks, these two are gone.
+      </div>
+    </div>
+
+    <div class="row zeb">
+      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:38</div></div>
+      <div style="flex-grow: 1;">
+        <div class="ttl">North plot</div>
+        <div class="lbl num" style="margin-top: 3px;">Today 8:40 am · 38 sec</div>
+        <div style="display: flex; align-items: center; gap: 7px; margin-top: 10px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.2"><path d="M12 20v-8"></path><path d="M8 15l4-4 4 4"></path><path d="M5 5h14"></path></svg>
+          <div style="font-size: 14.5px; font-weight: 600; color: #01579b;">Waiting for signal</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row zeb2">
+      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:44</div></div>
+      <div style="flex-grow: 1;">
+        <div class="ttl">North plot</div>
+        <div class="lbl num" style="margin-top: 3px;">Yesterday 6:15 pm · 44 sec</div>
+        <div style="margin-top: 11px;">
+          <div style="min-height: 10px; background: #e4e0d8; overflow: hidden;">
+            <div style="width: 40%; height: 100%; background: #01579b;"></div>
+          </div>
+          <div class="num" style="font-size: 14.5px; font-weight: 600; margin-top: 6px; color: #01579b;">Sending — 40 of 100</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── group 2: safe on the server ───────────────────────────── -->
+    <div style="padding: 22px 20px 12px;">
+      <div style="display: flex; align-items: baseline; gap: 9px;">
+        <div style="font-size: 17px; font-weight: 700; color: #37322d;">Sent and safe</div>
+        <div class="num" style="font-size: 17px; font-weight: 700; color: #37322d;">2</div>
+      </div>
+      <div style="font-size: 14.5px; line-height: 1.5; margin-top: 5px; color: #605a53; max-width: 34ch;">
+        On our server. Safe even if you lose this phone.
+      </div>
+    </div>
+
+    <div class="row zeb">
+      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:41</div></div>
+      <div style="flex-grow: 1;">
+        <div class="ttl">Canal plot</div>
+        <div class="lbl num" style="margin-top: 3px;">18 August · 41 sec</div>
+        <div style="display: flex; align-items: center; gap: 7px; margin-top: 10px;">
+          <!-- a stamp, not a tick: a tick would read as "we verified the field" -->
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
+          <div style="font-size: 14.5px; font-weight: 600; color: #37322d;">Date stamped</div>
+        </div>
+        <div style="font-size: 14px; line-height: 1.45; margin-top: 6px; color: #605a53;">
+          2 investors are looking at this one.
+        </div>
+      </div>
+    </div>
+
+    <!-- flagged: ochre, worded as a check and not an accusation -->
+    <div class="row zeb2">
+      <div style="display: flex; gap: 14px; align-items: flex-start;">
+        <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:36</div></div>
+        <div style="flex-grow: 1;">
+          <div class="ttl">Back field</div>
+          <div class="lbl num" style="margin-top: 3px;">11 August · 36 sec</div>
+          <div style="display: flex; align-items: center; gap: 7px; margin-top: 10px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
+            <div style="font-size: 14.5px; font-weight: 600; color: #37322d;">Date stamped</div>
+          </div>
+        </div>
+      </div>
+
+      
+    </div>
+
+  </div>
+
+  <!-- primary action: ink fill. Highest possible contrast, and it cannot be
+       confused with the healthy-leaf green. -->
+  <div style="flex-shrink: 0; background: #f6f3ef; padding: 16px 20px 20px;">
+    <div style="background: #1d1a17; height: 64px; display: flex; align-items: center; justify-content: center; gap: 12px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
+      <div style="font-size: 19px; font-weight: 700; color: #fff;">Record a video</div>
+    </div>
+  </div>
+
+
+  <!-- everything below this line needs a scroll on a 360x800 handset -->
+  
+</div>
+<script type="module" src="./pages/plots.js"></script>
+</body>
+</html>
