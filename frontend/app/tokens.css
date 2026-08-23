@@ -73,7 +73,8 @@
   --t-smooth: 746ms;
   --t-snappy: 568ms;
   --t-bouncy: 830ms;
-  --t-press:  378ms;
+  --t-press:   120ms;   /* press down: budget is 100-160ms */
+  --t-release: 260ms;   /* and back, slower, so it settles */
 }
 
 /* ------------------------------------------------------------------ *
@@ -105,11 +106,14 @@ body[data-role="public"] { background: var(--ground); }
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  transition: transform var(--t-press) var(--e-press);
+  transition: transform var(--t-release) var(--e-press);
 }
 /* Press answers on pointerdown, not on click. A 300ms wait for the tap to
-   resolve is the difference between a surface that answers and one that lags. */
-[data-act][data-pressed] { transform: scale(.97); }
+   resolve is the difference between a surface that answers and one that lags.
+   Asymmetric on purpose: the press snaps in at 120ms because a press budget is
+   100-160ms and the finger has already left by 378ms, and the release eases
+   back over 260ms so the surface settles rather than flicking. */
+[data-act][data-pressed] { transform: scale(.97); transition-duration: 120ms; }
 
 /* Progress is the one place easing would lie about the rate, and it rides on
    scaleX so it never relayouts its parent. */
@@ -118,13 +122,20 @@ body[data-role="public"] { background: var(--ground); }
 /* Someone who asked their system for less movement gets the state change and
    not the journey -- a cross-fade, never nothing at all. */
 @media (prefers-reduced-motion: reduce) {
+  /* Reduced motion means less movement, not no feedback. Blanket-killing every
+     animation to 1ms took the press response and the state cross-fades with
+     it, which leaves a person who asked for calm with a UI that looks broken.
+     So: travel and scale go, opacity and colour stay. */
   *, *::before, *::after {
+    animation-name: none !important;
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 80ms !important;
     scroll-behavior: auto !important;
+    transition-property: opacity, background-color, color, border-color, box-shadow !important;
+    transition-duration: 140ms !important;
   }
-  [data-act] { transition: none; }
+  /* the press still answers, by fading rather than moving */
+  [data-act][data-pressed] { transform: none; opacity: .72; }
 }
 
 /* Long user content must not break a row */

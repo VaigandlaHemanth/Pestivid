@@ -89,8 +89,12 @@
     }
 
     /* Press answers on the finger, not on the click. */
-    .tap { transition: transform 378ms var(--e-press); }
-    .tap:active { transform: scale(.97); }
+    /* Press feedback was 378ms, the settle time of the press spring. The budget
+       for a button press is 100-160ms: at 378ms the tap feels sluggish because
+       the finger is already gone. And it was symmetric, which is wrong twice
+       over. The press snaps, the release eases back. */
+    .tap { transition: transform 260ms var(--e-press); }
+    .tap:active { transform: scale(.97); transition-duration: 120ms; }
 
     @media (prefers-reduced-motion: reduce) {
       .e1,.e2,.e3,.e4,.stamp,.bar,.reveal,.step { animation: none; opacity: 1; }

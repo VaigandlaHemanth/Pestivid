@@ -176,9 +176,13 @@ ${keys}
 
     /* Press is the one animation a person drives. It fires on pointerdown, not
        on click -- waiting for the tap to resolve is the whole difference
-       between a surface that answers and one that lags. */
-    .press { transition: transform var(--t-press) var(--e-press); }
-    .press:active { transform: scale(.97); }
+       between a surface that answers and one that lags.
+
+       Asymmetric, and deliberately not the spring's settle time. A press
+       budget is 100-160ms; press's 378ms settle is a different number and too
+       slow for a finger that has already left. Down in 120ms, back in 260. */
+    .press { transition: transform 260ms var(--e-press); }
+    .press:active { transform: scale(.97); transition-duration: 120ms; }
 
     @keyframes barTrue  { 0%,100%{transform:scaleX(0)} 92%{transform:scaleX(1)} }
 
@@ -310,8 +314,7 @@ ${SPRINGS.map(row).join('\n')}
     <div class="card lift1">
       <div style="font-size: 18px; font-weight: 700;">Press, and the one bar that must not ease</div>
       <div style="font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px;">
-        Hold the button. It answers on pointerdown, before the tap has even resolved.
-      </div>
+        Hold the button. It answers on pointerdown, before the tap has resolved, and it goes down faster than it comes back up: 120&nbsp;ms in, 260&nbsp;ms out. A press that takes the spring's full 378&nbsp;ms settle is one the finger has already left.</div>
       <div class="press" style="background: #016abe; height: 54px; margin-top: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
         <div style="font-size: 16.5px; font-weight: 700; color: #fff;">Report the harvest</div>
       </div>
