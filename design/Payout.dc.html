@@ -14,10 +14,14 @@
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
     /* one investor per row, name and figure on the same baseline. no avatars
        competing with the number — the number is why the row exists */
-    .p1 { background: #f6f3ef; padding: 15px 20px; display: flex; align-items: center; gap: 13px; }
-    .p2 { background: #eae4de; padding: 15px 20px; display: flex; align-items: center; gap: 13px; }
-    .in { width: 40px; height: 40px; flex-shrink: 0; background: #ddd7d1; border-radius: 20px;
-          display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; }
+    .p1 { background: #f6f3ef; padding: 15px 20px; display: flex; align-items: baseline; gap: 14px;
+          box-shadow: inset 0 -1px 0 #dcd6d0; }
+    .p2 { background: #f6f3ef; padding: 15px 20px; display: flex; align-items: baseline; gap: 14px;
+          box-shadow: inset 0 -1px 0 #dcd6d0; }
+    /* the stake, not an initial: it is the reason the figure on the right is
+       what it is, and it belongs on the same baseline as both */
+    .in { width: 46px; flex-shrink: 0; text-align: right; font-size: 15px; font-weight: 600;
+          color: #605a53; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
   </style>
 </helmet>
 
@@ -49,37 +53,37 @@
     <div data-bind="countLine" style="font-size: 15px; color: #605a53; padding: 20px 20px 8px;">Four investors</div>
 
     <div class="p1">
-      <div class="in">R</div>
+      <div class="in">40%</div>
       <div style="flex-grow: 1;">
         <div style="font-size: 17px; font-weight: 600;">Ravi Kumar</div>
-        <div class="m" style="font-size: 14.5px; color: #605a53;">Put in &#8377;2,00,000 &middot; 40% of the pool</div>
+        <div class="m" style="font-size: 14.5px; color: #605a53;">Put in &#8377;2,00,000</div>
       </div>
       <div class="m" style="font-size: 19px; font-weight: 700;">&#8377;1,61,664</div>
     </div>
 
     <div class="p2">
-      <div class="in">S</div>
+      <div class="in">30%</div>
       <div style="flex-grow: 1;">
         <div style="font-size: 17px; font-weight: 600;">Sneha Reddy</div>
-        <div class="m" style="font-size: 14.5px; color: #605a53;">Put in &#8377;1,50,000 &middot; 30% of the pool</div>
+        <div class="m" style="font-size: 14.5px; color: #605a53;">Put in &#8377;1,50,000</div>
       </div>
       <div class="m" style="font-size: 19px; font-weight: 700;">&#8377;1,21,248</div>
     </div>
 
     <div class="p1">
-      <div class="in">C</div>
+      <div class="in">20%</div>
       <div style="flex-grow: 1;">
         <div style="font-size: 17px; font-weight: 600;">Charlie Investor</div>
-        <div class="m" style="font-size: 14.5px; color: #605a53;">Put in &#8377;1,00,000 &middot; 20% of the pool</div>
+        <div class="m" style="font-size: 14.5px; color: #605a53;">Put in &#8377;1,00,000</div>
       </div>
       <div class="m" style="font-size: 19px; font-weight: 700;">&#8377;80,832</div>
     </div>
 
     <div class="p2">
-      <div class="in">M</div>
+      <div class="in">10%</div>
       <div style="flex-grow: 1;">
         <div style="font-size: 17px; font-weight: 600;">Meena Rao</div>
-        <div class="m" style="font-size: 14.5px; color: #605a53;">Put in &#8377;50,000 &middot; 10% of the pool</div>
+        <div class="m" style="font-size: 14.5px; color: #605a53;">Put in &#8377;50,000</div>
       </div>
       <div class="m" style="font-size: 19px; font-weight: 700;">&#8377;40,416</div>
     </div>

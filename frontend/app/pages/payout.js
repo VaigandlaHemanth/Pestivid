@@ -2,8 +2,11 @@
 import { requireUser, api, load, state } from './_guard.js';
 import { bind, repeatRows } from '../bind.js';
 import { rupees } from '../api.js';
+import { appChrome } from '../chrome.js';
+import { press } from '../wire.js';
 
 const ctx = requireUser('payout', ['farmer']);
+if (ctx) appChrome(ctx.root, { back: 'money', user: ctx.user });
 if (ctx) load(ctx.root, async () => {
   const id = new URLSearchParams(location.search).get('project');
   if (!id) return state(ctx.root, 'empty', 'No season chosen', 'Open this from the season you are reporting on.',
@@ -30,14 +33,18 @@ if (ctx) load(ctx.root, async () => {
     amount: pool ? Math.round(toInvestors * (inv.amount || 0) / pool) : 0,
     put: inv.amount || 0,
   })), (el, r) => {
-    const [initial] = el.querySelectorAll('.in');
-    if (initial) initial.textContent = (r.name[0] || '?').toUpperCase();
-    const divs = el.querySelectorAll('div');
-    const name = [...divs].find(d => !d.children.length && /^[A-Z]/.test(d.textContent.trim()) && d !== initial);
+    // The chip carries the stake, not an initial. A letter says nothing; the
+    // percentage is the reason the figure on the right is the size it is.
+    const stake = el.querySelector('.in');
+    if (stake) stake.textContent = `${r.pct}%`;
+    const name = [...el.querySelectorAll('div')]
+      .find(d => !d.children.length && d !== stake && !d.classList.contains('m'));
     if (name) name.textContent = r.name;
     const meta = el.querySelector('.m');
-    if (meta) meta.textContent = `Put in ${rupees(r.put)} · ${r.pct}% of the pool`;
+    if (meta) meta.textContent = `Put in ${rupees(r.put)}`;
     const money = [...el.querySelectorAll('.m')].pop();
     if (money) money.textContent = rupees(r.amount);
   });
+
+  press(ctx.root);
 });
