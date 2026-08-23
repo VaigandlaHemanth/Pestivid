@@ -18,6 +18,8 @@
     .lift1 { box-shadow: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05); }
     .lift2 { box-shadow: 0 2px 5px rgba(29,26,23,.10), 0 16px 40px rgba(29,26,23,.14); }
     .p { font-size: 15.5px; line-height: 1.55; color: #4a443d; }
+    /* the row is the target, not the 17px glyph in it */
+    .cb { display: flex; align-items: center; gap: 9px; min-height: 26px; }
 
     /* Glass was here, and it should not have been.
        ---------------------------------------------
@@ -83,49 +85,31 @@
     <div style="background: #fff; padding: 22px 22px; overflow: hidden;">
       <div style="font-size: 17px; font-weight: 700;">Narrow it down</div>
 
-      <div style="margin-top: 18px;">
+      <div data-sec="crop" style="margin-top: 18px;">
         <div style="font-size: 14px; color: #605a53;">Crop</div>
-        <div style="display: flex; flex-direction: column; gap: 7px; margin-top: 8px;">
-          <div style="display: flex; align-items: center; gap: 9px;">
-            <div style="width: 17px; height: 17px; background: #1d1a17; display: flex; align-items: center; justify-content: center;">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4"><path d="M4 12.5 L9.5 18 L20 6.5"></path></svg>
-            </div>
-            <div style="font-size: 15.5px;">Potato</div>
-            <div class="m" style="font-size: 14px; color: #605a53; margin-left: auto;">14</div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 9px;">
-            <div style="width: 17px; height: 17px; box-shadow: inset 0 0 0 1.5px #b9c2cb;"></div>
-            <div style="font-size: 15.5px;">Wheat</div>
-            <div class="m" style="font-size: 14px; color: #605a53; margin-left: auto;">9</div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 9px;">
-            <div style="width: 17px; height: 17px; box-shadow: inset 0 0 0 1.5px #b9c2cb;"></div>
-            <div style="font-size: 15.5px;">Corn</div>
-            <div class="m" style="font-size: 14px; color: #605a53; margin-left: auto;">6</div>
+        <div data-crops style="display: flex; flex-direction: column; gap: 7px; margin-top: 8px;">
+          <!-- one row, cloned per crop that is actually listed. The three drawn
+               here counted 14 potato, 9 wheat and 6 corn lots, none of which
+               anybody had counted. -->
+          <div data-row="crop" class="cb">
+            <div data-slot="box" style="width: 17px; height: 17px; box-shadow: inset 0 0 0 1.5px #b9c2cb;"></div>
+            <div data-slot="name" style="font-size: 15.5px;">Potato</div>
+            <div data-slot="count" class="m" style="font-size: 14px; color: #605a53; margin-left: auto;">14</div>
           </div>
         </div>
       </div>
 
-      <div style="margin-top: 20px;">
-        <div style="font-size: 14px; color: #605a53;">Grown</div>
-        <div style="display: flex; flex-direction: column; gap: 7px; margin-top: 8px;">
-          <div style="display: flex; align-items: center; gap: 9px;">
-            <div style="width: 17px; height: 17px; background: #1d1a17; display: flex; align-items: center; justify-content: center;">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4"><path d="M4 12.5 L9.5 18 L20 6.5"></path></svg>
-            </div>
-            <div style="font-size: 15.5px;">Organic</div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 9px;">
-            <div style="width: 17px; height: 17px; box-shadow: inset 0 0 0 1.5px #b9c2cb;"></div>
-            <div style="font-size: 15.5px;">Conventional</div>
-          </div>
-        </div>
-      </div>
+      <!-- "Grown: organic / conventional" was drawn here and removed. A
+           Listing carries crop, location, pesticide, price range, status and a
+           video cid -- there is no organic flag on it anywhere, so the filter
+           could only ever have pretended to work, and the detail column beside
+           it already says "Not stated" for the same reason. It comes back when
+           a farmer is asked the question and the answer is stored. -->
 
       <!-- the filter that matters, and the honest label on it -->
       <div style="margin-top: 20px; background: #e8edf2; padding: 14px 15px;">
-        <div style="display: flex; align-items: flex-start; gap: 9px;">
-          <div style="width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px; background: #1d1a17; display: flex; align-items: center; justify-content: center;">
+        <div data-dated style="display: flex; align-items: flex-start; gap: 9px; min-height: 26px;">
+          <div data-slot="box" style="width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px; background: #1d1a17; display: flex; align-items: center; justify-content: center;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4"><path d="M4 12.5 L9.5 18 L20 6.5"></path></svg>
           </div>
           <div>
@@ -137,32 +121,29 @@
         </div>
       </div>
 
-      <div style="margin-top: 20px;">
-        <div style="font-size: 14px; color: #605a53;">Distance from you</div>
-        <div class="m" style="font-size: 17px; font-weight: 600; margin-top: 5px;">Within 120 km</div>
-        <div style="height: 4px; background: #d6dde4; margin-top: 10px; position: relative;">
-          <div style="width: 48%; height: 100%; background: #016abe;"></div>
-          <div style="position: absolute; left: 48%; top: -6px; width: 16px; height: 16px; background: #016abe; border-radius: 8px; transform: translateX(-50%);"></div>
-        </div>
-      </div>
+      <!-- "Distance from you: within 120 km" was a slider over a distance
+           nobody can compute. A Listing has a free-text location like "Sunny
+           Acres" and the User model has no location field at all, so there are
+           no two points to measure between. A drag handle that moves and
+           changes nothing is worse than no filter. -->
     </div>
 
     <!-- listings -->
     <div style="overflow: hidden; padding: 22px 26px;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div>
-          <div style="font-size: 24px; font-weight: 700; letter-spacing: -0.025em;">Potato, organic</div>
-          <div class="p" style="margin-top: 2px;">14 lots within 120 km of Hyderabad</div>
+          <div data-bind="list.title" style="font-size: 24px; font-weight: 700; letter-spacing: -0.025em;">Potato, organic</div>
+          <div data-bind="list.sub" class="p" style="margin-top: 2px;">14 lots within 120 km of Hyderabad</div>
         </div>
-        <div class="m" style="font-size: 14px; color: #605a53;">Cheapest first</div>
+        <div data-sort class="m" style="font-size: 14px; color: #605a53;">Cheapest first</div>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 18px;">
+      <div class="lift1" style="background: #fff; margin-top: 18px;">
         <sc-for data-list="lots" list="{{lots}}" as="l" hint-placeholder-count="4">
-          <div style="background: #fff; padding: 16px 18px; display: grid; grid-template-columns: 92px 1fr 168px; gap: 16px; align-items: center; {{l.sel}}" class="lift1">
+          <div data-lot style="padding: 18px 20px; display: grid; grid-template-columns: 92px 1fr 168px; gap: 16px; align-items: center; box-shadow: inset 0 -1px 0 #e4e9ee; {{l.sel}}">
             <div style="width: 92px; min-height: 68px; background: #37322d; position: relative; overflow: hidden;">
               <div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div>
-              <div class="mono" style="position: absolute; left: 8px; bottom: 6px; font-size: 11px; color: #ded7d0;">{{l.dur}}</div>
+              <div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div>
             </div>
             <div>
               <div data-bind="who" style="font-size: 17.5px; font-weight: 600;">{{l.who}}</div>
@@ -185,7 +166,7 @@
     <!-- the lot detail -->
     <div style="background: #fff; padding: 22px 24px;" class="lift1">
       <div style="font-size: 15px; color: #605a53;">Selected lot</div>
-      <div style="font-size: 21px; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
+      <div data-bind="lot.who" style="font-size: 21px; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
 
       <div style="min-height: 176px; background: #37322d; margin-top: 14px; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 10px; border: 1px solid #605a53;"></div>
@@ -197,22 +178,22 @@
       <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div class="p">She will accept</div>
-          <div class="m" style="font-size: 17px; font-weight: 700;">&#8377;44,000 &ndash; &#8377;52,000</div>
+          <div data-bind="lot.accept" class="m" style="font-size: 17px; font-weight: 700;">&#8377;44,000 &ndash; &#8377;52,000</div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div class="p">The lot</div>
-          <div class="m" style="font-size: 16px; font-weight: 600;">40 quintal, sold whole</div>
+          <div data-bind="lot.what" class="m" style="font-size: 16px; font-weight: 600;">40 quintal, sold whole</div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div class="p">Grown</div>
-          <div style="font-size: 16px; font-weight: 600;">Organic &mdash; farmer's word</div>
+          <div data-bind="lot.grown" style="font-size: 16px; font-weight: 600;">Organic &mdash; farmer's word</div>
         </div>
       </div>
 
       <!-- the same three tiers the investor sees, compressed -->
       <div style="margin-top: 16px; background: #f3f6f9; padding: 14px 15px;">
         <div style="font-size: 15px; font-weight: 700;">What is actually proved</div>
-        <div class="p" style="font-size: 14.5px; margin-top: 5px;">
+        <div data-bind="lot.proved" class="p" style="font-size: 14.5px; margin-top: 5px;">
           That a video of this crop existed by 18 August and has not been altered. Not that the field is
           hers, not that it is organic, and not the quality of what is in the sack.
         </div>
@@ -221,17 +202,17 @@
       <div style="margin-top: 18px;">
         <div style="font-size: 14px; color: #605a53;">What are you offering for it?</div>
         <div style="background: #f3f6f9; display: flex; align-items: center; padding: 0 16px; min-height: 54px; margin-top: 8px; box-shadow: inset 0 0 0 2px #016abe;">
-          <div class="m" style="font-size: 21px; font-weight: 700;">&#8377;48,000</div>
+          <div data-offer class="m" style="font-size: 21px; font-weight: 700;">&#8377;48,000</div>
         </div>
         <!-- the range as a bar, so an offer can be seen to be inside it -->
         <div style="height: 8px; background: #e3e9ef; margin-top: 10px; position: relative;">
-          <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 50%; background: #016abe;"></div>
+          <div data-range style="position: absolute; left: 0; top: 0; bottom: 0; width: 50%; background: #016abe;"></div>
         </div>
         <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-          <div class="m" style="font-size: 13px; color: #605a53;">&#8377;44,000 lowest</div>
-          <div class="m" style="font-size: 13px; color: #605a53;">&#8377;52,000 asking</div>
+          <div data-lo class="m" style="font-size: 13px; color: #605a53;">&#8377;44,000 lowest</div>
+          <div data-hi class="m" style="font-size: 13px; color: #605a53;">&#8377;52,000 asking</div>
         </div>
-        <div class="p" style="font-size: 14px; margin-top: 10px;">
+        <div data-inside class="p" style="font-size: 14px; margin-top: 10px;">
           Inside her range, so she can accept it. She is not obliged to &mdash; she can refuse or wait
           for a better offer, and there is no auction clock pushing either of you.
         </div>
@@ -256,13 +237,13 @@ class Component extends DCLogic {
     return {
       lots: [
         { who: 'Alice Farmer', where: 'Kadapa · 118 km away', price: '₹44,000–₹52,000', qty: '40 quintal',
-          dur: '0:41', stamp: 'Filmed 18 Aug, date proved', sel: 'box-shadow: inset 3px 0 0 #016abe, 0 1px 2px rgba(29,26,23,.06);' },
+          stamp: 'Filmed 18 Aug, date proved', sel: 'box-shadow: inset 3px 0 0 #016abe, inset 0 -1px 0 #e4e9ee;' },
         { who: 'Ravi Kumar', where: 'Chittoor · 94 km away', price: '₹30,000–₹35,000', qty: '25 quintal',
-          dur: '0:38', stamp: 'Filmed 16 Aug, date proved', sel: '' },
+          stamp: 'Filmed 16 Aug, date proved', sel: '' },
         { who: 'Meena Sharma', where: 'Anantapur · 76 km away', price: '₹78,000–₹88,000', qty: '60 quintal',
-          dur: '0:44', stamp: 'Filmed 19 Aug, date proved', sel: '' },
+          stamp: 'Filmed 19 Aug, date proved', sel: '' },
         { who: 'Suresh Naidu', where: 'Kurnool · 112 km away', price: '₹22,000–₹26,000', qty: '18 quintal',
-          dur: '0:35', stamp: 'No video — not listed as proved', sel: '' },
+          stamp: 'No video — not listed as proved', sel: '' },
       ],
     };
   }
