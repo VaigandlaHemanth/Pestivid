@@ -102,3 +102,10 @@ artifacts/*
 # because it is the reference the JS feature parity check compares against.
 public/parity/pixels/
 public/parity/*.jpg
+
+# Design canvas: generated output, not source
+design/pestivid-screens.html
+design/pestivid-website.html
+design/pestivid-frontend-plan.html
+design/audit/*.png
+design/audit/measurements.json

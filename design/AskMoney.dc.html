@@ -1,0 +1,339 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    .ph  { width: 360px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column;
+           box-sizing: border-box; }
+    .hd  { background: #f6f3ef; padding: 14px 18px 13px; flex-shrink: 0; }
+    .stp { font-size: 13px; color: #605a53; letter-spacing: .04em; }
+    .cap { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px; max-width: 45ch; }
+    .lb  { font-size: 16px; font-weight: 600; }
+    .bx  { background: #f6f3ef; height: 58px; margin-top: 7px; display: flex; align-items: center;
+           padding: 0 15px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 18px; font-weight: 600; }
+    .cp  { padding: 10px 13px; font-size: 15px; background: #eae4de; }
+    .cpOn{ padding: 10px 13px; font-size: 15px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
+    .hint{ font-size: 13.5px; line-height: 1.45; margin-top: 6px; color: #605a53; }
+    /* the three tiers of the investor page, reused verbatim so the farmer can see
+       which of her answers becomes which kind of claim */
+    .tier{ background: #fff; padding: 18px 20px; }
+  </style>
+</helmet>
+
+<div class="a" style="width: 1200px; background: #e7e1db; color: #1d1a17; padding: 28px 28px 34px; box-sizing: border-box; position: relative;">
+
+  <div style="font-size: 15px; color: #605a53;">The longest form in the product, and the one most likely to be abandoned</div>
+  <h2 style="margin: 5px 0 0; font-size: 27px; font-weight: 700; letter-spacing: -0.028em;">Asking for money</h2>
+  <p style="margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; max-width: 106ch; color: #4a443d;">
+    Eleven fields the server insists on, cut into three screens with the hardest decision on its own.
+    Nothing is asked twice, nothing is asked that can be worked out, and the two questions that decide
+    whether a farmer loses money are not sliders buried among the rest.
+  </p>
+
+  <div style="display: flex; gap: 36px; margin-top: 22px; align-items: flex-start;">
+
+    <!-- 1 ─────────── the video first, because the server will not accept it without one ─────────── -->
+    <div>
+      <div class="ph f" style="min-height: 860px;">
+        <div class="hd">
+          <div style="display: flex; align-items: center; gap: 11px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+            <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">Ask for money</div>
+          </div>
+          <div style="display: flex; gap: 5px; margin-top: 12px;">
+            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
+            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
+            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
+          </div>
+        </div>
+
+        <div style="flex-grow: 1; padding: 18px;">
+          <div style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
+          <div style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+            Pick a video of it. You cannot ask for money without one.
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+            <div style="background: #f6f3ef; padding: 12px 13px; display: flex; gap: 12px; align-items: center; box-shadow: inset 0 0 0 2px #1d1a17;">
+              <div style="width: 62px; height: 46px; background: #37322d; flex-shrink: 0;"></div>
+              <div style="flex-grow: 1;">
+                <div class="m" style="font-size: 15.5px; font-weight: 600;">Canal plot &middot; 18 August</div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.8"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+                  <div class="m" style="font-size: 13px; color: #006934; font-weight: 600;">Date proved</div>
+                </div>
+              </div>
+            </div>
+            <div style="background: #f6f3ef; padding: 12px 13px; display: flex; gap: 12px; align-items: center;">
+              <div style="width: 62px; height: 46px; background: #37322d; flex-shrink: 0;"></div>
+              <div style="flex-grow: 1;">
+                <div class="m" style="font-size: 15.5px; font-weight: 600;">Canal plot &middot; 11 August</div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.8"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+                  <div class="m" style="font-size: 13px; color: #006934; font-weight: 600;">Date proved</div>
+                </div>
+              </div>
+            </div>
+            <!-- not selectable yet, and told why rather than just dimmed -->
+            <div style="background: #e4dfd9; padding: 12px 13px; display: flex; gap: 12px; align-items: center;">
+              <div style="width: 62px; height: 46px; background: #4a443d; flex-shrink: 0;"></div>
+              <div style="flex-grow: 1;">
+                <div class="m" style="font-size: 15.5px; font-weight: 600; color: #4a443d;">Canal plot &middot; today</div>
+                <div style="font-size: 13px; color: #4a443d; margin-top: 2px;">Date still being written &mdash; ready in a few hours</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <div class="lb">What are you growing?</div>
+            <div class="bx">Potato</div>
+          </div>
+          <div style="margin-top: 15px;">
+            <div class="lb">How much land?</div>
+            <div class="bx m">2 acres</div>
+          </div>
+
+          <div style="background: #eae4de; padding: 14px 15px; margin-top: 18px;">
+            <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d;">
+              The video is the only thing on your whole page that an investor can check without
+              trusting you. Everything else below is your word, and it will say so.
+            </div>
+          </div>
+        </div>
+
+        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+          <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center;">
+            <div style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
+          </div>
+        </div>
+      </div>
+      <div class="stp" style="margin-top: 13px;">SCREEN 1 OF 3</div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">The video, then two words</div>
+      <div class="cap">
+        The server refuses a request with no video attached, so it is the first question rather than a
+        forgotten step at the end. A video whose date has not landed yet is shown, not hidden, with the
+        reason and the wait &mdash; hiding it reads as a bug.
+      </div>
+    </div>
+
+    <!-- 2 ─────────── how much, how long, how grown ─────────── -->
+    <div>
+      <div class="ph f" style="min-height: 860px;">
+        <div class="hd">
+          <div style="display: flex; align-items: center; gap: 11px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+            <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">How much do you need?</div>
+          </div>
+          <div style="display: flex; gap: 5px; margin-top: 12px;">
+            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
+            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
+            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
+          </div>
+        </div>
+
+        <div style="flex-grow: 1; padding: 18px;">
+          <div class="lb">Amount</div>
+          <div class="bx m" style="height: 64px; font-size: 23px; font-weight: 700; box-shadow: inset 0 0 0 2px #1d1a17;">&#8377;5,00,000</div>
+          <div class="hint">Seed, fertiliser, labour, water, transport for the whole season.</div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">Until when?</div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <div class="cp">4 months</div>
+              <div class="cpOn">6 months</div>
+              <div class="cp">9 months</div>
+              <div class="cp">Other</div>
+            </div>
+            <div class="hint">Harvest is due about a month before this. Investors see the date, not the number of months.</div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">How are you growing it?</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+              <div class="cpOn">Normal, with sprays</div>
+              <div class="cp">No sprays at all</div>
+              <div class="cp">Water beds</div>
+              <div class="cp">Fish and plants</div>
+              <div class="cp">Building the soil back</div>
+            </div>
+            <div class="hint">Plain words on purpose. Nobody standing in a field calls it conventional or regenerative.</div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">Anything they should know?</div>
+            <div style="background: #f6f3ef; min-height: 96px; margin-top: 7px; padding: 13px 15px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 15.5px; line-height: 1.5; color: #4a443d;">
+              Canal water has been steady this year. Last Rabi I sold 40 quintal off this plot.
+            </div>
+            <div class="hint">Optional, and short is fine. Say what happened last year rather than what you hope for this one.</div>
+          </div>
+        </div>
+
+        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+          <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center;">
+            <div style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
+          </div>
+        </div>
+      </div>
+      <div class="stp" style="margin-top: 13px;">SCREEN 2 OF 3</div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Four answers, three of them taps</div>
+      <div class="cap">
+        The growing method is a five-value list in the database with names like conventional and
+        aquaponic. Those are the words the schema uses, not the words a farmer uses, so the chips say
+        what they mean and the enum is translated behind them.
+      </div>
+    </div>
+
+    <!-- 3 ─────────── the decision that can cost them everything ─────────── -->
+    <div>
+      <div class="ph f" style="min-height: 860px;">
+        <div class="hd">
+          <div style="display: flex; align-items: center; gap: 11px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+            <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">How do they get paid?</div>
+          </div>
+          <div style="display: flex; gap: 5px; margin-top: 12px;">
+            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
+            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
+            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
+          </div>
+        </div>
+
+        <div style="flex-grow: 1; padding: 18px;">
+          <!-- two cards, each carrying its own failure case. this is the one
+               question on which a farmer can lose their land. -->
+          <div style="background: #f6f3ef; padding: 15px 16px; box-shadow: inset 0 0 0 2px #1d1a17;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <div style="width: 20px; height: 20px; flex-shrink: 0; background: #1d1a17; border-radius: 10px; margin-top: 2px;"></div>
+              <div>
+                <div style="font-size: 17px; font-weight: 700;">Share the profit</div>
+                <div style="font-size: 14.5px; line-height: 1.55; margin-top: 4px; color: #4a443d;">
+                  They take a share of whatever is left after your costs. <span style="font-weight: 700;">If the
+                  crop fails there is no profit, and you owe them nothing.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: #f6f3ef; padding: 15px 16px; margin-top: 10px;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <div style="width: 20px; height: 20px; flex-shrink: 0; box-shadow: inset 0 0 0 2px #78716a; border-radius: 10px; margin-top: 2px;"></div>
+              <div>
+                <div style="font-size: 17px; font-weight: 700;">Pay the whole amount back</div>
+                <div style="font-size: 14.5px; line-height: 1.55; margin-top: 4px; color: #4a443d;">
+                  You return the &#8377;5,00,000 whatever happens.
+                  <span style="font-weight: 700; color: #a71930;">If the crop fails you still owe it.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">What share of the profit?</div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <div class="cp">40%</div>
+              <div class="cp">50%</div>
+              <div class="cpOn">60%</div>
+              <div class="cp">70%</div>
+            </div>
+            <div class="hint">You keep the rest, plus the &#8377;5,00,000 they gave you.</div>
+          </div>
+
+          <!-- the required roi field, handled so it cannot read as a promise -->
+          <div style="background: #f2e6cd; padding: 15px 16px; margin-top: 18px;">
+            <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">What do you think they will get back?</div>
+            <div style="display: flex; align-items: baseline; gap: 9px; margin-top: 9px;">
+              <div class="m" style="font-size: 26px; font-weight: 700;">34%</div>
+              <div style="font-size: 14.5px; color: #4a443d;">worked out from your own last season</div>
+            </div>
+            <div style="font-size: 14px; line-height: 1.55; margin-top: 8px; color: #4a443d;">
+              You sold &#8377;9,32,000 and spent &#8377;2,58,400 last Rabi. We filled this in from those
+              numbers so it is not a figure pulled from the air. <span style="font-weight: 700;">It will be
+              shown as your guess, never as a promise, and nobody will be paid on it.</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+          <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center;">
+            <div style="font-size: 17px; font-weight: 700; color: #fff;">See what investors will see</div>
+          </div>
+        </div>
+      </div>
+      <div class="stp" style="margin-top: 13px;">SCREEN 3 OF 3</div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Two ways to settle, one of them dangerous</div>
+      <div class="cap">
+        The database offers profit share or full repayment and treats them as equivalent. They are not:
+        one cannot bankrupt a farmer and the other can. Each card carries its own crop-failure sentence,
+        in the card, at the moment of choosing.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ the payoff: her answers, sorted into the three tiers the investor page uses ══ -->
+  <div style="margin-top: 32px; background: #f3f6f9; padding: 24px 26px;">
+    <div style="font-size: 15px; color: #605a53;">The last screen before she submits</div>
+    <div style="font-size: 21px; font-weight: 700; letter-spacing: -0.022em; margin-top: 2px;">Where each of her answers lands on the investor page</div>
+    <div style="font-size: 15px; line-height: 1.5; margin-top: 6px; max-width: 104ch; color: #4a443d;">
+      Sorted into the same three tiers an investor reads, so a farmer can see in advance that most of
+      what she typed will be labelled as unchecked &mdash; and is told which single thing is not.
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-top: 18px;">
+      <div class="tier">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.8"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+          <div style="font-size: 15.5px; font-weight: 700; color: #006934;">Proved</div>
+        </div>
+        <div style="font-size: 14.5px; line-height: 1.6; margin-top: 8px; color: #4a443d;">
+          The video existed by 18 August and has not been altered.
+        </div>
+        <div style="font-size: 13.5px; color: #605a53; margin-top: 10px;">One item, and it is the only one.</div>
+      </div>
+
+      <div class="tier">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c4a12" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16v.01"></path></svg>
+          <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">Alice told us, nobody has checked</div>
+        </div>
+        <div style="font-size: 14.5px; line-height: 1.6; margin-top: 8px; color: #4a443d;">
+          That it is her land. That it is two acres. That it is potato. That she grows it with sprays.
+          Everything she wrote about last season.
+        </div>
+        <div style="font-size: 13.5px; color: #605a53; margin-top: 10px;">Six of her eleven answers.</div>
+      </div>
+
+      <div class="tier">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.2"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9.5v5M12 17.5v.01"></path></svg>
+          <div style="font-size: 15.5px; font-weight: 700; color: #4a443d;">Nobody knows</div>
+        </div>
+        <div style="font-size: 14.5px; line-height: 1.6; margin-top: 8px; color: #4a443d;">
+          Whether the crop succeeds. Her 34% is an estimate from her own past numbers and is shown that
+          way, next to the sentence that a total loss returns less than was put in.
+        </div>
+        <div style="font-size: 13.5px; color: #605a53; margin-top: 10px;">Never presented as a return.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.50 0.10 55); } a:hover { color: oklch(0.38 0.10 55); }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+    .navrow { display: flex; align-items: center; gap: 16px; padding: 0 16px; height: 72px;
+              border-bottom: 1px solid oklch(0.88 0.008 85); background: #fff; }
+    .navicon { width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center;
+               justify-content: center; border: 2px solid oklch(0.20 0.012 260); color: oklch(0.20 0.012 260); }
+    .navlabel { font-size: 20px; font-weight: 500; line-height: 1.2; }
+    .navte { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: oklch(0.42 0.012 260); margin-top: 2px; }
+  </style>
+</helmet>
+
+<div style="width: 1180px; min-height: 1520px; background: oklch(0.985 0.006 85); color: oklch(0.20 0.012 260); font-family: Newsreader, Georgia, serif; padding: 64px 72px 80px; box-sizing: border-box;">
+
+  <div style="border-bottom: 2px solid oklch(0.20 0.012 260); padding-bottom: 14px;">
+    <div class="mono" style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: oklch(0.50 0.10 55);">Pestivid &middot; movement</div>
+    <h1 style="margin: 6px 0 0; font-size: 46px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.02;">How people move through it</h1>
+  </div>
+
+  <!-- the killed idea -->
+  <div style="margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 2px solid oklch(0.20 0.012 260);">
+    <div style="padding: 22px 26px; border-right: 2px solid oklch(0.20 0.012 260); background: oklch(0.96 0.008 85);">
+      <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.45 0.13 25);">Ruled out</div>
+      <h3 style="margin: 8px 0 0; font-size: 24px; font-weight: 500;">A bottom tab bar</h3>
+      <p style="margin: 10px 0 0; font-size: 15.5px; line-height: 1.5;">
+        The obvious mobile answer, and it does not survive our own constraints. Four apply at once:
+      </p>
+      <div class="mono" style="margin-top: 12px; font-size: 12px; line-height: 2;">
+        48&ndash;64 px targets<br>
+        200% text zoom must not clip<br>
+        360 px screen floor<br>
+        ~2&times; string expansion in Telugu
+      </div>
+      <p style="margin: 12px 0 0; font-size: 15.5px; line-height: 1.5;">
+        Five Telugu labels at 200% text inside 360 px, each in a 48 px-wide tab, is not a tight fit &mdash;
+        it is arithmetic that does not close.
+      </p>
+    </div>
+    <div style="padding: 22px 26px;">
+      <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.50 0.10 145);">Chosen</div>
+      <h3 style="margin: 8px 0 0; font-size: 24px; font-weight: 500;">A flat list of large rows</h3>
+      <p style="margin: 10px 0 0; font-size: 15.5px; line-height: 1.5;">
+        Microsoft Research compared hierarchical menus against flat lists with exactly this population
+        &mdash; emergent users, low literacy. Flat wins. It is also the only layout that fits a long Telugu
+        label at double size, so the research and the arithmetic agree.
+      </p>
+      <p style="margin: 12px 0 0; font-size: 15.5px; line-height: 1.5;">
+        Each row carries a <span style="font-weight: 600;">label, an icon, and recorded audio</span> &mdash;
+        a human voice per language, not text-to-speech. A row readable three ways is a row that works for
+        someone who cannot read it.
+      </p>
+    </div>
+  </div>
+
+  <!-- farmer nav mock -->
+  <h2 class="mono" style="font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; margin: 46px 0 0; color: oklch(0.50 0.10 145);">Farmer &middot; five rows, 360 px wide</h2>
+
+  <div style="display: grid; grid-template-columns: 360px 1fr; gap: 44px; margin-top: 20px; align-items: start;">
+
+    <div style="border: 2px solid oklch(0.20 0.012 260); background: #fff;">
+      <div style="padding: 14px 16px; border-bottom: 2px solid oklch(0.20 0.012 260); display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em;">Pestivid</div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="oklch(0.30 0.012 260)" stroke-width="1.7"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l1.9-5.1A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"></path></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="oklch(0.30 0.012 260)" stroke-width="1.7"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"></path></svg>
+        </div>
+      </div>
+
+      <!-- Record — current -->
+      <div class="navrow" style="background: oklch(0.96 0.02 145);">
+        <div class="navicon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
+        </div>
+        <div style="flex-grow: 1;">
+          <div class="navlabel">Record</div>
+          <div class="navte">రికార్డ్ చేయండి</div>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="oklch(0.20 0.012 260)" stroke-width="1.8" style="flex-shrink: 0;"><circle cx="12" cy="12" r="9.2"></circle><path d="M9.5 8.8 v6.4 l5.2 -3.2 z" fill="oklch(0.20 0.012 260)" stroke="none"></path></svg>
+      </div>
+
+      <!-- My plots -->
+      <div class="navrow">
+        <div class="navicon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"></path><path d="M4 10h16M9 10v9"></path></svg>
+        </div>
+        <div style="flex-grow: 1;">
+          <div class="navlabel">My plots</div>
+          <div class="navte">నా పొలాలు</div>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="oklch(0.20 0.012 260)" stroke-width="1.8" style="flex-shrink: 0;"><circle cx="12" cy="12" r="9.2"></circle><path d="M9.5 8.8 v6.4 l5.2 -3.2 z" fill="oklch(0.20 0.012 260)" stroke="none"></path></svg>
+      </div>
+
+      <!-- Money -->
+      <div class="navrow">
+        <div class="navicon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18"></path><path d="M17 7.5c0-2-2.2-3-5-3s-5 1-5 3 2.2 2.7 5 3.3 5 1.4 5 3.4-2.2 3.3-5 3.3-5-1.3-5-3.3"></path></svg>
+        </div>
+        <div style="flex-grow: 1;">
+          <div class="navlabel">Money</div>
+          <div class="navte">డబ్బు</div>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="oklch(0.20 0.012 260)" stroke-width="1.8" style="flex-shrink: 0;"><circle cx="12" cy="12" r="9.2"></circle><path d="M9.5 8.8 v6.4 l5.2 -3.2 z" fill="oklch(0.20 0.012 260)" stroke="none"></path></svg>
+      </div>
+
+      <!-- Leaf check -->
+      <div class="navrow">
+        <div class="navicon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20c6-1 9-5.5 9-12-6.5 0-11 3-12 9"></path><path d="M5 20c1.5-5 4-8 9-9.5"></path></svg>
+        </div>
+        <div style="flex-grow: 1;">
+          <div class="navlabel">Leaf check</div>
+          <div class="navte">ఆకు పరీక్ష</div>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="oklch(0.20 0.012 260)" stroke-width="1.8" style="flex-shrink: 0;"><circle cx="12" cy="12" r="9.2"></circle><path d="M9.5 8.8 v6.4 l5.2 -3.2 z" fill="oklch(0.20 0.012 260)" stroke="none"></path></svg>
+      </div>
+
+      <!-- Ask -->
+      <div class="navrow" style="border-bottom: 2px solid oklch(0.20 0.012 260);">
+        <div class="navicon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8.5 8.5 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l1.9-5.1A8.5 8.5 0 0 1 12 3.5a8.5 8.5 0 0 1 9 8.5z"></path><path d="M9.5 10.5h5M9.5 14h3"></path></svg>
+        </div>
+        <div style="flex-grow: 1;">
+          <div class="navlabel">Ask</div>
+          <div class="navte">అడగండి</div>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="oklch(0.20 0.012 260)" stroke-width="1.8" style="flex-shrink: 0;"><circle cx="12" cy="12" r="9.2"></circle><path d="M9.5 8.8 v6.4 l5.2 -3.2 z" fill="oklch(0.20 0.012 260)" stroke="none"></path></svg>
+      </div>
+
+      <div style="padding: 13px 16px; font-size: 13px; line-height: 1.45; color: oklch(0.38 0.012 260); background: oklch(0.96 0.008 85);">
+        The circle on the right plays the row name aloud. Tapping the row opens it.
+      </div>
+    </div>
+
+    <div>
+      <p style="font-size: 16.5px; line-height: 1.55; margin: 0;">
+        Rows are 72 px tall, clearing the 64 px target floor with room for a second line when a translated
+        label wraps. The icon sits in a bordered square rather than floating: the high-contrast rule forbids
+        drop shadows, because a soft edge is the first thing to vanish in sunlight.
+      </p>
+      <p style="font-size: 16.5px; line-height: 1.55; margin: 16px 0 0;">
+        <span style="font-weight: 600;">Nav depth is capped at two.</span> Any farmer task is reachable in at
+        most two taps from this list. If a flow needs three, the flow is wrong, not the menu.
+      </p>
+
+      <h3 class="mono" style="font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; margin: 30px 0 0; color: oklch(0.50 0.10 55);">Deliberately generic</h3>
+      <p style="font-size: 16.5px; line-height: 1.55; margin: 12px 0 0;">
+        The farmer flow should <span style="font-style: italic;">not</span> look inventive. The camera should feel
+        like WhatsApp's camera; the money list like a UPI transaction history. Those are the two interfaces this
+        user already knows, and familiarity beats originality when the cost of confusion is a missed harvest payment.
+      </p>
+      <p style="font-size: 16.5px; line-height: 1.55; margin: 12px 0 0;">
+        Anti-slop discipline applies to the <span style="font-weight: 600;">investor, buyer and marketing</span>
+        surfaces, where someone is comparing and judging and a distinct voice earns attention. Two audiences,
+        two standards, one token set.
+      </p>
+    </div>
+  </div>
+
+  <!-- routing -->
+  <h2 class="mono" style="font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; margin: 48px 0 0; color: oklch(0.50 0.10 55);">Addresses, finally</h2>
+
+  <div style="margin-top: 18px; border-top: 1px solid oklch(0.86 0.008 85);">
+    <sc-for list="{{routes}}" as="r" hint-placeholder-count="13">
+      <div style="display: grid; grid-template-columns: 250px 90px 1fr; gap: 0; padding: 9px 0; border-bottom: 1px solid oklch(0.92 0.006 85); align-items: baseline;">
+        <div class="mono" style="font-size: 13.5px; font-weight: 500; color: oklch(0.50 0.10 55);">{{r.path}}</div>
+        <div class="mono" style="font-size: 11px; color: {{r.tint}};">{{r.role}}</div>
+        <div style="font-size: 15px; line-height: 1.4;">{{r.note}}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <p style="font-size: 16.5px; line-height: 1.55; margin: 22px 0 0; max-width: 70ch;">
+    A real URL per screen lets a support worker send a farmer straight to the screen in question, lets an
+    investor forward a project, and makes the back button behave. It is the cheapest structural fix on this canvas.
+  </p>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const soil = 'oklch(0.50 0.10 55)';
+    const leaf = 'oklch(0.50 0.10 145)';
+    const grey = 'oklch(0.50 0.01 260)';
+    return {
+      routes: [
+        { path: '/',            role: 'public',   tint: grey, note: 'Landing. The only pre-login surface.' },
+        { path: '/record',      role: 'farmer',   tint: leaf, note: 'Camera. Works offline, always.' },
+        { path: '/plots',       role: 'farmer',   tint: leaf, note: 'Video list, showing on-phone vs on-server.' },
+        { path: '/plots/:cid',  role: 'farmer',   tint: leaf, note: 'One video, its proof, its appeal if flagged.' },
+        { path: '/money',       role: 'farmer',   tint: leaf, note: 'Listings, funding, harvest, settlement.' },
+        { path: '/leaf',        role: 'farmer',   tint: leaf, note: 'Disease check. Lazy-loads the model.' },
+        { path: '/ask',         role: 'farmer',   tint: leaf, note: 'AgriBot. Lazy-loaded — the largest view.' },
+        { path: '/invest',      role: 'investor', tint: soil, note: 'Browse, master–detail.' },
+        { path: '/invest/:id',  role: 'investor', tint: soil, note: 'One project. Linkable, so it can be forwarded.' },
+        { path: '/portfolio',   role: 'investor', tint: soil, note: 'Holdings and settlement history.' },
+        { path: '/market',      role: 'buyer',    tint: soil, note: 'Produce listings with the proof panel.' },
+        { path: '/review',      role: 'reviewer', tint: soil, note: 'Flag queue, oldest first.' },
+        { path: '/review/:cid', role: 'reviewer', tint: soil, note: 'One decision, all evidence, one viewport.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

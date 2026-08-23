@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.50 0.10 55); } a:hover { color: oklch(0.38 0.10 55); }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+    .card { border: 2px solid oklch(0.20 0.012 260); background: #fff; }
+  </style>
+</helmet>
+
+<div style="width: 560px; min-height: 1080px; background: oklch(0.94 0.008 85); font-family: 'IBM Plex Sans', system-ui, sans-serif; color: oklch(0.20 0.012 260); padding: 30px 26px 40px; box-sizing: border-box;">
+
+  <div class="mono" style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: oklch(0.50 0.10 55);">Option A</div>
+  <h2 style="margin: 5px 0 0; font-size: 30px; font-weight: 600; letter-spacing: -0.02em;">Field ledger</h2>
+  <p style="margin: 8px 0 0; font-size: 15px; line-height: 1.5; color: oklch(0.32 0.012 260);">
+    Borders, not shadows. Mono numerals. Reads like a land record or a receipt book &mdash; a document that
+    someone else will rely on.
+  </p>
+  <div class="mono" style="margin: 12px 0 0; font-size: 11px; line-height: 1.7; color: oklch(0.40 0.012 260); border-left: 3px solid oklch(0.50 0.10 55); padding-left: 12px;">
+    Trades warmth for authority. Investors read it as<br>serious; some farmers may read it as official and cold.
+  </div>
+
+  <!-- phone frame -->
+  <div style="margin-top: 24px; width: 360px; border: 2px solid oklch(0.20 0.012 260); background: oklch(0.97 0.006 85);">
+
+    <div style="padding: 13px 15px; border-bottom: 2px solid oklch(0.20 0.012 260); display: flex; justify-content: space-between; align-items: center; background: #fff;">
+      <div style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em;">My plots</div>
+      <div class="mono" style="font-size: 11px; color: oklch(0.42 0.012 260);">4 videos</div>
+    </div>
+
+    <!-- on-phone group -->
+    <div style="padding: 11px 15px 8px; background: oklch(0.94 0.03 55); border-bottom: 2px solid oklch(0.20 0.012 260);">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.42 0.13 45)" stroke-width="2.2"><rect x="6" y="2.5" width="12" height="19" rx="1.6"></rect><path d="M10 18.5h4"></path></svg>
+        <div class="mono" style="font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: oklch(0.40 0.13 45);">Only on this phone</div>
+      </div>
+      <div style="font-size: 14px; line-height: 1.45; margin-top: 6px; color: oklch(0.28 0.012 260);">
+        Not sent yet. If you lose this phone, these are gone.
+      </div>
+    </div>
+
+    <sc-for list="{{pending}}" as="v" hint-placeholder-count="2">
+      <div style="display: flex; gap: 12px; padding: 13px 15px; border-bottom: 1px solid oklch(0.86 0.008 85); background: #fff; align-items: flex-start;">
+        <div style="width: 62px; height: 62px; flex-shrink: 0; border: 2px solid oklch(0.20 0.012 260); background: oklch(0.86 0.03 145); display: flex; align-items: center; justify-content: center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="oklch(0.34 0.06 145)" stroke-width="1.9"><path d="M6 4l12 8-12 8z"></path></svg>
+        </div>
+        <div style="flex-grow: 1;">
+          <div style="font-size: 16px; font-weight: 600;">{{v.crop}}</div>
+          <div class="mono" style="font-size: 11px; margin-top: 3px; color: oklch(0.44 0.012 260);">{{v.when}} &middot; {{v.size}}</div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; margin-top: 7px; border: 1.5px solid oklch(0.40 0.13 45); padding: 3px 7px;">
+            <div style="width: 6px; height: 6px; background: oklch(0.40 0.13 45);"></div>
+            <div class="mono" style="font-size: 11px; font-weight: 600; color: oklch(0.40 0.13 45);">{{v.state}}</div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+
+    <!-- on-server group -->
+    <div style="padding: 11px 15px 8px; background: oklch(0.94 0.03 145); border-top: 2px solid oklch(0.20 0.012 260); border-bottom: 2px solid oklch(0.20 0.012 260);">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.40 0.11 145)" stroke-width="2.2"><path d="M4 12.5 L9.5 18 L20 6.5"></path></svg>
+        <div class="mono" style="font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: oklch(0.38 0.11 145);">Sent and kept safe</div>
+      </div>
+      <div style="font-size: 14px; line-height: 1.45; margin-top: 6px; color: oklch(0.28 0.012 260);">
+        On our server. Safe if you lose this phone.
+      </div>
+    </div>
+
+    <sc-for list="{{sent}}" as="v" hint-placeholder-count="2">
+      <div style="display: flex; gap: 12px; padding: 13px 15px; border-bottom: 1px solid oklch(0.86 0.008 85); background: #fff; align-items: flex-start;">
+        <div style="width: 62px; height: 62px; flex-shrink: 0; border: 2px solid oklch(0.20 0.012 260); background: oklch(0.84 0.04 145); display: flex; align-items: center; justify-content: center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="oklch(0.32 0.07 145)" stroke-width="1.9"><path d="M6 4l12 8-12 8z"></path></svg>
+        </div>
+        <div style="flex-grow: 1;">
+          <div style="font-size: 16px; font-weight: 600;">{{v.crop}}</div>
+          <div class="mono" style="font-size: 11px; margin-top: 3px; color: oklch(0.44 0.012 260);">{{v.when}} &middot; {{v.size}}</div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; margin-top: 7px; border: 1.5px solid oklch(0.38 0.11 145); padding: 3px 7px;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="oklch(0.38 0.11 145)" stroke-width="3"><path d="M4 12.5 L9.5 18 L20 6.5"></path></svg>
+            <div class="mono" style="font-size: 11px; font-weight: 600; color: oklch(0.38 0.11 145);">{{v.state}}</div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+
+    <div style="padding: 15px; background: #fff;">
+      <div style="border: 2px solid oklch(0.20 0.012 260); background: oklch(0.20 0.012 260); color: oklch(0.97 0.006 85); height: 56px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.4"></circle></svg>
+        <div style="font-size: 17px; font-weight: 600;">Record a new video</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      pending: [
+        { crop: 'Potato — north plot', when: 'Today, 8:40 am', size: '9.2 MB', state: 'WAITING FOR SIGNAL' },
+        { crop: 'Potato — north plot', when: 'Yesterday',      size: '11.4 MB', state: 'SENDING — 40%' },
+      ],
+      sent: [
+        { crop: 'Potato — canal plot', when: '18 Aug', size: '10.1 MB', state: 'TIMESTAMPED' },
+        { crop: 'Wheat — back field',  when: '11 Aug', size: '8.7 MB',  state: 'TIMESTAMPED' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+
+    /* Anek Latin (Ek Type). Chosen because the same family ships Anek Devanagari,
+       Telugu, Tamil, Bangla and Kannada — so the Indic screens are the same
+       typeface, not a fallback. Loaded only here: this is the desktop investor
+       surface, where a webfont is affordable. */
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+
+    /* Two-part shadows: tight ambient + wide direct. Lighter reads as closer,
+       so the confirm surface is the lightest thing on screen. */
+    .lift1 { box-shadow: 0 1px 2px rgba(28,26,23,.06), 0 2px 8px rgba(28,26,23,.05); }
+    .lift2 { box-shadow: 0 2px 4px rgba(28,26,23,.09), 0 12px 32px rgba(28,26,23,.11); }
+
+    /* Glass, used on ONE element: the sticky media chrome floating over the crop
+       video. It carries no body text, no money and no verification claim — only
+       playback labels — so the unmeasurable-contrast objection does not apply.
+       It is never used on a farmer screen. */
+    .glass {
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border-top: 1px solid rgba(255,255,255,.34);
+    }
+    /* Browsers without backdrop-filter, and anyone who asked for less
+       transparency, get an opaque fill instead of unreadable mush. */
+    @supports not (backdrop-filter: blur(1px)) {
+      .glass { background: rgba(24,22,19,.82); }
+    }
+    @media (prefers-reduced-transparency: reduce) {
+      .glass { background: rgba(24,22,19,.86); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    }
+  </style>
+</helmet>
+
+<div class="a" style="width: 1320px; height: 940px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+
+  <!-- top bar: hierarchy by weight, no boxes -->
+  <div style="background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;" class="lift1">
+    <div style="display: flex; align-items: baseline; gap: 30px;">
+      <div style="font-size: 21px; font-weight: 700; letter-spacing: -0.025em;">Pestivid</div>
+      <div style="display: flex; gap: 24px; align-items: baseline;">
+        <div style="font-size: 15px; font-weight: 600;">Browse</div>
+        <div style="font-size: 15px; color: #4a443d;">Portfolio</div>
+        <div style="font-size: 15px; color: #4a443d;">Messages</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="font-size: 14px; color: #4a443d;">Charlie</div>
+      <div style="width: 32px; height: 32px; background: #d3ccc5; display: flex; align-items: center; justify-content: center; border-radius: 16px;">
+        <div style="font-size: 13px; font-weight: 600;">C</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; display: grid; grid-template-columns: 372px 1fr; overflow: hidden;">
+
+    <!-- list: zebra, no per-card borders -->
+    <div style="background: #fff; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="padding: 20px 24px 14px;">
+        <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">Open for funding</div>
+        <div style="font-size: 14px; color: #4a443d; margin-top: 3px;">Four seasons looking for money</div>
+      </div>
+
+      <sc-for list="{{projects}}" as="p" hint-placeholder-count="4">
+        <div style="padding: 16px 24px; background: {{p.bg}}; border-left: {{p.sel}};">
+          <div style="display: flex; gap: 14px;">
+            <div style="width: 78px; height: 58px; flex-shrink: 0; background: {{p.t1}}; overflow: hidden; position: relative;">
+              <div style="position: absolute; left: -10%; top: 46%; width: 120%; height: 54%; background: {{p.t2}};"></div>
+            </div>
+            <div style="flex-grow: 1;">
+              <div style="font-size: 17px; font-weight: 600; letter-spacing: -0.01em;">{{p.title}}</div>
+              <div style="font-size: 13.5px; color: #4a443d; margin-top: 2px;">{{p.meta}}</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <div style="height: 6px; background: #c3bcb6; overflow: hidden;">
+              <div style="width: {{p.pct}}; height: 100%; background: #01579b;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 7px; align-items: baseline;">
+              <div class="num" style="font-size: 15px; font-weight: 600;">{{p.raised}}</div>
+              <div class="num" style="font-size: 13px; color: #4a443d;">of {{p.goal}}</div>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- detail -->
+    <div style="overflow: hidden; padding: 24px 30px;">
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 30px;">
+        <div>
+          <div style="font-size: 14px; color: #4a443d;">Rabi season, week 11 of 18</div>
+          <h1 style="margin: 6px 0 0; font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;">Canal plot &mdash; two acres of potato</h1>
+          <div style="display: flex; align-items: center; gap: 10px; margin-top: 11px;">
+            <div style="width: 28px; height: 28px; background: #d3ccc5; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+              <div style="font-size: 12px; font-weight: 600;">A</div>
+            </div>
+            <div style="font-size: 15px;">Alice Farmer</div>
+            <div style="font-size: 14px; color: #4a443d;">&middot; member since June</div>
+          </div>
+        </div>
+        <div style="text-align: right; flex-shrink: 0;">
+          <div style="font-size: 14px; color: #4a443d;">Still needed</div>
+          <div class="num" style="font-size: 32px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1;">&#8377;3,20,000</div>
+          <div class="num" style="font-size: 14px; color: #4a443d;">of &#8377;5,00,000</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 372px; gap: 26px; margin-top: 22px;">
+
+        <div>
+          <!-- video with GLASS chrome — the one place it earns its keep -->
+          <div style="height: 300px; position: relative; overflow: hidden; background: #37322d;" class="lift1"><div style="position: absolute; inset: 12px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 24px; top: 24px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 12px; line-height: 1.85; color: #ded7d0;">VID_20260818_064410_IST.mp4<br>0:41 &middot; 10.1 MB &middot; 1080&times;1920 &middot; 30fps<br>sha256 3f9c2a1e&hellip;d21b<br>block 881,204</div>
+
+            <div style="position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); width: 66px; height: 66px; border-radius: 50%; background: rgba(255,255,255,.22); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.4); display: flex; align-items: center; justify-content: center;">
+              <div style="width: 0; height: 0; border-left: 21px solid #fff; border-top: 13px solid transparent; border-bottom: 13px solid transparent; margin-left: 7px;"></div>
+            </div>
+
+            <!-- glass strip: playback chrome only -->
+            <div class="glass" style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px; display: flex; align-items: center; gap: 14px;">
+              <div style="font-size: 13px; font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.55);">0:00</div>
+              <div style="flex-grow: 1; height: 4px; background: rgba(255,255,255,.32);">
+                <div style="width: 0%; height: 100%; background: #fff;"></div>
+              </div>
+              <div style="font-size: 13px; font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.55);">0:41</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,.86); text-shadow: 0 1px 3px rgba(0,0,0,.55);">1 of 3</div>
+            </div>
+          </div>
+
+          <!-- claim tiers: separated by space and weight, not four boxes -->
+          <div style="background: #fff; padding: 22px 24px; margin-top: 18px;" class="lift1">
+            <div style="font-size: 17px; font-weight: 700; letter-spacing: -0.015em;">What we can and cannot stand behind</div>
+
+            <div style="margin-top: 16px; display: flex; gap: 13px;">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
+              <div>
+                <div style="font-size: 15.5px; font-weight: 700;">Proved &mdash; you can check it yourself</div>
+                <div style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+                  This exact video file existed by <span class="num" style="font-weight: 600;">18 August 2026</span>
+                  and has not been altered. Written into Bitcoin block <span class="num">9xx,xxx</span>.
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 15px; display: flex; gap: 13px;">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
+              <div>
+                <div style="font-size: 15.5px; font-weight: 700; color: #01579b;">Alice told us &mdash; nobody has checked</div>
+                <div style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+                  That this is her land, that it is two acres, that it is potato, and the sowing date.
+                  The location her phone reported is here too &mdash; and a phone's location can be faked.
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 15px; display: flex; gap: 13px;">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8d867f" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="9"></circle><path d="M9 9.4a3 3 0 1 1 4 2.8v1.2"></path><path d="M12 17v.01"></path></svg>
+              <div>
+                <div style="font-size: 15.5px; font-weight: 700; color: #4a443d;">Nobody knows</div>
+                <div style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+                  Whether the crop will succeed. No one has visited this field.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- money: the lightest, most lifted surface on the page -->
+        <div>
+          <div style="background: #fff; padding: 22px 24px;" class="lift2">
+            <div style="font-size: 17px; font-weight: 700; letter-spacing: -0.015em;">If you put in &#8377;50,000</div>
+
+            <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <div style="font-size: 15px; color: #4a443d;">Your money back</div>
+                <div class="num" style="font-size: 17px; font-weight: 600;">&#8377;50,000</div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <div style="font-size: 15px; color: #4a443d;">Your share of the profit</div>
+                <div class="num" style="font-size: 17px; font-weight: 600;">60%</div>
+              </div>
+            </div>
+
+            <div style="font-size: 14.5px; line-height: 1.5; margin-top: 16px; color: #4a443d;">
+              Paid after Alice reports the harvest. <span style="font-weight: 600;">The profit does not exist yet</span>,
+              so we are not going to show you a total.
+            </div>
+
+            <div style="margin-top: 20px; background: #f2e6cd; padding: 15px 16px;">
+              <div style="font-size: 15.5px; font-weight: 700; color: #013f70;">You can lose this money</div>
+              <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+                Crops fail. If this one does there may be no profit to share, and a total loss can return
+                less than you put in. This is not a savings account.
+              </div>
+            </div>
+
+            <div style="margin-top: 20px; background: #1d1a17; height: 54px; display: flex; align-items: center; justify-content: center;">
+              <div style="font-size: 16.5px; font-weight: 600; color: #fff;">See the exact amount</div>
+            </div>
+            <div style="font-size: 13.5px; line-height: 1.5; margin-top: 11px; color: #4a443d;">
+              Nothing moves yet. The next screen restates the amount and you confirm it there.
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; background: #fff; padding: 16px 20px; display: flex; align-items: center; gap: 11px;" class="lift1">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M4 5h16v11H8l-4 4z"></path></svg>
+            <div style="font-size: 15.5px; font-weight: 600;">Ask Alice a question</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      projects: [
+        { title: 'Canal plot, potato', meta: '2 acres · organic · 4 months', pct: '36%',
+          raised: '₹1,80,000', goal: '₹5,00,000',
+          t1: '#4a443d', t2: '#37322d', t3: '#4a443d', bg: '#f6f3ef', sel: '3px solid #01579b' },
+        { title: 'Regenerative corn', meta: '3 acres · no-till · 5 months', pct: '50%',
+          raised: '₹40,000', goal: '₹80,000',
+          t1: '#4a443d', t2: '#37322d', t3: '#4a443d', bg: '#fff', sel: '3px solid transparent' },
+        { title: 'Wheat expansion', meta: '4 acres · conventional · 6 months', pct: '31%',
+          raised: '₹15,500', goal: '₹50,000',
+          t1: '#4a443d', t2: '#37322d', t3: '#544e47', bg: '#f6f3ef', sel: '3px solid transparent' },
+        { title: 'Hydroponic strawberry', meta: 'indoor · 1,200 sq ft · 3 months', pct: '0%',
+          raised: '₹0', goal: '₹1,20,000',
+          t1: '#544e47', t2: '#37322d', t3: '#4a443d', bg: '#fff', sel: '3px solid transparent' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

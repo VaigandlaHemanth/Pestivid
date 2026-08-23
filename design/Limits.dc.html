@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .mono { font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    .lift1 { box-shadow: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05); }
+    .lbl { font-size: 13.5px; color: #4a443d; }
+    .card { background: #fff; padding: 24px 26px; }
+    .th { font-size: 12.5px; color: #4a443d; text-transform: uppercase; letter-spacing: .05em;
+          padding: 0 22px 9px 0; text-align: left; font-weight: 600; }
+    .td { padding: 13px 22px 13px 0; vertical-align: top; box-shadow: inset 0 1px 0 #e4e9ee; font-size: 14.5px; line-height: 1.45; }
+    .ok   { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 3px 8px; background: #dfeee6; color: #024c26; }
+    .warn { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 3px 8px; background: #f2e6cd; color: #7c4a12; }
+    .stop { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 3px 8px; background: #f7e9e6; color: #a71930; }
+  </style>
+</helmet>
+
+<div class="a" style="width: 1320px; background: #f3f6f9; color: #1d1a17; padding: 34px 44px 44px; box-sizing: border-box;">
+
+  <div class="lbl">Deploying this for nothing</div>
+  <h1 style="margin: 4px 0 0; font-size: 31px; font-weight: 700; letter-spacing: -0.03em;">What the free tiers actually allow</h1>
+  <p style="margin: 9px 0 0; font-size: 15.5px; line-height: 1.55; max-width: 104ch; color: #4a443d;">
+    Read off the published limits in August 2026, not from memory. Three of them change the design
+    rather than the deployment, and one of them is a ceiling on how much product can exist at all.
+    Everything on this board is a number somebody can check.
+  </p>
+
+  <div class="card lift1" style="margin-top: 24px;">
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <th class="th" style="width: 15%;">Service</th>
+        <th class="th" style="width: 27%;">Free ceiling</th>
+        <th class="th" style="width: 26%;">What this product does to it</th>
+        <th class="th" style="width: 20%;">Headroom</th>
+        <th class="th" style="width: 12%;"></th>
+      </tr>
+
+      <tr>
+        <td class="td" style="font-weight: 600;">Pinata<div style="font-weight: 400; color: #4a443d; font-size: 13.5px;">video storage</div></td>
+        <td class="td"><span class="m">1&nbsp;GB</span> &middot; <span class="m">500 files</span> &middot; <span class="m">10&nbsp;GB</span> bandwidth &middot; <span class="m">10,000</span> requests/mo &middot; <span class="m">60</span> API req/min</td>
+        <td class="td">A 40-second clip is about <span class="m">10&nbsp;MB</span>. Every farmer is asked to film weekly.</td>
+        <td class="td"><span class="m" style="font-weight: 700;">≈100 videos</span>, ever. Roughly <span class="m">1,000</span> plays a month.</td>
+        <td class="td"><span class="stop">The ceiling</span></td>
+      </tr>
+
+      <tr>
+        <td class="td" style="font-weight: 600;">Vercel Hobby<div style="font-weight: 400; color: #4a443d; font-size: 13.5px;">api and web</div></td>
+        <td class="td"><span class="m">4.5&nbsp;MB</span> request body &middot; <span class="m">100&nbsp;GB</span> transfer &middot; <span class="m">1M</span> invocations &middot; <span class="m">4</span> CPU-hours &middot; <span class="m">300&nbsp;s</span> max duration</td>
+        <td class="td">Uploads a <span class="m">10&nbsp;MB</span> file. Serves a <span class="m">173&nbsp;MB</span> model to every farmer who turns on leaf check.</td>
+        <td class="td">The body limit is <span style="font-weight: 700;">already exceeded</span>. The model alone exhausts transfer at <span class="m">578</span> downloads.</td>
+        <td class="td"><span class="stop">Breaks</span></td>
+      </tr>
+
+      <tr>
+        <td class="td" style="font-weight: 600;">Vercel cron<div style="font-weight: 400; color: #4a443d; font-size: 13.5px;">timestamp upgrades</div></td>
+        <td class="td">Hobby: <span class="m">once per day</span>, fires anywhere inside the hour. A more frequent expression fails at deploy.</td>
+        <td class="td">OpenTimestamps needs the proof collected after Bitcoin confirms the block.</td>
+        <td class="td">Submission is instant. The finished proof arrives on the next daily run.</td>
+        <td class="td"><span class="warn">Changes the copy</span></td>
+      </tr>
+
+      <tr>
+        <td class="td" style="font-weight: 600;">MongoDB M0<div style="font-weight: 400; color: #4a443d; font-size: 13.5px;">everything else</div></td>
+        <td class="td"><span class="m">0.5&nbsp;GB</span> &middot; <span class="m">500</span> connections &middot; <span class="m">100</span> ops/sec &middot; <span class="m">10&nbsp;GB</span> in and out per rolling week &middot; pauses after <span class="m">30</span> idle days</td>
+        <td class="td">Twelve collections. A video document with its frame hashes is about <span class="m">3&nbsp;KB</span>.</td>
+        <td class="td"><span class="m">~170,000</span> video records. Storage is not the problem; <span class="m">100</span> ops/sec is.</td>
+        <td class="td"><span class="ok">Fits</span></td>
+      </tr>
+
+      <tr>
+        <td class="td" style="font-weight: 600;">Render free<div style="font-weight: 400; color: #4a443d; font-size: 13.5px;">if the API goes here instead</div></td>
+        <td class="td"><span class="m">750</span> instance-hours/mo &middot; sleeps after <span class="m">15</span> idle minutes &middot; about <span class="m">1</span> minute to wake &middot; no cron jobs, no background workers on free</td>
+        <td class="td">A farmer opens the app in a field with two bars of signal.</td>
+        <td class="td">First request of the morning waits a minute. There is nowhere to run the timestamp job.</td>
+        <td class="td"><span class="stop">Wrong shape</span></td>
+      </tr>
+
+      <tr>
+        <td class="td" style="font-weight: 600;">Free LLM tiers<div style="font-weight: 400; color: #4a443d; font-size: 13.5px;">the agronomy chat</div></td>
+        <td class="td">Every free inference tier is rate limited per minute and per day. The exact figures move; the existence of the limit does not.</td>
+        <td class="td">One farmer asking three questions in a row can exhaust a per-minute allowance.</td>
+        <td class="td">Needs a refusal state the screen does not have yet.</td>
+        <td class="td"><span class="warn">Missing state</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 22px;">
+
+    <div class="card lift1">
+      <div style="font-size: 19px; font-weight: 700;">The video cannot go through the API</div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 6px;">
+        A function request body caps at <span class="m">4.5&nbsp;MB</span> and returns
+        <span class="mono">413</span> above it. A 40-second clip is twice that. This is not a tuning
+        problem, it is a wall.
+      </div>
+      <div style="background: #f3f6f9; padding: 16px 18px; margin-top: 14px;">
+        <div style="font-size: 15px; font-weight: 700;">The phone uploads straight to storage</div>
+        <div style="font-size: 14px; line-height: 1.55; color: #4a443d; margin-top: 5px;">
+          The API issues a one-use upload URL, the handset sends the file to Pinata directly, and the
+          API never sees the bytes in a request body.
+        </div>
+      </div>
+      <!-- the part that matters, because the whole product rests on it -->
+      <div style="background: #eef4ee; padding: 16px 18px; margin-top: 12px;">
+        <div style="font-size: 15px; font-weight: 700; color: #024c26;">And the trust claim survives it</div>
+        <div style="font-size: 14px; line-height: 1.55; color: #4a443d; margin-top: 5px;">
+          The landing page promises the server hashes the bytes it actually received, never a number
+          the phone sends. That still holds: the server pulls the stored object back and hashes it
+          itself. It costs one download per video, well inside the budget, and it is the reason the
+          claim is allowed to stay on the page.
+        </div>
+      </div>
+    </div>
+
+    <div class="card lift1">
+      <div style="font-size: 19px; font-weight: 700;">A hundred videos, and then it is full</div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 6px;">
+        <span class="m">1&nbsp;GB</span> of pinned storage against <span class="m">10&nbsp;MB</span> a
+        clip. Twenty farmers filming weekly reach it in five weeks. Nothing in the architecture can be
+        clevered around this, because deleting old videos is precisely what the product promises never
+        to do.
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+        <div style="background: #f3f6f9; padding: 15px 16px;">
+          <div style="font-size: 14.5px; font-weight: 700;">What it is honestly for</div>
+          <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px;">
+            A pilot with a handful of farmers, a demonstration, or a review. Say that out loud rather
+            than opening signups and filling up in week five.
+          </div>
+        </div>
+        <div style="background: #f3f6f9; padding: 15px 16px;">
+          <div style="font-size: 14.5px; font-weight: 700;">What buys room</div>
+          <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px;">
+            Cap the clip at <span class="m">20&nbsp;s</span> and <span class="m">720p</span> and it is
+            about <span class="m">3&nbsp;MB</span> — three times the runway for a video that still shows
+            the crop and the edges of the plot.
+          </div>
+        </div>
+      </div>
+      <div style="font-size: 14px; line-height: 1.55; color: #4a443d; margin-top: 14px;">
+        <span style="font-weight: 700;">The timestamp is not affected.</span> A Bitcoin attestation
+        covers a hash, not a file, and the hashes are in Mongo. Even if storage filled tomorrow, every
+        date already proved stays proved.
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; margin-top: 22px;">
+
+    <div class="card lift1">
+      <div style="font-size: 18px; font-weight: 700;">Copy that had to change</div>
+      <div style="margin-top: 12px;">
+        <div class="lbl">On the screen after filming</div>
+        <div style="background: #f7e9e6; padding: 11px 13px; margin-top: 5px; font-size: 14px; line-height: 1.5;">
+          <span style="text-decoration: line-through; color: #4a443d;">A few hours, sometimes until tomorrow.</span>
+        </div>
+        <div style="background: #eef4ee; padding: 11px 13px; margin-top: 6px; font-size: 14px; line-height: 1.5;">
+          Usually by tomorrow. We send it off straight away; the proof comes back on a once-a-day run.
+        </div>
+        <div style="font-size: 13.5px; line-height: 1.5; color: #4a443d; margin-top: 8px;">
+          A daily cron cannot deliver &ldquo;a few hours&rdquo;, so the screen stops saying it.
+        </div>
+      </div>
+      <div style="margin-top: 16px;">
+        <div class="lbl">On the admin console</div>
+        <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 5px;">
+          &ldquo;Waiting longer than a day&rdquo; flagged normal behaviour as a fault. On a daily job the
+          threshold is <span class="m">48</span> hours.
+        </div>
+      </div>
+    </div>
+
+    <div class="card lift1">
+      <div style="font-size: 18px; font-weight: 700;">Two smaller traps</div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 8px;">
+        <span style="font-weight: 700;">The 173&nbsp;MB leaf model must not be served from our own
+        origin.</span> It comes from the model host it already lives on, so it never touches the
+        <span class="m">100&nbsp;GB</span> transfer budget. Served from the app, <span class="m">578</span>
+        farmers would end the month.
+      </div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 12px;">
+        <span style="font-weight: 700;">Runtime logs are kept one hour on Hobby.</span> The admin page
+        says every action there is logged against a name. That has to be a collection in the database,
+        not a platform log — otherwise the audit trail evaporates before anyone looks for it.
+      </div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 12px;">
+        <span style="font-weight: 700;">One more, easy to trip over:</span> a Hobby project cannot
+        connect to a repository owned by a GitHub organisation. This one is personal, so it deploys.
+        Moving it under an org later stops the deploys that day.
+      </div>
+    </div>
+
+    <div class="card lift1">
+      <div style="font-size: 18px; font-weight: 700;">What none of this touches</div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 8px;">
+        Every screen on this canvas is text, flat colour and inline SVG. No photographs, no icon font,
+        no illustration library, no animation library. The whole set carries
+        <span class="m">zero</span> raster images.
+      </div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 12px;">
+        Farmer screens use the system font stack, so a handset downloads no typeface at all — Android
+        already ships the Indic fonts, and re-sending them would cost
+        <span class="m">35&ndash;124&nbsp;KB</span> of a metered pack for nothing. The investor and
+        buyer pages load one web family, and only they do.
+      </div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 12px;">
+        The motion is <span class="mono">transform</span> and <span class="mono">opacity</span> on the
+        compositor. It costs no bytes and no server anything.
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

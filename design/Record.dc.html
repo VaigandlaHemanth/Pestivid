@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; }
+    a { color: #8ec5ec; } a:hover { color: #2f86d4; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+
+    /* No glass here, and the reason is measurable: backdrop-filter re-runs an
+       off-screen blur every frame anything behind it moves — and behind this is
+       a LIVE camera feed, so that is every frame, while the encoder is already
+       saturating the GPU. On Helio-G99 / Adreno-610 silicon that is dropped
+       frames in the recording itself. Opaque bars instead. */
+    .bar { background: rgba(14,13,11,.92); }
+
+    /* One pulse, on the record dot only. Nothing else moves — a farmer reading
+       a second language should never be chasing text across the screen. */
+    @keyframes puls { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    .rec { animation: puls 1.4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .rec { animation: none; } }
+  </style>
+</helmet>
+
+<div class="f" style="width: 360px; min-height: 800px; background: #0e0d0b; color: #ddd7d1; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+
+  <!-- top bar: what plot, and where it is being saved -->
+  <div class="bar" style="padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ddd7d1" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+      <div style="font-size: 18px; font-weight: 600;">North plot</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8ec5ec" stroke-width="2"><rect x="6" y="2.5" width="12" height="19" rx="1.6"></rect><path d="M10 18.5h4"></path></svg>
+      <div style="font-size: 14px; font-weight: 600; color: #8ec5ec;">Saving here</div>
+    </div>
+  </div>
+
+  <!-- viewfinder -->
+  <div style="flex-grow: 1; position: relative; background: #2a2622;">
+    <div style="position: absolute; inset: 0;">
+    </div>
+
+    <!-- framing guide: solid corners, not a dashed rectangle. A dashed line at
+         low contrast is the first thing to disappear in sun. -->
+    <div style="position: absolute; left: 22px; right: 22px; top: 96px; bottom: 150px;">
+      <div style="position: absolute; left: 0; top: 0; width: 34px; height: 34px; border-left: 4px solid #fff; border-top: 4px solid #fff;"></div>
+      <div style="position: absolute; right: 0; top: 0; width: 34px; height: 34px; border-right: 4px solid #fff; border-top: 4px solid #fff;"></div>
+      <div style="position: absolute; left: 0; bottom: 0; width: 34px; height: 34px; border-left: 4px solid #fff; border-bottom: 4px solid #fff;"></div>
+      <div style="position: absolute; right: 0; bottom: 0; width: 34px; height: 34px; border-right: 4px solid #fff; border-bottom: 4px solid #fff;"></div>
+    </div>
+
+    <!-- the single instruction, on an opaque bar -->
+    <div class="bar" style="position: absolute; left: 0; right: 0; top: 0; padding: 15px 18px;">
+      <div style="font-size: 18px; font-weight: 700; line-height: 1.3;">Walk slowly across your whole plot</div>
+      <div style="font-size: 15px; line-height: 1.45; margin-top: 4px; color: #d3ccc5;">
+        Show the crop, and the edges of your land.
+      </div>
+    </div>
+
+    <!-- timer -->
+    <div style="position: absolute; left: 0; right: 0; bottom: 0;">
+      <div class="bar" style="padding: 13px 18px;">
+        <div style="display: flex; align-items: center; gap: 11px;">
+          <div class="rec" style="width: 13px; height: 13px; border-radius: 50%; background: #a71930; flex-shrink: 0;"></div>
+          <div class="num" style="font-size: 24px; font-weight: 700; letter-spacing: -0.01em;">0:22</div>
+          <div class="num" style="font-size: 15px; color: #b5ada6;">of 0:45</div>
+          <div style="flex-grow: 1;"></div>
+          <div class="num" style="font-size: 15px; color: #b5ada6;">6.1 MB</div>
+        </div>
+        <div style="min-height: 8px; background: rgba(255,255,255,.20); margin-top: 10px; overflow: hidden;">
+          <div style="width: 49%; height: 100%; background: #a71930;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- controls: stop is 96px and unmissable -->
+  <div class="bar" style="padding: 20px 18px 26px; flex-shrink: 0;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+
+      <div style="width: 72px; display: flex; flex-direction: column; align-items: center; gap: 7px;">
+        <div style="width: 56px; height: 56px; background: rgba(255,255,255,.13); display: flex; align-items: center; justify-content: center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ddd7d1" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+        </div>
+        <div style="font-size: 14px; color: #d3ccc5;">Throw away</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <div style="width: 96px; height: 96px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+          <div style="width: 36px; height: 36px; background: #a71930;"></div>
+        </div>
+        <div style="font-size: 17px; font-weight: 700;">Stop</div>
+      </div>
+
+      <div style="width: 72px; display: flex; flex-direction: column; align-items: center; gap: 7px;">
+        <div style="width: 56px; height: 56px; background: rgba(255,255,255,.13); display: flex; align-items: center; justify-content: center;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ddd7d1" stroke-width="2"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#ddd7d1"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+        </div>
+        <div style="font-size: 14px; color: #d3ccc5;">Read to me</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 18px; display: flex; gap: 11px; align-items: flex-start;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8d867f" stroke-width="2" style="flex-shrink: 0; margin-top: 2px;"><rect x="6" y="2.5" width="12" height="19" rx="1.6"></rect><path d="M10 18.5h4"></path></svg>
+      <div style="font-size: 14.5px; line-height: 1.5; color: #c3bcb6;">
+        This is saving onto your phone as you film. It will send on its own when you have signal &mdash;
+        you can close the app and walk away.
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

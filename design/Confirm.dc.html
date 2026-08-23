@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    .lift1 { box-shadow: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05); }
+    .lift2 { box-shadow: 0 2px 5px rgba(29,26,23,.10), 0 18px 44px rgba(29,26,23,.16); }
+    .p { font-size: 15.5px; line-height: 1.55; color: #4a443d; }
+    .lbl { font-size: 14px; color: #605a53; }
+  </style>
+</helmet>
+
+<div class="a" style="width: 1320px; background: #f3f6f9; color: #1d1a17; padding: 34px 44px 44px; box-sizing: border-box; position: relative;">
+
+  <div class="lbl">The step that was missing</div>
+  <h1 style="margin: 5px 0 0; font-size: 32px; font-weight: 700; letter-spacing: -0.03em;">
+    Confirming money, on both sides
+  </h1>
+  <p class="p" style="margin: 8px 0 0; max-width: 96ch;">
+    Every &ldquo;See the exact amount&rdquo; and &ldquo;Report the harvest&rdquo; button in the earlier
+    screens led nowhere. These are the two screens they lead to &mdash; a page each, with a URL, not a modal,
+    because a money decision needs the evidence beside it and needs to be returnable.
+  </p>
+
+  <div style="display: grid; grid-template-columns: 1fr 380px; gap: 28px; margin-top: 26px;">
+
+    <!-- ══ INVESTOR: confirm ══ -->
+    <div style="background: #fff; padding: 28px 30px;" class="lift2">
+      <div class="lbl">Investor &middot; desktop</div>
+      <div style="font-size: 25px; font-weight: 700; letter-spacing: -0.025em; margin-top: 3px;">Confirm your investment</div>
+
+      <!-- what you are funding, restated -->
+      <div style="display: grid; grid-template-columns: 132px 1fr; gap: 18px; margin-top: 20px; align-items: center;">
+        <div style="min-height: 96px; background: #37322d; position: relative; overflow: hidden;">
+          <div style="position: absolute; inset: 6px; border: 1px solid #605a53;"></div>
+        </div>
+        <div>
+          <div style="font-size: 19px; font-weight: 600;">Canal plot &mdash; two acres of potato</div>
+          <div class="p" style="font-size: 14.5px; margin-top: 2px;">Alice Farmer &middot; Kadapa &middot; Rabi season, week 11 of 18</div>
+        </div>
+      </div>
+
+      <!-- the numbers, tabular and aligned -->
+      <div style="margin-top: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
+          <div style="font-size: 16px;">You are sending</div>
+          <div class="m" style="font-size: 22px; font-weight: 700;">&#8377;50,000</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
+          <div style="font-size: 16px;">Your share of any profit</div>
+          <div class="m" style="font-size: 18px; font-weight: 600;">60%</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
+          <div style="font-size: 16px;">Paid back after</div>
+          <div style="font-size: 16px; font-weight: 600;">Harvest reported, about 7 weeks</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0;">
+          <div style="font-size: 16px;">This project still needs</div>
+          <div class="m" style="font-size: 18px; font-weight: 600;">&#8377;3,20,000</div>
+        </div>
+      </div>
+
+      <!-- no projected total. deliberately. -->
+      <div style="background: #f3f6f9; padding: 16px 18px; margin-top: 6px;">
+        <div style="font-size: 15.5px; font-weight: 700;">We are not showing you a projected return</div>
+        <div class="p" style="font-size: 14.5px; margin-top: 4px;">
+          The profit does not exist yet. Any total we printed here would be a guess dressed up as a
+          figure, and you would reasonably read it as a promise.
+        </div>
+      </div>
+
+      <!-- the risk, unavoidable -->
+      <div style="background: #f7e9e6; padding: 17px 18px; margin-top: 14px;">
+        <div style="display: flex; gap: 11px; align-items: flex-start;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a71930" stroke-width="2.1" style="flex-shrink: 0; margin-top: 2px;"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9.5v5M12 17.5v.01"></path></svg>
+          <div>
+            <div style="font-size: 16px; font-weight: 700; color: #a71930;">You can lose this money</div>
+            <div class="p" style="font-size: 14.5px; margin-top: 4px;">
+              Crops fail. If this one does there may be no profit to share, and a total loss can return
+              less than you sent. No capital protection, no guaranteed return.
+            </div>
+          </div>
+        </div>
+        <!-- an explicit acknowledgement, not a buried checkbox -->
+        <div style="display: flex; gap: 11px; align-items: center; margin-top: 14px;">
+          <div style="width: 22px; height: 22px; flex-shrink: 0; background: #fff; box-shadow: inset 0 0 0 2px #a71930;"></div>
+          <div style="font-size: 15.5px; font-weight: 600;">I understand I could lose &#8377;50,000</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 20px; align-items: stretch;">
+        <div style="flex-grow: 1; background: #c9ced4; height: 54px; display: flex; align-items: center; justify-content: center;">
+          <div style="font-size: 16.5px; font-weight: 600; color: #6b7278;">Send &#8377;50,000</div>
+        </div>
+        <div style="width: 130px; height: 54px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1.5px #b9c2cb;">
+          <div style="font-size: 16px; color: #4a443d;">Go back</div>
+        </div>
+      </div>
+      <div class="p" style="font-size: 13.5px; margin-top: 9px;">
+        The button stays inactive until the box above is ticked. It shows a spinner while the server
+        works and only becomes a receipt once the transfer is confirmed &mdash; never before.
+      </div>
+    </div>
+
+    <!-- ══ FARMER: report the harvest ══ -->
+    <div class="f" style="background: #ddd7d1; padding: 0; min-height: 720px; display: flex; flex-direction: column;" >
+      <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+        <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">Report the harvest</div>
+      </div>
+
+      <div style="padding: 18px 20px; flex-grow: 1;">
+        <div style="background: #f2e6cd; padding: 14px 15px;">
+          <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">You can only do this once</div>
+          <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+            These two numbers decide what your four investors are paid. Check them before you send.
+          </div>
+        </div>
+
+        <div style="margin-top: 18px;">
+          <div style="font-size: 16px; font-weight: 600;">What did you sell it for?</div>
+          <div style="background: #f6f3ef; height: 60px; margin-top: 7px; display: flex; align-items: center; padding: 0 16px; box-shadow: inset 0 0 0 2px #1d1a17;">
+            <div class="m" style="font-size: 21px; font-weight: 700;">&#8377;9,32,000</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div style="font-size: 16px; font-weight: 600;">What did it cost you to grow?</div>
+          <div style="background: #f6f3ef; height: 60px; margin-top: 7px; display: flex; align-items: center; padding: 0 16px; box-shadow: inset 0 0 0 1px #c3bcb6;">
+            <div class="m" style="font-size: 21px; font-weight: 700;">&#8377;2,58,400</div>
+          </div>
+          <div style="font-size: 14px; line-height: 1.45; margin-top: 6px; color: #605a53;">
+            Seed, fertiliser, labour, water, transport.
+          </div>
+        </div>
+
+        <!-- the arithmetic, before they commit -->
+        <div style="background: #f6f3ef; padding: 16px 17px; margin-top: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <div style="font-size: 15.5px;">Profit</div>
+            <div class="m" style="font-size: 17px; font-weight: 700;">&#8377;6,73,600</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px;">
+            <div style="font-size: 15.5px;">Your investors get 60%</div>
+            <div class="m" style="font-size: 17px; font-weight: 700;">&#8377;4,04,160</div>
+          </div>
+          <div style="height: 1px; background: #dcd6c9; margin: 12px 0;"></div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <div style="font-size: 17px; font-weight: 700;">You keep</div>
+            <div class="m" style="font-size: 22px; font-weight: 700;">&#8377;2,69,440</div>
+          </div>
+          <div style="font-size: 14px; line-height: 1.45; margin-top: 9px; color: #4a443d;">
+            Plus the &#8377;5,00,000 they already gave you, which you keep either way.
+          </div>
+        </div>
+      </div>
+
+      <div style="background: #f6f3ef; padding: 14px 20px 18px;">
+        <div style="background: #016abe; height: 60px; display: flex; align-items: center; justify-content: center;">
+          <div style="font-size: 18px; font-weight: 700; color: #fff;">Send these numbers</div>
+        </div>
+        <div style="font-size: 13.5px; line-height: 1.45; margin-top: 9px; color: #605a53;">
+          One more screen shows each investor and what they get, before anything is final.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

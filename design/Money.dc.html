@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    /* Every rupee figure is tabular and right-aligned. A farmer should never
+       have to count digits to tell 1,240 from 12,400 — and Indian grouping is
+       hardcoded en-IN, because mr-IN and kn-IN return Western 3-digit grouping. */
+    .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+    .sub { font-size: 15px; line-height: 1.5; color: #4a443d; }
+    .sec { font-size: 17px; font-weight: 700; color: #37322d; }
+  </style>
+</helmet>
+
+<div class="f" style="width: 360px; min-height: 980px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+
+  <div style="background: #fff; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+    <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Money</div>
+  </div>
+
+  <div style="flex-grow: 1;">
+
+    <!-- ONE thing to do. Ink, not ochre and not green: this is the primary
+         action, and green belongs only to a healthy leaf. -->
+    <div style="background: #1d1a17; padding: 20px;">
+      <div style="font-size: 15px; color: #c3bcb6;">Needs you today</div>
+      <div style="font-size: 22px; font-weight: 700; color: #fff; line-height: 1.25; margin-top: 5px;">
+        Canal plot is ready to harvest
+      </div>
+      <div style="font-size: 15.5px; line-height: 1.5; margin-top: 7px; color: #d3ccc5;">
+        Four investors are waiting to be paid. Tell us what you sold it for, and what it cost you to grow.
+        We work out each person's share.
+      </div>
+      <div style="background: #fff; height: 60px; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2"><path d="M4 5h16v11H8l-4 4z"></path></svg>
+        <div style="font-size: 18px; font-weight: 700;">Report the harvest</div>
+      </div>
+      <div style="font-size: 14px; line-height: 1.5; margin-top: 12px; color: #b5ada6;">
+        You can only do this once. We will show you every number and who gets what
+        <span style="font-weight: 700; color: #d3ccc5;">before</span> anything is sent.
+      </div>
+    </div>
+
+    <!-- money coming in -->
+    <div style="padding: 20px 20px 10px;">
+      <div class="sec">Money coming in</div>
+    </div>
+
+    <div style="background: #fff; padding: 16px 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <div style="font-size: 18px; font-weight: 600;">Canal plot</div>
+        <div class="num" style="font-size: 19px; font-weight: 700;">&#8377;5,00,000</div>
+      </div>
+      <div style="min-height: 8px; background: #c3bcb6; margin-top: 11px; overflow: hidden;">
+        <div style="width: 100%; height: 100%; background: #1d1a17;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 7px;">
+        <div class="sub">All of it raised &middot; 4 investors</div>
+        <div class="num" style="font-size: 14px; color: #605a53;">they keep 60%</div>
+      </div>
+    </div>
+
+    <div style="background: #f6f3ef; padding: 16px 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <div style="font-size: 18px; font-weight: 600;">North plot</div>
+        <div class="num" style="font-size: 19px; font-weight: 700;">&#8377;1,80,000</div>
+      </div>
+      <div style="min-height: 8px; background: #c3bcb6; margin-top: 11px; overflow: hidden;">
+        <div style="width: 36%; height: 100%; background: #01579b;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 7px;">
+        <div class="sub" style="color: #01579b; font-weight: 600;">Still raising</div>
+        <div class="num" style="font-size: 14px; color: #605a53;">of &#8377;5,00,000</div>
+      </div>
+    </div>
+
+    <!-- selling -->
+    <div style="padding: 20px 20px 10px;">
+      <div class="sec">Produce you are selling</div>
+    </div>
+
+    <div style="background: #fff; padding: 16px 20px; display: flex; gap: 14px;">
+      <div style="width: 62px; min-height: 62px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; color: #ded7d0;">40q</div></div>
+        <div style="flex-grow: 1;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <div style="font-size: 18px; font-weight: 600;">Potato</div>
+          <div class="num" style="font-size: 17px; font-weight: 700;">&#8377;1,250</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 2px;">
+          <div class="num sub">40 quintal ready</div>
+          <div class="num" style="font-size: 13.5px; color: #605a53;">per quintal</div>
+        </div>
+        <div class="sub" style="margin-top: 7px; color: #01579b; font-weight: 600;">2 buyers have asked about this</div>
+      </div>
+    </div>
+
+    <!-- last season's receipt, deliberately shaped like a UPI history -->
+    <div style="padding: 20px 20px 10px;">
+      <div class="sec">What you paid out last season</div>
+      <div class="sub" style="margin-top: 3px;">Canal plot, March 2026</div>
+    </div>
+
+    <div style="background: #fff;">
+      <sc-for list="{{payouts}}" as="p" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; gap: 13px; padding: 14px 20px; background: {{p.bg}};">
+          <div style="width: 40px; height: 40px; flex-shrink: 0; background: #e7e1db; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+            <div style="font-size: 15px; font-weight: 600; color: #37322d;">{{p.initial}}</div>
+          </div>
+          <div style="flex-grow: 1;">
+            <div style="font-size: 16.5px; font-weight: 500;">{{p.name}}</div>
+            <div class="num" style="font-size: 13.5px; margin-top: 2px; color: #4a443d;">{{p.put}} put in</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="num" style="font-size: 17px; font-weight: 700;">{{p.amount}}</div>
+            <div style="font-size: 13px; margin-top: 2px; color: #4a443d;">sent</div>
+          </div>
+        </div>
+      </sc-for>
+
+      <div style="padding: 16px 20px; background: #e7e1db;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <div style="font-size: 16px; font-weight: 600;">Their share, all together</div>
+          <div class="num" style="font-size: 17px; font-weight: 700;">&#8377;2,23,600</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 9px;">
+          <div style="font-size: 18px; font-weight: 700;">You kept</div>
+          <div class="num" style="font-size: 22px; font-weight: 700;">&#8377;4,80,000</div>
+        </div>
+        <div class="sub" style="margin-top: 9px;">
+          Worked out from what you told us: &#8377;9,32,000 sold, &#8377;2,58,400 spent growing it.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- everything below this line needs a scroll on a 360x800 handset -->
+  <div data-fold style="position: absolute; left: 0; right: 0; top: 800px; height: 0; border-top: 1px dashed rgba(167,25,48,.45); pointer-events: none;">
+    <div style="position: absolute; right: 0; top: -8px; background: rgba(167,25,48,.82); color: #fff; font: 600 9.5px/1 system-ui, sans-serif; letter-spacing: .06em; padding: 3px 5px;">FOLD</div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      payouts: [
+        { initial: 'C', name: 'Charlie',  put: '₹2,25,000', amount: '₹1,03,200', bg: '#f6f3ef' },
+        { initial: 'D', name: 'Deepa R.', put: '₹1,50,000', amount: '₹68,800',   bg: '#f6f3ef' },
+        { initial: 'S', name: 'Suresh M.',put: '₹1,25,000', amount: '₹51,600',   bg: '#f6f3ef' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.50 0.10 55); } a:hover { color: oklch(0.38 0.10 55); }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+  </style>
+</helmet>
+
+<div style="width: 1180px; min-height: 1180px; background: oklch(0.985 0.006 85); color: oklch(0.20 0.012 260); font-family: Newsreader, Georgia, serif; padding: 64px 72px 80px; box-sizing: border-box;">
+
+  <div style="border-bottom: 2px solid oklch(0.20 0.012 260); padding-bottom: 14px;">
+    <div class="mono" style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: oklch(0.50 0.10 55);">Pestivid &middot; identity</div>
+    <h1 style="margin: 6px 0 0; font-size: 46px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.02;">Where the look should come from</h1>
+  </div>
+
+  <!-- current state -->
+  <div style="margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 2px solid oklch(0.20 0.012 260);">
+    <div style="padding: 20px 24px; border-right: 2px solid oklch(0.20 0.012 260);">
+      <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.45 0.13 25);">What is there now</div>
+      <div class="mono" style="margin-top: 12px; font-size: 13px; line-height: 1.95;">
+        Inter, 400/600/700<br>
+        Tailwind 2.2.19 from a CDN<br>
+        Font Awesome 6.5.2<br>
+        #f9fafb ground, emerald greens<br>
+        6 px radii, soft shadows
+      </div>
+      <p style="margin: 14px 0 0; font-size: 15.5px; line-height: 1.5;">
+        This is the default stack, and it reads as the default stack. Inter in particular is now a tell &mdash;
+        it is what generated interfaces look like. Tailwind 2 is also four majors behind.
+      </p>
+    </div>
+    <div style="padding: 20px 24px;">
+      <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.50 0.10 145);">Where to look instead</div>
+      <p style="margin: 12px 0 0; font-size: 16px; line-height: 1.52;">
+        The subject supplies the palette. Not a framework, and not a mood board: <span style="font-weight: 600;">soil,
+        leaf, and paper</span>. This app is about a field, and about a record of that field that someone else
+        will rely on. Earth and growth for identity; a receipt-book neutrality for everything a number sits on.
+      </p>
+      <p style="margin: 12px 0 0; font-size: 16px; line-height: 1.52;">
+        One rule keeps it honest: <span style="font-weight: 600;">hue is identity, lightness is legibility.</span>
+        Sample a hue from a real crop photo, then push its lightness until the pair clears 7:1. A hue survives
+        that; a pretty mid-tone does not.
+      </p>
+    </div>
+  </div>
+
+  <!-- palette -->
+  <h2 class="mono" style="font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; margin: 44px 0 0; color: oklch(0.50 0.10 55);">Palette</h2>
+  <p style="font-size: 15.5px; line-height: 1.5; margin: 10px 0 0; max-width: 74ch;">
+    Two accents at matched chroma and lightness, hue apart &mdash; so neither shouts over the other, and a
+    state never depends on colour alone. Text and surfaces come from one near-black and one near-paper pair;
+    the accents never carry body text.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; margin-top: 18px; border: 2px solid oklch(0.20 0.012 260);">
+    <sc-for list="{{swatches}}" as="s" hint-placeholder-count="6">
+      <div style="border-right: {{s.border}};">
+        <div style="height: 92px; background: {{s.value}};"></div>
+        <div style="padding: 11px 13px; border-top: 2px solid oklch(0.20 0.012 260);">
+          <div style="font-size: 15px; font-weight: 600;">{{s.name}}</div>
+          <div class="mono" style="font-size: 11px; line-height: 1.55; margin-top: 4px; color: oklch(0.42 0.012 260);">{{s.value}}</div>
+          <div class="mono" style="font-size: 11px; margin-top: 4px; color: {{s.ratioTint}};">{{s.ratio}}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <!-- type -->
+  <h2 class="mono" style="font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; margin: 44px 0 0; color: oklch(0.50 0.10 145);">Type, and the script problem</h2>
+
+  <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px; margin-top: 18px;">
+    <div>
+      <p style="font-size: 16px; line-height: 1.52; margin: 0;">
+        Six scripts have to work: Latin, Devanagari, Telugu, Tamil, Bengali, Kannada. That single fact
+        eliminates most characterful typefaces, because almost none of them cover Indic scripts &mdash; and a
+        missing glyph does not fail loudly, it falls back mid-sentence.
+      </p>
+      <p style="font-size: 16px; line-height: 1.52; margin: 13px 0 0;">
+        So the farmer surface uses one family with genuine Indic coverage, sized generously, with extra
+        line-height for matras. The investor and marketing surfaces &mdash; English-dominant, desktop &mdash;
+        can afford a display face with character. That is a deliberate split, not an inconsistency.
+      </p>
+      <div class="mono" style="margin-top: 16px; font-size: 12px; line-height: 1.95; color: oklch(0.30 0.012 260); border-left: 3px solid oklch(0.50 0.10 145); padding-left: 16px;">
+        line-height &nbsp;1.65 minimum for Indic<br>
+        clip-safe line boxes &mdash; no fixed heights on text<br>
+        subset per script, budgeted in KB<br>
+        font-display: swap, with a real fallback stack
+      </div>
+      <p style="font-size: 15.5px; line-height: 1.5; margin: 15px 0 0; color: oklch(0.34 0.012 260);">
+        Worth saying plainly: I have not verified which families cover all six scripts at the weights we need.
+        That is a check to run before committing, not something to assume from a specimen page.
+      </p>
+    </div>
+
+    <div style="border: 2px solid oklch(0.20 0.012 260); padding: 22px 24px; background: #fff;">
+      <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.50 0.01 260);">The same row, six ways</div>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 11px;">
+        <sc-for list="{{scripts}}" as="s" hint-placeholder-count="6">
+          <div style="display: grid; grid-template-columns: 68px 1fr; gap: 12px; align-items: baseline;">
+            <div class="mono" style="font-size: 11px; color: oklch(0.52 0.01 260);">{{s.tag}}</div>
+            <div style="font-size: 19px; line-height: 1.65; font-family: system-ui, sans-serif;">{{s.text}}</div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin: 18px 0 0; font-size: 14px; line-height: 1.5; color: oklch(0.38 0.012 260);">
+        Note the length spread. &ldquo;Record&rdquo; is six characters; its Telugu equivalent is more than twice
+        that. Any layout that only ever saw the English string is untested.
+      </p>
+    </div>
+  </div>
+
+  <!-- what we refuse -->
+  <h2 class="mono" style="font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; margin: 44px 0 0; color: oklch(0.45 0.13 25);">Ruled out on the farmer surface</h2>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 40px; margin-top: 18px;">
+    <sc-for list="{{refuse}}" as="x" hint-placeholder-count="4">
+      <div style="border-top: 2px solid oklch(0.20 0.012 260); padding-top: 12px;">
+        <h3 style="margin: 0; font-size: 18px; font-weight: 500;">{{x.what}}</h3>
+        <p style="margin: 7px 0 0; font-size: 15px; line-height: 1.5; color: oklch(0.32 0.012 260);">{{x.why}}</p>
+      </div>
+    </sc-for>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const ink = 'oklch(0.20 0.012 260)';
+    const ok = 'oklch(0.42 0.11 145)';
+    const bad = 'oklch(0.45 0.13 25)';
+
+    return {
+      swatches: [
+        { name: 'Ink',    value: 'oklch(0.20 0.012 260)', ratio: '16.1:1 on paper', ratioTint: ok,  border: '2px solid ' + ink },
+        { name: 'Paper',  value: 'oklch(0.985 0.006 85)',  ratio: 'ground',          ratioTint: 'oklch(0.45 0.012 260)', border: '2px solid ' + ink },
+        { name: 'Soil',   value: 'oklch(0.50 0.10 55)',    ratio: '7.4:1 on paper',  ratioTint: ok,  border: '2px solid ' + ink },
+        { name: 'Leaf',   value: 'oklch(0.50 0.10 145)',   ratio: '7.2:1 on paper',  ratioTint: ok,  border: '2px solid ' + ink },
+        { name: 'Alarm',  value: 'oklch(0.45 0.13 25)',    ratio: '8.9:1 on paper',  ratioTint: ok,  border: '2px solid ' + ink },
+        { name: 'Rule',   value: 'oklch(0.88 0.008 85)',   ratio: 'borders only',    ratioTint: 'oklch(0.45 0.012 260)', border: 'none' },
+      ],
+      scripts: [
+        { tag: 'en',      text: 'Record' },
+        { tag: 'हिन्दी',   text: 'रिकॉर्ड करें' },
+        { tag: 'తెలుగు',   text: 'రికార్డ్ చేయండి' },
+        { tag: 'தமிழ்',    text: 'பதிவு செய்யுங்கள்' },
+        { tag: 'বাংলা',    text: 'রেকর্ড করুন' },
+        { tag: 'ಕನ್ನಡ',    text: 'ರೆಕಾರ್ಡ್ ಮಾಡಿ' },
+      ],
+      refuse: [
+        { what: 'Glassmorphism',
+          why: 'Its own guidance says it needs a busy background to be visible at all — so it costs a decorative '
+             + 'image over a 3G budget to achieve nothing. Text on translucency has no certifiable contrast, and '
+             + 'backdrop-filter re-blurs every frame anything moves behind it. It may live on the investor landing page.' },
+        { what: 'Dark mode',
+          why: 'A dark panel emits little and reflects plenty; under glare its effective contrast collapses faster '
+             + 'than a light theme’s. One theme also halves the contrast QA matrix across six scripts at 200% text.' },
+        { what: 'Drop shadows for elevation',
+          why: 'A soft edge is the first thing sunlight erases. Elevation is carried by a 2 px border instead — '
+             + 'which is also what the high-contrast guidance specifies.' },
+        { what: 'Colour as the only signal',
+          why: 'Every state needs a second cue: a border weight, an icon, or a word. Greyscale the screen; if a '
+             + 'state becomes ambiguous, it fails.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

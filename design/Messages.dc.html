@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    /* unread is carried by a solid left edge, not by colour alone and not by a
+       dot small enough to miss in sunlight */
+    .n  { padding: 16px 20px 16px 17px; display: flex; gap: 13px; align-items: flex-start; background: #f6f3ef; }
+    .nu { padding: 16px 20px 16px 14px; display: flex; gap: 13px; align-items: flex-start;
+          background: #f6f3ef; box-shadow: inset 3px 0 0 #016abe; }
+    .h  { font-size: 16.5px; font-weight: 600; line-height: 1.35; }
+    .b  { font-size: 15px; line-height: 1.5; color: #4a443d; margin-top: 3px; }
+    .t  { font-size: 13.5px; color: #4a443d; margin-top: 5px; }
+    .ic { width: 38px; height: 38px; flex-shrink: 0; background: #e7e1db; display: flex;
+          align-items: center; justify-content: center; }
+  </style>
+</helmet>
+
+<div class="f" style="width: 360px; min-height: 900px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+
+  <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+    <div style="flex-grow: 1;">
+      <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Messages</div>
+      <div style="font-size: 14.5px; color: #605a53;">Two you have not read</div>
+    </div>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+  </div>
+
+  <div style="flex-grow: 1;">
+
+    <!-- the message the whole product exists to send -->
+    <div class="nu">
+      <div class="ic">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.4"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="h">Your Canal plot video now has a date nobody can change</div>
+        <div class="b">The one you filmed on 18 August. Its date is written into Bitcoin block 881,204. Investors can check it themselves.</div>
+        <div class="m t">Today, 11:40 am</div>
+      </div>
+    </div>
+
+    <div style="height: 1px; background: #ddd7d1;"></div>
+
+    <div class="nu">
+      <div class="ic">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M12 3v18"></path><path d="M17 7.5c0-2-2.2-3-5-3s-5 1-5 3 2.2 2.7 5 3.3 5 1.4 5 3.4-2.2 3.3-5 3.3-5-1.3-5-3.3"></path></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="h">Meena Rao put &#8377;50,000 into your North plot</div>
+        <div class="b">North plot has now raised &#8377;1,80,000 of the &#8377;5,00,000 you asked for.</div>
+        <div class="m t">Yesterday, 4:18 pm</div>
+      </div>
+    </div>
+
+    <div style="height: 1px; background: #ddd7d1;"></div>
+
+    <div class="n">
+      <div class="ic">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M5 3h11l3 3v15H5z"></path><path d="M16 3v3h3"></path><path d="M8.5 12.5h7M8.5 16h4"></path></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="h">Your North plot is open to investors</div>
+        <div class="b">We checked you have three date stamped videos on it, which is what we ask for before a plot can raise money.</div>
+        <div class="m t">19 August</div>
+      </div>
+    </div>
+
+    <div style="height: 1px; background: #ddd7d1;"></div>
+
+    <div class="n">
+      <div class="ic">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M21 12a8.5 8.5 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l1.9-5.1A8.5 8.5 0 0 1 12 3.5a8.5 8.5 0 0 1 9 8.5z"></path></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="h">Ravi Kumar asked you a question</div>
+        <div class="b">&ldquo;Is the canal water reaching the far end of the plot this year?&rdquo;</div>
+        <div class="m t">17 August</div>
+      </div>
+    </div>
+
+    <div style="height: 1px; background: #ddd7d1;"></div>
+
+    <!-- a failure told plainly, with the one thing they can do about it -->
+    <div class="n">
+      <div class="ic" style="background: #f7e9e6;">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#a71930" stroke-width="2.1"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9.5v5M12 17.5v.01"></path></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="h">A video did not finish sending</div>
+        <div class="b">The Back field one from 14 August stopped at 60%. It is still on your phone. It will try again on wi-fi.</div>
+        <div class="m t">14 August</div>
+      </div>
+    </div>
+
+    <div style="padding: 22px 20px;">
+      <div style="background: #eae4de; padding: 15px 16px;">
+        <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
+          Only your own plots and your own money appear here. We do not send offers or advertisements,
+          and there is nothing to unsubscribe from.
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- everything below this line needs a scroll on a 360x800 handset -->
+  <div data-fold style="position: absolute; left: 0; right: 0; top: 800px; height: 0; border-top: 1px dashed rgba(167,25,48,.45); pointer-events: none;">
+    <div style="position: absolute; right: 0; top: -8px; background: rgba(167,25,48,.82); color: #fff; font: 600 9.5px/1 system-ui, sans-serif; letter-spacing: .06em; padding: 3px 5px;">FOLD</div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

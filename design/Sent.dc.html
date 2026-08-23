@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    .pk  { background: #eae4de; height: 62px; display: flex; align-items: center; padding: 0 17px; font-size: 17px; }
+    .pkOn{ background: #1d1a17; color: #f6f3ef; height: 62px; display: flex; align-items: center;
+           padding: 0 17px; font-size: 17px; font-weight: 600; }
+    /* the four steps are a timeline, not a progress bar: three are already done
+       and the fourth takes hours, which a bar would misrepresent as stuck */
+    .st { display: flex; gap: 13px; align-items: flex-start; }
+    .dotD { width: 22px; height: 22px; flex-shrink: 0; background: #006934; display: flex;
+            align-items: center; justify-content: center; }
+    .dotW { width: 22px; height: 22px; flex-shrink: 0; box-shadow: inset 0 0 0 2px #78716a; }
+    .line { width: 2px; background: #c3bcb6; margin: 3px 0 3px 10px; height: 20px; }
+  </style>
+</helmet>
+
+<div class="f" style="width: 360px; min-height: 900px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+
+  <div style="background: #f6f3ef; padding: 15px 20px 14px; flex-shrink: 0;">
+    <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">That is saved</div>
+    <div class="m" style="font-size: 14.5px; color: #605a53; margin-top: 1px;">41 seconds &middot; 9.8 MB &middot; on your phone</div>
+  </div>
+
+  <div style="flex-grow: 1;">
+
+    <!-- one question, asked once, while they still remember which plot they walked -->
+    <div style="padding: 20px 20px 0;">
+      <div style="font-size: 18px; font-weight: 700;">Which plot was that?</div>
+      <div style="font-size: 15px; line-height: 1.5; color: #4a443d; margin-top: 4px;">
+        We ask now because in a week nobody remembers which field a video was.
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 13px;">
+        <div class="pkOn">Canal plot</div>
+        <div class="pk">North plot</div>
+        <div class="pk">Back field</div>
+        <div class="pk" style="color: #01579b; font-weight: 600;">A plot not in this list</div>
+      </div>
+    </div>
+
+    <!-- what happens next, in real time units, because the wait is hours -->
+    <div style="padding: 24px 20px 0;">
+      <div style="font-size: 18px; font-weight: 700;">What happens to it</div>
+
+      <div style="background: #f6f3ef; padding: 17px 18px; margin-top: 11px;">
+        <div class="st">
+          <div class="dotD"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
+          <div>
+            <div style="font-size: 16px; font-weight: 600;">Saved on your phone</div>
+            <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Done. You can close the app.</div>
+          </div>
+        </div>
+        <div class="line"></div>
+        <div class="st">
+          <div class="dotW"></div>
+          <div>
+            <div style="font-size: 16px; font-weight: 600;">Sent to us</div>
+            <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">When you next have wi-fi. On its own.</div>
+          </div>
+        </div>
+        <div class="line"></div>
+        <div class="st">
+          <div class="dotW"></div>
+          <div>
+            <div style="font-size: 16px; font-weight: 600;">Fingerprinted the moment it arrives</div>
+            <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">A few seconds. Nobody can change the file after this without it showing.</div>
+          </div>
+        </div>
+        <div class="line"></div>
+        <div class="st">
+          <div class="dotW"></div>
+          <div>
+            <div style="font-size: 16px; font-weight: 600;">Its date written into Bitcoin</div>
+            <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Usually by tomorrow. We send it off straight away and the proof comes back on a once-a-day run. We will tell you when it is done.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- said before they commit, not in a settings page afterwards -->
+    <div style="padding: 18px 20px 0;">
+      <div style="background: #f2e6cd; padding: 15px 16px;">
+        <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">You cannot delete it later</div>
+        <div style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+          Once it is sent, it stays. That is the whole reason its date is worth anything to somebody
+          putting money into your season. If you do not want to keep this one, throw it away now.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 18px;">
+    <div style="background: #016abe; height: 60px; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 18px; font-weight: 700; color: #fff;">Keep it and send</div>
+    </div>
+    <div style="height: 52px; margin-top: 10px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1.5px #a71930;">
+      <div style="font-size: 16px; font-weight: 600; color: #a71930;">Throw this one away</div>
+    </div>
+  </div>
+
+
+  <!-- everything below this line needs a scroll on a 360x800 handset -->
+  <div data-fold style="position: absolute; left: 0; right: 0; top: 800px; height: 0; border-top: 1px dashed rgba(167,25,48,.45); pointer-events: none;">
+    <div style="position: absolute; right: 0; top: -8px; background: rgba(167,25,48,.82); color: #fff; font: 600 9.5px/1 system-ui, sans-serif; letter-spacing: .06em; padding: 3px 5px;">FOLD</div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

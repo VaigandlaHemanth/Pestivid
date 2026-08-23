@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.50 0.10 145); } a:hover { color: oklch(0.38 0.10 145); }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+  </style>
+</helmet>
+
+<div style="width: 560px; min-height: 1080px; background: oklch(0.94 0.008 85); font-family: 'Instrument Sans', system-ui, sans-serif; color: oklch(0.19 0.012 260); padding: 30px 26px 40px; box-sizing: border-box;">
+
+  <div class="mono" style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: oklch(0.50 0.10 145);">Option B</div>
+  <h2 style="margin: 5px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.025em;">Signal</h2>
+  <p style="margin: 8px 0 0; font-size: 15px; line-height: 1.5; color: oklch(0.32 0.012 260);">
+    Big type, few words, one thing per screen. Status carried by a full-width band rather than a small badge,
+    so the state is legible at arm's length in sun.
+  </p>
+  <div class="mono" style="margin: 12px 0 0; font-size: 11px; line-height: 1.7; color: oklch(0.40 0.012 260); border-left: 3px solid oklch(0.50 0.10 145); padding-left: 12px;">
+    Most legible of the three, and the least distinctive.<br>Fits fewer items per screen — more scrolling.
+  </div>
+
+  <div style="margin-top: 24px; width: 360px; border: 2px solid oklch(0.19 0.012 260); background: #fff;">
+
+    <div style="padding: 15px 16px; border-bottom: 2px solid oklch(0.19 0.012 260);">
+      <div style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em;">My plots</div>
+    </div>
+
+    <!-- warning band -->
+    <div style="background: oklch(0.45 0.13 45); color: oklch(0.98 0.01 85); padding: 15px 16px;">
+      <div style="display: flex; align-items: flex-start; gap: 11px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink: 0; margin-top: 1px;"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9.5v5M12 17.5v.01"></path></svg>
+        <div>
+          <div style="font-size: 19px; font-weight: 700; line-height: 1.25;">2 videos are only on this phone</div>
+          <div style="font-size: 15px; line-height: 1.45; margin-top: 5px; opacity: 0.94;">
+            They will send by themselves when you have signal.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <sc-for list="{{rows}}" as="v" hint-placeholder-count="4">
+      <div style="padding: 16px; border-bottom: 1px solid oklch(0.87 0.008 85);">
+        <div style="display: flex; gap: 13px; align-items: flex-start;">
+          <div style="width: 72px; height: 72px; flex-shrink: 0; background: {{v.thumb}}; display: flex; align-items: center; justify-content: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="oklch(0.30 0.05 145)" stroke-width="1.8"><path d="M6 4l12 8-12 8z"></path></svg>
+          </div>
+          <div style="flex-grow: 1;">
+            <div style="font-size: 19px; font-weight: 600; line-height: 1.2;">{{v.crop}}</div>
+            <div style="font-size: 15px; color: oklch(0.42 0.012 260); margin-top: 3px;">{{v.when}}</div>
+          </div>
+        </div>
+        <div style="margin-top: 12px; height: 44px; display: flex; align-items: center; gap: 9px; padding: 0 13px; background: {{v.bandBg}};">
+          <div style="width: 9px; height: 9px; background: {{v.bandInk}}; flex-shrink: 0;"></div>
+          <div style="font-size: 15px; font-weight: 600; color: {{v.bandInk}};">{{v.state}}</div>
+        </div>
+      </div>
+    </sc-for>
+
+    <div style="padding: 16px;">
+      <div style="background: oklch(0.42 0.12 145); color: #fff; height: 60px; display: flex; align-items: center; justify-content: center; gap: 11px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.4"></circle></svg>
+        <div style="font-size: 19px; font-weight: 700;">Record</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const warnBg = 'oklch(0.93 0.04 45)';
+    const warnInk = 'oklch(0.40 0.13 45)';
+    const okBg = 'oklch(0.93 0.04 145)';
+    const okInk = 'oklch(0.37 0.11 145)';
+    return {
+      rows: [
+        { crop: 'Potato — north plot', when: 'Today, 8:40 am', thumb: 'oklch(0.86 0.03 145)', state: 'Waiting for signal', bandBg: warnBg, bandInk: warnInk },
+        { crop: 'Potato — north plot', when: 'Yesterday',      thumb: 'oklch(0.86 0.03 145)', state: 'Sending — 40%',      bandBg: warnBg, bandInk: warnInk },
+        { crop: 'Potato — canal plot', when: '18 August',      thumb: 'oklch(0.84 0.04 145)', state: 'Sent and timestamped', bandBg: okBg, bandInk: okInk },
+        { crop: 'Wheat — back field',  when: '11 August',      thumb: 'oklch(0.84 0.05 100)', state: 'Sent and timestamped', bandBg: okBg, bandInk: okInk },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

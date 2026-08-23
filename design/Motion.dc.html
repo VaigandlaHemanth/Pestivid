@@ -1,0 +1,426 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .mono { font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    .lift1 { box-shadow: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05); }
+    .lbl { font-size: 13.5px; color: #4a443d; }
+    .card { background: #fff; padding: 24px 26px; }
+
+    /* The five curves, solved from response and damping and emitted as
+       linear(). Chrome 113+ and Safari 17.2+ interpolate these natively, so
+       what runs below is the spring itself -- not a bezier that resembles one. */
+    :root {
+    --e-smooth: linear(0,0.0197,0.0687,0.135,0.2101,0.2882,0.3655,0.4393,0.5081,0.5712,0.6282,0.6791,0.7241,0.7637,0.7983,0.8283,0.8542,0.8765,0.8956,0.9119,0.9258,0.9376,0.9476,0.9561,0.9632,0.9692,0.9743,0.9786,0.9821,0.9851,0.9876,0.9897,0.9914,0.9929,0.9941,0.9951,0.996,0.9967,0.9972,0.9977,0.9981,0.9984,0.9987,0.9989,1);
+    --t-smooth: 746ms;
+    --e-snappy: linear(0,0.0183,0.0653,0.131,0.2077,0.2895,0.372,0.4523,0.5281,0.5982,0.6618,0.7185,0.7685,0.8119,0.8492,0.8808,0.9074,0.9294,0.9474,0.962,0.9737,0.9829,0.99,0.9953,0.9993,1.0021,1.0041,1.0053,1.006,1.0063,1.0062,1.006,1.0056,1.0052,1.0047,1.0042,1.0036,1.0032,1.0027,1.0023,1.0019,1.0016,1.0013,1.001,1);
+    --t-snappy: 568ms;
+    --e-bouncy: linear(0,0.0251,0.0895,0.1791,0.2824,0.3907,0.4975,0.598,0.6892,0.7695,0.8381,0.895,0.9408,0.9765,1.0033,1.0223,1.0349,1.0423,1.0456,1.0457,1.0437,1.0402,1.0357,1.0308,1.0258,1.021,1.0166,1.0126,1.0091,1.0062,1.0038,1.0019,1.0005,0.9994,0.9987,0.9982,0.998,0.9979,0.9979,0.9981,0.9982,0.9985,0.9987,0.9989,1);
+    --t-bouncy: 830ms;
+    --e-press: linear(0,0.0202,0.0703,0.1379,0.2142,0.2935,0.3716,0.446,0.5152,0.5784,0.6354,0.6861,0.7309,0.7701,0.8042,0.8338,0.8592,0.8811,0.8997,0.9156,0.9291,0.9406,0.9503,0.9584,0.9653,0.971,0.9759,0.9799,0.9833,0.9861,0.9885,0.9905,0.9921,0.9935,0.9946,0.9955,0.9963,0.997,0.9975,0.9979,0.9983,0.9986,0.9988,0.999,1);
+    --t-press: 378ms;
+    --e-sheet: linear(0,0.0166,0.0593,0.1189,0.1888,0.2636,0.3396,0.414,0.4849,0.5513,0.6122,0.6674,0.7169,0.7607,0.7992,0.8327,0.8616,0.8863,0.9074,0.9252,0.9401,0.9525,0.9628,0.9712,0.978,0.9836,0.988,0.9915,0.9942,0.9963,0.998,0.9992,1,1.0007,1.0011,1.0013,1.0015,1.0015,1.0015,1.0015,1.0014,1.0013,1.0012,1.001,1);
+    --t-sheet: 744ms;
+    }
+    @keyframes run-smooth { 0%{transform:translateX(0)} 31.1%,50%{transform:translateX(196px)} 81.1%,100%{transform:translateX(0)} }
+    @keyframes run-snappy { 0%{transform:translateX(0)} 23.7%,50%{transform:translateX(196px)} 73.7%,100%{transform:translateX(0)} }
+    @keyframes run-bouncy { 0%{transform:translateX(0)} 34.6%,50%{transform:translateX(196px)} 84.6%,100%{transform:translateX(0)} }
+    @keyframes run-press { 0%{transform:translateX(0)} 15.8%,50%{transform:translateX(196px)} 65.8%,100%{transform:translateX(0)} }
+    @keyframes run-sheet { 0%{transform:translateX(0)} 31%,50%{transform:translateX(196px)} 81%,100%{transform:translateX(0)} }
+
+    .dot { position: absolute; left: 6px; top: 6px; width: 18px; height: 18px; background: #012169;
+           border-radius: 9px; animation-duration: 2400ms; animation-iteration-count: infinite; }
+
+    @keyframes near { 0%{transform:translateX(0)} 8.3%,50%{transform:translateX(18px)} 58.3%,100%{transform:translateX(0)} }
+    @keyframes mid  { 0%{transform:translateX(0)} 15.8%,50%{transform:translateX(118px)} 65.8%,100%{transform:translateX(0)} }
+    @keyframes far  { 0%{transform:translateX(0)} 25%,50%{transform:translateX(320px)} 75%,100%{transform:translateX(0)} }
+
+    @keyframes originWrong { 0%{transform:scale(.2);opacity:0} 22%,58%{transform:scale(1);opacity:1} 66%,100%{transform:scale(.2);opacity:0} }
+    @keyframes originRight { 0%{transform:scale(.2);opacity:0} 22%,58%{transform:scale(1);opacity:1} 66%,100%{transform:scale(.2);opacity:0} }
+    .menu { animation-duration: 2400ms; animation-iteration-count: infinite;
+            animation-timing-function: var(--e-snappy); }
+
+    @keyframes stamp { 0%{transform:scale(1.5) rotate(-16deg);opacity:0} 6%{opacity:1}
+                       34.5%,64%{transform:scale(1) rotate(-5.5deg);opacity:1} 72%,100%{transform:scale(1.5) rotate(-16deg);opacity:0} }
+
+    /* Press is the one animation a person drives. It fires on pointerdown, not
+       on click -- waiting for the tap to resolve is the whole difference
+       between a surface that answers and one that lags. */
+    .press { transition: transform var(--t-press) var(--e-press); }
+    .press:active { transform: scale(.97); }
+
+    @keyframes barTrue  { 0%,100%{transform:scaleX(0)} 92%{transform:scaleX(1)} }
+
+    /* Anyone who asked their operating system for less movement gets the state
+       change, never the journey. Cross-fade, never nothing: a change that
+       happens with no transition at all is harder to follow, not easier. */
+    @media (prefers-reduced-motion: reduce) {
+      .dot, .menu, .stampEl, .barEl { animation: none !important; }
+      .press { transition: none; }
+      .rm { display: block !important; }
+    }
+  </style>
+</helmet>
+
+<div class="a" style="width: 1320px; background: #f3f6f9; color: #1d1a17; padding: 34px 44px 44px; box-sizing: border-box;">
+
+  <div class="lbl">Motion</div>
+  <h1 style="margin: 4px 0 0; font-size: 31px; font-weight: 700; letter-spacing: -0.03em;">Buttery is a physics claim, so it is checkable</h1>
+  <p style="margin: 9px 0 0; font-size: 15.5px; line-height: 1.55; max-width: 100ch; color: #4a443d;">
+    The reason iOS motion feels the way it does is not the easing curve, it is that nothing on the
+    screen is playing a fixed-length animation. Everything is a spring with a position and a velocity,
+    so it can be caught, redirected and handed a new target mid-flight without ever snapping. This
+    board runs the real curves &mdash; every dot below is moving on the spring named beside it.
+  </p>
+
+  <div class="card lift1" style="margin-top: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+      <div style="font-size: 19px; font-weight: 700;">Five springs, and no sixth</div>
+      <div class="lbl">solved from response and damping &middot; emitted as CSS <span class="mono">linear()</span></div>
+    </div>
+
+      <div style="display: grid; grid-template-columns: 150px 244px 1fr 128px; gap: 20px; align-items: center; padding: 16px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
+        <div>
+          <div class="mono" style="font-size: 15px; font-weight: 600;">smooth</div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 3px;">response 0.5s</div>
+          <div class="m" style="font-size: 13px; color: #4a443d;">damping 1</div>
+        </div>
+        <svg width="232" height="92" viewBox="0 0 232 92" aria-hidden="true" style="background: #fff;">
+          <line x1="10" y1="13.1" x2="222" y2="13.1" stroke="#c9d2da" stroke-dasharray="3 3"></line>
+          <line x1="10" y1="82" x2="222" y2="82" stroke="#c9d2da"></line>
+          <path d="M10.0,82.0 L12.4,81.7 L14.7,80.7 L17.1,79.3 L19.4,77.5 L21.8,75.4 L24.1,73.0 L26.5,70.6 L28.8,68.0 L31.2,65.4 L33.6,62.8 L35.9,60.1 L38.3,57.5 L40.6,55.0 L43.0,52.5 L45.3,50.1 L47.7,47.8 L50.0,45.6 L52.4,43.5 L54.8,41.5 L57.1,39.6 L59.5,37.8 L61.8,36.1 L64.2,34.4 L66.5,32.9 L68.9,31.5 L71.2,30.2 L73.6,28.9 L76.0,27.7 L78.3,26.6 L80.7,25.6 L83.0,24.7 L85.4,23.8 L87.7,23.0 L90.1,22.2 L92.4,21.5 L94.8,20.8 L97.2,20.2 L99.5,19.7 L101.9,19.1 L104.2,18.7 L106.6,18.2 L108.9,17.8 L111.3,17.4 L113.6,17.1 L116.0,16.8 L118.4,16.5 L120.7,16.2 L123.1,15.9 L125.4,15.7 L127.8,15.5 L130.1,15.3 L132.5,15.1 L134.8,14.9 L137.2,14.8 L139.6,14.7 L141.9,14.5 L144.3,14.4 L146.6,14.3 L149.0,14.2 L151.3,14.1 L153.7,14.0 L156.0,14.0 L158.4,13.9 L160.8,13.8 L163.1,13.8 L165.5,13.7 L167.8,13.7 L170.2,13.6 L172.5,13.6 L174.9,13.5 L177.2,13.5 L179.6,13.5 L182.0,13.4 L184.3,13.4 L186.7,13.4 L189.0,13.4 L191.4,13.4 L193.7,13.3 L196.1,13.3 L198.4,13.3 L200.8,13.3 L203.2,13.3 L205.5,13.3 L207.9,13.3 L210.2,13.2 L212.6,13.2 L214.9,13.2 L217.3,13.2 L219.6,13.2 L222.0,13.2" fill="none" stroke="#012169" stroke-width="2"></path>
+        </svg>
+        <div>
+          <div style="font-size: 15px; font-weight: 600;">Navigation. A screen arriving or leaving.</div>
+          <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 3px;">No overshoot at all. Anything a person is reading must not wobble.</div>
+          <div style="height: 30px; background: #eef2f6; margin-top: 9px; position: relative; overflow: hidden;">
+            <div class="dot" style="animation-name: run-smooth; animation-timing-function: var(--e-smooth);"></div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div class="m" style="font-size: 19px; font-weight: 700;">746<span style="font-size: 13px; font-weight: 400; color: #4a443d;">ms</span></div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 2px;">no overshoot</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 150px 244px 1fr 128px; gap: 20px; align-items: center; padding: 16px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
+        <div>
+          <div class="mono" style="font-size: 15px; font-weight: 600;">snappy</div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 3px;">response 0.4s</div>
+          <div class="m" style="font-size: 13px; color: #4a443d;">damping 0.85</div>
+        </div>
+        <svg width="232" height="92" viewBox="0 0 232 92" aria-hidden="true" style="background: #fff;">
+          <line x1="10" y1="13.1" x2="222" y2="13.1" stroke="#c9d2da" stroke-dasharray="3 3"></line>
+          <line x1="10" y1="82" x2="222" y2="82" stroke="#c9d2da"></line>
+          <path d="M10.0,82.0 L12.4,81.7 L14.7,80.8 L17.1,79.4 L19.4,77.7 L21.8,75.6 L24.1,73.3 L26.5,70.8 L28.8,68.2 L31.2,65.5 L33.6,62.7 L35.9,59.9 L38.3,57.1 L40.6,54.4 L43.0,51.7 L45.3,49.1 L47.7,46.5 L50.0,44.1 L52.4,41.7 L54.8,39.5 L57.1,37.4 L59.5,35.3 L61.8,33.4 L64.2,31.6 L66.5,30.0 L68.9,28.4 L71.2,26.9 L73.6,25.6 L76.0,24.3 L78.3,23.1 L80.7,22.0 L83.0,21.0 L85.4,20.1 L87.7,19.3 L90.1,18.5 L92.4,17.9 L94.8,17.2 L97.2,16.7 L99.5,16.2 L101.9,15.7 L104.2,15.3 L106.6,14.9 L108.9,14.6 L111.3,14.3 L113.6,14.1 L116.0,13.8 L118.4,13.6 L120.7,13.5 L123.1,13.3 L125.4,13.2 L127.8,13.1 L130.1,13.0 L132.5,12.9 L134.8,12.9 L137.2,12.8 L139.6,12.8 L141.9,12.8 L144.3,12.7 L146.6,12.7 L149.0,12.7 L151.3,12.7 L153.7,12.7 L156.0,12.7 L158.4,12.7 L160.8,12.7 L163.1,12.8 L165.5,12.8 L167.8,12.8 L170.2,12.8 L172.5,12.8 L174.9,12.8 L177.2,12.8 L179.6,12.9 L182.0,12.9 L184.3,12.9 L186.7,12.9 L189.0,12.9 L191.4,12.9 L193.7,13.0 L196.1,13.0 L198.4,13.0 L200.8,13.0 L203.2,13.0 L205.5,13.0 L207.9,13.0 L210.2,13.0 L212.6,13.1 L214.9,13.1 L217.3,13.1 L219.6,13.1 L222.0,13.1" fill="none" stroke="#012169" stroke-width="2"></path>
+        </svg>
+        <div>
+          <div style="font-size: 15px; font-weight: 600;">Chips, toggles, filters, small state flips.</div>
+          <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 3px;">A whisper of overshoot. Reads as responsive without reading as toy-like.</div>
+          <div style="height: 30px; background: #eef2f6; margin-top: 9px; position: relative; overflow: hidden;">
+            <div class="dot" style="animation-name: run-snappy; animation-timing-function: var(--e-snappy);"></div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div class="m" style="font-size: 19px; font-weight: 700;">568<span style="font-size: 13px; font-weight: 400; color: #4a443d;">ms</span></div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 2px;">+0.6% over</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 150px 244px 1fr 128px; gap: 20px; align-items: center; padding: 16px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
+        <div>
+          <div class="mono" style="font-size: 15px; font-weight: 600;">bouncy</div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 3px;">response 0.5s</div>
+          <div class="m" style="font-size: 13px; color: #4a443d;">damping 0.7</div>
+        </div>
+        <svg width="232" height="92" viewBox="0 0 232 92" aria-hidden="true" style="background: #fff;">
+          <line x1="10" y1="13.1" x2="222" y2="13.1" stroke="#c9d2da" stroke-dasharray="3 3"></line>
+          <line x1="10" y1="82" x2="222" y2="82" stroke="#c9d2da"></line>
+          <path d="M10.0,82.0 L12.4,81.6 L14.7,80.3 L17.1,78.5 L19.4,76.1 L21.8,73.3 L24.1,70.1 L26.5,66.7 L28.8,63.2 L31.2,59.6 L33.6,55.9 L35.9,52.3 L38.3,48.7 L40.6,45.2 L43.0,41.9 L45.3,38.7 L47.7,35.6 L50.0,32.7 L52.4,30.1 L54.8,27.6 L57.1,25.3 L59.5,23.2 L61.8,21.3 L64.2,19.5 L66.5,18.0 L68.9,16.6 L71.2,15.4 L73.6,14.3 L76.0,13.4 L78.3,12.7 L80.7,12.0 L83.0,11.4 L85.4,11.0 L87.7,10.7 L90.1,10.4 L92.4,10.2 L94.8,10.1 L97.2,10.0 L99.5,10.0 L101.9,10.0 L104.2,10.1 L106.6,10.1 L108.9,10.3 L111.3,10.4 L113.6,10.5 L116.0,10.7 L118.4,10.9 L120.7,11.0 L123.1,11.2 L125.4,11.4 L127.8,11.5 L130.1,11.7 L132.5,11.8 L134.8,12.0 L137.2,12.1 L139.6,12.3 L141.9,12.4 L144.3,12.5 L146.6,12.6 L149.0,12.7 L151.3,12.8 L153.7,12.9 L156.0,12.9 L158.4,13.0 L160.8,13.0 L163.1,13.1 L165.5,13.1 L167.8,13.2 L170.2,13.2 L172.5,13.2 L174.9,13.2 L177.2,13.3 L179.6,13.3 L182.0,13.3 L184.3,13.3 L186.7,13.3 L189.0,13.3 L191.4,13.3 L193.7,13.3 L196.1,13.3 L198.4,13.3 L200.8,13.3 L203.2,13.3 L205.5,13.3 L207.9,13.3 L210.2,13.2 L212.6,13.2 L214.9,13.2 L217.3,13.2 L219.6,13.2 L222.0,13.2" fill="none" stroke="#012169" stroke-width="2"></path>
+        </svg>
+        <div>
+          <div style="font-size: 15px; font-weight: 600;">The stamp, and nothing else in this product.</div>
+          <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 3px;">Real overshoot. Spend it once, on the only moment worth celebrating.</div>
+          <div style="height: 30px; background: #eef2f6; margin-top: 9px; position: relative; overflow: hidden;">
+            <div class="dot" style="animation-name: run-bouncy; animation-timing-function: var(--e-bouncy);"></div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div class="m" style="font-size: 19px; font-weight: 700;">830<span style="font-size: 13px; font-weight: 400; color: #4a443d;">ms</span></div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 2px;">+4.6% over</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 150px 244px 1fr 128px; gap: 20px; align-items: center; padding: 16px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
+        <div>
+          <div class="mono" style="font-size: 15px; font-weight: 600;">press</div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 3px;">response 0.25s</div>
+          <div class="m" style="font-size: 13px; color: #4a443d;">damping 1</div>
+        </div>
+        <svg width="232" height="92" viewBox="0 0 232 92" aria-hidden="true" style="background: #fff;">
+          <line x1="10" y1="13.1" x2="222" y2="13.1" stroke="#c9d2da" stroke-dasharray="3 3"></line>
+          <line x1="10" y1="82" x2="222" y2="82" stroke="#c9d2da"></line>
+          <path d="M10.0,82.0 L12.4,81.6 L14.7,80.7 L17.1,79.2 L19.4,77.3 L21.8,75.2 L24.1,72.8 L26.5,70.3 L28.8,67.7 L31.2,65.1 L33.6,62.4 L35.9,59.7 L38.3,57.1 L40.6,54.6 L43.0,52.1 L45.3,49.7 L47.7,47.3 L50.0,45.1 L52.4,43.0 L54.8,41.0 L57.1,39.1 L59.5,37.3 L61.8,35.6 L64.2,34.0 L66.5,32.5 L68.9,31.0 L71.2,29.7 L73.6,28.5 L76.0,27.3 L78.3,26.2 L80.7,25.2 L83.0,24.3 L85.4,23.4 L87.7,22.6 L90.1,21.9 L92.4,21.2 L94.8,20.5 L97.2,19.9 L99.5,19.4 L101.9,18.9 L104.2,18.4 L106.6,18.0 L108.9,17.6 L111.3,17.2 L113.6,16.9 L116.0,16.6 L118.4,16.3 L120.7,16.0 L123.1,15.8 L125.4,15.6 L127.8,15.4 L130.1,15.2 L132.5,15.0 L134.8,14.8 L137.2,14.7 L139.6,14.6 L141.9,14.4 L144.3,14.3 L146.6,14.2 L149.0,14.1 L151.3,14.0 L153.7,14.0 L156.0,13.9 L158.4,13.8 L160.8,13.8 L163.1,13.7 L165.5,13.7 L167.8,13.6 L170.2,13.6 L172.5,13.5 L174.9,13.5 L177.2,13.5 L179.6,13.4 L182.0,13.4 L184.3,13.4 L186.7,13.4 L189.0,13.4 L191.4,13.3 L193.7,13.3 L196.1,13.3 L198.4,13.3 L200.8,13.3 L203.2,13.3 L205.5,13.3 L207.9,13.2 L210.2,13.2 L212.6,13.2 L214.9,13.2 L217.3,13.2 L219.6,13.2 L222.0,13.2" fill="none" stroke="#012169" stroke-width="2"></path>
+        </svg>
+        <div>
+          <div style="font-size: 15px; font-weight: 600;">Finger down, finger up.</div>
+          <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 3px;">Fast enough that it feels like the surface, not like a reaction to you.</div>
+          <div style="height: 30px; background: #eef2f6; margin-top: 9px; position: relative; overflow: hidden;">
+            <div class="dot" style="animation-name: run-press; animation-timing-function: var(--e-press);"></div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div class="m" style="font-size: 19px; font-weight: 700;">378<span style="font-size: 13px; font-weight: 400; color: #4a443d;">ms</span></div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 2px;">no overshoot</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 150px 244px 1fr 128px; gap: 20px; align-items: center; padding: 16px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
+        <div>
+          <div class="mono" style="font-size: 15px; font-weight: 600;">sheet</div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 3px;">response 0.55s</div>
+          <div class="m" style="font-size: 13px; color: #4a443d;">damping 0.9</div>
+        </div>
+        <svg width="232" height="92" viewBox="0 0 232 92" aria-hidden="true" style="background: #fff;">
+          <line x1="10" y1="13.1" x2="222" y2="13.1" stroke="#c9d2da" stroke-dasharray="3 3"></line>
+          <line x1="10" y1="82" x2="222" y2="82" stroke="#c9d2da"></line>
+          <path d="M10.0,82.0 L12.4,81.7 L14.7,80.9 L17.1,79.7 L19.4,78.1 L21.8,76.2 L24.1,74.1 L26.5,71.8 L28.8,69.4 L31.2,67.0 L33.6,64.4 L35.9,61.9 L38.3,59.3 L40.6,56.8 L43.0,54.3 L45.3,51.8 L47.7,49.5 L50.0,47.2 L52.4,44.9 L54.8,42.8 L57.1,40.7 L59.5,38.8 L61.8,36.9 L64.2,35.2 L66.5,33.5 L68.9,31.9 L71.2,30.5 L73.6,29.1 L76.0,27.8 L78.3,26.5 L80.7,25.4 L83.0,24.3 L85.4,23.4 L87.7,22.4 L90.1,21.6 L92.4,20.8 L94.8,20.1 L97.2,19.4 L99.5,18.8 L101.9,18.2 L104.2,17.7 L106.6,17.2 L108.9,16.8 L111.3,16.4 L113.6,16.0 L116.0,15.7 L118.4,15.4 L120.7,15.1 L123.1,14.9 L125.4,14.7 L127.8,14.5 L130.1,14.3 L132.5,14.1 L134.8,14.0 L137.2,13.9 L139.6,13.8 L141.9,13.7 L144.3,13.6 L146.6,13.5 L149.0,13.4 L151.3,13.4 L153.7,13.3 L156.0,13.3 L158.4,13.2 L160.8,13.2 L163.1,13.2 L165.5,13.1 L167.8,13.1 L170.2,13.1 L172.5,13.1 L174.9,13.1 L177.2,13.1 L179.6,13.1 L182.0,13.0 L184.3,13.0 L186.7,13.0 L189.0,13.0 L191.4,13.0 L193.7,13.0 L196.1,13.0 L198.4,13.0 L200.8,13.0 L203.2,13.1 L205.5,13.1 L207.9,13.1 L210.2,13.1 L212.6,13.1 L214.9,13.1 L217.3,13.1 L219.6,13.1 L222.0,13.1" fill="none" stroke="#012169" stroke-width="2"></path>
+        </svg>
+        <div>
+          <div style="font-size: 15px; font-weight: 600;">The confirm screen sliding up over the plot.</div>
+          <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 3px;">Slightly longer, because it carries more pixels a longer distance.</div>
+          <div style="height: 30px; background: #eef2f6; margin-top: 9px; position: relative; overflow: hidden;">
+            <div class="dot" style="animation-name: run-sheet; animation-timing-function: var(--e-sheet);"></div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div class="m" style="font-size: 19px; font-weight: 700;">744<span style="font-size: 13px; font-weight: 400; color: #4a443d;">ms</span></div>
+          <div class="m" style="font-size: 13px; color: #4a443d; margin-top: 2px;">+0.2% over</div>
+        </div>
+      </div>
+    <div style="font-size: 14px; line-height: 1.55; color: #4a443d; margin-top: 16px; max-width: 108ch;">
+      Settle time is measured, not chosen: it is the moment the curve is within 0.1% of rest and stays
+      there. That is why <span class="mono">bouncy</span> costs 828&nbsp;ms for a 500&nbsp;ms response
+      &mdash; the overshoot has to come back.
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 680px 1fr; gap: 22px; margin-top: 22px; align-items: stretch;">
+
+    <div class="card lift1">
+      <div style="font-size: 19px; font-weight: 700;">Why not a duration and a curve</div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 5px;">
+        Both lines set off, and are told a fifth of the way in to turn round and go back.
+      </div>
+      <svg width="620" height="190" viewBox="0 0 620 190" style="margin-top: 12px; background: #fff;" aria-hidden="true">
+        <line x1="20" y1="170.0" x2="600" y2="170.0" stroke="#c9d2da" stroke-dasharray="3 3"></line>
+        <line x1="85.4" y1="20" x2="85.4" y2="170" stroke="#a71930" stroke-width="1.5" stroke-dasharray="4 3"></line>
+        <path d="M20.0,170.0 L21.1,170.0 L22.2,169.9 L23.3,169.9 L24.4,169.8 L25.4,169.6 L26.5,169.4 L27.6,169.2 L28.7,169.0 L29.8,168.7 L30.9,168.3 L32.0,167.9 L33.1,167.5 L34.2,166.9 L35.2,166.4 L36.3,165.7 L37.4,165.0 L38.5,164.2 L39.6,163.3 L40.7,162.4 L41.8,161.3 L42.9,160.2 L44.0,159.0 L45.1,157.7 L46.1,156.3 L47.2,154.8 L48.3,153.3 L49.4,151.7 L50.5,150.0 L51.6,148.3 L52.7,146.6 L53.8,144.8 L54.9,143.0 L55.9,141.3 L57.0,139.5 L58.1,137.7 L59.2,136.0 L60.3,134.3 L61.4,132.6 L62.5,131.0 L63.6,129.4 L64.7,127.8 L65.7,126.3 L66.8,124.8 L67.9,123.3 L69.0,121.9 L70.1,120.5 L71.2,119.1 L72.3,117.8 L73.4,116.5 L74.5,115.3 L75.6,114.1 L76.6,112.9 L77.7,111.7 L78.8,110.6 L79.9,109.5 L81.0,108.4 L82.1,107.4 L83.2,106.4 L84.3,105.4 L85.4,104.4 L85.4,104.4 L90.3,104.5 L95.3,105.1 L100.2,106.2 L105.2,108.1 L110.1,110.9 L115.1,114.6 L120.0,118.9 L125.0,123.3 L129.9,127.4 L134.9,131.0 L139.8,134.3 L144.8,137.2 L149.7,139.8 L154.7,142.1 L159.6,144.2 L164.6,146.1 L169.5,147.9 L174.5,149.5 L179.4,151.0 L184.4,152.4 L189.3,153.7 L194.3,154.9 L199.2,156.0 L204.2,157.0 L209.1,158.0 L214.1,158.9 L219.0,159.7 L224.0,160.5 L228.9,161.3 L233.9,162.0 L238.8,162.6 L243.8,163.3 L248.7,163.8 L253.7,164.4 L258.6,164.9 L263.6,165.3 L268.6,165.8 L273.5,166.2 L278.5,166.6 L283.4,166.9 L288.4,167.3 L293.3,167.6 L298.3,167.9 L303.2,168.1 L308.2,168.4 L313.1,168.6 L318.1,168.8 L323.0,169.0 L328.0,169.2 L332.9,169.3 L337.9,169.5 L342.8,169.6 L347.8,169.7 L352.7,169.8 L357.7,169.8 L362.6,169.9 L367.6,169.9 L372.5,170.0 L377.5,170.0 L382.4,170.0" fill="none" stroke="#a71930" stroke-width="2.2"></path>
+        <path d="M20.0,170.0 L21.1,170.0 L22.2,169.9 L23.3,169.8 L24.4,169.7 L25.4,169.5 L26.5,169.3 L27.6,169.0 L28.7,168.7 L29.8,168.4 L30.9,168.0 L32.0,167.6 L33.1,167.2 L34.2,166.8 L35.2,166.3 L36.3,165.8 L37.4,165.3 L38.5,164.8 L39.6,164.2 L40.7,163.6 L41.8,163.0 L42.9,162.4 L44.0,161.8 L45.1,161.1 L46.1,160.4 L47.2,159.8 L48.3,159.1 L49.4,158.3 L50.5,157.6 L51.6,156.9 L52.7,156.1 L53.8,155.4 L54.9,154.6 L55.9,153.8 L57.0,153.0 L58.1,152.2 L59.2,151.4 L60.3,150.6 L61.4,149.8 L62.5,149.0 L63.6,148.2 L64.7,147.3 L65.7,146.5 L66.8,145.7 L67.9,144.8 L69.0,144.0 L70.1,143.1 L71.2,142.3 L72.3,141.4 L73.4,140.6 L74.5,139.7 L75.6,138.9 L76.6,138.0 L77.7,137.2 L78.8,136.3 L79.9,135.5 L81.0,134.6 L82.1,133.7 L83.2,132.9 L84.3,132.1 L85.4,131.2 L85.4,131.2 L90.5,127.7 L95.7,125.1 L100.9,123.3 L106.1,122.2 L111.3,121.6 L116.5,121.5 L121.7,121.8 L126.9,122.4 L132.0,123.2 L137.2,124.3 L142.4,125.6 L147.6,127.0 L152.8,128.5 L158.0,130.1 L163.2,131.7 L168.3,133.3 L173.5,134.9 L178.7,136.6 L183.9,138.2 L189.1,139.8 L194.3,141.4 L199.5,142.9 L204.7,144.4 L209.8,145.8 L215.0,147.2 L220.2,148.5 L225.4,149.7 L230.6,151.0 L235.8,152.1 L241.0,153.2 L246.2,154.2 L251.3,155.2 L256.5,156.2 L261.7,157.1 L266.9,157.9 L272.1,158.7 L277.3,159.4 L282.5,160.1 L287.6,160.8 L292.8,161.4 L298.0,162.0 L303.2,162.5 L308.4,163.1 L313.6,163.5 L318.8,164.0 L324.0,164.4 L329.1,164.8 L334.3,165.2 L339.5,165.5 L344.7,165.8 L349.9,166.1 L355.1,166.4 L360.3,166.7 L365.5,166.9 L370.6,167.1 L375.8,167.3 L381.0,167.5 L386.2,167.7 L391.4,167.9 L396.6,168.0 L401.8,168.2 L406.9,168.3 L412.1,168.4 L417.3,168.6 L422.5,168.7 L427.7,168.8 L432.9,168.9 L438.1,168.9 L443.3,169.0 L448.4,169.1 L453.6,169.2 L458.8,169.2 L464.0,169.3 L469.2,169.3 L474.4,169.4 L479.6,169.4 L484.8,169.5 L489.9,169.5 L495.1,169.6 L500.3,169.6 L505.5,169.6 L510.7,169.7 L515.9,169.7 L521.1,169.7 L526.3,169.7 L531.4,169.7 L536.6,169.8 L541.8,169.8 L547.0,169.8 L552.2,169.8" fill="none" stroke="#012169" stroke-width="2.2"></path>
+        <text x="93.4" y="32" font-family="system-ui" font-size="12" fill="#a71930">told to reverse</text>
+      </svg>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 12px;">
+        <div>
+          <div style="font-size: 15px; font-weight: 700; color: #a71930;">420&nbsp;ms cubic-bezier</div>
+          <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 3px;">
+            It has to stop dead before it can go back, because the replacement animation begins at
+            rest. That corner is what people call cheap, and no amount of curve-tuning removes it.
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700; color: #012169;">spring, velocity carried</div>
+          <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 3px;">
+            It was moving, so it carries on a little further before the turn, exactly the way a
+            physical object would. Nothing on screen is ever motionless mid-gesture.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card lift1">
+      <div style="font-size: 19px; font-weight: 700;">Distance sets the duration</div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 5px;">
+        A chip nudging 18&nbsp;px and a sheet crossing 320&nbsp;px cannot take the same time. Same
+        spring, response scaled by distance.
+      </div>
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <div class="m lbl">18&nbsp;px &middot; response 0.20s &middot; 200&nbsp;ms</div>
+          <div style="height: 26px; background: #eef2f6; margin-top: 5px; position: relative; overflow: hidden;">
+            <div class="dot" style="width: 14px; height: 14px; top: 6px; animation-name: near; animation-timing-function: var(--e-snappy);"></div>
+          </div>
+        </div>
+        <div>
+          <div class="m lbl">118&nbsp;px &middot; response 0.32s &middot; 380&nbsp;ms</div>
+          <div style="height: 26px; background: #eef2f6; margin-top: 5px; position: relative; overflow: hidden;">
+            <div class="dot" style="width: 14px; height: 14px; top: 6px; animation-name: mid; animation-timing-function: var(--e-snappy);"></div>
+          </div>
+        </div>
+        <div>
+          <div class="m lbl">320&nbsp;px &middot; response 0.50s &middot; 600&nbsp;ms</div>
+          <div style="height: 26px; background: #eef2f6; margin-top: 5px; position: relative; overflow: hidden;">
+            <div class="dot" style="width: 14px; height: 14px; top: 6px; animation-name: far; animation-timing-function: var(--e-smooth);"></div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 14px;">
+        The rule: <span class="mono">response = clamp(0.18, 0.14 + distance/1400, 0.55)</span>. Never a
+        constant.
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; margin-top: 22px;">
+
+    <div class="card lift1">
+      <div style="font-size: 18px; font-weight: 700;">Motion starts where it physically should</div>
+      <div style="font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px;">
+        A menu that grows from the middle of itself came from nowhere. One that grows from the control
+        that opened it came from that control.
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 600; color: #a71930;">centre &mdash; wrong</div>
+          <div style="height: 104px; background: #eef2f6; margin-top: 6px; position: relative; display: flex; align-items: center; justify-content: center;">
+            <div class="menu" style="width: 74px; height: 62px; background: #012169; transform-origin: 50% 50%; animation-name: originWrong;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 600; color: #012169;">from the control &mdash; right</div>
+          <div style="height: 104px; background: #eef2f6; margin-top: 6px; position: relative;">
+            <div style="position: absolute; left: 10px; top: 10px; width: 26px; height: 12px; background: #b9c2cb;"></div>
+            <div class="menu" style="position: absolute; left: 10px; top: 26px; width: 74px; height: 62px; background: #012169; transform-origin: 0 0; animation-name: originRight;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card lift1">
+      <div style="font-size: 18px; font-weight: 700;">Press, and the one bar that must not ease</div>
+      <div style="font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px;">
+        Hold the button. It answers on pointerdown, before the tap has even resolved.
+      </div>
+      <div class="press" style="background: #016abe; height: 54px; margin-top: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+        <div style="font-size: 16.5px; font-weight: 700; color: #fff;">Report the harvest</div>
+      </div>
+      <div class="lbl" style="margin-top: 16px;">Upload progress &middot; <span class="mono">scaleX</span>, linear</div>
+      <div style="height: 12px; background: #eef2f6; margin-top: 6px; overflow: hidden;">
+        <div class="barEl" style="height: 100%; background: #012169; transform-origin: left; animation: barTrue 3200ms linear infinite;"></div>
+      </div>
+      <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px;">
+        Progress is the one place an easing curve would be a lie: it would report a rate the upload is
+        not achieving. Linear, and on <span class="mono">scaleX</span> so it never relayouts its parent.
+      </div>
+    </div>
+
+    <div class="card lift1">
+      <div style="font-size: 18px; font-weight: 700;">The stamp</div>
+      <div style="font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px;">
+        The only celebratory motion in the entire product, and it fires when the block confirms.
+        Never optimistically, because a stamp that appears and then has to be taken away is worse than
+        no stamp.
+      </div>
+      <div style="height: 178px; background: #eef2f6; margin-top: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+        <div class="stampEl" style="width: 118px; height: 118px; border-radius: 50%; border: 3px solid #01579b; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,253,249,.62); animation: stamp 3360ms var(--e-bouncy) infinite;">
+          <div class="m" style="font-size: 11px; letter-spacing: .08em; color: #01579b;">DATE PROVED</div>
+          <div class="m" style="font-size: 15px; font-weight: 700; color: #01579b; margin-top: 2px;">18 AUG 2026</div>
+          <div class="m" style="font-size: 11px; color: #4a443d; margin-top: 3px;">block 881,204</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 22px;">
+    <div class="card lift1">
+      <div style="font-size: 18px; font-weight: 700;">What may move, and what may never</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 12px;">
+        <div style="background: #eef4ee; padding: 15px 16px;">
+          <div style="font-size: 14.5px; font-weight: 700; color: #024c26;">Free &mdash; the compositor owns them</div>
+          <div class="mono" style="font-size: 13.5px; line-height: 1.7; margin-top: 5px;">transform<br>opacity</div>
+          <div style="font-size: 13.5px; line-height: 1.5; color: #4a443d; margin-top: 6px;">
+            Translate, scale, rotate, fade. That is the whole vocabulary, and everything on this canvas
+            is built from it.
+          </div>
+        </div>
+        <div style="background: #f7e9e6; padding: 15px 16px;">
+          <div style="font-size: 14.5px; font-weight: 700; color: #a71930;">Banned inside a loop</div>
+          <div class="mono" style="font-size: 13.5px; line-height: 1.7; margin-top: 5px;">width height top left<br>margin padding<br>background-color box-shadow<br>filter border-radius</div>
+          <div style="font-size: 13.5px; line-height: 1.5; color: #4a443d; margin-top: 6px;">
+            Each one costs layout or paint on the main thread, every frame, on a phone that has about
+            8&nbsp;ms of headroom in the first place.
+          </div>
+        </div>
+      </div>
+      <div style="font-size: 14px; line-height: 1.55; color: #4a443d; margin-top: 14px;">
+        <span style="font-weight: 700;">Also: <span class="mono">will-change</span> is added on
+        interaction start and stripped on <span class="mono">animationend</span>.</span> Left switched on
+        it permanently allocates a compositor layer, and a dozen of those on a 4&nbsp;GB handset is
+        memory pressure that shows up as jank somewhere else entirely.
+      </div>
+      <div class="rm" style="display: none; background: #f2e6cd; padding: 14px 15px; margin-top: 14px;">
+        <div style="font-size: 14.5px; font-weight: 700; color: #7c4a12;">Your system asked for reduced motion, so this board stopped moving.</div>
+        <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px;">
+          In the product the state still changes &mdash; it cross-fades instead of travelling. Removing
+          the transition entirely makes a change harder to follow, not easier.
+        </div>
+      </div>
+    </div>
+
+    <div class="card lift1">
+      <div style="font-size: 18px; font-weight: 700;">Glass, and the line it does not cross</div>
+      <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d; margin-top: 5px;">
+        Eight surfaces, on three boards: the landing hero, the sign-in panel and the investor
+        evidence card. Each carries an <span class="mono">@supports</span> fallback and a
+        <span class="mono">prefers-reduced-transparency</span> opt-out. Eight is a small number and
+        the reason is a constraint, not neglect.
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px;">
+        <div style="background: #eef4ee; padding: 15px 16px;">
+          <div style="font-size: 14.5px; font-weight: 700; color: #024c26;">Affordable</div>
+          <div style="font-size: 13.5px; line-height: 1.5; color: #4a443d; margin-top: 5px;">
+            A blurred panel over a <span style="font-weight: 700;">static</span> backdrop is filtered
+            once and cached. The hero grid behind our nav never moves, which is why the nav can be glass.
+          </div>
+        </div>
+        <div style="background: #f7e9e6; padding: 15px 16px;">
+          <div style="font-size: 14.5px; font-weight: 700; color: #a71930;">Not affordable</div>
+          <div style="font-size: 13.5px; line-height: 1.5; color: #4a443d; margin-top: 5px;">
+            Over anything that moves &mdash; a scrolling list, a camera preview &mdash; the backdrop is
+            re-filtered every frame. On a Mali GPU that is the frame budget, gone, on the one screen a
+            farmer uses outdoors in a hurry.
+          </div>
+        </div>
+      </div>
+      <div style="font-size: 14px; line-height: 1.55; color: #4a443d; margin-top: 14px;">
+        Glass needs a backdrop that is both <span style="font-weight: 700;">frozen and varied</span>.
+        Frozen, or it re-filters every frame. Varied, or there is nothing to blur &mdash; a panel over
+        a flat fill samples one colour and returns it, which is a translucent grey bar wearing the
+        costume of glass. This product has exactly three such backdrops. The recording screen has a
+        live viewfinder, so it gets flat dark bars; the data pages have flat fills, so glass there
+        would be a no-op with a performance cost. That is the whole audit, and it is why the number
+        is eight rather than everywhere.
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

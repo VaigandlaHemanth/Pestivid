@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    /* 72px rows: clears the 64px target floor with room for a second line when a
+       translated label wraps. Flat list, not a tab bar — five Telugu labels at
+       200% text inside 360px is arithmetic that does not close. */
+    .row { display: flex; align-items: center; gap: 15px; padding: 0 20px; height: 76px; }
+    .lab { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+    .nat { font-size: 15px; color: #605a53; margin-top: 1px; }
+    .ic  { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center;
+           justify-content: center; background: #e7e1db; }
+  </style>
+</helmet>
+
+<div class="f" style="width: 360px; min-height: 880px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+
+  <!-- header -->
+  <div style="background: #f6f3ef; padding: 16px 20px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+    <div>
+      <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
+      <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Alice &middot; Kadapa</div>
+    </div>
+    <div style="display: flex; gap: 16px; align-items: center;">
+      <div style="position: relative;">
+        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+        <div class="m" style="position: absolute; top: -5px; right: -6px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+      </div>
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg>
+    </div>
+  </div>
+
+  <!-- the one thing that needs them today, above the menu -->
+  <div style="background: #1d1a17; padding: 18px 20px; flex-shrink: 0;">
+    <div style="font-size: 14.5px; color: #b5ada6;">Needs you today</div>
+    <div style="font-size: 20px; font-weight: 700; color: #f6f3ef; line-height: 1.28; margin-top: 4px;">
+      Canal plot is ready to harvest
+    </div>
+    <div style="background: #016abe; height: 56px; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+      <div style="font-size: 17px; font-weight: 700; color: #fff;">Report the harvest</div>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
+    </div>
+  </div>
+
+  <!-- the five destinations. flat list, label + icon + audio. -->
+  <div style="flex-grow: 1;">
+
+    <div class="row" style="background: #f6f3ef;">
+      <div class="ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="lab">Record a video</div>
+      </div>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+    </div>
+
+    <div class="row" style="background: #eae4de;">
+      <div class="ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M4 5h16v14H4z"></path><path d="M4 10h16M9 10v9"></path></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="lab">My plots</div>
+      </div>
+      <div class="m" style="font-size: 15px; font-weight: 700; color: #01579b;">2 waiting</div>
+    </div>
+
+    <div class="row" style="background: #f6f3ef;">
+      <div class="ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M12 3v18"></path><path d="M17 7.5c0-2-2.2-3-5-3s-5 1-5 3 2.2 2.7 5 3.3 5 1.4 5 3.4-2.2 3.3-5 3.3-5-1.3-5-3.3"></path></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="lab">Money</div>
+      </div>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+    </div>
+
+    <div class="row" style="background: #eae4de;">
+      <div class="ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M12 20c6-1 9-5.5 9-12-6.5 0-11 3-12 9"></path><path d="M5 20c1.5-5 4-8 9-9.5"></path></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="lab">Check a leaf</div>
+      </div>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+    </div>
+
+    <div class="row" style="background: #f6f3ef;">
+      <div class="ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M21 12a8.5 8.5 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l1.9-5.1A8.5 8.5 0 0 1 12 3.5a8.5 8.5 0 0 1 9 8.5z"></path><path d="M9.5 10.5h5M9.5 14h3"></path></svg>
+      </div>
+      <div style="flex-grow: 1;">
+        <div class="lab">Ask a question</div>
+      </div>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+    </div>
+
+    <!-- weather sits below the menu, not above it: it is context, not a task -->
+    <div style="padding: 20px; background: #ddd7d1;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div style="font-size: 15px; color: #605a53;">Kadapa, today</div>
+          <div class="m" style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;">31&deg;</div>
+        </div>
+        <div style="text-align: right;">
+          <div class="m" style="font-size: 15px; font-weight: 600;">78% humidity</div>
+          <div style="font-size: 14.5px; color: #605a53; margin-top: 2px;">Rain likely Thursday</div>
+        </div>
+      </div>
+      <div style="background: #f2e6cd; padding: 13px 15px; margin-top: 13px;">
+        <div style="font-size: 15.5px; line-height: 1.5; color: #4a443d;">
+          <span style="font-weight: 700;">Do not spray before Thursday.</span> Rain within two days washes
+          most sprays off, so it is money on the ground.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- speak, always reachable -->
+  <div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 18px;">
+    <div style="background: #e7e1db; height: 58px; display: flex; align-items: center; justify-content: center; gap: 11px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"></path></svg>
+      <div style="font-size: 17px; font-weight: 600;">Speak instead of typing</div>
+    </div>
+  </div>
+
+
+  <!-- everything below this line needs a scroll on a 360x800 handset -->
+  <div data-fold style="position: absolute; left: 0; right: 0; top: 800px; height: 0; border-top: 1px dashed rgba(167,25,48,.45); pointer-events: none;">
+    <div style="position: absolute; right: 0; top: -8px; background: rgba(167,25,48,.82); color: #fff; font: 600 9.5px/1 system-ui, sans-serif; letter-spacing: .06em; padding: 3px 5px;">FOLD</div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

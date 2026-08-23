@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: oklch(0.48 0.10 55); } a:hover { color: oklch(0.36 0.10 55); }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+  </style>
+</helmet>
+
+<div style="width: 560px; min-height: 1080px; background: oklch(0.94 0.008 85); font-family: 'Source Sans 3', system-ui, sans-serif; color: oklch(0.19 0.012 260); padding: 30px 26px 40px; box-sizing: border-box;">
+
+  <div class="mono" style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: oklch(0.48 0.10 55);">Option C</div>
+  <h2 style="margin: 5px 0 0; font-size: 31px; font-weight: 700; font-family: 'Source Serif 4', Georgia, serif; letter-spacing: -0.015em;">Almanac</h2>
+  <p style="margin: 8px 0 0; font-size: 15px; line-height: 1.5; color: oklch(0.32 0.012 260);">
+    Serif headings, a season strip across the top, denser rows. Positions each plot in the crop cycle rather
+    than as an isolated file &mdash; which is how a farmer already thinks about a field.
+  </p>
+  <div class="mono" style="margin: 12px 0 0; font-size: 11px; line-height: 1.7; color: oklch(0.40 0.012 260); border-left: 3px solid oklch(0.48 0.10 55); padding-left: 12px;">
+    Most character, most risk. Serif at small sizes in<br>Indic scripts is the weak point — needs testing first.
+  </div>
+
+  <div style="margin-top: 24px; width: 360px; border: 2px solid oklch(0.19 0.012 260); background: oklch(0.975 0.008 85);">
+
+    <div style="padding: 14px 16px 12px; border-bottom: 2px solid oklch(0.19 0.012 260); background: #fff;">
+      <div style="font-size: 23px; font-weight: 700; font-family: 'Source Serif 4', Georgia, serif; letter-spacing: -0.015em;">My plots</div>
+      <!-- season strip -->
+      <div style="display: flex; gap: 3px; margin-top: 11px;">
+        <sc-for list="{{season}}" as="s" hint-placeholder-count="6">
+          <div style="flex-grow: 1;">
+            <div style="height: 7px; background: {{s.fill}};"></div>
+            <div class="mono" style="font-size: 8.5px; margin-top: 4px; text-align: center; color: {{s.ink}};">{{s.label}}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div class="mono" style="font-size: 11px; margin-top: 8px; color: oklch(0.44 0.012 260);">Rabi season &middot; week 11 of 18</div>
+    </div>
+
+    <sc-for list="{{rows}}" as="v" hint-placeholder-count="4">
+      <div style="padding: 13px 16px; border-bottom: 1px solid oklch(0.88 0.008 85); background: {{v.bg}};">
+        <div style="display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 56px; height: 56px; flex-shrink: 0; border: 1.5px solid oklch(0.19 0.012 260); background: {{v.thumb}}; display: flex; align-items: center; justify-content: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.30 0.05 145)" stroke-width="1.9"><path d="M6 4l12 8-12 8z"></path></svg>
+          </div>
+          <div style="flex-grow: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+              <div style="font-size: 17px; font-weight: 600; font-family: 'Source Serif 4', Georgia, serif;">{{v.crop}}</div>
+              <div class="mono" style="font-size: 11px; color: oklch(0.46 0.012 260); white-space: nowrap;">{{v.when}}</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 7px; margin-top: 7px;">
+              <div style="width: 7px; height: 7px; background: {{v.ink}}; flex-shrink: 0;"></div>
+              <div style="font-size: 14px; font-weight: 600; color: {{v.ink}};">{{v.state}}</div>
+            </div>
+            <div style="font-size: 13.5px; line-height: 1.4; margin-top: 5px; color: oklch(0.36 0.012 260);">{{v.note}}</div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+
+    <div style="padding: 15px 16px; background: #fff;">
+      <div style="border: 2px solid oklch(0.19 0.012 260); background: oklch(0.44 0.10 55); color: oklch(0.98 0.01 85); height: 54px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.4"></circle></svg>
+        <div style="font-size: 17px; font-weight: 600;">Record a new video</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    const warnInk = 'oklch(0.40 0.13 45)';
+    const okInk = 'oklch(0.37 0.11 145)';
+    const on = 'oklch(0.48 0.10 55)';
+    const off = 'oklch(0.86 0.01 85)';
+    return {
+      season: [
+        { label: 'SOW',  fill: on,  ink: 'oklch(0.34 0.012 260)' },
+        { label: 'GROW', fill: on,  ink: 'oklch(0.34 0.012 260)' },
+        { label: 'NOW',  fill: 'oklch(0.42 0.13 145)', ink: 'oklch(0.34 0.10 145)' },
+        { label: 'FLWR', fill: off, ink: 'oklch(0.58 0.012 260)' },
+        { label: 'HRVT', fill: off, ink: 'oklch(0.58 0.012 260)' },
+        { label: 'SELL', fill: off, ink: 'oklch(0.58 0.012 260)' },
+      ],
+      rows: [
+        { crop: 'North plot', when: 'today',  thumb: 'oklch(0.86 0.03 145)', state: 'Only on this phone', note: 'Will send when you have signal.', ink: warnInk, bg: 'oklch(0.975 0.02 45)' },
+        { crop: 'North plot', when: 'yest.',  thumb: 'oklch(0.86 0.03 145)', state: 'Sending — 40%',      note: 'Keep the app open if you can.',  ink: warnInk, bg: 'oklch(0.975 0.02 45)' },
+        { crop: 'Canal plot', when: '18 Aug', thumb: 'oklch(0.84 0.04 145)', state: 'Sent, timestamped',  note: 'Investors can see this one.',    ink: okInk,  bg: '#fff' },
+        { crop: 'Back field', when: '11 Aug', thumb: 'oklch(0.84 0.05 100)', state: 'Sent, timestamped',  note: 'Wheat, previous season.',        ink: okInk,  bg: '#fff' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    .ph { width: 360px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column;
+          box-sizing: border-box; }
+    .them { background: #f6f3ef; padding: 13px 15px; max-width: 268px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 15px; max-width: 262px; margin-left: auto; }
+    .t    { font-size: 15.5px; line-height: 1.5; }
+    .when { font-size: 12.5px; color: #4a443d; margin-top: 5px; }
+    /* quick replies are chips, not a rotating prompt: still text, tappable, and
+       they spare somebody typing a reply on a phone keyboard */
+    .chip { background: #e7e1db; min-height: 46px; box-sizing: border-box; display: flex; align-items: center; padding: 10px 13px; font-size: 15px; }
+    .cap  { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px; max-width: 46ch; }
+  </style>
+</helmet>
+
+<div class="a" style="width: 820px; background: #e7e1db; color: #1d1a17; padding: 28px 28px 34px; box-sizing: border-box; position: relative;">
+
+  <div style="font-size: 15px; color: #605a53;">Messages listed a thread; tapping one went nowhere</div>
+  <h2 style="margin: 5px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -0.028em;">One thread, from both ends</h2>
+  <p style="margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; max-width: 84ch; color: #4a443d;">
+    The same four messages, seen by the person who is owed an answer and the person who owes it. What
+    differs is the strip under the name &mdash; each side needs the money context the other already has.
+  </p>
+
+  <div style="display: flex; gap: 36px; margin-top: 22px; align-items: flex-start;">
+
+    <!-- ══ FARMER ══ -->
+    <div>
+      <div class="ph f" style="min-height: 800px;">
+        <div style="background: #f6f3ef; padding: 14px 18px 13px; display: flex; align-items: center; gap: 11px; flex-shrink: 0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+          <div style="width: 38px; height: 38px; background: #e7e1db; border-radius: 19px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700;">R</div>
+          <div style="flex-grow: 1;">
+            <div style="font-size: 18px; font-weight: 700;">Ravi Kumar</div>
+            <div class="m" style="font-size: 13.5px; color: #605a53;">Put &#8377;2,00,000 into Canal plot</div>
+          </div>
+        </div>
+
+        <div style="flex-grow: 1; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;">
+          <div class="them">
+            <div class="t">Namaste Alice. Is the canal water reaching the far end of the plot this year?</div>
+            <div class="m when">17 August, 9:12 am</div>
+          </div>
+          <div class="me">
+            <div class="t">Yes. These two weeks it came every third day.</div>
+            <div style="display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 5px;">
+              <div class="m" style="font-size: 12.5px; color: #c4bdb6;">17 August, 1:40 pm</div>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a9a29b" stroke-width="2.4"><path d="M2 13l4 4 8-9"></path><path d="M10 15l2 2 9-10"></path></svg>
+            </div>
+          </div>
+          <div class="them">
+            <div class="t">Good. Can you walk to the far end in the next video? I have only seen the near side.</div>
+            <div class="m when">17 August, 2:05 pm</div>
+          </div>
+
+          <div style="flex-grow: 1;"></div>
+
+          <div>
+            <div style="font-size: 13.5px; color: #605a53; margin-bottom: 7px;">Tap one to answer</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+              <div class="chip">Yes, I will</div>
+              <div class="chip">Give me two days</div>
+              <div class="chip">The far end is dry</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+          <div style="display: flex; gap: 9px; align-items: stretch;">
+            <div style="flex-grow: 1; background: #ddd7d1; display: flex; align-items: center; padding: 0 14px; min-height: 56px;">
+              <div style="font-size: 16px; color: #4a443d;">Write a message</div>
+            </div>
+            <div style="width: 56px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"></path></svg>
+            </div>
+          </div>
+          <div style="font-size: 13px; line-height: 1.45; margin-top: 9px; color: #605a53;">
+            These are kept on our server and are not scrambled. Assume we could read them.
+          </div>
+        </div>
+      </div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 13px;">The farmer owes an answer</div>
+      <div class="cap">
+        The strip under his name is the money, because that is why this conversation deserves her
+        time. There is no photo button: the server stores text and nothing else, so drawing a paperclip
+        would promise a feature that does not exist.
+      </div>
+    </div>
+
+    <!-- ══ INVESTOR ══ -->
+    <div>
+      <div class="ph f" style="min-height: 800px;">
+        <div style="background: #f6f3ef; padding: 14px 18px 13px; display: flex; align-items: center; gap: 11px; flex-shrink: 0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg>
+          <div style="width: 38px; height: 38px; background: #e7e1db; border-radius: 19px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700;">A</div>
+          <div style="flex-grow: 1;">
+            <div style="font-size: 18px; font-weight: 700;">Alice Farmer</div>
+            <div class="m" style="font-size: 13.5px; color: #605a53;">Canal plot &middot; week 11 of 18</div>
+          </div>
+        </div>
+
+        <!-- pinned, so a question is never asked without the file in reach -->
+        <div style="background: #eae4de; padding: 12px 18px; display: flex; align-items: center; gap: 11px; flex-shrink: 0;">
+          <div style="width: 52px; height: 40px; background: #37322d; flex-shrink: 0;"></div>
+          <div style="flex-grow: 1;">
+            <div class="m" style="font-size: 14.5px; font-weight: 600;">Her latest video &middot; 18 August</div>
+            <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.8"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+              <div class="m" style="font-size: 13px; color: #006934; font-weight: 600;">Block 881,204</div>
+            </div>
+          </div>
+          <div style="font-size: 14px; color: #01579b; font-weight: 600;">Watch</div>
+        </div>
+
+        <div style="flex-grow: 1; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;">
+          <div class="me">
+            <div class="t">Namaste Alice. Is the canal water reaching the far end of the plot this year?</div>
+            <div style="display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 5px;">
+              <div class="m" style="font-size: 12.5px; color: #c4bdb6;">9:12 am</div>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a9a29b" stroke-width="2.4"><path d="M2 13l4 4 8-9"></path><path d="M10 15l2 2 9-10"></path></svg>
+            </div>
+          </div>
+          <div class="them">
+            <div class="t">Yes. These two weeks it came every third day.</div>
+            <div class="m when">1:40 pm</div>
+          </div>
+          <div class="me">
+            <div class="t">Good. Can you walk to the far end in the next video? I have only seen the near side.</div>
+            <div style="display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 5px;">
+              <div class="m" style="font-size: 12.5px; color: #c4bdb6;">2:05 pm &middot; delivered</div>
+            </div>
+          </div>
+
+          <div style="flex-grow: 1;"></div>
+
+          <!-- the sentence that stops an investor turning a delay into a story -->
+          <div style="background: #eae4de; padding: 13px 14px;">
+            <div style="font-size: 14.5px; line-height: 1.55; color: #4a443d;">
+              <span style="font-weight: 700;">She does not have to answer.</span> Alice is farming, not
+              running an investor relations desk, and a slow reply is not evidence of anything. What she
+              is obliged to do is report the harvest.
+            </div>
+          </div>
+        </div>
+
+        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+          <div style="display: flex; gap: 9px; align-items: stretch;">
+            <div style="flex-grow: 1; background: #ddd7d1; display: flex; align-items: center; padding: 0 14px; min-height: 52px;">
+              <div style="font-size: 16px; color: #4a443d;">Write a message</div>
+            </div>
+            <div style="width: 52px; background: #012169; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 12h14"></path><path d="M13 6l6 6-6 6"></path></svg>
+            </div>
+          </div>
+          <div style="font-size: 13px; line-height: 1.45; margin-top: 9px; color: #605a53;">
+            Not scrambled, and kept on our server. Nothing said here changes the terms you agreed to.
+          </div>
+        </div>
+      </div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 13px;">The investor is owed one</div>
+      <div class="cap">
+        His side pins her latest dated video above the thread, so a question is never asked without the
+        evidence in reach. And the grey panel exists to head off the failure mode that kills these
+        platforms: silence read as fraud.
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
