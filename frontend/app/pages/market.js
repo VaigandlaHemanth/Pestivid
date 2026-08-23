@@ -28,3 +28,5 @@ if (ctx) load(ctx.root, async () => {
     stamp: l.cid ? 'Dated video attached' : 'No video — not listed as proved',
   })));
 });
+
+// Same as the landing hero: a filename, a hash and a block number drawn as

@@ -12,6 +12,19 @@ if (ctx) load(ctx.root, async () => {
   const tiles = [...ctx.root.querySelectorAll('.m')].filter(e => e.style.fontSize === '29px');
   if (tiles[0]) tiles[0].textContent = String(buys.length);
   if (tiles[1]) tiles[1].textContent = rupees(buys.reduce((a, p) => a + (p.price || 0), 0));
+  // The receipt panel shows the newest purchase. With no purchases it says so,
+  // because deClaimProps has already stripped the drawn hash and an em dash
+  // where a hash belongs reads as a fault.
+  const top = buys[0];
+  const short = (v) => (v ? `${String(v).slice(0, 8)}…${String(v).slice(-4)}` : 'not recorded');
+  bind(ctx.root, { receipt: top ? {
+    tx: short(top.txHash), hash: short(top.videoFileHash), cid: short(top.cid),
+    block: top.blockHeight ? `Block ${Number(top.blockHeight).toLocaleString('en-IN')}` : 'Not written into a block yet',
+  } : {
+    tx: 'No purchase yet', hash: 'No purchase yet', cid: 'No purchase yet',
+    block: 'No purchase yet',
+  } });
+
   if (!buys.length) {
     return state(ctx.root.querySelector('table')?.parentElement || ctx.root, 'empty', 'You have not bought a lot yet',
       'Nothing here yet. When you buy, the receipt and the video it was sold on stay on this page.');
@@ -32,3 +45,5 @@ if (ctx) load(ctx.root, async () => {
     body.append(tr);
   }
 });
+
+// Same as the landing hero: a filename, a hash and a block number drawn as

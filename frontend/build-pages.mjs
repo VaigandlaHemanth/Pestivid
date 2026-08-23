@@ -117,7 +117,13 @@ export async function build() {
     let style = (open.match(/style="([^"]*)"/) || [, ''])[1];
     style = style.replace(/\bwidth:\s*\d+px;?/, '');
     style = style.replace(/\b(min-)?height:\s*\d+px;?/, '');
-    style = `box-sizing: border-box; width: 100%; max-width: ${f.w}px; margin-left: auto; margin-right: auto; min-height: 100vh; `
+    // A desktop board drawn at 1280 or 1320 was being clamped to that width and
+    // centred, which left a band of bare ground down both sides of the window.
+    // Let it fill instead; at the design width the two are identical, which is
+    // what verify-layout measures. A phone board keeps its width and centres,
+    // because that is what a phone screen is.
+    const clamp = f.w > 400 ? 'max-width: none;' : `max-width: ${f.w}px;`;
+    style = `box-sizing: border-box; width: 100%; ${clamp} margin-left: auto; margin-right: auto; min-height: 100vh; `
       + (f.inherited ? f.inherited + '; ' : '') + style;
     let open2 = open.replace(/\sdata-page="[^"]*"/, '');
     open2 = /style="/.test(open2) ? open2.replace(/style="[^"]*"/, `style="${style}"`)

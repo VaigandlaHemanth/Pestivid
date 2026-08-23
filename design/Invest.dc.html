@@ -125,7 +125,7 @@
 
         <div>
           <!-- video with GLASS chrome — the one place it earns its keep -->
-          <div style="height: 300px; position: relative; overflow: hidden; background: #37322d;" class="lift1"><div style="position: absolute; inset: 12px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 24px; top: 24px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 12px; line-height: 1.85; color: #ded7d0;">VID_20260818_064410_IST.mp4<br>0:41 &middot; 10.1 MB &middot; 1080&times;1920 &middot; 30fps<br>sha256 3f9c2a1e&hellip;d21b<br>block 881,204</div>
+          <div style="height: 300px; position: relative; overflow: hidden; background: #37322d;" class="lift1"><div style="position: absolute; inset: 12px; border: 1px solid #605a53;"></div><div data-bind="file.meta" style="position: absolute; left: 24px; top: 24px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 12px; line-height: 1.85; color: #ded7d0;">VID_20260818_064410_IST.mp4<br>0:41 &middot; 10.1 MB &middot; 1080&times;1920 &middot; 30fps<br>sha256 3f9c2a1e&hellip;d21b<br>block 881,204</div>
 
             <div style="position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); width: 66px; height: 66px; border-radius: 50%; background: rgba(255,255,255,.22); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.4); display: flex; align-items: center; justify-content: center;">
               <div style="width: 0; height: 0; border-left: 21px solid #fff; border-top: 13px solid transparent; border-bottom: 13px solid transparent; margin-left: 7px;"></div>
@@ -138,7 +138,7 @@
                 <div style="width: 0%; height: 100%; background: #fff;"></div>
               </div>
               <div style="font-size: 13px; font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.55);">0:41</div>
-              <div style="font-size: 13px; color: rgba(255,255,255,.86); text-shadow: 0 1px 3px rgba(0,0,0,.55);">1 of 3</div>
+              <div data-bind="file.count" style="font-size: 13px; color: rgba(255,255,255,.86); text-shadow: 0 1px 3px rgba(0,0,0,.55);">1 of 3</div>
             </div>
           </div>
 
@@ -150,7 +150,7 @@
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
               <div>
                 <div style="font-size: 15.5px; font-weight: 700;">Proved &mdash; you can check it yourself</div>
-                <div style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+                <div data-bind="proved.line" style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
                   This exact video file existed by <span class="num" style="font-weight: 600;">18 August 2026</span>
                   and has not been altered. Written into Bitcoin block <span class="num">9xx,xxx</span>.
                 </div>
@@ -160,8 +160,8 @@
             <div style="margin-top: 15px; display: flex; gap: 13px;">
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
               <div>
-                <div style="font-size: 15.5px; font-weight: 700; color: #01579b;">Alice told us &mdash; nobody has checked</div>
-                <div style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+                <div data-bind="told.title" style="font-size: 15.5px; font-weight: 700; color: #01579b;">Alice told us &mdash; nobody has checked</div>
+                <div data-bind="told.body" style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
                   That this is her land, that it is two acres, that it is potato, and the sowing date.
                   The location her phone reported is here too &mdash; and a phone's location can be faked.
                 </div>
@@ -183,20 +183,20 @@
         <!-- money: the lightest, most lifted surface on the page -->
         <div>
           <div style="background: #fff; padding: 22px 24px;" class="lift2">
-            <div style="font-size: 17px; font-weight: 700; letter-spacing: -0.015em;">If you put in &#8377;50,000</div>
+            <div data-bind="offer.title" style="font-size: 17px; font-weight: 700; letter-spacing: -0.015em;">If you put in &#8377;50,000</div>
 
             <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;">
               <div style="display: flex; justify-content: space-between; align-items: baseline;">
                 <div style="font-size: 15px; color: #4a443d;">Your money back</div>
-                <div class="num" style="font-size: 17px; font-weight: 600;">&#8377;50,000</div>
+                <div data-bind="offer.back" class="num" style="font-size: 17px; font-weight: 600;">&#8377;50,000</div>
               </div>
               <div style="display: flex; justify-content: space-between; align-items: baseline;">
                 <div style="font-size: 15px; color: #4a443d;">Your share of the profit</div>
-                <div class="num" style="font-size: 17px; font-weight: 600;">60%</div>
+                <div data-bind="offer.share" class="num" style="font-size: 17px; font-weight: 600;">60%</div>
               </div>
             </div>
 
-            <div style="font-size: 14.5px; line-height: 1.5; margin-top: 16px; color: #4a443d;">
+            <div data-bind="offer.when" style="font-size: 14.5px; line-height: 1.5; margin-top: 16px; color: #4a443d;">
               Paid after Alice reports the harvest. <span style="font-weight: 600;">The profit does not exist yet</span>,
               so we are not going to show you a total.
             </div>
@@ -219,7 +219,7 @@
 
           <div style="margin-top: 14px; background: #fff; padding: 16px 20px; display: flex; align-items: center; gap: 11px;" class="lift1">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M4 5h16v11H8l-4 4z"></path></svg>
-            <div style="font-size: 15.5px; font-weight: 600;">Ask Alice a question</div>
+            <div data-bind="told.ask" style="font-size: 15.5px; font-weight: 600;">Ask Alice a question</div>
           </div>
         </div>
 

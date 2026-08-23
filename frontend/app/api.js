@@ -93,7 +93,13 @@ export async function sendVideo(file, meta, onProgress) {
     xhr.ontimeout = () => reject(new ApiError(0, { message: 'The upload took too long.' }, 'upload'));
     xhr.onload = () => {
       if (xhr.status < 200 || xhr.status >= 300) {
-        return reject(new ApiError(xhr.status, { message: 'Storage would not take the file.' }, 'upload'));
+        // Storage is rate limited on the free tier. That is a wait, not a
+        // refusal, and the clip is still on the phone either way.
+        return reject(new ApiError(xhr.status, {
+          message: xhr.status === 429
+            ? 'Storage is busy just now. Your video is still on your phone — it will go on the next try.'
+            : 'Storage would not take the file.',
+        }, 'upload'));
       }
       let d = null;
       try { d = JSON.parse(xhr.responseText); } catch { /* handled below */ }

@@ -9,6 +9,7 @@
 import { requireUser, api, load, state } from './_guard.js';
 import { bind, repeat } from '../bind.js';
 import { rupees, whenShort, dateState } from '../api.js';
+import { asField } from '../wire.js';
 
 const KEY = 'pv.ask';
 const draft = {
@@ -84,17 +85,8 @@ export function stepVideo() {
     // crop and acres, the two words beside the video
     const cropBox = byLabel(ctx.root, 'Potato');
     const acreBox = byLabel(ctx.root, '2 acres');
-    const asInput = (el, place, mode) => {
-      if (!el) return null;
-      const cs = getComputedStyle(el);
-      const i = document.createElement('input');
-      i.type = 'text'; i.placeholder = place; if (mode) i.inputMode = mode;
-      i.style.cssText = `all: unset; display: block; width: 100%; font: ${cs.font}; color: ${cs.color};`;
-      el.replaceChildren(i);
-      return i;
-    };
-    const crop = asInput(cropBox, 'Potato');
-    const acres = asInput(acreBox, '2', 'decimal');
+    const crop = asField(cropBox, { placeholder: 'Potato', label: 'What are you growing' });
+    const acres = asField(acreBox, { placeholder: '2', inputMode: 'decimal', label: 'How much land, in acres' });
     crop?.addEventListener('input', () => draft.put({ crop: crop.value.trim() }));
     acres?.addEventListener('input', () => draft.put({ acres: Number(acres.value) || 0 }));
 
@@ -120,14 +112,10 @@ export function stepAmount() {
 
     const box = ctx.root.querySelector('[data-bind="amount"]');
     const cs = box && getComputedStyle(box);
-    if (box) {
-      const i = document.createElement('input');
-      i.type = 'text'; i.inputMode = 'numeric'; i.placeholder = '₹';
-      i.value = d.amount || '';
-      i.style.cssText = `all: unset; display: block; width: 100%; font: ${cs.font}; color: ${cs.color};`;
-      box.replaceChildren(i);
-      i.addEventListener('input', () => draft.put({ amount: Number(String(i.value).replace(/[^\d]/g, '')) || 0 }));
-    }
+    const amountField = asField(box, { inputMode: 'numeric', placeholder: '₹',
+      value: d.amount || '', label: 'How much you need' });
+    amountField?.addEventListener('input', () =>
+      draft.put({ amount: Number(String(amountField.value).replace(/[^\d]/g, '')) || 0 }));
 
     // the growing method is a five-value enum on the server; these are its
     // words translated into words a farmer uses
@@ -146,15 +134,9 @@ export function stepAmount() {
 
     const notes = [...ctx.root.querySelectorAll('div')]
       .find(e => /Canal water has been steady/.test(e.textContent) && e.children.length === 0);
-    if (notes) {
-      const ta = document.createElement('textarea');
-      const c2 = getComputedStyle(notes);
-      ta.rows = 3; ta.value = d.description || '';
-      ta.placeholder = 'What happened last year on this plot';
-      ta.style.cssText = `all: unset; display: block; width: 100%; font: ${c2.font}; color: ${c2.color};`;
-      notes.replaceChildren(ta);
-      ta.addEventListener('input', () => draft.put({ description: ta.value.slice(0, 1000) }));
-    }
+    const ta = asField(notes, { multiline: true, rows: 3, value: d.description || '',
+      placeholder: 'What happened last year on this plot', label: 'Anything they should know' });
+    ta?.addEventListener('input', () => draft.put({ description: ta.value.slice(0, 1000) }));
 
     const next = byLabel(ctx.root, 'Next');
     next?.setAttribute('data-act', '');

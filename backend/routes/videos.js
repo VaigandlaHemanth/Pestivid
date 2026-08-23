@@ -722,7 +722,14 @@ router.post('/upload-url', authenticateToken, limits.uploadBurstLimiter, async (
         });
     } catch (err) {
         console.error('upload-url error:', err.message);
-        return res.status(502).json({ message: 'Could not get an upload address from storage. Try again.' });
+        // Pinata's free tier allows 60 API calls a minute. Being over it is a
+        // wait, and telling a farmer their upload broke would be wrong.
+        const busy = err.response && err.response.status === 429;
+        return res.status(busy ? 429 : 502).json({
+            message: busy
+                ? 'We are asking storage too often just now. Wait a moment and try again — nothing is lost.'
+                : 'Could not get an upload address from storage. Try again.',
+        });
     }
 });
 

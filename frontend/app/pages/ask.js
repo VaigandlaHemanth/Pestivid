@@ -3,14 +3,25 @@
 // screen has to be able to say "not now" in words a farmer can act on.
 import { requireUser, api, load, state } from './_guard.js';
 import { oneByText, reason } from '../bind.js';
+import { asField } from '../wire.js';
 
 const ctx = requireUser('ask', ['farmer', 'investor', 'buyer', 'admin']);
+// The board drew an example exchange so the bubbles could be judged. Keep the
+// opening line, drop the rest: a farmer must not read a worked example as an
+// answer they were given.
 if (!ctx) { /* requireUser has already sent them to sign in */ } else {
 
 const root = ctx.root;
 const thread = root.querySelector('.them')?.parentElement;
 const field = oneByText('Type your question', root);
 const send = root.querySelector('div[style*="background: #016abe"]');
+send?.setAttribute('aria-label', 'Send your question');
+send?.setAttribute('role', 'button');
+
+if (thread) {
+  const bubbles = [...thread.querySelectorAll('.them, .me')];
+  bubbles.slice(1).forEach(b => b.remove());
+}
 
 function bubble(kind, text, source) {
   const el = document.createElement('div');
@@ -53,14 +64,9 @@ async function ask(text) {
   } finally { asking = false; }
 }
 
-// the drawn field becomes a real one, in the box it already occupies
-if (field) {
-  const input = document.createElement('input');
-  const cs = getComputedStyle(field);
-  input.type = 'text'; input.name = 'question'; input.enterKeyHint = 'send';
-  input.placeholder = 'Type your question';
-  input.style.cssText = `all: unset; display: block; width: 100%; font: ${cs.font}; color: #1d1a17;`;
-  field.replaceChildren(input);
+const input = asField(field, { name: 'question', enterKeyHint: 'send',
+  placeholder: 'Type your question', label: 'Your question' });
+if (input) {
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') { ask(input.value.trim()); input.value = ''; }
   });

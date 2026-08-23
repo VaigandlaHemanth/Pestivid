@@ -3,6 +3,7 @@
 // is caught before it is irreversible.
 import { requireUser, api, load, state } from './_guard.js';
 import { bind } from '../bind.js';
+import { asField } from '../wire.js';
 import { rupees } from '../api.js';
 
 const ctx = requireUser('report-harvest', ['farmer']);
@@ -13,16 +14,10 @@ if (ctx) load(ctx.root, async () => {
   const share = project.investorShare || 0;
 
   const fields = [...ctx.root.querySelectorAll('[data-bind="revenue"], [data-bind="costs"]')];
-  const inputs = fields.map(f => {
-    const cs = getComputedStyle(f);
-    const i = document.createElement('input');
-    i.type = 'text'; i.inputMode = 'numeric'; i.autocomplete = 'off';
-    i.value = '';
-    i.placeholder = '₹';
-    i.style.cssText = `all: unset; display: block; width: 100%; font: ${cs.font}; color: ${cs.color};`;
-    f.replaceChildren(i);
-    return i;
-  });
+  const inputs = fields.map((f, i) => asField(f, {
+    inputMode: 'numeric', autocomplete: 'off', placeholder: '₹',
+    label: i === 0 ? 'What did you sell it for' : 'What did it cost you to grow',
+  }));
 
   const recompute = () => {
     const [rev, cost] = inputs.map(i => Number(String(i.value).replace(/[^\d]/g, '')) || 0);

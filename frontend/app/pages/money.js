@@ -26,14 +26,18 @@ if (ctx) load(ctx.root, async () => {
     },
     raise: {
       name: raising ? raising.title : 'No season open',
-      amount: raising ? rupees(raising.amount) : '—',
+      amount: raising ? rupees(raising.amount) : 'Nothing being raised',
       state: raising
         ? `${rupees(raising.fundedAmount || 0)} raised of ${rupees(raising.amount)}`
         : 'You are not raising money',
     },
     lastSeason: {
-      investors: investors == null ? '—' : rupees(investors),
-      kept: settled ? rupees((settled.harvestRevenue || 0) - investors) : '—',
+      name: settled ? `${settled.title}, ${new Date(settled.harvestReportedAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}` : 'No season closed yet',
+      investors: investors == null ? 'Nothing paid out yet' : rupees(investors),
+      kept: settled ? rupees((settled.harvestRevenue || 0) - investors) : 'Nothing yet',
+      basis: settled
+        ? `Worked out from what you told us: ${rupees(settled.harvestRevenue)} sold, ${rupees(settled.inputCostBasis)} spent growing it.`
+        : 'Nothing to work out from until a season closes.',
     },
   });
   if (!projects?.length && !listings?.length) {

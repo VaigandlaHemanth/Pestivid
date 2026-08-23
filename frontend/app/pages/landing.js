@@ -39,3 +39,7 @@ if (root) {
     if (el) { el.setAttribute('data-act', ''); el.dataset.go = to; }
   }
 }
+
+// The hero carries a "record of evidence" prop with a filename, a hash and a
+// block number on it. On a public page those are invented figures dressed as
+// proof, which is the one thing this product must not do. Replace them with a

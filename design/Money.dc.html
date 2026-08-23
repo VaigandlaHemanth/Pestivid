@@ -106,7 +106,7 @@
     <!-- last season's receipt, deliberately shaped like a UPI history -->
     <div style="padding: 20px 20px 10px;">
       <div class="sec">What you paid out last season</div>
-      <div class="sub" style="margin-top: 3px;">Canal plot, March 2026</div>
+      <div data-bind="lastSeason.name" class="sub" style="margin-top: 3px;">Canal plot, March 2026</div>
     </div>
 
     <div style="background: #fff;">
@@ -135,7 +135,7 @@
           <div style="font-size: 18px; font-weight: 700;">You kept</div>
           <div data-bind="lastSeason.kept" class="num" style="font-size: 22px; font-weight: 700;">&#8377;4,80,000</div>
         </div>
-        <div class="sub" style="margin-top: 9px;">
+        <div data-bind="lastSeason.basis" class="sub" style="margin-top: 9px;">
           Worked out from what you told us: &#8377;9,32,000 sold, &#8377;2,58,400 spent growing it.
         </div>
       </div>

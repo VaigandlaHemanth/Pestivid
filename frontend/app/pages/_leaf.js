@@ -64,6 +64,14 @@ export function leaf(slug) {
       return;
     }
 
+    // No verdict yet, so the drawn example must go: a farmer must not read a
+    // worked diagnosis as one the checker gave them.
+    bind(ctx.root, {
+      shot: { file: 'No photo yet', where: 'Nothing checked yet' },
+      verdict: { name: 'No diagnosis yet', note: 'Take a photo and the checker will name what it sees, or refuse to.' },
+      refusal: { headline: 'Nothing checked yet' },
+    });
+
     // No verdict yet: this page is where a photograph is taken.
     const slot = ctx.root.querySelector('div[style*="#37322d"]');
     const picker = document.createElement('input');

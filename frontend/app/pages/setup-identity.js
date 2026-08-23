@@ -10,28 +10,19 @@
 // rate-limited server-side, and it wants replacing with a one-time code sent to
 // the phone. That route does not exist yet.
 import { api, session } from '../api.js';
-import { wire } from '../wire.js';
+import { wire, asField } from '../wire.js';
 import { state } from '../bind.js';
 
 const root = wire('setup-identity');
 
-const asInput = (el, opts) => {
-  if (!el) return null;
-  const cs = getComputedStyle(el);
-  const i = document.createElement('input');
-  Object.assign(i, opts);
-  i.style.cssText = `all: unset; display: block; width: 100%; font: ${cs.font}; color: #1d1a17;`;
-  el.replaceChildren(i);
-  return i;
-};
 const byText = (t) => [...root.querySelectorAll('div')]
   .find(d => d.children.length === 0 && d.textContent.trim() === t);
 
 if (root) {
-  const name = asInput(byText('Alice Farmer'),
-    { type: 'text', name: 'name', autocomplete: 'name', placeholder: 'Your name' });
-  const phone = asInput(byText('98765 43210'),
-    { type: 'tel', name: 'tel', autocomplete: 'tel', inputMode: 'numeric', placeholder: '98765 43210' });
+  const name = asField(byText('Alice Farmer'),
+    { type: 'text', name: 'name', autocomplete: 'name', placeholder: 'Your name', label: 'Your name' });
+  const phone = asField(byText('98765 43210'),
+    { type: 'tel', name: 'tel', autocomplete: 'tel', inputMode: 'numeric', placeholder: '98765 43210', label: 'Your phone number' });
 
   // six drawn boxes become one field, so a password manager and a numeric
   // keypad both work; the boxes stay as the visual
@@ -60,6 +51,7 @@ if (root) {
       paint();
     });
     strip.setAttribute('data-act', '');
+    strip.setAttribute('aria-label', 'Your six number code');
     strip.addEventListener('click', () => code.focus());
     paint();
   }
