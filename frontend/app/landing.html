@@ -40,7 +40,6 @@
       .glass { background: rgba(29,26,23,.90); backdrop-filter: none; -webkit-backdrop-filter: none; }
     }
     .ots { text-shadow: 0 1px 5px rgba(0,0,0,.55); }
-    .ots { text-shadow: 0 1px 6px rgba(0,0,0,.45); }
 
     /* Motion: one staged entrance, and the receipt stamp. Nothing loops,
        nothing moves after it settles. */
@@ -100,13 +99,41 @@
       .e1,.e2,.e3,.e4,.stamp,.bar,.reveal,.step { animation: none; opacity: 1; }
       .tap { transition: none; }
     }
+
+    /* Dark glass, for a readout that has to stay legible over a frame nobody
+       chose. Light .glass at 13% cannot carry #ded7d0 over an arbitrary photo;
+       this can, and it does real work rather than decoration: mono text laid
+       straight onto a video frame has whatever contrast that frame happens to
+       give it, which is not a number anyone can promise.
+
+       64% and not the 42% this started at, because 42% was measured, not
+       guessed: over a blown-out frame the plate composited to rgb(153,153,152)
+       and the readout came out at 2.00:1, which is unreadable. The frame is not
+       ours to choose, so the guarantee has to hold against the worst one --
+       pure white -- and 64% is where it does. A third of the frame still shows
+       through, blurred, so it still reads as glass.
+
+       14px of blur, not the hero's 18px: a blur wider than the plate's short
+       side stops frosting and starts smearing. The reduced-transparency
+       fallback is the flat panel the board already drew, so asking for less
+       transparency costs nothing here. */
+    .gplate {
+      background: rgba(12,11,10,.64);
+      backdrop-filter: blur(14px) saturate(118%);
+      -webkit-backdrop-filter: blur(14px) saturate(118%);
+      box-shadow: inset 0 1px 0 rgba(246,243,239,.14);
+    }
+    @supports not (backdrop-filter: blur(1px)) { .gplate { background: rgba(12,11,10,.88); } }
+    @media (prefers-reduced-transparency: reduce) {
+      .gplate { background: rgba(12,11,10,.92); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    }
   </style>
 </head>
 <body data-page="landing" data-role="public" data-design-width="1320" data-design-height="3849">
 <div class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #ddd7d1; color: #1d1a17; box-sizing: border-box;">
 
   <!-- ══ HERO over a field, with glass nav ══ -->
-  <div style="height: 660px; position: relative; overflow: hidden;">
+  <div style="min-height: 660px; position: relative; overflow: hidden;">
     <div style="position: absolute; inset: 0; background: #37322d;">
       <!-- Rows running to a horizon, in the neutral media ramp. Three bands of
            decreasing frequency read as perspective without pretending to be a
@@ -134,10 +161,10 @@
     <!-- The wash used to cover the whole frame, which flattened the rows into
          grey mush. A scrim only where the text sits keeps the headline at
          contrast and lets the field read on the right. -->
-    <div style="position: absolute; inset: 0; background: linear-gradient(100deg, rgba(24,21,18,.88) 0%, rgba(24,21,18,.74) 40%, rgba(24,21,18,.26) 70%, rgba(24,21,18,.14) 100%);"></div><div style="position: absolute; inset: 22px; border: 1px solid rgba(246,243,239,.16);"></div><div data-bind="evidence.meta" style="position: absolute; right: 40px; bottom: 34px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.9; color: #ded7d0; text-align: right;">VID_20260818_064410_IST.mp4<br>0:41 · 1080×1920 · 30fps<br>sha256 3f9c2a1e…d21b<br>block 881,204 · 18 Aug 2026</div></div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(100deg, rgba(24,21,18,.88) 0%, rgba(24,21,18,.74) 40%, rgba(24,21,18,.26) 70%, rgba(24,21,18,.14) 100%);"></div><div style="position: absolute; inset: 22px; border: 1px solid rgba(246,243,239,.16);"></div><div data-bind="evidence.meta" class="gplate" style="position: absolute; right: 40px; bottom: 34px; padding: 9px 12px; max-width: 236px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.9; color: #ded7d0; text-align: right;">VID_20260818_064410_IST.mp4<br>0:41 · 1080×1920 · 30fps<br>sha256 3f9c2a1e…d21b<br>block 881,204 · 18 Aug 2026</div></div>
 
     <!-- glass nav -->
-    <div class="glass e1" style="position: absolute; left: 0; right: 0; top: 0; border-left: none; border-right: none; border-top: none; padding: 0 44px; height: 66px; display: flex; align-items: center; justify-content: space-between;">
+    <div class="glass e1" style="position: absolute; left: 0; right: 0; top: 0; border-left: none; border-right: none; border-top: none; padding: 0 44px; min-height: 66px; display: flex; align-items: center; justify-content: space-between;">
       <div class="ots" style="font-size: 22px; font-weight: 700; letter-spacing: -0.028em; color: #fff;">Pestivid</div>
       <div style="display: flex; align-items: center; gap: 26px;">
         <div class="ots" style="font-size: 15px; color: rgba(255,255,255,.94);">How it works</div>
@@ -149,7 +176,7 @@
       </div>
     </div>
 
-    <div style="position: absolute; left: 72px; top: 146px; width: 760px;">
+    <div style="position: relative; margin: 146px 0 0 72px; width: 760px;">
       <h1 class="e2 ots" style="margin: 0; font-size: 62px; font-weight: 800; letter-spacing: -0.038em; line-height: 1.02; color: #fff;">
         A field you can see.<br>A date nobody can move.
       </h1>

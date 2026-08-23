@@ -80,7 +80,9 @@ for (const f of [email, pass]) {
 // "Create an account" pointed nowhere; the page it needs now exists.
 const create = oneByText('Create an account', root);
 if (create) { create.setAttribute('data-act', ''); create.dataset.go = 'signup'; }
-const phoneApp = oneByText('Get the phone app', root);
-if (phoneApp) { phoneApp.setAttribute('data-act', ''); phoneApp.dataset.go = 'setup-language'; }
+// There is no phone app. A farmer signs in on this same site, with a phone
+// number instead of an address, so the link goes to that screen.
+const farmerIn = oneByText('Farmer sign-in', root);
+if (farmerIn) { farmerIn.setAttribute('data-act', ''); farmerIn.dataset.go = 'signin-farmer'; }
 
 email?.focus();

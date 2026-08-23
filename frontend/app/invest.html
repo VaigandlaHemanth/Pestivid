@@ -44,10 +44,38 @@
     @media (prefers-reduced-transparency: reduce) {
       .glass { background: rgba(24,22,19,.86); backdrop-filter: none; -webkit-backdrop-filter: none; }
     }
+
+    /* Dark glass, for a readout that has to stay legible over a frame nobody
+       chose. Light .glass at 13% cannot carry #ded7d0 over an arbitrary photo;
+       this can, and it does real work rather than decoration: mono text laid
+       straight onto a video frame has whatever contrast that frame happens to
+       give it, which is not a number anyone can promise.
+
+       64% and not the 42% this started at, because 42% was measured, not
+       guessed: over a blown-out frame the plate composited to rgb(153,153,152)
+       and the readout came out at 2.00:1, which is unreadable. The frame is not
+       ours to choose, so the guarantee has to hold against the worst one --
+       pure white -- and 64% is where it does. A third of the frame still shows
+       through, blurred, so it still reads as glass.
+
+       14px of blur, not the hero's 18px: a blur wider than the plate's short
+       side stops frosting and starts smearing. The reduced-transparency
+       fallback is the flat panel the board already drew, so asking for less
+       transparency costs nothing here. */
+    .gplate {
+      background: rgba(12,11,10,.64);
+      backdrop-filter: blur(14px) saturate(118%);
+      -webkit-backdrop-filter: blur(14px) saturate(118%);
+      box-shadow: inset 0 1px 0 rgba(246,243,239,.14);
+    }
+    @supports not (backdrop-filter: blur(1px)) { .gplate { background: rgba(12,11,10,.88); } }
+    @media (prefers-reduced-transparency: reduce) {
+      .gplate { background: rgba(12,11,10,.92); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    }
   </style>
 </head>
 <body data-page="invest" data-role="investor" data-design-width="1320" data-design-height="940">
-<div class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+<div class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box;">
 
   <!-- top bar: hierarchy by weight, no boxes -->
   <div style="background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;" class="lift1">
@@ -193,7 +221,7 @@
 
         <div>
           <!-- video with GLASS chrome — the one place it earns its keep -->
-          <div style="height: 300px; position: relative; overflow: hidden; background: #37322d;" class="lift1"><div style="position: absolute; inset: 12px; border: 1px solid #605a53;"></div><div data-bind="file.meta" style="position: absolute; left: 24px; top: 24px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 12px; line-height: 1.85; color: #ded7d0;">VID_20260818_064410_IST.mp4<br>0:41 · 10.1 MB · 1080×1920 · 30fps<br>sha256 3f9c2a1e…d21b<br>block 881,204</div>
+          <div style="height: 300px; position: relative; overflow: hidden; background: #37322d;" class="lift1"><div style="position: absolute; inset: 12px; border: 1px solid #605a53;"></div><div data-bind="file.meta" class="gplate" style="position: absolute; left: 24px; top: 24px; padding: 9px 12px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 12px; line-height: 1.85; color: #f6f3ef;">VID_20260818_064410_IST.mp4<br>0:41 · 10.1 MB · 1080×1920 · 30fps<br>sha256 3f9c2a1e…d21b<br>block 881,204</div>
 
             <div style="position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); width: 66px; height: 66px; border-radius: 50%; background: rgba(255,255,255,.22); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.4); display: flex; align-items: center; justify-content: center;">
               <div style="width: 0; height: 0; border-left: 21px solid #fff; border-top: 13px solid transparent; border-bottom: 13px solid transparent; margin-left: 7px;"></div>

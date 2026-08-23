@@ -42,4 +42,7 @@ if (root) {
 
 // The hero carries a "record of evidence" prop with a filename, a hash and a
 // block number on it. On a public page those are invented figures dressed as
-// proof, which is the one thing this product must not do. Replace them with a
+// proof, which is the one thing this product must not do, so deClaimProps in
+// wire.js swaps the whole run for a sentence naming what a record holds. The
+// board keeps the filled-in example because an artboard is a drawing; the live
+// page does not, because a live page is a claim.

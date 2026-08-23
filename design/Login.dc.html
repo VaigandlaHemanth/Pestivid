@@ -71,16 +71,6 @@
 
        Nothing on glass carries a money figure, a verification claim or body copy.
        Labels get their own shadow so legibility never depends on the backdrop. */
-    .glass {
-      background: rgba(246,243,239,.13);
-      backdrop-filter: blur(18px) saturate(125%);
-      -webkit-backdrop-filter: blur(18px) saturate(125%);
-      box-shadow: inset 0 1px 0 rgba(246,243,239,.22);
-    }
-    @supports not (backdrop-filter: blur(1px)) { .glass { background: rgba(29,26,23,.86); } }
-    @media (prefers-reduced-transparency: reduce) {
-      .glass { background: rgba(29,26,23,.90); backdrop-filter: none; -webkit-backdrop-filter: none; }
-    }
     .ots { text-shadow: 0 1px 5px rgba(0,0,0,.55); }
     </style>
 </helmet>
@@ -190,10 +180,10 @@
         <div>
           <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">Sign in</div>
           <div style="font-size: 15.5px; line-height: 1.55; margin-top: 6px; max-width: 44ch; color: #4a443d;">
-            Investors and buyers. If you farm, the phone app is the one to use:
-            it works with no signal and reads every screen aloud.
+            Investors and buyers. If you farm, sign in with your phone number
+            instead: same site, laid out for a phone.
           </div>
-          <div style="font-size: 15px; font-weight: 600; color: #01579b; margin-top: 12px;">Get the phone app</div>
+          <div style="font-size: 15px; font-weight: 600; color: #01579b; margin-top: 12px;">Farmer sign-in</div>
         </div>
 
         <div>
@@ -329,8 +319,8 @@
             </div>
           </div>
           <div style="font-size: 14.5px; line-height: 1.55; margin-top: 14px; max-width: 46ch; color: #4a443d;">
-            If you farm, neither of these is you. The phone app is the way in: it
-            works with no signal and reads every screen aloud.
+            If you farm, neither of these is you. Sign in with your phone number
+            instead, on this same site.
           </div>
         </div>
 
@@ -393,7 +383,7 @@
     <div style="display: grid; grid-template-columns: 360px 360px 1fr; gap: 26px; margin-top: 24px; align-items: start;">
 
       <!-- step 1: phone number -->
-      <div data-page="signin-farmer" class="sys" style="background: #ddd7d1; height: 640px; display: flex; flex-direction: column;">
+      <div data-page="signin-farmer" class="sys" style="background: #ddd7d1; min-height: 640px; display: flex; flex-direction: column;">
         <div style="background: #fff; padding: 18px 20px;">
           <div style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em; color: #1d1a17;">Pestivid</div>
         </div>
@@ -417,18 +407,30 @@
             <div class="num" style="font-size: 23px; font-weight: 600; letter-spacing: .06em; color: #1d1a17;">98765 43210</div>
           </div>
 
-          <!-- listen: a real recorded voice, not TTS -->
-          <div style="display: flex; align-items: center; gap: 11px; margin-top: 16px;">
+          <!-- The six numbers the farmer chose when the account was made. There
+               is no SMS route in this product, so asking for a texted code
+               would be drawing a step that cannot happen. -->
+          <div style="margin-top: 20px;">
+            <div style="font-size: 17px; font-weight: 600;">Your six number code</div>
+            <div style="display: flex; align-items: center; min-height: 64px; margin-top: 8px; padding: 0 18px; background: #fff; box-shadow: inset 0 0 0 1px #c3bcb6;">
+              <div class="num" style="font-size: 23px; font-weight: 600; letter-spacing: .28em; color: #1d1a17;">••••••</div>
+            </div>
+            <div style="font-size: 15px; line-height: 1.45; margin-top: 7px; color: #4a443d;">
+              The one you picked when you made the account. Not your bank PIN.
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 11px; margin-top: 18px;">
             <div style="width: 52px; height: 52px; flex-shrink: 0; background: #fff; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 2px #1d1a17;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
             </div>
-            <div style="font-size: 15.5px; line-height: 1.4; color: #4a443d;">Tap to hear this page read out</div>
+            <div style="font-size: 15.5px; line-height: 1.4; color: #4a443d;">Bigger text and read-aloud are in settings</div>
           </div>
         </div>
 
         <div style="background: #fff; padding: 16px 20px 20px;">
           <div style="background: #1d1a17; height: 64px; display: flex; align-items: center; justify-content: center; gap: 11px;">
-            <div style="font-size: 19px; font-weight: 700; color: #fff;">Send me a code</div>
+            <div style="font-size: 19px; font-weight: 700; color: #fff;">Sign in</div>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
           </div>
         </div>

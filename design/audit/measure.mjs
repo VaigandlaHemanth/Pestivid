@@ -151,12 +151,32 @@ const PAGE_FN = () => {
       }
     }
 
-    // clipping: an ancestor hides overflow and this element sticks out of it
-    if (el.scrollHeight - el.clientHeight > 1 && cs.overflow !== 'visible' && el.clientHeight > 0) {
+    // clipping: an ancestor hides overflow and this element sticks out of it.
+    //
+    // Overflowing is not the same as clipping. A deliberately oversized
+    // decoration behind overflow:hidden is a CROP -- the LeafCheck guidance
+    // tiles draw a leaf at 188% height precisely so the frame cuts it. What
+    // matters is whether READING material is cut, so the test is whether any
+    // text or control actually falls past the container's floor.
+    const cutsContent = () => {
+      const floor = el.getBoundingClientRect().top + el.clientHeight + 1;
+      for (const d of el.querySelectorAll('*')) {
+        const own = [...d.childNodes].some(k => k.nodeType === 3 && k.textContent.trim());
+        if (!own) continue;
+        if (d.getBoundingClientRect().bottom > floor) return true;
+      }
+      return false;
+    };
+    if (el.scrollHeight - el.clientHeight > 1 && cs.overflow !== 'visible' && el.clientHeight > 0 && cutsContent()) {
       clipped.push({
         tag, cls: el.className || '', clientH: el.clientHeight, scrollH: el.scrollHeight,
         cut: el.scrollHeight - el.clientHeight,
         first: (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 50),
+        // an empty unclassed div says nothing; where it sits and what it holds does
+        at: `${Math.round(box.x)},${Math.round(box.y)} ${Math.round(box.width)}x${Math.round(box.height)}`,
+        bg: cs.backgroundColor,
+        kids: [...el.children].map(k => (k.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 24) ||
+              `<${k.tagName.toLowerCase()}>`).join(' | ').slice(0, 90),
       });
     }
   }
@@ -176,12 +196,26 @@ const SCALE_FN = (factor) => {
   }
   const root = document.querySelector('x-dc > div, x-dc div');
   const out = [];
+  // Same rule as the unscaled pass: a deliberately oversized decoration behind
+  // overflow:hidden is a crop, not a clip. Only reading material counts. This
+  // collector was missing the test, so a cropped illustration was reported at
+  // every zoom level and drowned out the two boards that really do cut text.
+  const cutsContent = (el) => {
+    const floor = el.getBoundingClientRect().top + el.clientHeight + 1;
+    for (const d of el.querySelectorAll('*')) {
+      if (![...d.childNodes].some(k => k.nodeType === 3 && k.textContent.trim())) continue;
+      if (d.getBoundingClientRect().bottom > floor) return true;
+    }
+    return false;
+  };
   for (const el of document.querySelectorAll('body *')) {
     const cs = getComputedStyle(el);
     if (cs.overflow === 'visible' || el.clientHeight === 0) continue;
     const cut = el.scrollHeight - el.clientHeight;
-    if (cut > 2) out.push({
+    if (cut > 2 && cutsContent(el)) out.push({
       cut, clientH: el.clientHeight,
+      tag: el.tagName.toLowerCase(), cls: el.className || '',
+      at: `${Math.round(el.getBoundingClientRect().x)},${Math.round(el.getBoundingClientRect().y)}`,
       first: (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 55),
     });
   }
@@ -219,4 +253,12 @@ for (const r of results) {
     `  clip:${r.clipped.length}  apca<60:${lowApca}  target<${mobile ? 44 : 24}:${small}` +
     `  clip@130%:${r.scale130.clipped.length}  clip@200%:${r.scale200.clipped.length}`
   );
+  // a count is not a finding; name what is cut so it can be fixed
+  for (const [tag, set] of [['130%', r.scale130.clipped], ['200%', r.scale200.clipped]])
+    for (const c of set)
+      console.log(`      @${tag} cut ${c.cut}px  <${c.tag} class="${c.cls}"> at ${c.at}  "${c.first}"`);
+  for (const c of r.clipped) {
+    console.log(`      cut ${c.cut}px  <${c.tag} class="${c.cls}"> at ${c.at} bg ${c.bg}`);
+    console.log(`         holds: ${c.kids}`);
+  }
 }

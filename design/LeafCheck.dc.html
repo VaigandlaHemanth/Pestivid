@@ -16,6 +16,34 @@
     .hd  { background: #fff; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; }
     .hdt { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
     .sub { font-size: 15px; line-height: 1.5; color: #4a443d; }
+
+    /* Dark glass, for a readout that has to stay legible over a frame nobody
+       chose. Light .glass at 13% cannot carry #ded7d0 over an arbitrary photo;
+       this can, and it does real work rather than decoration: mono text laid
+       straight onto a video frame has whatever contrast that frame happens to
+       give it, which is not a number anyone can promise.
+
+       64% and not the 42% this started at, because 42% was measured, not
+       guessed: over a blown-out frame the plate composited to rgb(153,153,152)
+       and the readout came out at 2.00:1, which is unreadable. The frame is not
+       ours to choose, so the guarantee has to hold against the worst one --
+       pure white -- and 64% is where it does. A third of the frame still shows
+       through, blurred, so it still reads as glass.
+
+       14px of blur, not the hero's 18px: a blur wider than the plate's short
+       side stops frosting and starts smearing. The reduced-transparency
+       fallback is the flat panel the board already drew, so asking for less
+       transparency costs nothing here. */
+    .gplate {
+      background: rgba(12,11,10,.64);
+      backdrop-filter: blur(14px) saturate(118%);
+      -webkit-backdrop-filter: blur(14px) saturate(118%);
+      box-shadow: inset 0 1px 0 rgba(246,243,239,.14);
+    }
+    @supports not (backdrop-filter: blur(1px)) { .gplate { background: rgba(12,11,10,.88); } }
+    @media (prefers-reduced-transparency: reduce) {
+      .gplate { background: rgba(12,11,10,.92); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    }
   </style>
 </helmet>
 
@@ -40,8 +68,8 @@
 
       <div style="min-height: 140px; background: #37322d; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 8px; border: 1px solid #605a53;"></div>
-        <div data-bind="shot.file" style="position: absolute; left: 18px; top: 16px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #ded7d0;">IMG_20260822_0914_IST.jpg<br>3024&times;4032 &middot; 2.4 MB</div>
-        <div style="position: absolute; left: 12px; bottom: 11px; background: rgba(12,11,10,.9); padding: 5px 10px;">
+        <div data-bind="shot.file" class="gplate" style="position: absolute; left: 18px; top: 16px; padding: 7px 10px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #f6f3ef;">IMG_20260822_0914_IST.jpg<br>3024&times;4032 &middot; 2.4 MB</div>
+        <div class="gplate" style="position: absolute; left: 12px; bottom: 11px; padding: 5px 10px;">
           <div data-bind="shot.where" style="font-size: 12px; font-weight: 600; color: #f6f3ef;">Checked on your phone</div>
         </div>
       </div>
@@ -155,8 +183,8 @@
 
       <div style="min-height: 140px; background: #37322d; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 8px; border: 1px solid #605a53;"></div>
-        <div style="position: absolute; left: 18px; top: 16px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #ded7d0;">IMG_20260822_0931_IST.jpg<br>3024&times;4032 &middot; 2.4 MB</div>
-        <div style="position: absolute; left: 12px; bottom: 11px; background: rgba(12,11,10,.9); padding: 5px 10px;">
+        <div class="gplate" style="position: absolute; left: 18px; top: 16px; padding: 7px 10px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #f6f3ef;">IMG_20260822_0931_IST.jpg<br>3024&times;4032 &middot; 2.4 MB</div>
+        <div class="gplate" style="position: absolute; left: 12px; bottom: 11px; padding: 5px 10px;">
           <div data-bind="refusal.headline" style="font-size: 12px; font-weight: 600; color: #f6f3ef;">Too close &mdash; the leaf runs off the edges</div>
         </div>
       </div>
