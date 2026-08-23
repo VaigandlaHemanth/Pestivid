@@ -60,11 +60,20 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) await build();
 
 export async function build() {
   const shim = readFileSync(path.join(DESIGN, 'audit', 'shim.js'), 'utf8');
-  // A leading underscore means scratch. A copy of a board left in design/ still
-  // declares the same data-page slugs, and whichever the directory listed first
-  // became that page's origin -- so a throwaway file silently decided what a
-  // real page was generated from.
-  const boards = readdirSync(DESIGN).filter(f => f.endsWith('.dc.html') && !f.startsWith('_'));
+  // Which board a page comes from must not depend on directory order. A copy of
+  // a board left in design/ declares the same data-page slugs, and whichever
+  // the listing happened to reach first became that page's origin -- so a
+  // throwaway file silently decided what a real page was generated from, and
+  // the generated page then pointed at a board that no longer existed.
+  //
+  // canvas.json is the authoritative set of artboards, so it goes first and in
+  // its own order. Anything else in design/ follows, and files starting with an
+  // underscore are scratch and never considered.
+  const onCanvas = JSON.parse(readFileSync(path.join(DESIGN, 'canvas.json'), 'utf8'))
+    .artboards.map(a => a.file);
+  const present = new Set(readdirSync(DESIGN).filter(f => f.endsWith('.dc.html') && !f.startsWith('_')));
+  const boards = [...onCanvas.filter(f => present.has(f)),
+                  ...[...present].filter(f => !onCanvas.includes(f)).sort()];
   const browser = await chromium.launch();
   const found = {};
 

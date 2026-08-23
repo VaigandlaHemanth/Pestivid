@@ -11,7 +11,8 @@ if (ctx) load(ctx.root, async () => {
   const mine = key ? all.filter(v => (v.crop || v.location) === key) : all;
   if (!mine.length) {
     return state(ctx.root, 'empty', 'No videos on this plot',
-      'Film it once and this page fills itself.');
+      'Film it once and this page fills itself.',
+        { label: 'Record a video', go: 'record' });
   }
   const first = mine[0];
   bind(ctx.root, { plot: {

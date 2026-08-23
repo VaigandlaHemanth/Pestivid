@@ -20,7 +20,8 @@ if (ctx) load(ctx.root, async () => {
   ];
   if (!items.length) {
     return state(ctx.root, 'empty', 'Nothing yet',
-      'Only your own plots and your own money appear here. We do not send offers.');
+      'Only your own plots and your own money appear here. We do not send offers.',
+        { label: 'Ask a question', go: 'ask' });
   }
   repeatRows(ctx.root, '.n, .nu', items, (el, r) => {
     el.className = r.unread ? 'nu' : 'n';

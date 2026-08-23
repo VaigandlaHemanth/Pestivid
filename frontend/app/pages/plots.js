@@ -29,7 +29,8 @@ if (ctx) {
 
     if (!videos.length) {
       return state(ctx.root, 'empty', 'You have not filmed anything yet',
-        'Walk across your field and record forty seconds. Nobody will fund a season on an empty account.');
+        'Walk across your field and record forty seconds. Nobody will fund a season on an empty account.',
+        { label: 'Record a video', go: 'record' });
     }
 
     // The heading is a state and the count is a figure beside it. Binding the

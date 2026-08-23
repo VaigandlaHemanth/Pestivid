@@ -71,7 +71,16 @@ export function repeat(container, rows, decorate) {
  * Replace a subtree with an honest message. Used for empty, failed and
  * rate-limited: three different things that must not look like each other.
  */
-export function state(container, kind, headline, detail) {
+/**
+ * A message that replaces whatever it is handed.
+ *
+ * @param action optional {label, go} -- a way out. An empty state that names an
+ *   action ("Film your field first") and then offers no way to take it leaves
+ *   the person on a blank page with no exit, which is what this produced on the
+ *   send screen: one box at the top of 1,200px of nothing. If the state names a
+ *   thing to do, it has to be doable from here.
+ */
+export function state(container, kind, headline, detail, action) {
   if (!container) return;
   const tone = {
     empty:   ['#eae4de', '#1d1a17', '#4a443d'],
@@ -88,6 +97,21 @@ export function state(container, kind, headline, detail) {
   p.style.cssText = `font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: ${tone[2]};`;
   p.textContent = detail;
   box.append(h, p);
+  if (action && action.label && action.go) {
+    const a = document.createElement('div');
+    a.dataset.go = action.go;
+    a.dataset.act = '';
+    a.setAttribute('role', 'button');
+    a.tabIndex = 0;
+    a.style.cssText = 'margin-top: 13px; min-height: 48px; background: #1d1a17; color: #fff;'
+      + ' display: flex; align-items: center; justify-content: center;'
+      + ' font-size: 16px; font-weight: 600; cursor: pointer;';
+    a.textContent = action.label;
+    a.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); a.click(); }
+    });
+    box.append(a);
+  }
   container.replaceChildren(box);
 }
 
@@ -153,4 +177,68 @@ export function repeatRows(root, selector, rows, decorate) {
   });
   anchor.remove();
   return made;
+}
+
+/* ------------------------------------------------------------------ *
+ * Named rows.
+ *
+ * repeatRows() takes a CSS selector and its callers were matching substrings of
+ * the style attribute, then picking children by position -- "the first leaf div
+ * that has text". That put a crop name inside a thumbnail and dropped a price,
+ * and it means any change to the drawing silently rewires the code.
+ *
+ * So the artboards name their own parts instead: data-row="payout" marks a
+ * repeatable row, data-slot="amount" names a field in it, data-sec="paid" marks
+ * the heading that introduces the group. None of it paints anything.
+ * ------------------------------------------------------------------ */
+
+/**
+ * Clone a named row once per item and fill its named slots.
+ *
+ * A slot whose value is `null` is REMOVED rather than left showing whatever the
+ * artboard drew -- that is the difference between "this lot has no price yet"
+ * and "this lot costs 1,250 rupees because the mock said so". A slot the item
+ * does not mention at all is left alone.
+ *
+ * @returns the elements created, in order.
+ */
+export function rows(root, name, items, decorate) {
+  const all = [...root.querySelectorAll(`[data-row="${name}"]`)];
+  const tpl = all[0];
+  if (!tpl) return [];
+  all.slice(1).forEach(n => n.remove());     // extra examples of the same row
+  const parent = tpl.parentElement;
+  const anchor = tpl.nextSibling;
+  if (!items.length) { tpl.remove(); return []; }
+
+  const made = [];
+  for (const item of items) {
+    const el = tpl.cloneNode(true);
+    for (const slot of el.querySelectorAll('[data-slot]')) {
+      const v = item[slot.dataset.slot];
+      if (v === undefined) continue;
+      if (v === null) { slot.remove(); continue; }
+      slot.textContent = String(v);
+    }
+    parent.insertBefore(el, anchor);
+    decorate?.(el, item);
+    made.push(el);
+  }
+  tpl.remove();
+  return made;
+}
+
+/** One slot inside a row built by rows(). */
+export const slot = (el, name) => el?.querySelector(`[data-slot="${name}"]`) || null;
+
+/**
+ * Remove a whole section: the data-sec heading that introduces it and every
+ * named row that belongs to it. Used when there is genuinely nothing to show --
+ * an empty section with the artboard's examples still in it is how this page
+ * ended up saying "No season closed yet" above three investors marked "sent".
+ */
+export function dropSection(root, sec, ...rowNames) {
+  root.querySelector(`[data-sec="${sec}"]`)?.remove();
+  for (const n of rowNames)
+    root.querySelectorAll(`[data-row="${n}"]`).forEach(el => el.remove());
 }

@@ -23,6 +23,10 @@
     .st { display: flex; gap: 13px; align-items: flex-start; }
     .dotD { width: 22px; height: 22px; flex-shrink: 0; background: #006934; display: flex;
             align-items: center; justify-content: center; }
+    /* Finished, but not checkable by anybody but us -- so ink, not green. Green
+       is spent only on the step that ends in a Bitcoin block. */
+    .dotOk { width: 22px; height: 22px; flex-shrink: 0; background: #1d1a17; display: flex;
+             align-items: center; justify-content: center; }
     .dotW { width: 22px; height: 22px; flex-shrink: 0; box-shadow: inset 0 0 0 2px #78716a; }
     .line { width: 2px; background: #c3bcb6; margin: 3px 0 3px 10px; height: 20px; }
   </style>
@@ -57,7 +61,7 @@
 
       <div style="background: #f6f3ef; padding: 17px 18px; margin-top: 11px;">
         <div class="st">
-          <div class="dotD"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
+          <div class="dotOk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
           <div>
             <div style="font-size: 16px; font-weight: 600;">Saved on your phone</div>
             <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Done. You can close the app.</div>

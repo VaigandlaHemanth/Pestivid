@@ -6,7 +6,8 @@ import { rupees } from '../api.js';
 const ctx = requireUser('payout', ['farmer']);
 if (ctx) load(ctx.root, async () => {
   const id = new URLSearchParams(location.search).get('project');
-  if (!id) return state(ctx.root, 'empty', 'No season chosen', 'Open this from the season you are reporting on.');
+  if (!id) return state(ctx.root, 'empty', 'No season chosen', 'Open this from the season you are reporting on.',
+        { label: 'Back to your seasons', go: 'money' });
   const [project, investments] = await Promise.all([
     api.projects.one(id), api.investments.onProject(id),
   ]);

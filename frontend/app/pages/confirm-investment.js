@@ -6,7 +6,8 @@ const ctx = requireUser('confirm-investment', ['investor']);
 if (ctx) load(ctx.root, async () => {
   const q = new URLSearchParams(location.search);
   const id = q.get('project'), amount = Number(q.get('amount')) || 0;
-  if (!id) return state(ctx.root, 'empty', 'No season chosen', 'Open this from a season you were reading.');
+  if (!id) return state(ctx.root, 'empty', 'No season chosen', 'Open this from a season you were reading.',
+        { label: 'See what is open', go: 'invest' });
   const p = await api.projects.one(id);
   bind(ctx.root, {
     lot: {
