@@ -127,6 +127,96 @@ async function cleanup(filePath) {
     }
 }
 
+
+/**
+ * Ask Pinata for a one-use upload URL the handset can post straight to.
+ *
+ * This exists because the video cannot travel through our own API on a free
+ * host: a serverless function request body caps at 4.5 MB and a forty-second
+ * clip is about 10 MB. The phone therefore uploads to storage directly, and we
+ * pull the object back afterwards to hash it -- see fetchToTemp below. The JWT
+ * never leaves the server; what the phone receives is a URL that expires.
+ */
+async function signUploadUrl({ filename, maxBytes = MAX_BYTES, expiresSeconds = 120 }) {
+    if (!pinataConfigured()) {
+        const e = new Error('PINATA_JWT is not configured on the server.');
+        e.code = 'PINATA_NOT_CONFIGURED';
+        throw e;
+    }
+    const resp = await axios.post(
+        'https://uploads.pinata.cloud/v3/files/sign',
+        {
+            network: 'public',
+            // `date` is required and undocumented in the guide: without it the
+            // endpoint answers 400 invalid_type on body.date. Unix seconds.
+            date: Math.floor(Date.now() / 1000),
+            expires: expiresSeconds,
+            filename,
+            max_file_size: maxBytes,
+            // ALLOWED_MIME is a Set, and JSON.stringify turns a Set into {}
+            allow_mime_types: [...ALLOWED_MIME],
+        },
+        {
+            headers: { Authorization: `Bearer ${process.env.PINATA_JWT}` },
+            timeout: Number(process.env.PINATA_TIMEOUT_MS || 30000),
+        },
+    );
+    const url = resp.data && (resp.data.data || resp.data.url || resp.data.signedUrl);
+    if (typeof url !== 'string' || !/^https:\/\//.test(url)) {
+        throw new Error('Pinata did not return a usable upload URL.');
+    }
+    return { url, expiresSeconds };
+}
+
+/** Where we read a pinned object back from. */
+function gatewayUrl(cid) {
+    const base = (process.env.PINATA_GATEWAY || 'https://gateway.pinata.cloud').replace(/\/+$/, '');
+    return `${base}/ipfs/${cid}`;
+}
+
+/**
+ * Pull a pinned object back to a temp file so the server can hash the bytes
+ * itself.
+ *
+ * The landing page promises the server hashes the bytes it actually received
+ * and never a number the phone sends. Direct-to-storage upload would break that
+ * promise unless we fetch the object and hash it here, so we do. It costs one
+ * download per video, which is inside the budget, and it is the only reason the
+ * claim is allowed to stay on the page.
+ *
+ * Streams to disk and refuses anything over the size limit rather than reading
+ * an unbounded response into memory.
+ */
+async function fetchToTemp(cid, maxBytes = MAX_BYTES) {
+    const dest = path.join(os.tmpdir(), `pv_${Date.now()}_${Math.random().toString(36).slice(2)}.bin`);
+    const resp = await axios.get(gatewayUrl(cid), {
+        responseType: 'stream',
+        timeout: Number(process.env.PINATA_TIMEOUT_MS || 180000),
+        maxRedirects: 3,
+    });
+    let seen = 0;
+    const out = fs.createWriteStream(dest);
+    await new Promise((resolve, reject) => {
+        resp.data.on('data', (chunk) => {
+            seen += chunk.length;
+            if (seen > maxBytes) {
+                resp.data.destroy();
+                out.destroy();
+                reject(Object.assign(new Error('Stored object is larger than the limit.'), { code: 'TOO_BIG' }));
+            }
+        });
+        resp.data.on('error', reject);
+        out.on('error', reject);
+        out.on('finish', resolve);
+        resp.data.pipe(out);
+    }).catch(async (e) => { await cleanup(dest); throw e; });
+    if (seen === 0) {
+        await cleanup(dest);
+        throw new Error('Stored object was empty.');
+    }
+    return { path: dest, bytes: seen };
+}
+
 module.exports = {
     upload,
     sha256File,
@@ -135,4 +225,7 @@ module.exports = {
     cleanup,
     MAX_BYTES,
     ALLOWED_MIME,
+    signUploadUrl,
+    fetchToTemp,
+    gatewayUrl,
 };

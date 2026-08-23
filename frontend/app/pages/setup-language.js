@@ -1,4 +1,2 @@
-// setup-language -- behaviour and data binding.
-// The markup comes from the artboard; only conduct lives here.
-import { wire } from '../wire.js';
-wire('setup-language');
+import { notWired } from './_stub.js';
+notWired('setup-language', "Choosing a language does nothing until the strings are translated.");

@@ -28,12 +28,21 @@ for (const [k, p] of Object.entries(people)) {
 console.log('  three accounts created and signed in');
 
 const CHECKS = [
-  ['profile',   'farmer',   people.farmer.name],
-  ['home',      'farmer',   people.farmer.name.split(' ').slice(0, 2).join(' ')],
-  ['plots',     'farmer',   'not filmed anything yet'],
-  ['portfolio', 'investor', people.investor.name],
-  ['orders',    'buyer',    'not bought a lot yet'],
-  ['invest',    'investor', null],
+  ['profile',        'farmer',   people.farmer.name],
+  ['home',           'farmer',   people.farmer.name.split(' ').slice(0, 2).join(' ')],
+  ['plots',          'farmer',   'not filmed anything yet'],
+  ['money',          'farmer',   null],
+  ['messages',       'farmer',   'you have not read'],
+  ['payout',         'farmer',   'No season chosen'],
+  ['report-harvest', 'farmer',   'No season chosen'],
+  ['thread-farmer',  'farmer',   'No conversation chosen'],
+  ['plot',           'farmer',   'No videos on this plot'],
+  ['sent',           'farmer',   'no clip to send'],
+  ['portfolio',      'investor', people.investor.name],
+  ['invest',         'investor', null],
+  ['confirm-investment', 'investor', 'No season chosen'],
+  ['orders',         'buyer',    'not bought a lot yet'],
+  ['market',         'buyer',    null],
 ];
 
 const browser = await chromium.launch();
@@ -50,7 +59,9 @@ for (const [slug, who, expect] of CHECKS) {
   await page.goto(`${APP}/${slug}.html`, { waitUntil: 'load' });
   await page.waitForTimeout(1400);
   const text = await page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
-  const placeholderLeft = /Alice Farmer|Charlie Investor|Deccan Cold Storage|98765 43210/.test(text);
+  // Only strings that cannot be real data. "Alice Farmer" is in the seed set, so
+  // matching on it flagged a genuine notification as a leftover placeholder.
+  const placeholderLeft = /Charlie Investor|Deccan Cold Storage|98765 43210|Canal plot &mdash;/.test(text);
   const ok = (!expect || text.includes(expect)) && !placeholderLeft && !errs.length;
   if (!ok) {
     bad++;

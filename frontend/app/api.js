@@ -65,6 +65,48 @@ const post = (p, b) => request('POST', p, b);
 const put = (p, b) => request('PUT', p, b);
 const del = p => request('DELETE', p);
 
+/**
+ * Send a clip the only way a free host allows.
+ *
+ * The API cannot carry it -- a function request body caps at 4.5 MB and a
+ * forty-second clip is about 10 MB -- so the handset asks for a one-use URL,
+ * posts the file straight to storage, and then tells us the identifier. The
+ * server fetches the object back and hashes it there, which is why the page can
+ * still say the hash came from the bytes we received.
+ *
+ * onProgress gets 0..1 so the screen can drive a scaleX bar.
+ */
+export async function sendVideo(file, meta, onProgress) {
+  const ticket = await api.videos.requestUpload({ crop: meta.crop });
+  if (file.size > ticket.maxBytes) {
+    throw new ApiError(413, { message: `That clip is ${Math.round(file.size / 1e6)} MB and the limit is ${Math.round(ticket.maxBytes / 1e6)} MB.` }, 'upload');
+  }
+  const form = new FormData();
+  form.append(ticket.field || 'file', file, file.name || 'clip.mp4');
+  form.append('network', 'public');
+
+  const cid = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();          // fetch cannot report upload progress
+    xhr.open('POST', ticket.url);
+    xhr.upload.onprogress = e => { if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total); };
+    xhr.onerror = () => reject(new ApiError(0, { message: 'The upload stopped. It is still on your phone.' }, 'upload'));
+    xhr.ontimeout = () => reject(new ApiError(0, { message: 'The upload took too long.' }, 'upload'));
+    xhr.onload = () => {
+      if (xhr.status < 200 || xhr.status >= 300) {
+        return reject(new ApiError(xhr.status, { message: 'Storage would not take the file.' }, 'upload'));
+      }
+      let d = null;
+      try { d = JSON.parse(xhr.responseText); } catch { /* handled below */ }
+      const id = d?.data?.cid || d?.cid || d?.IpfsHash;
+      id ? resolve(id) : reject(new ApiError(502, { message: 'Storage did not say where it put the file.' }, 'upload'));
+    };
+    xhr.send(form);
+  });
+
+  // Nothing is recorded until the server has read the object back itself.
+  return api.videos.confirmUpload({ ...meta, cid });
+}
+
 export const api = {
   auth: {
     login: (email, password) => post('/auth/login', { email, password }),
@@ -84,7 +126,7 @@ export const api = {
     // the server then pulls the object back and hashes it itself -- which is
     // what keeps "the server hashes the bytes it received" true.
     requestUpload: (meta) => post('/videos/upload-url', meta),
-    finishUpload: (b) => post('/videos', b),
+    confirmUpload: (b) => post('/videos/confirm-upload', b),
   },
   projects: {
     open: () => get('/funding-requests'),

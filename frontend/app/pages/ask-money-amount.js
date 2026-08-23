@@ -1,4 +1,2 @@
-// ask-money-amount -- behaviour and data binding.
-// The markup comes from the artboard; only conduct lives here.
-import { wire } from '../wire.js';
-wire('ask-money-amount');
+import { notWired } from './_stub.js';
+notWired('ask-money-amount', "Part of the ask-for-money form, which is not connected yet.");

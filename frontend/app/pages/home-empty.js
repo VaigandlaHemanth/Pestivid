@@ -1,4 +1,2 @@
-// home-empty -- behaviour and data binding.
-// The markup comes from the artboard; only conduct lives here.
-import { wire } from '../wire.js';
-wire('home-empty');
+import { notWired } from './_stub.js';
+notWired('home-empty', "This is the empty state of the home screen, kept as a reference.");

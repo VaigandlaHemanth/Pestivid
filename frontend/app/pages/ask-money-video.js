@@ -1,4 +1,2 @@
-// ask-money-video -- behaviour and data binding.
-// The markup comes from the artboard; only conduct lives here.
-import { wire } from '../wire.js';
-wire('ask-money-video');
+import { notWired } from './_stub.js';
+notWired('ask-money-video', "The form needs a Plot entity the server does not have; a plot is currently just a string on a video.");

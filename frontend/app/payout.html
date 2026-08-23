@@ -40,16 +40,16 @@
     <div style="background: #eae4de; padding: 16px 20px;">
       <div style="display: flex; justify-content: space-between;">
         <div style="font-size: 15px; color: #605a53;">You sold it for</div>
-        <div class="m" style="font-size: 16px; font-weight: 600;">₹9,32,000</div>
+        <div data-bind="revenue" class="m" style="font-size: 16px; font-weight: 600;">₹9,32,000</div>
       </div>
       <div style="display: flex; justify-content: space-between; margin-top: 6px;">
         <div style="font-size: 15px; color: #605a53;">It cost you</div>
-        <div class="m" style="font-size: 16px; font-weight: 600;">₹2,58,400</div>
+        <div data-bind="costs" class="m" style="font-size: 16px; font-weight: 600;">₹2,58,400</div>
       </div>
       <div style="font-size: 14.5px; color: #01579b; font-weight: 600; margin-top: 10px;">Change these numbers</div>
     </div>
 
-    <div style="font-size: 15px; color: #605a53; padding: 20px 20px 8px;">Four investors</div>
+    <div data-bind="countLine" style="font-size: 15px; color: #605a53; padding: 20px 20px 8px;">Four investors</div>
 
     <div class="p1">
       <div class="in">R</div>
@@ -92,12 +92,12 @@
       <div style="background: #f6f3ef; padding: 16px 17px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div style="font-size: 16px;">All four together</div>
-          <div class="m" style="font-size: 20px; font-weight: 700;">₹4,04,160</div>
+          <div data-bind="toInvestors" class="m" style="font-size: 20px; font-weight: 700;">₹4,04,160</div>
         </div>
         <div style="height: 1px; background: #dcd6c9; margin: 12px 0;"></div>
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div style="font-size: 17px; font-weight: 700;">You keep</div>
-          <div class="m" style="font-size: 23px; font-weight: 700;">₹2,69,440</div>
+          <div data-bind="youKeep" class="m" style="font-size: 23px; font-weight: 700;">₹2,69,440</div>
         </div>
       </div>
     </div>

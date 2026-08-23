@@ -36,7 +36,7 @@
       <div style="font-size: 22px; font-weight: 700; color: #fff; line-height: 1.25; margin-top: 5px;">
         Canal plot is ready to harvest
       </div>
-      <div style="font-size: 15.5px; line-height: 1.5; margin-top: 7px; color: #d3ccc5;">
+      <div data-bind="due.line" style="font-size: 15.5px; line-height: 1.5; margin-top: 7px; color: #d3ccc5;">
         Four investors are waiting to be paid. Tell us what you sold it for, and what it cost you to grow.
         We work out each person's share.
       </div>
@@ -58,13 +58,13 @@
     <div style="background: #fff; padding: 16px 20px;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div style="font-size: 18px; font-weight: 600;">Canal plot</div>
-        <div class="num" style="font-size: 19px; font-weight: 700;">&#8377;5,00,000</div>
+        <div data-bind="raise.amount" class="num" style="font-size: 19px; font-weight: 700;">&#8377;5,00,000</div>
       </div>
       <div style="min-height: 8px; background: #c3bcb6; margin-top: 11px; overflow: hidden;">
         <div style="width: 100%; height: 100%; background: #1d1a17;"></div>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 7px;">
-        <div class="sub">All of it raised &middot; 4 investors</div>
+        <div data-bind="raise.state" class="sub">All of it raised &middot; 4 investors</div>
         <div class="num" style="font-size: 14px; color: #605a53;">they keep 60%</div>
       </div>
     </div>
@@ -129,11 +129,11 @@
       <div style="padding: 16px 20px; background: #e7e1db;">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div style="font-size: 16px; font-weight: 600;">Their share, all together</div>
-          <div class="num" style="font-size: 17px; font-weight: 700;">&#8377;2,23,600</div>
+          <div data-bind="lastSeason.investors" class="num" style="font-size: 17px; font-weight: 700;">&#8377;2,23,600</div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 9px;">
           <div style="font-size: 18px; font-weight: 700;">You kept</div>
-          <div class="num" style="font-size: 22px; font-weight: 700;">&#8377;4,80,000</div>
+          <div data-bind="lastSeason.kept" class="num" style="font-size: 22px; font-weight: 700;">&#8377;4,80,000</div>
         </div>
         <div class="sub" style="margin-top: 9px;">
           Worked out from what you told us: &#8377;9,32,000 sold, &#8377;2,58,400 spent growing it.

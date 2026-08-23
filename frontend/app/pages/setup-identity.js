@@ -1,4 +1,2 @@
-// setup-identity -- behaviour and data binding.
-// The markup comes from the artboard; only conduct lives here.
-import { wire } from '../wire.js';
-wire('setup-identity');
+import { notWired } from './_stub.js';
+notWired('setup-identity', "Registration by phone number needs a server route that does not exist.");

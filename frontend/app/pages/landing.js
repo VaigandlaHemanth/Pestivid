@@ -1,4 +1,2 @@
-// landing -- behaviour and data binding.
-// The markup comes from the artboard; only conduct lives here.
-import { wire } from '../wire.js';
-wire('landing');
+import { notWired } from './_stub.js';
+notWired('landing', "A marketing page with nothing to read from the server.");

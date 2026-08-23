@@ -1,4 +1,2 @@
-// leaf-result -- behaviour and data binding.
-// The markup comes from the artboard; only conduct lives here.
-import { wire } from '../wire.js';
-wire('leaf-result');
+import { notWired } from './_stub.js';
+notWired('leaf-result', "The classifier runs on the handset and is not loaded here yet.");

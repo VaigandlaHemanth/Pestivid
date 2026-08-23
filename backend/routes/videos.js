@@ -669,6 +669,144 @@ router.post('/:cid/appeal', authenticateToken, async (req, res) => {
 });
 
 
+// ── Direct-to-storage upload ────────────────────────────────────────────────
+//
+// POST /upload sends the file through this API, which works on a box we own and
+// does not work on a free serverless host: the request body caps at 4.5 MB and
+// a forty-second clip is about 10 MB. These two routes are the path that fits.
+//
+//   1. the phone asks for a one-use URL          POST /videos/upload-url
+//   2. the phone posts the file straight to Pinata
+//   3. the phone tells us the CID                POST /videos/confirm-upload
+//   4. WE fetch the object back and hash it ourselves
+//
+// Step 4 is the whole point. Without it the hash would be a number the phone
+// sent us, which is exactly the design this file was written to replace. The
+// bytes we hash are the bytes that are actually stored, fetched by us.
+router.post('/upload-url', authenticateToken, limits.uploadBurstLimiter, async (req, res) => {
+    if (req.user.role !== 'farmer') {
+        return res.status(403).json({ message: "Forbidden: Only users with the 'farmer' role can upload videos." });
+    }
+    if (!ipfs.pinataConfigured()) {
+        return res.status(503).json({
+            message: 'Video storage is not configured on the server. ' +
+                     'An administrator must set PINATA_JWT in the backend environment.',
+        });
+    }
+    try {
+        const crop = typeof req.body.crop === 'string' ? safeCrop(req.body.crop) : 'video';
+        const signed = await ipfs.signUploadUrl({
+            filename: `pestivid_${crop}_${Date.now()}.mp4`,
+            maxBytes: ipfs.MAX_BYTES,
+            expiresSeconds: Number(process.env.UPLOAD_URL_TTL_SECONDS || 120),
+        });
+        return res.json({
+            url: signed.url,
+            expiresSeconds: signed.expiresSeconds,
+            maxBytes: ipfs.MAX_BYTES,
+            // the phone needs to know the field name and that the server will
+            // hash the object afterwards, so it can say so on screen
+            field: 'file',
+            hashedBy: 'server-after-upload',
+        });
+    } catch (err) {
+        console.error('upload-url error:', err.message);
+        return res.status(502).json({ message: 'Could not get an upload address from storage. Try again.' });
+    }
+});
+
+router.post('/confirm-upload', authenticateToken, limits.uploadLimiter, async (req, res) => {
+    if (req.user.role !== 'farmer') {
+        return res.status(403).json({ message: "Forbidden: Only users with the 'farmer' role can upload videos." });
+    }
+    const { cid, crop, pesticide, location, pesticideCompany, purpose } = req.body;
+    if (!cid || !crop || !location || !purpose) {
+        return res.status(400).json({ message: 'Missing required fields (cid, crop, location, purpose).' });
+    }
+    if (typeof cid !== 'string' || !/^[A-Za-z0-9]{40,80}$/.test(cid)) {
+        return res.status(400).json({ message: 'That does not look like a storage identifier.' });
+    }
+    if (!['agristream', 'sell', 'funding'].includes(purpose)) {
+        return res.status(400).json({ message: "Invalid purpose. Must be 'agristream', 'sell', or 'funding'." });
+    }
+    // Claiming somebody else's CID must not attach their footage to your name.
+    const already = await Video.findOne({ cid });
+    if (already) {
+        return res.status(409).json({ message: `A video with CID "${cid}" already exists.`, cid });
+    }
+
+    let tmp = null;
+    try {
+        const fetched = await ipfs.fetchToTemp(cid, ipfs.MAX_BYTES);
+        tmp = fetched.path;
+
+        // hashed here, from the bytes that are actually in storage
+        const videoFileHash = await ipfs.sha256File(tmp);
+        const existing = await Video.findOne({ videoFileHash });
+        if (existing) {
+            await ipfs.cleanup(tmp);
+            return res.status(409).json({
+                message: 'This exact video has already been uploaded.',
+                cid: existing.cid,
+                uploadTimestamp: existing.uploadTimestamp,
+            });
+        }
+
+        let analysis = { fingerprint: undefined, provenance: { flags: [], reviewState: 'none' } };
+        try {
+            let reported;
+            if (req.body.latitude && req.body.longitude) {
+                reported = {
+                    latitude: Number(req.body.latitude),
+                    longitude: Number(req.body.longitude),
+                    accuracy: req.body.locationAccuracy ? Number(req.body.locationAccuracy) : undefined,
+                };
+            }
+            analysis = await provenanceSvc.analyse(tmp, {
+                farmerId: req.user._id,
+                reportedLocation: reported,
+            });
+        } catch (e) {
+            console.warn('Provenance analysis failed, continuing:', e.message);
+            analysis.provenance.flags = ['analysis_error'];
+        }
+
+        const savedVideo = await new Video({
+            cid,
+            storageType: 'ipfs',
+            videoFileHash,
+            hashComputedBy: 'server',
+            fingerprint: analysis.fingerprint,
+            provenance: analysis.provenance,
+            farmerWallet: req.user._id,
+            crop: String(crop).trim(),
+            pesticide: pesticide ? String(pesticide).trim() : undefined,
+            location: String(location).trim(),
+            pesticideCompany: pesticideCompany ? String(pesticideCompany).trim() : undefined,
+            purpose,
+        }).save();
+
+        await ipfs.cleanup(tmp);
+        return res.status(201).json({
+            message: 'Saved. Its date is being written now.',
+            cid: savedVideo.cid,
+            videoFileHash: savedVideo.videoFileHash,
+            hashComputedBy: savedVideo.hashComputedBy,
+            uploadTimestamp: savedVideo.uploadTimestamp,
+            bytes: fetched.bytes,
+        });
+    } catch (err) {
+        if (tmp) await ipfs.cleanup(tmp);
+        if (err.code === 'TOO_BIG') {
+            return res.status(413).json({ message: `That video is larger than the ${Math.round(ipfs.MAX_BYTES / 1024 / 1024)} MB limit.` });
+        }
+        console.error('confirm-upload error:', err.message);
+        return res.status(502).json({
+            message: 'We could not read the video back from storage, so we have not recorded it. Nothing is half-saved.',
+        });
+    }
+});
+
 router.post('/upload', authenticateToken,
     limits.uploadBurstLimiter, limits.uploadLimiter,
     (req, res, next) => {

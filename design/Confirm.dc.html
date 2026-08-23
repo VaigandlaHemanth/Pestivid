@@ -46,8 +46,8 @@
           <div style="position: absolute; inset: 6px; border: 1px solid #605a53;"></div>
         </div>
         <div>
-          <div style="font-size: 19px; font-weight: 600;">Canal plot &mdash; two acres of potato</div>
-          <div class="p" style="font-size: 14.5px; margin-top: 2px;">Alice Farmer &middot; Kadapa &middot; Rabi season, week 11 of 18</div>
+          <div data-bind="lot.title" style="font-size: 19px; font-weight: 600;">Canal plot &mdash; two acres of potato</div>
+          <div data-bind="lot.meta" class="p" style="font-size: 14.5px; margin-top: 2px;">Alice Farmer &middot; Kadapa &middot; Rabi season, week 11 of 18</div>
         </div>
       </div>
 
@@ -55,7 +55,7 @@
       <div style="margin-top: 22px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
           <div style="font-size: 16px;">You are sending</div>
-          <div class="m" style="font-size: 22px; font-weight: 700;">&#8377;50,000</div>
+          <div data-bind="amount" class="m" style="font-size: 22px; font-weight: 700;">&#8377;50,000</div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
           <div style="font-size: 16px;">Your share of any profit</div>
@@ -67,7 +67,7 @@
         </div>
         <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0;">
           <div style="font-size: 16px;">This project still needs</div>
-          <div class="m" style="font-size: 18px; font-weight: 600;">&#8377;3,20,000</div>
+          <div data-bind="lot.needed" class="m" style="font-size: 18px; font-weight: 600;">&#8377;3,20,000</div>
         </div>
       </div>
 
@@ -131,14 +131,14 @@
         <div style="margin-top: 18px;">
           <div style="font-size: 16px; font-weight: 600;">What did you sell it for?</div>
           <div style="background: #f6f3ef; height: 60px; margin-top: 7px; display: flex; align-items: center; padding: 0 16px; box-shadow: inset 0 0 0 2px #1d1a17;">
-            <div class="m" style="font-size: 21px; font-weight: 700;">&#8377;9,32,000</div>
+            <div data-bind="revenue" class="m" style="font-size: 21px; font-weight: 700;">&#8377;9,32,000</div>
           </div>
         </div>
 
         <div style="margin-top: 16px;">
           <div style="font-size: 16px; font-weight: 600;">What did it cost you to grow?</div>
           <div style="background: #f6f3ef; height: 60px; margin-top: 7px; display: flex; align-items: center; padding: 0 16px; box-shadow: inset 0 0 0 1px #c3bcb6;">
-            <div class="m" style="font-size: 21px; font-weight: 700;">&#8377;2,58,400</div>
+            <div data-bind="costs" class="m" style="font-size: 21px; font-weight: 700;">&#8377;2,58,400</div>
           </div>
           <div style="font-size: 14px; line-height: 1.45; margin-top: 6px; color: #605a53;">
             Seed, fertiliser, labour, water, transport.
@@ -149,16 +149,16 @@
         <div style="background: #f6f3ef; padding: 16px 17px; margin-top: 18px;">
           <div style="display: flex; justify-content: space-between; align-items: baseline;">
             <div style="font-size: 15.5px;">Profit</div>
-            <div class="m" style="font-size: 17px; font-weight: 700;">&#8377;6,73,600</div>
+            <div data-bind="profit" class="m" style="font-size: 17px; font-weight: 700;">&#8377;6,73,600</div>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px;">
             <div style="font-size: 15.5px;">Your investors get 60%</div>
-            <div class="m" style="font-size: 17px; font-weight: 700;">&#8377;4,04,160</div>
+            <div data-bind="toInvestors" class="m" style="font-size: 17px; font-weight: 700;">&#8377;4,04,160</div>
           </div>
           <div style="height: 1px; background: #dcd6c9; margin: 12px 0;"></div>
           <div style="display: flex; justify-content: space-between; align-items: baseline;">
             <div style="font-size: 17px; font-weight: 700;">You keep</div>
-            <div class="m" style="font-size: 22px; font-weight: 700;">&#8377;2,69,440</div>
+            <div data-bind="youKeep" class="m" style="font-size: 22px; font-weight: 700;">&#8377;2,69,440</div>
           </div>
           <div style="font-size: 14px; line-height: 1.45; margin-top: 9px; color: #4a443d;">
             Plus the &#8377;5,00,000 they already gave you, which you keep either way.
