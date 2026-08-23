@@ -110,9 +110,16 @@
            to sample: a translucent panel over a flat fill is a no-op blur. -->
       <div style="position: absolute; left: 0; right: 0; top: 0; height: 34%;
                   background: linear-gradient(180deg, #8d857a 0%, #9c9388 55%, #a9a094 100%);"></div>
-      <div style="position: absolute; left: 0; right: 0; top: 34%; height: 2px; background: #9a9188;"></div>
+      <!-- Haze above the horizon. Without it the sky met the first furrow band
+           at a hard full-width line, which read as a UI seam rather than as
+           distance. Atmospheric perspective, one gradient. -->
+      <div style="position: absolute; left: 0; right: 0; top: 22%; height: 14%;
+                  background: linear-gradient(180deg, rgba(169,160,148,0) 0%, rgba(169,160,148,.55) 62%, rgba(120,112,101,.75) 100%);"></div>
+      <div style="position: absolute; left: 0; right: 0; top: 34%; height: 1px; background: rgba(154,145,136,.5);"></div>
       <div style="position: absolute; left: -12%; right: -12%; top: 35%; height: 14%;
-                  background: repeating-linear-gradient(177deg, #4d463e 0 5px, #3a352f 5px 11px);"></div>
+                  background: repeating-linear-gradient(177deg, #4d463e 0 5px, #3a352f 5px 11px);
+                  mask-image: linear-gradient(180deg, transparent 0%, #000 34%);
+                  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 34%);"></div>
       <div style="position: absolute; left: -18%; right: -18%; top: 49%; height: 20%;
                   background: repeating-linear-gradient(178.5deg, #574f45 0 11px, #3b362f 11px 24px);"></div>
       <div style="position: absolute; left: -26%; right: -26%; top: 69%; bottom: 0;

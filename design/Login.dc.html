@@ -14,7 +14,39 @@
     .a { font-family: 'Anek Latin', system-ui, sans-serif; }
     .sys { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+
+    /* .fld was used four times and never defined, so every field on this card
+       rendered as an icon on one line and the value under it, with no height.
+       A field is a row: icon, value, and whatever sits at the end. 56px clears
+       the 44px target floor with room for a focus ring outside the box. */
+    .fld {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 56px;
+      padding: 0 14px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .fld > svg { flex-shrink: 0; }
     .lift2 { box-shadow: 0 2px 4px rgba(28,26,23,.10), 0 16px 44px rgba(28,26,23,.16); }
+
+    /* The same springs the motion board runs. One staged entrance, nothing
+       loops, and the button answers the finger rather than the click. */
+    :root {
+      --e-smooth: linear(0,0.0234,0.0805,0.1562,0.2403,0.326,0.409,0.4867,0.5576,0.6213,0.6777,0.727,0.7697,0.8065,0.838,0.8647,0.8874,0.9065,0.9225,0.9359,0.9471,0.9564,0.9641,0.9705,0.9758,0.9802,0.9838,0.9867,0.9892,0.9911,0.9928,0.9941,0.9952,0.9961,0.9968,0.9974,0.9979,0.9983,0.9986,0.9989,1);
+      --e-press:  linear(0,0.0239,0.082,0.1588,0.244,0.3306,0.4142,0.4923,0.5634,0.6271,0.6833,0.7324,0.7748,0.8112,0.8423,0.8687,0.8909,0.9096,0.9253,0.9383,0.9492,0.9582,0.9657,0.9719,0.977,0.9812,0.9846,0.9875,0.9898,0.9917,0.9932,0.9945,0.9955,0.9964,0.9971,0.9976,0.9981,0.9984,0.9987,0.999,1);
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .a1 { animation: rise 746ms var(--e-smooth) both; }
+    .a2 { animation: rise 746ms var(--e-smooth) 80ms both; }
+    .a3 { animation: rise 746ms var(--e-smooth) 160ms both; }
+    .tap { transition: transform 378ms var(--e-press); }
+    .tap:active { transform: scale(.985); }
+    @media (prefers-reduced-motion: reduce) {
+      .a1,.a2,.a3 { animation: none; }
+      .tap { transition: none; }
+    }
 
     /* GLASS — desktop sign-in card only.
        It floats over a real field photograph, indoors, on a laptop. The card's
@@ -48,7 +80,29 @@
   <div data-page="signin" class="a" style="height: 720px; position: relative; overflow: hidden; color: #1d1a17;">
 
     <!-- the photograph the glass needs to exist at all -->
-    <div style="position: absolute; inset: 0; background: #37322d;"><div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(7, 1fr);"><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(133,133,133);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(133,133,133);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(133,133,133);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(46,46,46);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(107,107,107);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(76,76,76);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(61,61,61);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(122,122,122);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(92,92,92);"></div><div style="background: rgb(46,46,46);"></div></div><div style="position: absolute; inset: 0; background: rgba(29,26,23,.34);"></div><div style="position: absolute; inset: 22px; border: 1px solid rgba(246,243,239,.16);"></div><div data-bind="evidence.meta" style="position: absolute; right: 40px; bottom: 34px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.9; color: #ded7d0; text-align: right;">VID_20260818_064410_IST.mp4<br>0:41 &middot; 1080&times;1920 &middot; 30fps<br>sha256 3f9c2a1e&hellip;d21b<br>block 881,204 &middot; 18 Aug 2026</div></div>
+    <div style="position: absolute; inset: 0; background: #37322d;">
+      <!-- The same field as the landing hero: furrows running to a horizon in
+           the neutral media ramp, near-horizontal and tighter toward the
+           horizon so they recede, with haze above the horizon so the sky does
+           not meet the ground at a hard line. Zero bytes, and it gives the
+           glass card real per-band variation to sample rather than a flat fill
+           that would make the blur a no-op. -->
+      <div style="position: absolute; left: 0; right: 0; top: 0; height: 34%;
+                  background: linear-gradient(180deg, #8d857a 0%, #9c9388 55%, #a9a094 100%);"></div>
+      <div style="position: absolute; left: 0; right: 0; top: 22%; height: 14%;
+                  background: linear-gradient(180deg, rgba(169,160,148,0) 0%, rgba(169,160,148,.55) 62%, rgba(120,112,101,.75) 100%);"></div>
+      <div style="position: absolute; left: 0; right: 0; top: 30.5%; height: 4.5%;
+                  background: repeating-linear-gradient(87deg, #2b2823 0 34px, #3a3530 34px 71px);"></div>
+      <div style="position: absolute; left: 0; right: 0; top: 34%; height: 1px; background: rgba(154,145,136,.5);"></div>
+      <div style="position: absolute; left: -12%; right: -12%; top: 35%; height: 14%;
+                  background: repeating-linear-gradient(177deg, #4d463e 0 5px, #3a352f 5px 11px);
+                  mask-image: linear-gradient(180deg, transparent 0%, #000 34%);
+                  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 34%);"></div>
+      <div style="position: absolute; left: -18%; right: -18%; top: 49%; height: 20%;
+                  background: repeating-linear-gradient(178.5deg, #574f45 0 11px, #3b362f 11px 24px);"></div>
+      <div style="position: absolute; left: -26%; right: -26%; top: 69%; bottom: 0;
+                  background: repeating-linear-gradient(180.5deg, #625a4e 0 24px, #3d3831 24px 52px);"></div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(100deg, rgba(24,21,18,.86) 0%, rgba(24,21,18,.70) 34%, rgba(24,21,18,.30) 62%, rgba(24,21,18,.18) 100%);"></div><div style="position: absolute; inset: 22px; border: 1px solid rgba(246,243,239,.16);"></div><div data-bind="evidence.meta" style="position: absolute; right: 40px; bottom: 34px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.9; color: #ded7d0; text-align: right;">VID_20260818_064410_IST.mp4<br>0:41 &middot; 1080&times;1920 &middot; 30fps<br>sha256 3f9c2a1e&hellip;d21b<br>block 881,204 &middot; 18 Aug 2026</div></div>
 
     <!-- header, also glass, also carrying nothing critical -->
     <div class="glass r1" style="position: absolute; left: 0; right: 0; top: 0; border-left: none; border-right: none; border-top: none; padding: 0 40px; height: 62px; display: flex; align-items: center; justify-content: space-between;">
@@ -57,7 +111,7 @@
     </div>
 
     <div style="position: absolute; left: 72px; top: 128px; width: 480px;">
-      <h1 class="r1" style="margin: 0; font-size: 50px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.02; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,.42);">
+      <h1 class="r1 a1" style="margin: 0; font-size: 50px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.02; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,.42);">
         Fund a season.<br>Read the evidence first.
       </h1>
       <p class="r2" style="font-size: 18px; line-height: 1.5; margin: 18px 0 0; color: rgba(255,255,255,.95); text-shadow: 0 1px 8px rgba(0,0,0,.5); max-width: 40ch;">
@@ -94,14 +148,13 @@
           </div>
         </div>
 
-        <div style="margin-top: 22px; background: #1d1a17; height: 54px; display: flex; align-items: center; justify-content: center;">
+        <div class="tap" style="margin-top: 22px; background: #1d1a17; height: 54px; display: flex; align-items: center; justify-content: center;">
           <div style="font-size: 16.5px; font-weight: 600; color: #fff;">Sign in</div>
         </div>
 
         <div style="margin-top: 18px; padding-top: 16px; box-shadow: inset 0 1px 0 #c3bcb6;">
           <div style="font-size: 14px; line-height: 1.5; color: #605a53;">
-            Are you a farmer? <span style="font-weight: 600; color: #01579b;">Use the phone app instead</span> &mdash;
-            it works without signal and reads every screen aloud.
+            Are you a farmer? <span style="font-weight: 600; color: #01579b;">Use the phone app instead</span>,             it works without signal and reads every screen aloud.
           </div>
         </div>
       </div>
@@ -111,10 +164,10 @@
   <!-- ══ FARMER sign-in: no glass, no photograph, no English-first ══ -->
   <div style="padding: 44px 72px 56px; background: #e7e1db;">
     <div class="a" style="font-size: 15px; color: #605a53;">The same product, signed into from a field</div>
-    <h2 class="a" style="margin: 4px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -0.028em; color: #1d1a17;">Farmer sign-in &mdash; deliberately plain</h2>
+    <h2 class="a" style="margin: 4px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -0.028em; color: #1d1a17;">Farmer sign-in, deliberately plain</h2>
     <p class="a" style="margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; max-width: 84ch; color: #4a443d;">
       No glass, no photograph behind the fields, no gradient. A phone number and a code, at 64 px, over an
-      opaque background &mdash; because this screen gets used standing in sun, and because a person who cannot
+      opaque background, because this screen gets used standing in sun, and because a person who cannot
       read the label still has to get in.
     </p>
 
@@ -217,7 +270,7 @@
             <div style="font-size: 15.5px; font-weight: 600;">Language before anything else</div>
             <div style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
               Picking a language is the only choice on screen that unlocks every other one, so it goes first
-              &mdash; not in a settings page behind a gear icon.
+             , not in a settings page behind a gear icon.
             </div>
           </div>
           <div>
