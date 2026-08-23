@@ -18,14 +18,44 @@
     /* 72px rows: clears the 64px target floor with room for a second line when a
        translated label wraps. Flat list, not a tab bar — five Telugu labels at
        200% text inside 360px is arithmetic that does not close. */
-    .row { display: flex; align-items: center; gap: 15px; padding: 0 20px; height: 76px; }
+    .row { display: flex; align-items: center; gap: 15px; padding: 0 20px; min-height: 76px; }
     .lab { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
     .nat { font-size: 15px; color: #605a53; margin-top: 1px; }
     .ic  { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center;
            justify-content: center; background: #e7e1db; }
+
+    /* Five rows in alternating fills is a data table wearing a menu's clothes:
+       it says these are five readings of the same kind, when one of them is the
+       thing the whole product exists for and four are places to look something
+       up. So: one surface, hairline rules, and the first row given the height
+       and the second line that say what it costs you to skip it. The rules are
+       the same ledger language as every other screen. */
+    .menu { background: #f6f3ef; }
+    .row + .row { box-shadow: inset 0 1px 0 #e4dfd8; }
+    .row.first { align-items: flex-start; padding-top: 18px; padding-bottom: 18px; }
+    .row.first .lab { font-size: 21px; font-weight: 700; letter-spacing: -0.016em; }
+    /* read-aloud is a control, so it gets a control's target rather than a bare glyph */
+    .say { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center;
+           justify-content: center; margin-right: -10px; }
+    :root {
+      --e-smooth: linear(0,0.0234,0.0805,0.1562,0.2403,0.326,0.409,0.4867,0.5576,0.6213,0.6777,0.727,0.7697,0.8065,0.838,0.8647,0.8874,0.9065,0.9225,0.9359,0.9471,0.9564,0.9641,0.9705,0.9758,0.9802,0.9838,0.9867,0.9892,0.9911,0.9928,0.9941,0.9952,0.9961,0.9968,0.9974,0.9979,0.9983,0.9986,0.9989,1);
+      --e-snappy: linear(0,0.0218,0.0768,0.1523,0.2388,0.3293,0.4187,0.5039,0.5826,0.6536,0.7164,0.7711,0.818,0.8576,0.8905,0.9176,0.9395,0.9571,0.9708,0.9814,0.9895,0.9954,0.9997,1.0026,1.0045,1.0056,1.0062,1.0063,1.0061,1.0057,1.0052,1.0047,1.0041,1.0036,1.003,1.0025,1.0021,1.0017,1.0014,1.0011,1);
+      --e-bouncy: linear(0,0.0299,0.1054,0.2083,0.3244,0.4432,0.5571,0.6613,0.7527,0.8302,0.8936,0.9437,0.9816,1.009,1.0276,1.0389,1.0445,1.046,1.0444,1.0408,1.036,1.0306,1.0251,1.0199,1.0152,1.011,1.0075,1.0047,1.0024,1.0007,0.9995,0.9987,0.9982,0.9979,0.9979,0.998,0.9981,0.9984,0.9986,0.9989,1);
+      --e-press:  linear(0,0.0239,0.082,0.1588,0.244,0.3306,0.4142,0.4923,0.5634,0.6271,0.6833,0.7324,0.7748,0.8112,0.8423,0.8687,0.8909,0.9096,0.9253,0.9383,0.9492,0.9582,0.9657,0.9719,0.977,0.9812,0.9846,0.9875,0.9898,0.9917,0.9932,0.9945,0.9955,0.9964,0.9971,0.9976,0.9981,0.9984,0.9987,0.999,1);
+
+    /* One staged entrance, on the way in only. The rows arrive in reading order
+       so the eye is led down the list instead of five things appearing at once.
+       55ms apart: past about 60ms a stagger stops reading as one movement and
+       starts reading as five separate ones. */
+    @keyframes rowin { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+    .menu .row { animation: rowin 568ms var(--e-snappy) both; }
+    .menu .row:nth-child(2) { animation-delay: 55ms; }
+    .menu .row:nth-child(3) { animation-delay: 110ms; }
+    .menu .row:nth-child(4) { animation-delay: 165ms; }
+    .menu .row:nth-child(5) { animation-delay: 220ms; }
   </style>
 </head>
-<body data-page="home" data-role="farmer" data-design-width="360" data-design-height="908">
+<body data-page="home" data-role="farmer" data-design-width="360" data-design-height="800">
 <div class="f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
   <!-- header -->
@@ -34,18 +64,20 @@
       <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
       <div data-bind="whoWhere" style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Alice · Kadapa</div>
     </div>
-    <div style="display: flex; gap: 16px; align-items: center;">
-      <div style="position: relative;">
+    <div style="display: flex; gap: 4px; align-items: center; margin-right: -10px;">
+      <div style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
         <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
-        <div class="m" style="position: absolute; top: -5px; right: -6px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        <div data-readout="" class="m" style="position: absolute; top: 6px; right: 4px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
       </div>
-      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg>
+      <div style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg>
+      </div>
     </div>
   </div>
 
   <!-- the one thing that needs them today, above the menu -->
   <div style="background: #1d1a17; padding: 18px 20px; flex-shrink: 0;">
-    <div style="font-size: 14.5px; color: #b5ada6;">Needs you today</div>
+    <div style="font-size: 14.5px; color: #c4bdb6;">Needs you today</div>
     <div data-bind="todo.headline" style="font-size: 20px; font-weight: 700; color: #f6f3ef; line-height: 1.28; margin-top: 4px;">
       Canal plot is ready to harvest
     </div>
@@ -55,82 +87,77 @@
     </div>
   </div>
 
-  <!-- the five destinations. flat list, label + icon + audio. -->
-  <div style="flex-grow: 1;">
+  <!-- the five destinations: one primary, four places to look. -->
+  <div>
 
-    <div class="row" style="background: #f6f3ef;">
+    <div class="menu">
+    <div class="row first">
       <div class="ic">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
       </div>
       <div style="flex-grow: 1;">
         <div class="lab">Record a video</div>
+        <div class="nat" style="line-height: 1.4; margin-top: 3px;">The date is fixed the moment it arrives.</div>
       </div>
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
     </div>
 
-    <div class="row" style="background: #eae4de;">
+    <div class="row">
       <div class="ic">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M4 5h16v14H4z"></path><path d="M4 10h16M9 10v9"></path></svg>
       </div>
       <div style="flex-grow: 1;">
         <div class="lab">My plots</div>
+        <div data-bind="plots.waiting" class="nat m">2 videos</div>
       </div>
-      <div data-bind="plots.waiting" class="m" style="font-size: 15px; font-weight: 700; color: #01579b;">2 waiting</div>
+      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
     </div>
 
-    <div class="row" style="background: #f6f3ef;">
+    <div class="row">
       <div class="ic">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M12 3v18"></path><path d="M17 7.5c0-2-2.2-3-5-3s-5 1-5 3 2.2 2.7 5 3.3 5 1.4 5 3.4-2.2 3.3-5 3.3-5-1.3-5-3.3"></path></svg>
+        <div class="m" style="font-size: 24px; font-weight: 700; line-height: 1;">₹</div>
       </div>
       <div style="flex-grow: 1;">
         <div class="lab">Money</div>
       </div>
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
     </div>
 
-    <div class="row" style="background: #eae4de;">
+    <div class="row">
       <div class="ic">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M12 20c6-1 9-5.5 9-12-6.5 0-11 3-12 9"></path><path d="M5 20c1.5-5 4-8 9-9.5"></path></svg>
       </div>
       <div style="flex-grow: 1;">
         <div class="lab">Check a leaf</div>
       </div>
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
     </div>
 
-    <div class="row" style="background: #f6f3ef;">
+    <div class="row">
       <div class="ic">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M21 12a8.5 8.5 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l1.9-5.1A8.5 8.5 0 0 1 12 3.5a8.5 8.5 0 0 1 9 8.5z"></path><path d="M9.5 10.5h5M9.5 14h3"></path></svg>
       </div>
       <div style="flex-grow: 1;">
         <div class="lab">Ask a question</div>
       </div>
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
+    </div>
     </div>
 
-    <!-- weather sits below the menu, not above it: it is context, not a task -->
-    <div style="padding: 20px; background: #ddd7d1;">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <div>
-          <div style="font-size: 15px; color: #605a53;">Kadapa, today</div>
-          <div class="m" style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;">31°</div>
-        </div>
-        <div style="text-align: right;">
-          <div class="m" style="font-size: 15px; font-weight: 600;">78% humidity</div>
-          <div style="font-size: 14.5px; color: #605a53; margin-top: 2px;">Rain likely Thursday</div>
-        </div>
-      </div>
-      <div style="background: #f2e6cd; padding: 13px 15px; margin-top: 13px;">
-        <div style="font-size: 15.5px; line-height: 1.5; color: #4a443d;">
-          <span style="font-weight: 700;">Do not spray before Thursday.</span> Rain within two days washes
-          most sprays off, so it is money on the ground.
-        </div>
-      </div>
-    </div>
+    <!-- The weather block that stood here is gone, and this is the deletion on
+         the page I would defend hardest. It read "Kadapa, today 31 degrees, 78%
+         humidity, rain likely Thursday" and then instructed the farmer "Do not
+         spray before Thursday". Every one of those figures was typed into the
+         artboard by hand. There is no weather source anywhere in this product,
+         and the User model has no location field, so there is not even a place
+         to look one up from. Invented numbers are bad on a marketing page;
+         invented numbers that tell somebody when to spray a crop can cost them
+         a season. It comes back when there is a forecast behind it and a
+         district to ask about -- both real work, neither a page fix. -->
   </div>
 
   <!-- speak, always reachable -->
-  <div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 18px;">
+  <div style="flex-shrink: 0; background: #f6f3ef; padding: 16px 20px 18px; margin-top: 12px;">
     <div style="background: #e7e1db; height: 58px; display: flex; align-items: center; justify-content: center; gap: 11px;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"></path></svg>
       <div style="font-size: 17px; font-weight: 600;">Speak instead of typing</div>

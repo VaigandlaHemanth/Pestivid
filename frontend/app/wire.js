@@ -145,6 +145,117 @@ export function deClaimProps(root) {
   }
 }
 
+/* ------------------------------------------------------------------ *
+ * Making a div into a control.
+ *
+ * wire() runs promoteControls() once, at page setup, before a page module has
+ * marked anything -- so a module that adds data-act afterwards got the click
+ * delegation (that is on the root) but never the role, the tabindex or the
+ * keyboard handler. Every page needs to mark its own controls after wire(),
+ * so marking and promoting happen together here.
+ * ------------------------------------------------------------------ */
+
+/** Promote one element that has just been marked as a control. */
+export function promote(el, name) {
+  if (!el) return null;
+  el.setAttribute('data-act', el.dataset.act || '');
+  if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+  if (!el.hasAttribute('tabindex')) el.tabIndex = 0;
+  if (name && !el.getAttribute('aria-label')) el.setAttribute('aria-label', name);
+  if (!el.dataset.kb) {
+    el.dataset.kb = '1';
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+    });
+  }
+  return el;
+}
+
+/** A control inside another control has to stop there. The read-aloud button
+ *  sits inside a whole-row link, so without this a press on the speaker also
+ *  navigates -- and the row wins, because navigation happens first. Applied
+ *  automatically, since the alternative is remembering it at every call site. */
+function containIfNested(el) {
+  if (!el.parentElement?.closest('[data-act]')) return;
+  el.addEventListener('click', e => e.stopPropagation());
+  el.addEventListener('pointerdown', e => e.stopPropagation());
+}
+
+/** A control that goes somewhere. The whole row, not the label inside it: a
+ *  44px glyph in a 76px row leaves most of what looks pressable dead. */
+export function goes(el, dest, name) {
+  if (!el) return null;
+  el.dataset.go = dest;
+  promote(el, name);
+  containIfNested(el);
+  return el;
+}
+
+/** A control that does something here. */
+export function acts(el, name, fn) {
+  if (!el) return null;
+  promote(el, name);
+  containIfNested(el);
+  el.addEventListener('click', fn);
+  return el;
+}
+
+/** Read-aloud, only where the device can actually speak.
+ *
+ *  The artboards drew a speaker on several rows and the sign-in page used to
+ *  claim the app "reads every screen aloud". Nobody had recorded anything, so
+ *  that claim came out. This is the honest version: the browser's own voice,
+ *  used only when a voice for the page's language is installed. Returns false
+ *  when it cannot speak, and the caller removes the button -- a speaker that
+ *  does nothing is worse than no speaker, because someone who needs it will
+ *  conclude the app is broken rather than that the drawing was decoration.
+ *
+ *  Voices load asynchronously in Chrome, so a first call can see an empty list;
+ *  the button is kept if the API exists and re-checked on voiceschanged. */
+const LANG = () => document.documentElement.lang || localStorage.getItem('pv.lang') || 'en-IN';
+let voicesReady = false;
+if (window.speechSynthesis) {
+  speechSynthesis.addEventListener?.('voiceschanged', () => { voicesReady = true; });
+}
+export function voiceFor(lang) {
+  if (!window.speechSynthesis) return null;
+  const want = (lang || LANG()).toLowerCase().split('-')[0];
+  const all = speechSynthesis.getVoices() || [];
+  return all.find(v => v.lang.toLowerCase().startsWith(want))
+      || all.find(v => v.lang.toLowerCase().startsWith('en')) || null;
+}
+export function sayable(el, text, name) {
+  if (!el || !window.speechSynthesis || !text) return false;
+  el.setAttribute('aria-pressed', 'false');
+  const stop = () => {
+    speechSynthesis.cancel();
+    document.querySelectorAll('[aria-pressed="true"][data-speaking]').forEach(n => {
+      n.removeAttribute('data-speaking'); n.setAttribute('aria-pressed', 'false');
+    });
+  };
+  acts(el, name || 'Read aloud', () => {
+    // Speaking with no visible acknowledgement is the same bug as a button that
+    // does nothing: the person cannot tell whether it worked, and cannot stop
+    // it. So it is a toggle -- press to start, press again to stop -- and the
+    // pressed state is drawn.
+    const speaking = el.hasAttribute('data-speaking');
+    stop();
+    if (speaking) return;
+    const v = voiceFor();
+    const u = new SpeechSynthesisUtterance(text);
+    if (v) { u.voice = v; u.lang = v.lang; }
+    u.rate = 0.92;                       // a shade under default; these are instructions
+    u.onend = u.onerror = stop;
+    el.setAttribute('data-speaking', '');
+    el.setAttribute('aria-pressed', 'true');
+    speechSynthesis.speak(u);
+  });
+  return true;
+}
+
+/** Press feedback for controls a module marked after wire() ran. */
+export function press(root) { pressFeedback(root); }
+
 export function wire(slug) {
   const root = document.querySelector('body > div');
   if (!root) return;

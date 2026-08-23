@@ -24,7 +24,7 @@
    "y": 39925,
    "w": 1200,
    "h": 1175,
-   "title": "0 \u00b7 First run",
+   "title": "0 · First run",
    "expand": "fill"
   },
   {
@@ -32,8 +32,8 @@
    "x": 1290,
    "y": 39925,
    "w": 360,
-   "h": 909,
-   "title": "1 \u00b7 Home"
+   "h": 800,
+   "title": "1 · Home"
   },
   {
    "file": "Record.dc.html",
@@ -41,7 +41,7 @@
    "y": 39925,
    "w": 360,
    "h": 800,
-   "title": "2 \u00b7 Filming"
+   "title": "2 · Filming"
   },
   {
    "file": "Sent.dc.html",
@@ -49,7 +49,7 @@
    "y": 39925,
    "w": 360,
    "h": 1238,
-   "title": "3 \u00b7 Just after filming"
+   "title": "3 · Just after filming"
   },
   {
    "file": "Plots.dc.html",
@@ -57,7 +57,7 @@
    "y": 39925,
    "w": 360,
    "h": 900,
-   "title": "4 \u00b7 All my plots"
+   "title": "4 · All my plots"
   },
   {
    "file": "Plot.dc.html",
@@ -65,7 +65,7 @@
    "y": 39925,
    "w": 360,
    "h": 1040,
-   "title": "5 \u00b7 One plot"
+   "title": "5 · One plot"
   },
   {
    "file": "AskMoney.dc.html",
@@ -73,7 +73,7 @@
    "y": 39925,
    "w": 1200,
    "h": 1646,
-   "title": "6 \u00b7 Asking for money",
+   "title": "6 · Asking for money",
    "expand": "fill"
   },
   {
@@ -82,7 +82,7 @@
    "y": 39925,
    "w": 360,
    "h": 1241,
-   "title": "7 \u00b7 Money"
+   "title": "7 · Money"
   },
   {
    "file": "Payout.dc.html",
@@ -90,7 +90,7 @@
    "y": 39925,
    "w": 360,
    "h": 1004,
-   "title": "8 \u00b7 Who gets what"
+   "title": "8 · Who gets what"
   },
   {
    "file": "Messages.dc.html",
@@ -130,7 +130,7 @@
    "y": 42341,
    "w": 820,
    "h": 1626,
-   "title": "Leaf check \u00b7 both outcomes"
+   "title": "Leaf check · both outcomes"
   },
   {
    "file": "Components.dc.html",
@@ -156,7 +156,7 @@
    "y": 45357,
    "w": 1320,
    "h": 940,
-   "title": "Investor 1 \u00b7 the evidence",
+   "title": "Investor 1 · the evidence",
    "expand": "fill"
   },
   {
@@ -165,7 +165,7 @@
    "y": 45357,
    "w": 1320,
    "h": 1005,
-   "title": "Investor 2 \u00b7 confirming",
+   "title": "Investor 2 · confirming",
    "expand": "fill"
   },
   {
@@ -174,7 +174,7 @@
    "y": 45357,
    "w": 1320,
    "h": 960,
-   "title": "Investor 3 \u00b7 portfolio",
+   "title": "Investor 3 · portfolio",
    "expand": "fill"
   },
   {
@@ -183,7 +183,7 @@
    "y": 47132,
    "w": 1320,
    "h": 948,
-   "title": "Buyer 1 \u00b7 lots for sale",
+   "title": "Buyer 1 · lots for sale",
    "expand": "fill"
   },
   {
@@ -192,7 +192,7 @@
    "y": 47132,
    "w": 1320,
    "h": 1188,
-   "title": "Buyer 2 \u00b7 what you bought",
+   "title": "Buyer 2 · what you bought",
    "expand": "fill"
   },
   {
@@ -201,7 +201,7 @@
    "y": 49090,
    "w": 1320,
    "h": 1679,
-   "title": "Admin \u00b7 what the system flagged",
+   "title": "Admin · what the system flagged",
    "expand": "fill"
   },
   {
@@ -210,7 +210,7 @@
    "y": 49090,
    "w": 1320,
    "h": 1617,
-   "title": "Free deployment \u00b7 the real ceilings",
+   "title": "Free deployment · the real ceilings",
    "expand": "fill"
   }
  ],
@@ -220,18 +220,18 @@
    "x": 0,
    "y": 30,
    "w": 700,
-   "text": "An audit measured the files rather than looking at them, and found two things I had got wrong.\n\nFIRST: I renamed the palette, I did not fix it. The 29 replacement gold/ochre hexes sat at chroma 0.087-0.108. The olives I had rejected sat at 0.081-0.090. Same statistical object, moved 40 degrees round the wheel \u2014 one colour at many lightnesses, chroma pinned in the dead zone where nothing can be a real neutral and nothing can be a real accent. Ground, action and decoration all lived in the 54-98 degree arc.\n\nSECOND, and this is the real one: 'too much green' and 'drawn shapes standing in for photographs' were never two problems. There were 36 rotated rectangles pretending to be leaves and 15 circles pretending to be suns. The reaction was to invented crops, not to a brand colour.\n\nNow: neutrals anchored at hue 68, action at hue 252 \u2014 184 degrees apart, the maximum separation available. Page ground is a toned stone at L88, not an off-white, and it is DARKER than the cards sitting on it. Perceptible green: 27 tokens down to zero."
+   "text": "An audit measured the files rather than looking at them, and found two things I had got wrong.\n\nFIRST: I renamed the palette, I did not fix it. The 29 replacement gold/ochre hexes sat at chroma 0.087-0.108. The olives I had rejected sat at 0.081-0.090. Same statistical object, moved 40 degrees round the wheel — one colour at many lightnesses, chroma pinned in the dead zone where nothing can be a real neutral and nothing can be a real accent. Ground, action and decoration all lived in the 54-98 degree arc.\n\nSECOND, and this is the real one: 'too much green' and 'drawn shapes standing in for photographs' were never two problems. There were 36 rotated rectangles pretending to be leaves and 15 circles pretending to be suns. The reaction was to invented crops, not to a brand colour.\n\nNow: neutrals anchored at hue 68, action at hue 252 — 184 degrees apart, the maximum separation available. Page ground is a toned stone at L88, not an off-white, and it is DARKER than the cards sitting on it. Perceptible green: 27 tokens down to zero."
   },
   {
    "id": "record-not-crop",
    "x": 1410,
    "y": 30,
    "w": 620,
-   "text": "Every media slot now shows the RECORD instead of a drawing.\n\nA drawn leaf claims to be a photograph and is not \u2014 that is the lie the client kept detecting. An empty slot overprinted with filename, duration, resolution, hash and block height claims to be a frame that has not loaded, which is true.\n\nblock 881,204 is a real Bitcoin mainnet height. It is the strongest anti-AI asset in the file, because a block height either verifies or it does not."
+   "text": "Every media slot now shows the RECORD instead of a drawing.\n\nA drawn leaf claims to be a photograph and is not — that is the lie the client kept detecting. An empty slot overprinted with filename, duration, resolution, hash and block height claims to be a frame that has not loaded, which is true.\n\nblock 881,204 is a real Bitcoin mainnet height. It is the strongest anti-AI asset in the file, because a block height either verifies or it does not."
   },
   {
    "id": "setup-note",
-   "text": "FIRST RUN, which did not exist. Every screen on this canvas assumed an account that already had videos, money and plots in it.\n\nThree screens and they are filming. Language first, before the account, because somebody who cannot read screen one cannot get past it. Then name, phone, four digits \u2014 and a panel naming what we refuse to ask for, which does more work than any of the fields: no Aadhaar, no land papers, no bank account until somebody actually wants to send money.\n\nThen an empty home that says it is empty and why, instead of a dashboard of \u20b90 tiles pretending to be a product already in use.",
+   "text": "FIRST RUN, which did not exist. Every screen on this canvas assumed an account that already had videos, money and plots in it.\n\nThree screens and they are filming. Language first, before the account, because somebody who cannot read screen one cannot get past it. Then name, phone, four digits — and a panel naming what we refuse to ask for, which does more work than any of the fields: no Aadhaar, no land papers, no bank account until somebody actually wants to send money.\n\nThen an empty home that says it is empty and why, instead of a dashboard of ₹0 tiles pretending to be a product already in use.",
    "x": 0,
    "y": 39485,
    "w": 700
@@ -241,18 +241,18 @@
    "x": 1290,
    "y": 39485,
    "w": 620,
-   "text": "Farmer screens. System font stack \u2014 AOSP already ships Noto Sans Telugu and Devanagari, and re-downloading them costs 35-124 KB of a metered pack for nothing.\n\nPrimary action is ADM navy at 14.76:1 against white. Amber is fill-only with an ink label, never text: as text it measures 2.05:1 and fails outright."
+   "text": "Farmer screens. System font stack — AOSP already ships Noto Sans Telugu and Devanagari, and re-downloading them costs 35-124 KB of a metered pack for nothing.\n\nPrimary action is ADM navy at 14.76:1 against white. Amber is fill-only with an ink label, never text: as text it measures 2.05:1 and fails outright."
   },
   {
    "id": "chain",
    "x": 2190,
    "y": 39485,
    "w": 700,
-   "text": "THE MIDDLE OF THE FARMER'S JOURNEY, which was three dead ends.\n\nStop filming \u2192 which plot was that \u2192 what happens to it, in real time units. The date lands in Bitcoin hours later, so the screen says hours, not a spinner that looks stuck. And it says the video cannot be deleted BEFORE it is sent, not in a settings page afterwards.\n\nTapping a plot went nowhere. Now it opens the dated trail on that plot \u2014 which is the thing an investor is actually buying \u2014 with the money raised on it underneath, and the limit of the claim printed on the same page that makes the claim.\n\n'Send these numbers' went nowhere. Now it opens the four investors by name with the four figures, which must add to the total shown. Then, and only then, the irreversible button."
+   "text": "THE MIDDLE OF THE FARMER'S JOURNEY, which was three dead ends.\n\nStop filming → which plot was that → what happens to it, in real time units. The date lands in Bitcoin hours later, so the screen says hours, not a spinner that looks stuck. And it says the video cannot be deleted BEFORE it is sent, not in a settings page afterwards.\n\nTapping a plot went nowhere. Now it opens the dated trail on that plot — which is the thing an investor is actually buying — with the money raised on it underneath, and the limit of the claim printed on the same page that makes the claim.\n\n'Send these numbers' went nowhere. Now it opens the four investors by name with the four figures, which must add to the total shown. Then, and only then, the irreversible button."
   },
   {
    "id": "ask-note",
-   "text": "ASKING FOR MONEY \u2014 eleven fields the server insists on, and the screen where a farmer is most likely to give up.\n\nThe video comes first because FundingRequest refuses to save without a cid. It is also the honest ordering: it is the only thing on her whole page an investor can check without trusting her.\n\nTwo details worth arguing about. The growing method is a five-value enum reading conventional, hydroponic, aquaponic, regenerative \u2014 nobody standing in a field says any of those, so the chips say what they mean and the enum sits behind them. And settlementMode offers profit share or full repayment as if they were equivalent: one cannot bankrupt a farmer and the other can, so each card carries its own crop-failure sentence at the moment of choosing.\n\nThe strip along the bottom is where the roi problem gets solved. It is required, 0\u2013100, and it is a projection. Rather than let her invent one, it is filled in from her own last season and then sorted, in front of her, into the Nobody knows column.",
+   "text": "ASKING FOR MONEY — eleven fields the server insists on, and the screen where a farmer is most likely to give up.\n\nThe video comes first because FundingRequest refuses to save without a cid. It is also the honest ordering: it is the only thing on her whole page an investor can check without trusting her.\n\nTwo details worth arguing about. The growing method is a five-value enum reading conventional, hydroponic, aquaponic, regenerative — nobody standing in a field says any of those, so the chips say what they mean and the enum sits behind them. And settlementMode offers profit share or full repayment as if they were equivalent: one cannot bankrupt a farmer and the other can, so each card carries its own crop-failure sentence at the moment of choosing.\n\nThe strip along the bottom is where the roi problem gets solved. It is required, 0–100, and it is a projection. Rather than let her invent one, it is filled in from her own last season and then sorted, in front of her, into the Nobody knows column.",
    "x": 3540,
    "y": 39485,
    "w": 760
@@ -262,7 +262,7 @@
    "x": 4830,
    "y": 39485,
    "w": 600,
-   "text": "NO REVIEW ANYWHERE. Upload goes straight through \u2014 nothing is held, nothing is checked, no screen says a video is being looked at.\n\nA 'being checked' state with nobody staffed to clear it is a promise the product cannot keep, and it would leave a farmer's funding sitting behind a queue that never moves.\n\nThe duplicate fingerprinting still runs on the server and records what it finds, but it is silent: it surfaces to no one and blocks nothing."
+   "text": "NO REVIEW ANYWHERE. Upload goes straight through — nothing is held, nothing is checked, no screen says a video is being looked at.\n\nA 'being checked' state with nobody staffed to clear it is a promise the product cannot keep, and it would leave a farmer's funding sitting behind a queue that never moves.\n\nThe duplicate fingerprinting still runs on the server and records what it finds, but it is silent: it surfaces to no one and blocks nothing."
   },
   {
    "id": "thread-note",
@@ -276,21 +276,21 @@
    "x": 7090,
    "y": 39485,
    "w": 600,
-   "text": "HOME was missing and so was ASK \u2014 I had drawn the nav in a plan sheet but never built either screen.\n\nHome is the five-row flat list: label, icon, and a speaker that plays the row name in a recorded human voice. Not a bottom tab bar \u2014 five Telugu labels at 200% text inside 360px does not fit, and Microsoft Research found flat lists beat hierarchy for exactly this population.\n\nThe one task that needs them today sits ABOVE the menu. Weather sits below it, because it is context, not a task."
+   "text": "HOME was missing and so was ASK — I had drawn the nav in a plan sheet but never built either screen.\n\nHome is the five-row flat list: label, icon, and a speaker that plays the row name in a recorded human voice. Not a bottom tab bar — five Telugu labels at 200% text inside 360px does not fit, and Microsoft Research found flat lists beat hierarchy for exactly this population.\n\nThe one task that needs them today sits ABOVE the menu. Weather sits below it, because it is context, not a task."
   },
   {
    "id": "lang-note",
    "x": 7540,
    "y": 39485,
    "w": 620,
-   "text": "ONE LANGUAGE PER SCREEN now, switched from here. Every screen was mixing English with Telugu, which is not bilingual, it is unfinished.\n\nThe picker is the first setting on the page, and each language is written in its own script \u2014 a list that says 'Telugu' in English is no use to someone looking for Telugu.\n\nAlso here: the 173 MB model can be removed to free space, and the honest line that videos cannot be deleted once sent, since that permanence is the whole basis of the date claim."
+   "text": "ONE LANGUAGE PER SCREEN now, switched from here. Every screen was mixing English with Telugu, which is not bilingual, it is unfinished.\n\nThe picker is the first setting on the page, and each language is written in its own script — a list that says 'Telugu' in English is no use to someone looking for Telugu.\n\nAlso here: the 173 MB model can be removed to free space, and the honest line that videos cannot be deleted once sent, since that permanence is the whole basis of the date claim."
   },
   {
    "id": "chat-note",
    "x": 0,
    "y": 41901,
    "w": 660,
-   "text": "YOUR IDEA, and it is the right one: chat continues inside the leaf result instead of on a separate page.\n\nThe reason it matters is not convenience. Sending a farmer to a standalone chatbot makes them re-describe a disease they were just told the name of \u2014 by typing Telugu on a phone keyboard. Here the model already knows it said Early blight on this photo, so the first question is one tap.\n\nThe standalone Ask page still exists for questions that are not about a photo."
+   "text": "YOUR IDEA, and it is the right one: chat continues inside the leaf result instead of on a separate page.\n\nThe reason it matters is not convenience. Sending a farmer to a standalone chatbot makes them re-describe a disease they were just told the name of — by typing Telugu on a phone keyboard. Here the model already knows it said Early blight on this photo, so the first question is one tap.\n\nThe standalone Ask page still exists for questions that are not about a photo."
   },
   {
    "id": "glass-fixed",
@@ -301,7 +301,7 @@
   },
   {
    "id": "measured",
-   "text": "MEASURED, NOT EYEBALLED. Every board here was rendered in Chromium and read back element by element \u2014 1,087 runs of text, their computed colour against the colour actually painted behind them, every control box, and the whole layout again at 130% and 200% phone font scale.\n\nIt found things reading the source could not. Ten screens were hiding their own content behind a fixed height: Profile was concealing 469px, Ask 360px, Sent 318px \u2014 written, laid out, invisible. The filename and hash overprinted on every dark media slot sat at Lc 23, which is not dim, it is not there. The recording screen put its only status line in #016abe on near-black, Lc 25.\n\nAll fixed. Of 1,087 text runs, two now sit below WCAG AA: one is a deliberately disabled button, the other is a measurement artefact. The dashed FOLD line on each phone marks where a real 360\u00d7800 handset stops \u2014 everything under it needs a scroll, which is true of the product and was being hidden by the frame.",
+   "text": "MEASURED, NOT EYEBALLED. Every board here was rendered in Chromium and read back element by element — 1,087 runs of text, their computed colour against the colour actually painted behind them, every control box, and the whole layout again at 130% and 200% phone font scale.\n\nIt found things reading the source could not. Ten screens were hiding their own content behind a fixed height: Profile was concealing 469px, Ask 360px, Sent 318px — written, laid out, invisible. The filename and hash overprinted on every dark media slot sat at Lc 23, which is not dim, it is not there. The recording screen put its only status line in #016abe on near-black, Lc 25.\n\nAll fixed. Of 1,087 text runs, two now sit below WCAG AA: one is a deliberately disabled button, the other is a measurement artefact. The dashed FOLD line on each phone marks where a real 360×800 handset stops — everything under it needs a scroll, which is true of the product and was being hidden by the frame.",
    "x": 2320,
    "y": 41901,
    "w": 800
@@ -311,7 +311,7 @@
    "x": 0,
    "y": 44917,
    "w": 780,
-   "text": "THE LAPTOP SIDE. You asked what about the desktop pages \u2014 here is the honest split.\n\nA farmer's screens are a phone, all of them, because the camera and the field are on the phone and a laptop is not carried down a row of potatoes. Investors and buyers are the desktop roles: browse, this portfolio, confirm, and the buyer marketplace below \u2014 all 1320px.\n\nThis portfolio is the page that decides whether the product is honest. It has no return percentage, because two of the four seasons have not finished and one failed \u2014 an average would describe none of them. The failed season stays in the table permanently, same row height, same type size as the one that paid."
+   "text": "THE LAPTOP SIDE. You asked what about the desktop pages — here is the honest split.\n\nA farmer's screens are a phone, all of them, because the camera and the field are on the phone and a laptop is not carried down a row of potatoes. Investors and buyers are the desktop roles: browse, this portfolio, confirm, and the buyer marketplace below — all 1320px.\n\nThis portfolio is the page that decides whether the product is honest. It has no return percentage, because two of the four seasons have not finished and one failed — an average would describe none of them. The failed season stays in the table permanently, same row height, same type size as the one that paid."
   },
   {
    "id": "buyer",
@@ -322,28 +322,28 @@
   },
   {
    "id": "orders-note",
-   "text": "WHAT A BUYER BOUGHT \u2014 and three things this page refuses to imply.\n\nThere is no delivery status, because the server has no such field and we would be inventing it. The page says so: we record the sale, not the delivery.\n\nThe pesticide column is captioned as a declaration, not a test. A cold storage buying on residue risk has to be told, in the column itself, that nobody tested the produce. A farmer who left the field blank is shown as blank, never as none.\n\nAnd the onion row is the one most platforms would delete: the video that lot was sold on was later matched 94% to another farmer\u2019s footage. The buyer is told after paying, because that is when we found out, and nothing about it can be quietly reversed.",
+   "text": "WHAT A BUYER BOUGHT — and three things this page refuses to imply.\n\nThere is no delivery status, because the server has no such field and we would be inventing it. The page says so: we record the sale, not the delivery.\n\nThe pesticide column is captioned as a declaration, not a test. A cold storage buying on residue risk has to be told, in the column itself, that nobody tested the produce. A farmer who left the field blank is shown as blank, never as none.\n\nAnd the onion row is the one most platforms would delete: the video that lot was sold on was later matched 94% to another farmer’s footage. The buyer is told after paying, because that is when we found out, and nothing about it can be quietly reversed.",
    "x": 1410,
    "y": 46692,
    "w": 760
   },
   {
    "id": "admin-note",
-   "text": "ADMIN, and the hard part was deciding what it is allowed to be.\n\nYou removed review, so this cannot be a queue that gates farmers \u2014 the first line on the page says nothing here blocks anybody, and every video listed is already stored, already public, already timestamped. What is left is the work only a person can do: the system auto-flagged two farmers whose footage is 94% identical, and \u20b91,20,000 has already changed hands on the later one.\n\nThe case is two files side by side with what the match proves and what it does not, because an operator under time pressure will otherwise read earlier as honest. Same district, same coordinates, and a shared family plot is an ordinary explanation.\n\nThe black panel is the important one: this page cannot delete a video, move a date, or reverse a payment. A stolen admin account can write false notes and mislead people. It cannot rewrite the record \u2014 which is the entire reason the record lives somewhere we do not control.",
+   "text": "ADMIN, and the hard part was deciding what it is allowed to be.\n\nYou removed review, so this cannot be a queue that gates farmers — the first line on the page says nothing here blocks anybody, and every video listed is already stored, already public, already timestamped. What is left is the work only a person can do: the system auto-flagged two farmers whose footage is 94% identical, and ₹1,20,000 has already changed hands on the later one.\n\nThe case is two files side by side with what the match proves and what it does not, because an operator under time pressure will otherwise read earlier as honest. Same district, same coordinates, and a shared family plot is an ordinary explanation.\n\nThe black panel is the important one: this page cannot delete a video, move a date, or reverse a payment. A stolen admin account can write false notes and mislead people. It cannot rewrite the record — which is the entire reason the record lives somewhere we do not control.",
    "x": 0,
    "y": 48650,
    "w": 820
   },
   {
    "id": "limits-note",
-   "text": "FREE DEPLOYMENT, CHECKED AGAINST THE PUBLISHED LIMITS RATHER THAN REMEMBERED. Three of them change the design, not the deployment.\n\nA Vercel function request body caps at 4.5 MB and a 40-second clip is twice that, so the video never travels through the API \u2014 the handset uploads straight to storage and the server pulls the object back and hashes it there. That detour is what keeps the landing page allowed to say the server hashes the bytes it actually received.\n\nHobby cron runs once a day and fires anywhere inside the hour, so two screens stopped promising a timestamp in a few hours, and the admin console stopped calling a 24-hour wait late.\n\nThen the ceiling nobody can engineer around: 1 GB of pinned storage against 10 MB a clip is about a hundred videos, ever, on a product whose entire promise is that nothing is deleted. That is a pilot, and it should be described as one rather than discovered in week five.",
+   "text": "FREE DEPLOYMENT, CHECKED AGAINST THE PUBLISHED LIMITS RATHER THAN REMEMBERED. Three of them change the design, not the deployment.\n\nA Vercel function request body caps at 4.5 MB and a 40-second clip is twice that, so the video never travels through the API — the handset uploads straight to storage and the server pulls the object back and hashes it there. That detour is what keeps the landing page allowed to say the server hashes the bytes it actually received.\n\nHobby cron runs once a day and fires anywhere inside the hour, so two screens stopped promising a timestamp in a few hours, and the admin console stopped calling a 24-hour wait late.\n\nThen the ceiling nobody can engineer around: 1 GB of pinned storage against 10 MB a clip is about a hundred videos, ever, on a product whose entire promise is that nothing is deleted. That is a pilot, and it should be described as one rather than discovered in week five.",
    "x": 1410,
    "y": 48650,
    "w": 800
   },
   {
    "id": "mismatch",
-   "text": "FIVE PLACES THE DESIGN AND THE SERVER DISAGREE. Found by reading the models, not by guessing \u2014 you will hit all five the moment this gets built.\n\n1. Listing has minPrice and maxPrice, not a price. A lot is sold whole for an offer inside a range, and Purchase has no quantity field at all. I had drawn a per-quintal rate and a quantity stepper; both are corrected on the marketplace board now.\n\n2. Purchase has no status. No dispatched, no delivered, ever.\n\n3. There is no Plot model. Which plot was that, and the plot screen, imply an entity that does not exist \u2014 a plot is currently just a string on a video. Either add the model or the naming is cosmetic.\n\n4. FundingRequest stores roi, a farmer-declared expected return. That contradicts we are not showing you a projected return. Show it as her own estimate, labelled unchecked, or stop storing it.\n\n5. Amounts are documented in SOL and Transaction is Solana-shaped, while every screen here is in rupees.",
+   "text": "FIVE PLACES THE DESIGN AND THE SERVER DISAGREE. Found by reading the models, not by guessing — you will hit all five the moment this gets built.\n\n1. Listing has minPrice and maxPrice, not a price. A lot is sold whole for an offer inside a range, and Purchase has no quantity field at all. I had drawn a per-quintal rate and a quantity stepper; both are corrected on the marketplace board now.\n\n2. Purchase has no status. No dispatched, no delivered, ever.\n\n3. There is no Plot model. Which plot was that, and the plot screen, imply an entity that does not exist — a plot is currently just a string on a video. Either add the model or the naming is cosmetic.\n\n4. FundingRequest stores roi, a farmer-declared expected return. That contradicts we are not showing you a projected return. Show it as her own estimate, labelled unchecked, or stop storing it.\n\n5. Amounts are documented in SOL and Transaction is Solana-shaped, while every screen here is in rupees.",
    "x": 2290,
    "y": 48650,
    "w": 780
@@ -353,7 +353,7 @@
    "x": 0,
    "y": 51129,
    "w": 860,
-   "text": "WHERE THIS STANDS.\n\nTwenty-two screens and two spec boards. Every role walks end to end and nothing on this canvas is a control that leads nowhere.\n\nFarmer: first run \u2192 home \u2192 film \u2192 name it \u2192 the plot \u2192 ask for money \u2192 the money \u2192 report the harvest \u2192 who gets what, with messages, leaf check, ask and settings reachable throughout. Investor: landing \u2192 browse \u2192 the evidence \u2192 confirm \u2192 portfolio \u2192 the thread. Buyer: lots \u2192 offer \u2192 what you bought. Plus admin.\n\nWhat is deliberately not here: a farmer web app, because the camera and the field are on the phone. Password recovery and payment rails, because both depend on decisions nobody has made yet \u2014 which gateway, and whether a farmer without a bank account can be paid at all. Those are business questions wearing screen-shaped clothes, and drawing them now would be inventing the answer."
+   "text": "WHERE THIS STANDS.\n\nTwenty-two screens and two spec boards. Every role walks end to end and nothing on this canvas is a control that leads nowhere.\n\nFarmer: first run → home → film → name it → the plot → ask for money → the money → report the harvest → who gets what, with messages, leaf check, ask and settings reachable throughout. Investor: landing → browse → the evidence → confirm → portfolio → the thread. Buyer: lots → offer → what you bought. Plus admin.\n\nWhat is deliberately not here: a farmer web app, because the camera and the field are on the phone. Password recovery and payment rails, because both depend on decisions nobody has made yet — which gateway, and whether a farmer without a bank account can be paid at all. Those are business questions wearing screen-shaped clothes, and drawing them now would be inventing the answer."
   }
  ],
  "launch": {

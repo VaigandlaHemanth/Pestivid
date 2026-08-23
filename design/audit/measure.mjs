@@ -108,7 +108,10 @@ const PAGE_FN = () => {
   const clipped = [];
   const all = document.querySelectorAll('body *');
 
+  // [data-fold] is the artboard's own fold annotation; build-pages.mjs strips it
+  // from the generated page, so measuring it reports controls nobody can see.
   for (const el of all) {
+    if (el.closest('[data-fold]')) continue;
     const cs = getComputedStyle(el);
     if (cs.display === 'none' || cs.visibility === 'hidden') continue;
     const tag = el.tagName.toLowerCase();
@@ -146,7 +149,8 @@ const PAGE_FN = () => {
       const childPainted = Array.from(el.children).some(ch => {
         const c = parse(getComputedStyle(ch).backgroundColor); return c && c.a > 0;
       });
-      if (txt.length > 0 && txt.length <= 42 && !childPainted && box.height > 0) {
+      const readout = el.hasAttribute('data-readout');
+      if (txt.length > 0 && txt.length <= 42 && !childPainted && box.height > 0 && !readout) {
         controls.push({ label: txt.slice(0, 42), w: +box.width.toFixed(1), h: +box.height.toFixed(1) });
       }
     }
@@ -254,6 +258,11 @@ for (const r of results) {
     `  clip@130%:${r.scale130.clipped.length}  clip@200%:${r.scale200.clipped.length}`
   );
   // a count is not a finding; name what is cut so it can be fixed
+  // counts tell you a board is wrong; only the element tells you where
+  for (const t of r.textEls.filter(t => Math.abs(t.apca) < 60 && t.size < 24))
+    console.log(`      Lc ${Math.round(Math.abs(t.apca))} at ${t.size}px  ${t.color} on ${t.bg}  "${(t.text || '').slice(0, 46)}"`);
+  for (const c of r.controls.filter(c => c.h < (r.w <= 400 ? 44 : 24)))
+    console.log(`      target ${c.w}x${c.h}  "${c.label}"`);
   for (const [tag, set] of [['130%', r.scale130.clipped], ['200%', r.scale200.clipped]])
     for (const c of set)
       console.log(`      @${tag} cut ${c.cut}px  <${c.tag} class="${c.cls}"> at ${c.at}  "${c.first}"`);
