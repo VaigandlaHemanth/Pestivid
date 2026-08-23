@@ -86,7 +86,7 @@ router.get('/', async (req, res) => {
          const formattedRequests = requests.map(request => ({
              _id: request._id.toString(),
              farmerWallet: request.farmerWallet ? request.farmerWallet._id.toString() : null,
-             farmerName: request.farmerWallet ? (request.farmerWallet.name.split(' ')[0] || request.farmerWallet.displayIdentifier) : 'Unknown Farmer',
+             farmerName: request.farmerWallet ? ((request.farmerWallet.name || '').trim().split(' ')[0] || request.farmerWallet.displayIdentifier || 'Unknown Farmer') : 'Unknown Farmer',
              title: request.title,
              crop: request.crop,
              acres: request.acres,
@@ -150,7 +150,7 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
         const formattedRequests = requests.map(request => ({
              _id: request._id.toString(),
              farmerWallet: request.farmerWallet ? request.farmerWallet._id.toString() : null,
-             farmerName: request.farmerWallet ? (request.farmerWallet.name.split(' ')[0] || request.farmerWallet.displayIdentifier) : 'Unknown Farmer',
+             farmerName: request.farmerWallet ? ((request.farmerWallet.name || '').trim().split(' ')[0] || request.farmerWallet.displayIdentifier || 'Unknown Farmer') : 'Unknown Farmer',
              title: request.title,
              crop: request.crop,
              acres: request.acres,
@@ -220,7 +220,7 @@ router.get('/:id', async (req, res) => {
          const formattedRequest = {
              _id: request._id.toString(),
              farmerWallet: request.farmerWallet ? request.farmerWallet._id.toString() : null,
-             farmerName: request.farmerWallet ? (request.farmerWallet.name.split(' ')[0] || request.farmerWallet.displayIdentifier) : 'Unknown Farmer',
+             farmerName: request.farmerWallet ? ((request.farmerWallet.name || '').trim().split(' ')[0] || request.farmerWallet.displayIdentifier || 'Unknown Farmer') : 'Unknown Farmer',
              title: request.title,
              crop: request.crop,
              acres: request.acres,

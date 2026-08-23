@@ -118,7 +118,22 @@ for (const slug of slugs) {
     p.on('pageerror', e => errs.push(String(e).slice(0, 70)));
     await p.goto(`${APP}/${slug}.html`, { waitUntil: 'load' });
     await p.waitForTimeout(1200);
-    const before = await p.evaluate(() => ({ url: location.pathname, html: document.body.innerHTML.length }));
+    // A control that is already the current one is not dead when clicking it
+    // changes nothing -- selecting the row you are already reading is meant to
+    // be a no-op. Recorded before the click so the two cases can be told apart.
+    const before = await p.evaluate((n) => {
+      const sel = '[data-act], [data-go], [role="button"], [role="checkbox"], [role="radio"], [role="switch"], [role="link"], input, textarea';
+      const els = [...document.querySelectorAll(sel)].filter(e => {
+        const r = e.getBoundingClientRect(); const cs = getComputedStyle(e);
+        return r.width >= 2 && r.height >= 2 && cs.visibility !== 'hidden' && cs.display !== 'none' && cs.opacity !== '0';
+      });
+      const el = els[n];
+      return {
+        url: location.pathname,
+        html: document.body.innerHTML.length,
+        already: el?.getAttribute('aria-current') === 'true' || el?.getAttribute('aria-pressed') === 'true',
+      };
+    }, i);
     try {
       await p.evaluate((n) => {
         const sel = '[data-act], [data-go], [role="button"], [role="checkbox"], [role="radio"], [role="switch"], [role="link"], input, textarea';
@@ -135,7 +150,7 @@ for (const slug of slugs) {
     clicked++;
     if (errs.length) broke.push(`${c.name}: ${errs[0]}`);
     else if (after.url !== before.url) moved.push(`${c.name} -> ${after.url.split('/').pop()}`);
-    else if (after.html === before.html) dead.push(c.name);
+    else if (after.html === before.html && !before.already) dead.push(c.name);
     await p.close();
   }
 

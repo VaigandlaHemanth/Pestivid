@@ -19,7 +19,22 @@
     .lift2 { box-shadow: 0 2px 5px rgba(29,26,23,.10), 0 16px 40px rgba(29,26,23,.14); }
     .p { font-size: 15.5px; line-height: 1.55; color: #4a443d; }
 
-    /* Dark glass, for a readout that has to stay legible over a frame nobody
+    /* Glass was here, and it should not have been.
+       ---------------------------------------------
+       The rule this product wrote for itself is that glass needs a backdrop
+       that is both frozen and varied, or the blur samples one colour and
+       returns it -- a translucent grey bar wearing the costume of glass. Then
+       glass was put on this board anyway, on the assumption that the media slot
+       carries a video frame at runtime.
+       It does not. There is no <video> and no <img> in any generated page
+       except the live viewfinder on Record and the captured photo on LeafCheck;
+       this slot is a flat #37322d fill, permanently. So the filter had nothing
+       to sample and cost a compositor pass to sample it.
+       The filters are gone. The alphas stay exactly as drawn, because a
+       translucent scrim over a dark fill is honest work -- it is what keeps the
+       readout legible. It simply is not glass, and no longer claims to be. */
+
+    /* A scrim, formerly dark glass, for a readout that has to stay legible over a frame nobody
        chose. Light .glass at 13% cannot carry #ded7d0 over an arbitrary photo;
        this can, and it does real work rather than decoration: mono text laid
        straight onto a video frame has whatever contrast that frame happens to
@@ -38,13 +53,7 @@
        transparency costs nothing here. */
     .gplate {
       background: rgba(12,11,10,.64);
-      backdrop-filter: blur(14px) saturate(118%);
-      -webkit-backdrop-filter: blur(14px) saturate(118%);
       box-shadow: inset 0 1px 0 rgba(246,243,239,.14);
-    }
-    @supports not (backdrop-filter: blur(1px)) { .gplate { background: rgba(12,11,10,.88); } }
-    @media (prefers-reduced-transparency: reduce) {
-      .gplate { background: rgba(12,11,10,.92); backdrop-filter: none; -webkit-backdrop-filter: none; }
     }
   </style>
 </helmet>

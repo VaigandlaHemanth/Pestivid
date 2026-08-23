@@ -38,7 +38,7 @@ const code = '246813';
   await page.goto(`${APP}/setup-identity.html`, { waitUntil: 'load' });
   await page.waitForTimeout(500);
 
-  await page.fill('input[name="name"]', `Phone Farmer ${stamp}`);
+  await page.fill('input[name="name"]', `Testcase Farmer ${stamp}`);
   await page.fill('input[name="tel"]', digits);
   await page.fill('input[name="new-password"]', code);
   await page.getByText('Continue', { exact: true }).click();
@@ -92,7 +92,7 @@ const code = '246813';
   page.on('pageerror', e => errs.push(String(e).slice(0, 90)));
   await page.addInitScript(([t, u]) => {
     localStorage.setItem('pv.token', t); localStorage.setItem('pv.user', u);
-  }, [token, JSON.stringify({ _id: userId, name: 'Phone Farmer', role: 'farmer' })]);
+  }, [token, JSON.stringify({ _id: userId, name: 'Testcase Farmer', role: 'farmer' })]);
 
   await page.goto(`${APP}/ask-money-video.html`, { waitUntil: 'load' });
   await page.waitForTimeout(1500);

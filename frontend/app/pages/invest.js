@@ -1,6 +1,7 @@
 import { requireUser, api, load, state } from './_guard.js';
 import { repeat, bind } from '../bind.js';
 import { rupees } from '../api.js';
+import { promote, goes, press } from '../wire.js';
 
 const ctx = requireUser('invest', ['investor']);
 if (ctx) load(ctx.root, async () => {
@@ -31,13 +32,24 @@ if (ctx) load(ctx.root, async () => {
     if (bar) bar.style.width = row.pct;
   });
 
-  await show(open[0]);
-
-  // clicking a season in the list swaps the detail column
-  [...list.children].forEach((el, i) => {
-    el.setAttribute('data-act', '');
-    el.addEventListener('click', () => show(open[i]));
+  // repeat() clones the first drawn row, and on the board that row is the
+  // SELECTED one -- so every row arrived wearing the selection fill and the
+  // blue border, and the thing you were actually looking at was indicated by
+  // nothing at all. Selection is state; the template carries none of it.
+  const rows = [...list.children];
+  const select = (i) => rows.forEach((el, n) => {
+    const on = n === i;
+    el.style.background = on ? '#eae4de' : '#fff';
+    el.style.borderLeftColor = on ? '#012169' : 'transparent';
+    el.setAttribute('aria-current', on ? 'true' : 'false');
   });
+  rows.forEach((el, i) => {
+    promote(el, open[i]?.title || 'This season');
+    el.addEventListener('click', () => { select(i); show(open[i]); });
+  });
+  select(0);
+  await show(open[0]);
+  press(ctx.root);
 
   async function show(p) {
     const farmer = p.farmerName || 'The farmer';
@@ -93,9 +105,27 @@ if (ctx) load(ctx.root, async () => {
 
     const go = [...ctx.root.querySelectorAll('div')]
       .find(d => d.children.length === 0 && d.textContent.trim() === 'See the exact amount');
-    if (go) {
-      go.setAttribute('data-act', '');
-      go.parentElement.dataset.go = `confirm-investment?project=${p._id || p.id}&amount=${offer}`;
+    if (go) goes(go.parentElement, `confirm-investment?project=${p._id || p.id}&amount=${offer}`,
+                 'See the exact amount');
+
+    // "Ask <farmer> a question" is a lifted white bar with an icon sitting
+    // directly under the primary button -- it reads as the page's secondary
+    // action and did nothing at all.
+    const askRow = ctx.root.querySelector('[data-bind="told.ask"]')?.parentElement;
+    if (askRow && p.farmerWallet) {
+      promote(askRow, `Ask ${farmer.split(' ')[0]} a question`);
+      // assigned, not added: show() runs again on every row click, and
+      // addEventListener would stack one handler per click.
+      askRow.onclick = async () => {
+        try {
+          const conv = await api.messages.open({ targetUserId: p.farmerWallet });
+          location.href = `./thread-investor.html?c=${conv._id || conv.id}`;
+        } catch (err) {
+          state(askRow, 'failed', 'Could not open the conversation', err.message);
+        }
+      };
+    } else if (askRow) {
+      askRow.remove();       // no farmer to ask
     }
   }
 });
