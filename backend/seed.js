@@ -76,6 +76,7 @@ const seedDB = async () => {
             { name: 'Demo Farmer', email: 'demo.farmer@pestivid.sim', role: 'farmer', password: demoPasswordHash, memberSince: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }, // ~30 days ago
             { name: 'Demo Buyer', email: 'demo.buyer@pestivid.sim', role: 'buyer', password: demoPasswordHash, memberSince: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) }, // ~15 days ago
             { name: 'Demo Investor', email: 'demo.investor@pestivid.sim', role: 'investor', password: demoPasswordHash, memberSince: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000) }, // ~45 days ago
+            { name: 'Demo Admin', email: 'demo.admin@pestivid.sim', role: 'admin', password: demoPasswordHash, memberSince: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000) }, // registration refuses role 'admin', so this seed is the only way one exists
             { name: 'Alice Farmer', email: 'alice@example.com', role: 'farmer', password: await bcrypt.hash('alice123', 10), memberSince: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000) }, // ~60 days ago
             { name: 'Bob Buyer', email: 'bob@example.com', role: 'buyer', password: await bcrypt.hash('bob123', 10), memberSince: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000) }, // ~20 days ago
             { name: 'Charlie Investor', email: 'charlie@example.com', role: 'investor', password: await bcrypt.hash('charlie123', 10), memberSince: new Date(Date.now() - 50 * 24 * 60 * 60 * 1000) }, // ~50 days ago
@@ -201,14 +202,14 @@ function assertSafeToSeed() {
                 farmerWallet: demoFarmerUser._id,
                 crop: demoTomatoVideo.crop, location: demoTomatoVideo.location, pesticide: demoTomatoVideo.pesticide, pesticideCompany: demoTomatoVideo.pesticideCompany,
                 cid: demoTomatoVideo.cid, storageType: demoTomatoVideo.storageType, videoFileHash: demoTomatoVideo.videoFileHash,
-                minPrice: 0.8, maxPrice: 1.2, status: 'active', createdAt: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000), // 1.5 days ago
+                minPrice: 44000, maxPrice: 52000, status: 'active', createdAt: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000), // 1.5 days ago
                 txHash: generateSimulatedTxHash('sim_list_tomato_demo'), notificationSent: true // Already notified buyers
             },
              {
                  farmerWallet: demoFarmerUser._id,
                  crop: demoLettuceVideo.crop, location: demoLettuceVideo.location, pesticide: demoLettuceVideo.pesticide, pesticideCompany: demoLettuceVideo.pesticideCompany,
                  cid: demoLettuceVideo.cid, storageType: demoLettuceVideo.storageType, videoFileHash: demoLettuceVideo.videoFileHash,
-                 minPrice: 0.5, maxPrice: 0.9, status: 'active', createdAt: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000), // 0.5 days ago
+                 minPrice: 28000, maxPrice: 36000, status: 'active', createdAt: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000), // 0.5 days ago
                  txHash: generateSimulatedTxHash('sim_list_lettuce_demo'), notificationSent: true // Already notified buyers
              },
              // Listing by Alice Farmer
@@ -216,7 +217,7 @@ function assertSafeToSeed() {
                 farmerWallet: aliceUser._id,
                 crop: alicePeppersVideo.crop, location: alicePeppersVideo.location, pesticide: alicePeppersVideo.pesticide, pesticideCompany: alicePeppersVideo.pesticideCompany,
                 cid: alicePeppersVideo.cid, storageType: alicePeppersVideo.storageType, videoFileHash: alicePeppersVideo.videoFileHash,
-                minPrice: 1.5, maxPrice: 2.0, status: 'active', createdAt: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000), // 2.5 days ago
+                minPrice: 78000, maxPrice: 92000, status: 'active', createdAt: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000), // 2.5 days ago
                 txHash: generateSimulatedTxHash('sim_list_peppers_alice'), notificationSent: true // Already notified buyers
             },
             // Add a listing that will be marked as 'sold' later
@@ -224,7 +225,7 @@ function assertSafeToSeed() {
                 farmerWallet: demoFarmerUser._id,
                 crop: 'Cucumbers', location: 'Field 2', pesticide: 'Organic Spray', pesticideCompany: 'BioGro',
                 cid: 'bafybeidr4pzkr5kkh5664gxfb4o73j322v4r5v6w7x8y9z0a1b1c1d1e1f1h', storageType: 'ipfs', videoFileHash: 'sim_hash_cucumbers_video_1',
-                minPrice: 0.7, maxPrice: 1.0, status: 'active', createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+                minPrice: 38000, maxPrice: 48000, status: 'active', createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
                 txHash: generateSimulatedTxHash('sim_list_cukes_demo'), notificationSent: true
             },
         ];
@@ -241,15 +242,15 @@ function assertSafeToSeed() {
         const fundingRequests = [
             // Request by Demo Farmer
             {
-                farmerWallet: demoFarmerUser._id, title: 'Organic Wheat Expansion', crop: demoWheatVideo.crop, acres: 10, amount: 50, method: 'organic',
+                farmerWallet: demoFarmerUser._id, title: 'Organic Wheat Expansion', crop: demoWheatVideo.crop, acres: 10, amount: 500000, method: 'organic',
                 cid: demoWheatVideo.cid, videoStorageType: demoWheatVideo.storageType, videoFileHash: demoWheatVideo.videoFileHash,
                 description: 'Expand organic wheat production to meet local demand. Funds for new harvester.', timeline: 6, roi: 15, investorShare: 20,
-                fundedAmount: 15.5, status: 'partially_funded', createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+                fundedAmount: 155000, status: 'partially_funded', createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
                  investors: [], // Investors will be added below
                  updates: [{id:'upd_wheat_1', date: new Date(Date.now() - 2.8*24*60*60*1000).toLocaleDateString(), text:'Initial planting complete, crops look healthy.'}] // Embedded update
             },
              {
-                 farmerWallet: demoFarmerUser._id, title: 'Hydroponic Strawberry Setup', crop: demoStrawberryVideo.crop, acres: 1, amount: 120, method: 'hydroponic',
+                 farmerWallet: demoFarmerUser._id, title: 'Hydroponic Strawberry Setup', crop: demoStrawberryVideo.crop, acres: 1, amount: 1200000, method: 'hydroponic',
                  cid: demoStrawberryVideo.cid, videoStorageType: demoStrawberryVideo.storageType, videoFileHash: demoStrawberryVideo.videoFileHash,
                  description: 'Setting up a new hydroponic system for year-round strawberry production.', timeline: 4, roi: 22, investorShare: 25,
                  fundedAmount: 0, status: 'pending', createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
@@ -257,20 +258,20 @@ function assertSafeToSeed() {
              },
              // Request by Alice Farmer
              {
-                farmerWallet: aliceUser._id, title: 'Regenerative Corn Pilot', crop: aliceCornVideo.crop, acres: 5, amount: 80, method: 'regenerative',
+                farmerWallet: aliceUser._id, title: 'Regenerative Corn Pilot', crop: aliceCornVideo.crop, acres: 5, amount: 800000, method: 'regenerative',
                 cid: aliceCornVideo.cid,
                 videoStorageType: aliceCornVideo.storageType, videoFileHash: aliceCornVideo.videoFileHash,
                 description: 'Pilot project for regenerative corn farming on 5 acres. Focus on soil health and biodiversity.', timeline: 9, roi: 18, investorShare: 22,
-                fundedAmount: 40, status: 'partially_funded', createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
+                fundedAmount: 400000, status: 'partially_funded', createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
                 investors: [], updates: []
             },
             // Add a request that is already fully funded
              {
-                farmerWallet: demoFarmerUser._id, title: 'Green Bean Expansion', crop: 'Green Beans', acres: 3, amount: 30, method: 'organic',
+                farmerWallet: demoFarmerUser._id, title: 'Green Bean Expansion', crop: 'Green Beans', acres: 3, amount: 300000, method: 'organic',
                 cid: demoLettuceVideo.cid, // Using lettuce video as placeholder
                 videoStorageType: demoLettuceVideo.storageType, videoFileHash: demoLettuceVideo.videoFileHash,
                 description: 'Expanding organic green bean patch. Need funds for trellising materials.', timeline: 3, roi: 12, investorShare: 15,
-                fundedAmount: 30, status: 'funded', createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
+                fundedAmount: 300000, status: 'funded', createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
                 investors: [], updates: [] // Investors added below
             },
         ];
@@ -292,7 +293,7 @@ function assertSafeToSeed() {
             {
                 investorWallet: demoInvestorUser._id,
                 projectId: demoWheatRequest._id,
-                amount: 10.0,
+                amount: 100000,
                 investmentDate: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000), // 2.5 days ago
                 txHash: generateSimulatedTxHash('sim_invest_wheat_demo_1'),
                  status: 'growing', progress: 50, // Simulate some progress
@@ -300,7 +301,7 @@ function assertSafeToSeed() {
              {
                  investorWallet: demoInvestorUser._id,
                  projectId: demoWheatRequest._id,
-                 amount: 5.5, // Total funded = 10 + 5.5 = 15.5, matches wheatRequest.fundedAmount
+                 amount: 55000, // Total funded = 100000 + 55000 = 155000, matches wheatRequest.fundedAmount
                  investmentDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
                  txHash: generateSimulatedTxHash('sim_invest_wheat_demo_2'),
                   status: 'growing', progress: 50, // Simulate some progress
@@ -309,7 +310,7 @@ function assertSafeToSeed() {
              {
                  investorWallet: charlieUser._id,
                  projectId: aliceCornRequest._id,
-                 amount: 40.0, // Matches fundedAmount on request
+                 amount: 400000, // Matches fundedAmount on request
                  investmentDate: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), // 9 days ago
                  txHash: generateSimulatedTxHash('sim_invest_corn_charlie_1'),
                   status: 'growing', progress: 30, // Simulate some progress
@@ -318,11 +319,11 @@ function assertSafeToSeed() {
             {
                 investorWallet: demoInvestorUser._id,
                 projectId: demoGreenBeansRequest._id,
-                amount: 30.0, // Matches total amount
+                amount: 300000, // Matches total amount
                 investmentDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago
                 txHash: generateSimulatedTxHash('sim_invest_greenbeans_demo'),
                  status: 'harvested', progress: 100, // Mark as harvested
-                 payoutAmount: 30.0 * (demoGreenBeansRequest.roi / 100), // Calculate expected payout
+                 payoutAmount: 300000 * (demoGreenBeansRequest.roi / 100), // Calculate expected payout
                  payoutDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // Payout happened 5 days ago
                  payoutTxHash: generateSimulatedTxHash('sim_payout_greenbeans_demo'),
                  payoutNotified: true,
@@ -370,7 +371,7 @@ function assertSafeToSeed() {
             const purchase = new Purchase({
                  buyerWallet: bobUser._id,
                  listingId: demoCucumbersListing._id,
-                 price: 0.9, // Assume price within range
+                 price: 49500, // an offer inside the range the farmer listed
                  purchaseDate: purchaseDate,
                  txHash: purchaseTxHash,
                  // farmerWallet, crop, etc. will be populated by pre-save hook
@@ -471,12 +472,12 @@ function assertSafeToSeed() {
               // Notification for Demo Farmer about purchase
              { recipient: demoFarmerUser._id, type: 'purchase', message: `Your listing "${demoCucumbersListing?.crop || 'N/A'}" was purchased by Bob Buyer!`, timestamp: new Date(Date.now() - 0.1 * 24 * 60 * 60 * 1000), read: false, itemId: demoCucumbersListing?._id, itemType: 'Listing' },
               // Notification for Demo Investor about investment
-             { recipient: demoInvestorUser._id, type: 'investment', message: 'Your investment of 10.0 SOL in Wheat project successful!', timestamp: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoWheatRequest._id) && i.amount === 10.0)?._id, itemType: 'Investment' },
-             { recipient: demoInvestorUser._id, type: 'investment', message: 'Your investment of 5.5 SOL in Wheat project successful!', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoWheatRequest._id) && i.amount === 5.5)?._id, itemType: 'Investment' },
+             { recipient: demoInvestorUser._id, type: 'investment', message: 'Your investment of ₹1,00,000 in the wheat season successful!', timestamp: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoWheatRequest._id) && i.amount === 10.0)?._id, itemType: 'Investment' },
+             { recipient: demoInvestorUser._id, type: 'investment', message: 'Your investment of ₹55,000 in the wheat season successful!', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoWheatRequest._id) && i.amount === 5.5)?._id, itemType: 'Investment' },
               // Notification for Demo Investor about update (assuming farmer added an update)
              { recipient: demoInvestorUser._id, type: 'update', message: `Update posted for project "${demoWheatRequest?.title || 'N/A'}": Initial planting...`, timestamp: new Date(Date.now() - 2.8 * 24 * 60 * 60 * 1000), read: true, itemId: demoWheatRequest?._id, itemType: 'FundingRequest' }, // Mark read
              // Notification for Demo Investor about payout (Green Beans)
-             { recipient: demoInvestorUser._id, type: 'payout', message: `Payout received for "Green Bean Expansion": ${investments.find(i => i.projectId.equals(demoGreenBeansRequest._id))?.payoutAmount.toFixed(2) || 'N/A'} SOL!`, timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoGreenBeansRequest._id))?._id, itemType: 'Investment' },
+             { recipient: demoInvestorUser._id, type: 'payout', message: `Payout received for "Green Bean Expansion": ${investments.find(i => i.projectId.equals(demoGreenBeansRequest._id))?.payoutAmount?.toLocaleString('en-IN') || 'N/A'}!`, timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoGreenBeansRequest._id))?._id, itemType: 'Investment' },
 
 
              // Global notifications

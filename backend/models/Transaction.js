@@ -22,14 +22,14 @@ const transactionSchema = new mongoose.Schema({
         required: [true, 'Transaction type is required'],
         enum: {
             values: ['investment', 'payout', 'purchase', 'sale'], // Possible types of transactions in the demo flow
-            // 'investment': User (investor) sent SOL to a project
-            // 'payout': User (investor) received SOL from a harvested project
-            // 'purchase': User (buyer) spent SOL on a listing
-            // 'sale': User (farmer) received SOL from a listing purchase
+            // 'investment': an investor sent money to a project
+            // 'payout': an investor was paid from a harvested project
+            // 'purchase': a buyer paid for a listing
+            // 'sale': a farmer was paid for a listing
             message: 'Invalid transaction type.'
         }
     },
-    amount: { // Amount of SOL involved in the transaction
+    amount: { // Amount involved, in rupees
         type: Number,
         required: [true, 'Transaction amount is required'],
         // Can be positive (for payout, sale) or negative (for investment, purchase) depending on how you record it,
@@ -57,7 +57,7 @@ const transactionSchema = new mongoose.Schema({
     // counterpartyUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', sparse: true }, // The other user involved (farmer for purchase, buyer for sale, farmer for investment, investor for payout)
     // fee: Number, // Transaction fee (simulated)
     // status: { type: String, enum: ['pending', 'confirmed', 'failed'], default: 'confirmed' } // Simulated blockchain confirmation status
-    // tokenType: String, // e.g., 'SOL', 'USDC', custom token
+    // currency: String, // only rupees exist today; add this if that changes
 });
 
 

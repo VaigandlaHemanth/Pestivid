@@ -45,7 +45,7 @@ const investmentSchema = new mongoose.Schema({
 
 
     // Investment-specific details:
-    amount: { // The specific amount of SOL invested by this investor in this project
+    amount: { // What this investor put in, in rupees
         type: Number,
         required: [true, 'Investment amount is required'],
         min: [0, 'Investment amount cannot be negative']

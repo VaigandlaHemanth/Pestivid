@@ -31,10 +31,10 @@ const fundingRequestSchema = new mongoose.Schema({
         required: [true, 'Land size (acres) is required'],
         min: [0.1, 'Land size must be at least 0.1 acres']
     },
-    amount: { // Total funding amount required (in SOL)
+    amount: { // Total funding amount required, in rupees
         type: Number,
         required: [true, 'Funding amount is required'],
-        min: [1, 'Funding amount must be at least 1 SOL']
+        min: [1, 'Funding amount must be at least 1 rupee']
     },
     method: { // Growing method
         type: String,
@@ -115,7 +115,7 @@ const fundingRequestSchema = new mongoose.Schema({
     },
 
     // Funding Progress:
-    fundedAmount: { // Total amount of funding received so far (in SOL)
+    fundedAmount: { // Total funding received so far, in rupees
         type: Number,
         default: 0,
         min: [0, 'Funded amount cannot be negative']
