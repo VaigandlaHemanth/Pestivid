@@ -12,7 +12,14 @@ const dig = (obj, path) => path.split('.').reduce((o, k) => (o == null ? o : o[k
 
 /** Fill one subtree from one object. */
 export function bind(root, data) {
+  // Two calls over the same root must not wipe each other. A path whose FIRST
+  // segment is absent from this call's data was not addressed by it, so it is
+  // left alone; a path that is addressed and empty becomes an em dash. Without
+  // that distinction a second bind() blanked everything the first had filled,
+  // which is exactly what emptied the investor nav.
+  const addressed = (path) => Object.prototype.hasOwnProperty.call(data || {}, path.split('.')[0]);
   for (const el of root.querySelectorAll('[data-bind]')) {
+    if (!addressed(el.dataset.bind)) continue;
     const v = dig(data, el.dataset.bind);
     el.textContent = v == null || v === '' ? '—' : String(v);
   }
@@ -117,3 +124,33 @@ export const byText = (text, root = document) =>
 
 /** The first of those. */
 export const oneByText = (text, root = document) => byText(text, root)[0] || null;
+
+/**
+ * Repeat only the elements matching `selector`, leaving their siblings alone.
+ *
+ * repeat() assumes the container holds nothing but rows. Several boards do not
+ * work that way: the plot list, the payout list and the message list all put a
+ * section heading and its note in the same parent as the rows. Taking the first
+ * child as the template there cloned the heading once per row and dropped the
+ * rows entirely.
+ *
+ * This takes the first match as the template, removes the rest of the matches,
+ * and inserts the clones where the first one stood.
+ */
+export function repeatRows(root, selector, rows, decorate) {
+  const found = [...root.querySelectorAll(selector)];
+  if (!found.length) return null;
+  const anchor = document.createComment('rows');
+  found[0].before(anchor);
+  const tpl = found[0].cloneNode(true);
+  found.forEach(el => el.remove());
+  const made = rows.map((row, i) => {
+    const el = tpl.cloneNode(true);
+    bind(el, row);
+    if (decorate) decorate(el, row, i);
+    anchor.before(el);
+    return el;
+  });
+  anchor.remove();
+  return made;
+}

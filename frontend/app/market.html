@@ -35,7 +35,7 @@
       </div>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
-      <div style="font-size: 14px; color: #605a53;">Bob · buyer</div>
+      <div data-bind="me.line" style="font-size: 14px; color: #605a53;">Bob · buyer</div>
       <div style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
         <div style="font-size: 13px; font-weight: 600;">B</div>
       </div>
@@ -123,24 +123,24 @@
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 18px;">
-        <div style="display: contents;">
+        <div data-list="lots" style="display: contents;">
           <div style="background: #fff; padding: 16px 18px; display: grid; grid-template-columns: 92px 1fr 168px; gap: 16px; align-items: center; box-shadow: inset 3px 0 0 #016abe, 0 1px 2px rgba(29,26,23,.06);" class="lift1">
             <div style="width: 92px; min-height: 68px; background: #37322d; position: relative; overflow: hidden;">
               <div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div>
               <div class="mono" style="position: absolute; left: 8px; bottom: 6px; font-size: 11px; color: #ded7d0;">0:41</div>
             </div>
             <div>
-              <div style="font-size: 17.5px; font-weight: 600;">Alice Farmer</div>
-              <div class="p" style="font-size: 14.5px; margin-top: 2px;">Kadapa · 118 km away</div>
+              <div data-bind="who" style="font-size: 17.5px; font-weight: 600;">Alice Farmer</div>
+              <div data-bind="where" class="p" style="font-size: 14.5px; margin-top: 2px;">Kadapa · 118 km away</div>
               <div style="display: flex; align-items: center; gap: 7px; margin-top: 8px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path></svg>
-                <div style="font-size: 14px; color: #605a53;">Filmed 18 Aug, date proved</div>
+                <div data-bind="stamp" style="font-size: 14px; color: #605a53;">Filmed 18 Aug, date proved</div>
               </div>
             </div>
             <div style="text-align: right;">
-              <div class="m" style="font-size: 18px; font-weight: 700; letter-spacing: -0.015em;">₹44,000–₹52,000</div>
+              <div data-bind="price" class="m" style="font-size: 18px; font-weight: 700; letter-spacing: -0.015em;">₹44,000–₹52,000</div>
               <div class="m" style="font-size: 13.5px; color: #605a53;">for the whole lot</div>
-              <div class="m" style="font-size: 14.5px; margin-top: 5px;">40 quintal</div>
+              <div data-bind="qty" class="m" style="font-size: 14.5px; margin-top: 5px;">40 quintal</div>
             </div>
           </div>
         
@@ -150,17 +150,17 @@
               <div class="mono" style="position: absolute; left: 8px; bottom: 6px; font-size: 11px; color: #ded7d0;">0:38</div>
             </div>
             <div>
-              <div style="font-size: 17.5px; font-weight: 600;">Ravi Kumar</div>
-              <div class="p" style="font-size: 14.5px; margin-top: 2px;">Chittoor · 94 km away</div>
+              <div data-bind="who" style="font-size: 17.5px; font-weight: 600;">Ravi Kumar</div>
+              <div data-bind="where" class="p" style="font-size: 14.5px; margin-top: 2px;">Chittoor · 94 km away</div>
               <div style="display: flex; align-items: center; gap: 7px; margin-top: 8px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path></svg>
-                <div style="font-size: 14px; color: #605a53;">Filmed 16 Aug, date proved</div>
+                <div data-bind="stamp" style="font-size: 14px; color: #605a53;">Filmed 16 Aug, date proved</div>
               </div>
             </div>
             <div style="text-align: right;">
-              <div class="m" style="font-size: 18px; font-weight: 700; letter-spacing: -0.015em;">₹30,000–₹35,000</div>
+              <div data-bind="price" class="m" style="font-size: 18px; font-weight: 700; letter-spacing: -0.015em;">₹30,000–₹35,000</div>
               <div class="m" style="font-size: 13.5px; color: #605a53;">for the whole lot</div>
-              <div class="m" style="font-size: 14.5px; margin-top: 5px;">25 quintal</div>
+              <div data-bind="qty" class="m" style="font-size: 14.5px; margin-top: 5px;">25 quintal</div>
             </div>
           </div>
         
@@ -170,17 +170,17 @@
               <div class="mono" style="position: absolute; left: 8px; bottom: 6px; font-size: 11px; color: #ded7d0;">0:44</div>
             </div>
             <div>
-              <div style="font-size: 17.5px; font-weight: 600;">Meena Sharma</div>
-              <div class="p" style="font-size: 14.5px; margin-top: 2px;">Anantapur · 76 km away</div>
+              <div data-bind="who" style="font-size: 17.5px; font-weight: 600;">Meena Sharma</div>
+              <div data-bind="where" class="p" style="font-size: 14.5px; margin-top: 2px;">Anantapur · 76 km away</div>
               <div style="display: flex; align-items: center; gap: 7px; margin-top: 8px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path></svg>
-                <div style="font-size: 14px; color: #605a53;">Filmed 19 Aug, date proved</div>
+                <div data-bind="stamp" style="font-size: 14px; color: #605a53;">Filmed 19 Aug, date proved</div>
               </div>
             </div>
             <div style="text-align: right;">
-              <div class="m" style="font-size: 18px; font-weight: 700; letter-spacing: -0.015em;">₹78,000–₹88,000</div>
+              <div data-bind="price" class="m" style="font-size: 18px; font-weight: 700; letter-spacing: -0.015em;">₹78,000–₹88,000</div>
               <div class="m" style="font-size: 13.5px; color: #605a53;">for the whole lot</div>
-              <div class="m" style="font-size: 14.5px; margin-top: 5px;">60 quintal</div>
+              <div data-bind="qty" class="m" style="font-size: 14.5px; margin-top: 5px;">60 quintal</div>
             </div>
           </div>
         
@@ -190,17 +190,17 @@
               <div class="mono" style="position: absolute; left: 8px; bottom: 6px; font-size: 11px; color: #ded7d0;">0:35</div>
             </div>
             <div>
-              <div style="font-size: 17.5px; font-weight: 600;">Suresh Naidu</div>
-              <div class="p" style="font-size: 14.5px; margin-top: 2px;">Kurnool · 112 km away</div>
+              <div data-bind="who" style="font-size: 17.5px; font-weight: 600;">Suresh Naidu</div>
+              <div data-bind="where" class="p" style="font-size: 14.5px; margin-top: 2px;">Kurnool · 112 km away</div>
               <div style="display: flex; align-items: center; gap: 7px; margin-top: 8px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path></svg>
-                <div style="font-size: 14px; color: #605a53;">No video — not listed as proved</div>
+                <div data-bind="stamp" style="font-size: 14px; color: #605a53;">No video — not listed as proved</div>
               </div>
             </div>
             <div style="text-align: right;">
-              <div class="m" style="font-size: 18px; font-weight: 700; letter-spacing: -0.015em;">₹22,000–₹26,000</div>
+              <div data-bind="price" class="m" style="font-size: 18px; font-weight: 700; letter-spacing: -0.015em;">₹22,000–₹26,000</div>
               <div class="m" style="font-size: 13.5px; color: #605a53;">for the whole lot</div>
-              <div class="m" style="font-size: 14.5px; margin-top: 5px;">18 quintal</div>
+              <div data-bind="qty" class="m" style="font-size: 14.5px; margin-top: 5px;">18 quintal</div>
             </div>
           </div>
         </div>

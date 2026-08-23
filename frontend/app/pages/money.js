@@ -18,10 +18,14 @@ if (ctx) load(ctx.root, async () => {
     : null;
 
   bind(ctx.root, {
-    due: { line: due
-      ? `Your investors are waiting to be paid on ${due.title}.`
-      : 'Nobody is waiting on you.' },
+    due: {
+      headline: due ? `${due.title} is ready to harvest` : 'Nothing needs you today',
+      line: due
+        ? 'Your investors are waiting to be paid. Tell us what you sold it for and what it cost you to grow.'
+        : 'Nobody is waiting on you.',
+    },
     raise: {
+      name: raising ? raising.title : 'No season open',
       amount: raising ? rupees(raising.amount) : '—',
       state: raising
         ? `${rupees(raising.fundedAmount || 0)} raised of ${rupees(raising.amount)}`

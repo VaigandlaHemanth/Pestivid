@@ -1,6 +1,6 @@
 // Who gets what, from the server's arithmetic rather than the phone's.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, repeat } from '../bind.js';
+import { bind, repeatRows } from '../bind.js';
 import { rupees } from '../api.js';
 
 const ctx = requireUser('payout', ['farmer']);
@@ -22,9 +22,7 @@ if (ctx) load(ctx.root, async () => {
     countLine: `${investments.length} investor${investments.length === 1 ? '' : 's'}`,
   });
 
-  const rows = [...ctx.root.querySelectorAll('.p1, .p2')];
-  const container = rows[0]?.parentElement;
-  repeat(container, investments.map(inv => ({
+  repeatRows(ctx.root, '.p1, .p2', investments.map(inv => ({
     name: inv.investorName || 'Investor',
     // each share is that investor's slice of the pool, not an equal split
     pct: pool ? Math.round(100 * (inv.amount || 0) / pool) : 0,

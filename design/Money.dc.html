@@ -33,7 +33,7 @@
          action, and green belongs only to a healthy leaf. -->
     <div style="background: #1d1a17; padding: 20px;">
       <div style="font-size: 15px; color: #c3bcb6;">Needs you today</div>
-      <div style="font-size: 22px; font-weight: 700; color: #fff; line-height: 1.25; margin-top: 5px;">
+      <div data-bind="due.headline" style="font-size: 22px; font-weight: 700; color: #fff; line-height: 1.25; margin-top: 5px;">
         Canal plot is ready to harvest
       </div>
       <div data-bind="due.line" style="font-size: 15.5px; line-height: 1.5; margin-top: 7px; color: #d3ccc5;">
@@ -57,7 +57,7 @@
 
     <div style="background: #fff; padding: 16px 20px;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <div style="font-size: 18px; font-weight: 600;">Canal plot</div>
+        <div data-bind="raise.name" style="font-size: 18px; font-weight: 600;">Canal plot</div>
         <div data-bind="raise.amount" class="num" style="font-size: 19px; font-weight: 700;">&#8377;5,00,000</div>
       </div>
       <div style="min-height: 8px; background: #c3bcb6; margin-top: 11px; overflow: hidden;">

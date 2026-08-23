@@ -1,5 +1,5 @@
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, repeat } from '../bind.js';
+import { bind, repeatRows } from '../bind.js';
 import { whenShort, dateState, rupees } from '../api.js';
 
 const ctx = requireUser('plot', ['farmer']);
@@ -20,8 +20,7 @@ if (ctx) load(ctx.root, async () => {
     stage: `${mine.length} video${mine.length === 1 ? '' : 's'} so far`,
     videosLabel: 'Videos of this plot',
   } });
-  const rows = [...ctx.root.querySelectorAll('.vid')];
-  repeat(rows[0]?.parentElement, mine.map(v => {
+  repeatRows(ctx.root, '.vid', mine.map(v => {
     const s = dateState(v);
     return { when: whenShort(v.uploadTimestamp), status: s.text, kind: s.kind };
   }), (el, r) => {
