@@ -65,16 +65,22 @@ if (ctx) {
       const ttl = el.querySelector('.ttl'); if (ttl) ttl.textContent = row.name;
       const lbl = el.querySelector('.lbl'); if (lbl) lbl.textContent = row.when;
 
-      // The duration in the tile corner: the real one, or nothing. Showing the
-      // artboard's number on every row is the same lie four times over.
-      const tile = el.querySelector('div[style*="background: #37322d"]');
-      const dur = tile?.querySelector('div[style*="bottom: 6px"]');
+      // The duration, in the tile corner and in its own column. Marked on the
+      // board rather than found by a style string: the laptop layout moved the
+      // tile's background into a class, the old selector matched nothing, and
+      // every row went on showing the artboard's 0:41.
+      const dur = el.querySelector('[data-dur]');
       if (dur) { if (row.dur) dur.textContent = row.dur; else dur.remove(); }
+      const len = el.querySelector('[data-len]');
+      if (len) {
+        if (row.v.durationSeconds) len.textContent = `${Math.round(row.v.durationSeconds)} sec`;
+        else len.textContent = 'not recorded';
+      }
 
       // The state, not the explanation. Four rows repeating "date being
       // written, usually by tomorrow" says it three times too often; the
       // sentence above the list carries it once.
-      const status = [...el.querySelectorAll('div')]
+      const status = el.querySelector('[data-state]') || [...el.querySelectorAll('div')]
         .reverse().find(d => !d.children.length && d.textContent.trim());
       if (status) {
         status.textContent = row.s.short || row.s.text;
