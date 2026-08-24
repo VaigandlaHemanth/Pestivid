@@ -58,6 +58,9 @@ const FIND = () => {
     const looksLikeControl = linked || chevron || (ringed && !surface) || (painted && !surface);
     if (!looksLikeControl) continue;
     if (trackedLabel || (linked && insideProse)) continue;
+    // Bold, unfilled, unringed: that is a heading. The chevron it sits beside
+    // belongs to the first row of the list it introduces.
+    if (Number(cs.fontWeight) >= 700 && !painted && !ringed) continue;
 
     out.push({
       text: text.slice(0, 40),
