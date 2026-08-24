@@ -80,7 +80,7 @@
         <tr>
           <td class="td">
             <div style="font-size: 16.5px; font-weight: 600;">Potato &mdash; 40 quintal</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
+            <div data-who style="font-size: 14px; color: #605a53; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
           </td>
           <td class="td">
             <div class="m" style="font-size: 18px; font-weight: 700;">&#8377;49,500</div>
@@ -90,7 +90,7 @@
           <td class="td">
             <div style="display: flex; align-items: center; gap: 5px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.6"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
-              <div class="m" style="font-size: 14px; color: #006934; font-weight: 600;">18 Jul, block 878,410</div>
+              <div data-dated class="m" style="font-size: 14px; color: #006934; font-weight: 600;">18 Jul, block 878,410</div>
             </div>
             <div class="act" style="margin-top: 5px;">Watch it &middot; check the date</div>
           </td>
@@ -176,9 +176,12 @@
 
       <!-- the receipt. every field on it is one the server actually stores. -->
       <div style="width: 560px; background: #fff; padding: 24px 26px;" class="lift1">
-        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <!-- gap and flex-shrink: the panel is 560px wide but sits in a grid
+             track that squeezes it, and space-between alone let a long receipt
+             title butt straight up against "Download" with no space at all. -->
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 18px;">
           <div data-bind="receipt.head" style="font-size: 17px; font-weight: 700;">Receipt &mdash; potato, 12 August</div>
-          <div class="act">Download</div>
+          <div class="act" style="flex-shrink: 0;">Download</div>
         </div>
         <div style="margin-top: 16px;">
           <div style="display: flex; justify-content: space-between; padding: 9px 0; box-shadow: inset 0 -1px 0 #eef2f5;">

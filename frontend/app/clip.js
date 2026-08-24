@@ -33,7 +33,14 @@ function run(mode, fn) {
   return open().then(db => new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, mode);
     const out = fn(tx.objectStore(STORE));
-    tx.oncomplete = () => { db.close(); resolve(out?.result ?? out); };
+    tx.oncomplete = () => {
+      db.close();
+      // `out?.result ?? out` was wrong: an EMPTY store gives a request whose
+      // result is undefined, so ?? fell through and handed back the IDBRequest
+      // itself -- which is truthy. The send screen then believed there was a
+      // clip and rendered "0 seconds · NaN MB · on your phone".
+      resolve(out && typeof out === 'object' && 'result' in out ? out.result : out);
+    };
     tx.onerror = () => { db.close(); reject(tx.error); };
   }));
 }

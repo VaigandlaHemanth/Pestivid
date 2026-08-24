@@ -70,6 +70,13 @@ if (ctx) load(ctx.root, async () => {
   for (const p of buys) {
     const tr = tpl.cloneNode(true), tds = tr.querySelectorAll('td');
     tds[0]?.querySelector('div')?.replaceChildren(document.createTextNode(p.crop || 'Lot'));
+    // The farmer and where the lot came from. Unmarked on the board, so every
+    // row said "Alice Farmer · Kadapa" whoever had actually grown it.
+    const who = tr.querySelector('[data-who]');
+    if (who) {
+      const line = [p.farmerName, p.location].filter(Boolean).join(' · ');
+      if (line) who.textContent = line; else who.remove();
+    }
     tds[1]?.querySelector('.m')?.replaceChildren(document.createTextNode(rupees(p.price)));
     if (tds[2]) tds[2].textContent = dayMonth(p.purchaseDate);
     // the pesticide field is what the farmer typed; blank is blank, not none

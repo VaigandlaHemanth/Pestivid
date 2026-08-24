@@ -36,7 +36,7 @@ const CHECKS = [
   ['payout',         'farmer',   'No season chosen'],
   ['report-harvest', 'farmer',   'No season chosen'],
   ['thread',  'farmer',   'No conversation chosen'],
-  ['plot',           'farmer',   'No videos on this plot'],
+  ['plot',           'farmer',   'No plot chosen'],
   ['sent',           'farmer',   'no clip to send'],
   ['portfolio',      'investor', people.investor.name],
   ['invest',         'investor', null],

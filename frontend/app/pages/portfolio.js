@@ -50,8 +50,11 @@ if (ctx) {
     const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
     bind(root, {
       me: { initial },
-      heading: mine.length === 1 ? 'Your one season'
-             : `Your ${WORDS[mine.length] || mine.length} seasons`,
+      // The rows are INVESTMENTS, and two of them can be in the same season --
+      // "Organic Wheat Expansion" appeared twice, at ₹55,000 and ₹1,00,000, under
+      // a heading that called them three seasons. It counts what it lists.
+      heading: mine.length === 1 ? 'Your one investment'
+             : `Your ${WORDS[mine.length] || mine.length} investments`,
       investor: { name: ctx.user.name },
       labels: { putIn: 'You have put in, all together' },
       // The note described the artboard's mix -- "two have not finished and one
@@ -63,8 +66,8 @@ if (ctx) {
         // word numbers, to match the heading -- "2 of these seasons" next to
         // "Your three seasons" reads like two different pages
         const w = (n) => WORDS[n] || String(n);
-        if (open) parts.push(open === 1 ? 'One of these seasons has not finished'
-                                        : `${w(open)[0].toUpperCase()}${w(open).slice(1)} of these seasons have not finished`);
+        if (open) parts.push(open === 1 ? 'One of these has not finished'
+                                        : `${w(open)[0].toUpperCase()}${w(open).slice(1)} of these have not finished`);
         if (failed) parts.push(failed === 1 ? 'one failed outright' : `${w(failed)} failed outright`);
         const lead = parts.length ? parts.join(' and ') + '. ' : '';
         return lead + 'A single percentage would average them together into a number that describes none of them.';
