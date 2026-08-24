@@ -191,7 +191,9 @@ export const dayMonth = (iso) => {
 
 /** "Today, 8:40 am" reads faster in a field than a date does. */
 export const whenShort = (iso) => {
-  if (!iso) return '—';
+  // No date is not an em dash. A caller that gets '' removes the element rather
+  // than printing a placeholder on a line of its own where a time would be.
+  if (!iso) return '';
   const d = new Date(iso), now = new Date();
   const t = d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }).toLowerCase();
   const days = Math.round((new Date(now.toDateString()) - new Date(d.toDateString())) / 86400000);

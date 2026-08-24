@@ -55,17 +55,28 @@ router.get('/conversations/:userId', authenticateToken, async (req, res) => {
         // Find all conversations where the 'participants' array contains the specified userId.
         // Sort by the last message timestamp to show the most recent conversations first.
         const conversations = await Conversation.find({ participants: userId })
+                                               .populate('participants', 'name role')
                                                .sort({ lastMessageTimestamp: -1 }); // Newest first
 
         // Map to format for frontend (e.g., ensure _id is string)
-         const formattedConversations = conversations.map(conv => ({
-             _id: conv._id.toString(), // Conversation ID string
-             participants: conv.participants.map(p => p.toString()), // Participant IDs as strings
-             lastMessageSnippet: conv.lastMessageSnippet,
-             lastMessageTimestamp: conv.lastMessageTimestamp ? conv.lastMessageTimestamp.toISOString() : null, // ISO string date
-             createdAt: conv.createdAt ? conv.createdAt.toISOString() : null, // ISO string date
-             // Frontend will need to find the other participant's name using the users list fetched separately.
-         }));
+         const formattedConversations = conversations.map(conv => {
+             // The old comment here said the frontend would look the other
+             // participant's name up "using the users list fetched separately".
+             // There is no such route a farmer is allowed to call, so every
+             // thread was headed "Them" and the messages list said "A message"
+             // instead of who sent it. The name comes with the conversation.
+             const other = (conv.participants || [])
+                 .find(p => p && p._id && p._id.toString() !== userId.toString());
+             return {
+                 _id: conv._id.toString(), // Conversation ID string
+                 participants: (conv.participants || []).map(p => (p && p._id ? p._id.toString() : String(p))),
+                 otherName: other ? other.name : null,
+                 otherRole: other ? other.role : null,
+                 lastMessageSnippet: conv.lastMessageSnippet,
+                 lastMessageTimestamp: conv.lastMessageTimestamp ? conv.lastMessageTimestamp.toISOString() : null, // ISO string date
+                 createdAt: conv.createdAt ? conv.createdAt.toISOString() : null, // ISO string date
+             };
+         });
 
 
         // Send the list of conversations for this user
@@ -178,13 +189,17 @@ router.get('/conversations/:conversationId/messages', authenticateToken, async (
         // Find all messages linked to this conversation ID
         // Sort messages by timestamp in ascending order (oldest first)
         const messages = await Message.find({ conversationId: conversationId })
+                                     .populate('sender', 'name role')
                                      .sort({ timestamp: 1 }); // Ascending timestamp
 
         // Map to format for frontend (e.g., ensure IDs are strings)
          const formattedMessages = messages.map(msg => ({
              _id: msg._id.toString(), // Message ID string
              conversationId: msg.conversationId.toString(), // Conversation ID string
-             sender: msg.sender.toString(), // Sender User ID string
+             // sender stays an id string so existing comparisons keep working;
+             // the name rides alongside it rather than replacing it.
+             sender: (msg.sender && msg.sender._id ? msg.sender._id : msg.sender).toString(),
+             senderName: msg.sender && msg.sender.name ? msg.sender.name : null,
              receiver: msg.receiver.toString(), // Receiver User ID string
              text: msg.text,
              timestamp: msg.timestamp ? msg.timestamp.toISOString() : null, // ISO string date
