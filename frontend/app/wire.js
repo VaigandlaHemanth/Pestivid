@@ -219,6 +219,10 @@ export function press(root) { pressFeedback(root); }
 export function wire(slug) {
   const root = document.querySelector('body > div');
   if (!root) return;
+  // The "bigger text" setting lives on the profile screen but has to hold on
+  // every screen, or it is a note to itself. Zoom enlarges px type as well as
+  // rem, which matters because these boards are drawn in px throughout.
+  if (localStorage.getItem('pv.bigText') === '1') document.documentElement.style.zoom = '1.3';
   pressFeedback(root);
   promoteControls(root);
   links(root);

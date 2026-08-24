@@ -15,18 +15,28 @@
     a { color: #01579b; } a:hover { color: #013f70; }
     .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
-    .sec  { font-size: 15px; color: #605a53; padding: 22px 20px 9px; }
-    .row  { background: #f6f3ef; padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
-    .row2 { background: #eae4de; padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
+    .sec  { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+            color: #4a443d; padding: 24px 20px 8px; }
+    .row  { background: #f6f3ef; padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+            box-shadow: inset 0 -1px 0 #c3bcb6; }
+    .row2 { background: #f6f3ef; padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+            box-shadow: inset 0 -1px 0 #c3bcb6; }
     .lab  { font-size: 17px; font-weight: 600; }
     .val  { font-size: 15px; color: #605a53; margin-top: 2px; }
     /* language chips stay in their own script — a picker that writes every
        option in English is useless to the person who needs it */
     .lang { padding: 12px 15px; font-size: 17px; background: #eae4de; }
     .langOn { padding: 12px 15px; font-size: 17px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
+    :root {
+      --e-press:  linear(0,0.0239,0.082,0.1588,0.244,0.3306,0.4142,0.4923,0.5634,0.6271,0.6833,0.7324,0.7748,0.8112,0.8423,0.8687,0.8909,0.9096,0.9253,0.9383,0.9492,0.9582,0.9657,0.9719,0.977,0.9812,0.9846,0.9875,0.9898,0.9917,0.9932,0.9945,0.9955,0.9964,0.9971,0.9976,0.9981,0.9984,0.9987,0.999,1);
+      --t-release: 260ms;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      [data-knob], [data-toggle] { transition: none; }
+    }
   </style>
 </head>
-<body data-page="profile" data-role="farmer" data-design-width="360" data-design-height="1463">
+<body data-page="profile" data-role="farmer" data-design-width="360" data-design-height="1355">
 <div class="f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
   <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
@@ -67,25 +77,19 @@
     </div>
 
     <!-- reading and hearing -->
-    <div class="sec">Reading and hearing</div>
-    <div class="row">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
-      <div style="flex-grow: 1;">
-        <div class="lab">Read screens aloud</div>
-        <div class="val">A recorded voice, not a robot one</div>
-      </div>
-      <div style="width: 50px; height: 30px; background: #016abe; border-radius: 15px; position: relative; flex-shrink: 0;">
-        <div style="position: absolute; right: 3px; top: 3px; width: 24px; height: 24px; background: #fff; border-radius: 12px;"></div>
-      </div>
-    </div>
+    <div class="sec">Reading</div>
+    <!-- "Read screens aloud -- a recorded voice, not a robot one" was a switch
+         here. It goes with the rest of the voice work: nobody recorded the voice,
+         and the setting is removed rather than left as a toggle that moves and
+         changes nothing. The section keeps its other row, which is real. -->
     <div class="row2">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9" style="flex-shrink: 0;"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>
       <div style="flex-grow: 1;">
         <div class="lab">Bigger text</div>
         <div class="val">Currently normal</div>
       </div>
-      <div style="width: 50px; height: 30px; background: #c3bcb6; border-radius: 15px; position: relative; flex-shrink: 0;">
-        <div style="position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; background: #f6f3ef; border-radius: 12px;"></div>
+      <div data-toggle="" style="width: 50px; height: 30px; background: #c3bcb6; border-radius: 15px; position: relative; flex-shrink: 0; transition: background-color var(--t-release, 260ms) var(--e-press, ease);">
+        <div data-knob="" style="position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; background: #fff; border-radius: 12px; transform: translateX(0); transition: transform var(--t-release, 260ms) var(--e-press, ease);"></div>
       </div>
     </div>
 
@@ -97,8 +101,8 @@
         <div class="lab">Send videos on wi-fi only</div>
         <div class="val">Saves your mobile data pack</div>
       </div>
-      <div style="width: 50px; height: 30px; background: #016abe; border-radius: 15px; position: relative; flex-shrink: 0;">
-        <div style="position: absolute; right: 3px; top: 3px; width: 24px; height: 24px; background: #fff; border-radius: 12px;"></div>
+      <div data-toggle="" style="width: 50px; height: 30px; background: #016abe; border-radius: 15px; position: relative; flex-shrink: 0; transition: background-color var(--t-release, 260ms) var(--e-press, ease);">
+        <div data-knob="" style="position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; background: #fff; border-radius: 12px; transform: translateX(20px); transition: transform var(--t-release, 260ms) var(--e-press, ease);"></div>
       </div>
     </div>
     <div class="row2" style="align-items: flex-start;">
