@@ -205,6 +205,44 @@ body > div[style*="width: 824px"] {
   }
 }
 
+/* ── the laptop shell on a narrow window ────────────────────────────────── */
+
+/* Fifteen boards moved from 360px phone panels to 1320px laptop layouts, all
+   sharing three class names: .bar for the top bar, .th and .tr for a table.
+   These are the rules that fold that shell onto a phone, written once because
+   the shell is one thing.
+
+   Without them the table's five fixed tracks forced the page 1322px wide inside
+   a 390px viewport: the date column was simply off-screen. */
+@media (max-width: 900px) {
+  /* The bar grows instead of clipping the signed-in name. */
+  [data-surface="desk"] .bar {
+    height: auto !important;
+    min-height: 60px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding: 10px 16px !important;
+  }
+  [data-surface="desk"] .bar > div { flex-wrap: wrap; row-gap: 4px; }
+
+  /* A column header means nothing once the rows are no longer columns. */
+  [data-surface="desk"] .th { display: none !important; }
+
+  /* Each row becomes a card: thumbnail beside the name, everything else under
+     it, and the chevron goes because the whole row is already the target. */
+  [data-surface="desk"] .tr {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 5px 14px;
+    align-items: center;
+  }
+  [data-surface="desk"] .tr > *:nth-child(1) { flex: 0 0 auto; }
+  [data-surface="desk"] .tr > *:nth-child(2) { flex: 1 1 55%; min-width: 0; }
+  [data-surface="desk"] .tr > *:nth-child(3),
+  [data-surface="desk"] .tr > *:nth-child(4) { flex: 1 1 100%; }
+  [data-surface="desk"] .tr > *:nth-child(5) { display: none; }
+}
+
 /* ── things that must never change ──────────────────────────────────────── */
 
 /* Reduced motion is handled in tokens.css; nothing here animates. */

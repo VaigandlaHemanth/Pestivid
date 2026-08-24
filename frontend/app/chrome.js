@@ -76,6 +76,9 @@ export function appChrome(root, opts = {}) {
  * which is what a screen reader needs and what the underline already says.
  */
 const DEST = {
+  // the farmer's three, now that the farmer has the same bar as everybody else
+  'My plots': 'plots',
+  Money: 'money',
   Browse: 'invest',
   Portfolio: 'portfolio',
   Messages: 'messages',
