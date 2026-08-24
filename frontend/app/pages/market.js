@@ -147,8 +147,7 @@ if (ctx) {
     const inside = root.querySelector('[data-inside]');
     const loLabel = root.querySelector('[data-lo]');
     const hiLabel = root.querySelector('[data-hi]');
-    const sendRow = [...root.querySelectorAll('div')]
-      .find(d => d.children.length === 0 && d.textContent.trim() === 'Send this offer')?.parentElement;
+    const sendRow = root.querySelector('[data-send]');
 
     const digits = (s) => Number(String(s || '').replace(/[^\d]/g, '')) || 0;
 
@@ -215,7 +214,7 @@ if (ctx) {
       const was = label?.textContent;
       if (label) label.textContent = 'Sending…';
       try {
-        await api.purchases.create({ listingId: open._id || open.id, offerAmount: n });
+        await api.purchases.create({ listingId: open._id || open.id, offerPrice: n });
         if (label) label.textContent = 'Offer sent';
       } catch (err) {
         if (label) label.textContent = was;

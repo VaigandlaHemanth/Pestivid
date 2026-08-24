@@ -1,15 +1,37 @@
 import { requireUser, api, load, state } from './_guard.js';
 import { bind } from '../bind.js';
 import { rupees, dayMonth } from '../api.js';
+import { goes, acts, press } from '../wire.js';
+
+// A CSV row separator, named so no editing pass can put a real newline
+// inside the string literal -- which is exactly how this file broke once.
+const NEWLINE = String.fromCharCode(13, 10);
 
 const ctx = requireUser('orders', ['buyer']);
+
+// The nav and the three "Watch it - check the date" links were painted to read
+// unmistakably as links and did nothing: the board carried no data-act and this
+// module emitted none, so wire.js never promoted them.
+if (ctx) {
+  const navItem = (t) => [...ctx.root.querySelectorAll('div')]
+    .find(d => d.children.length === 0 && d.textContent.trim() === t);
+  goes(navItem('Lots for sale'), 'market', 'Lots for sale');
+  goes(navItem('Messages'), 'messages', 'Messages');
+  press(ctx.root);
+}
+
 if (ctx) load(ctx.root, async () => {
   // the nav shows who is signed in, on every desktop page that has one
   const initial = (ctx.user.name || '?').trim()[0].toUpperCase();
 
   const buys = await api.purchases.asBuyer(ctx.user._id || ctx.user.id);
   bind(ctx.root, { me: { initial }, buyer: { line: `${ctx.user.name} · buyer since ${dayMonth(ctx.user.memberSince)}` } });
-  const tiles = [...ctx.root.querySelectorAll('.m')].filter(e => e.style.fontSize === '29px');
+  // Addressed by name, not by type size. This looked up '29px' and the board's
+  // figures became 32px when the KPI cards turned into a ledger band -- so the
+  // page went on showing "4 lots bought, 3,86,000 paid" from the artboard while
+  // the table below it said the buyer had bought nothing.
+  const fig = (n) => ctx.root.querySelector(`[data-fig="${n}"]`);
+  const tiles = [fig('count'), fig('paid')];
   if (tiles[0]) tiles[0].textContent = String(buys.length);
   if (tiles[1]) tiles[1].textContent = rupees(buys.reduce((a, p) => a + (p.price || 0), 0));
   // The receipt panel shows the newest purchase. With no purchases it says so,
@@ -18,12 +40,22 @@ if (ctx) load(ctx.root, async () => {
   const top = buys[0];
   const short = (v) => (v ? `${String(v).slice(0, 8)}…${String(v).slice(-4)}` : 'not recorded');
   bind(ctx.root, { receipt: top ? {
+    head: `Receipt — ${top.crop || 'lot'}, ${dayMonth(top.purchaseDate)}`,
+    paid: rupees(top.price),
     tx: short(top.txHash), hash: short(top.videoFileHash), cid: short(top.cid),
     block: top.blockHeight ? `Block ${Number(top.blockHeight).toLocaleString('en-IN')}` : 'Not written into a block yet',
   } : {
+    head: 'No receipt yet', paid: '—',
     tx: 'No purchase yet', hash: 'No purchase yet', cid: 'No purchase yet',
     block: 'No purchase yet',
   } });
+
+  // The green tick beside the date is the proved mark. Beside "once its date
+  // lands" it says the opposite of the words next to it.
+  for (const row of ctx.root.querySelectorAll('tr')) {
+    const tick = row.querySelector('svg[stroke="#006934"], svg[stroke="#024c26"]');
+    if (tick && !/block\s*\d/.test(row.textContent)) tick.remove();
+  }
 
   if (!buys.length) {
     return state(ctx.root.querySelector('table')?.parentElement || ctx.root, 'empty', 'You have not bought a lot yet',
@@ -42,8 +74,55 @@ if (ctx) load(ctx.root, async () => {
     if (tds[4]) tds[4].textContent = p.pesticide
       ? [p.pesticide, p.pesticideCompany].filter(Boolean).join(' · ')
       : 'They left this blank';
+    // The range the farmer asked, and what the record can say about the date.
+    // Both were the first row's values printed on every row.
+    const asked = tr.querySelector('[data-asked]');
+    if (asked) {
+      if (p.minPrice != null && p.maxPrice != null) {
+        asked.textContent = `She asked ${rupees(p.minPrice)}–${rupees(p.maxPrice)}`;
+      } else asked.remove();
+    }
+    const dated = tr.querySelector('[data-dated]');
+    if (dated) {
+      dated.textContent = p.blockHeight
+        ? `Block ${Number(p.blockHeight).toLocaleString('en-IN')} · you can check this yourself`
+        : 'On our server · its date has not landed in a block yet';
+      dated.style.color = p.blockHeight ? '#006934' : '#4a443d';
+    }
+
+    // "Watch it - check the date" is the whole point of this row: it is how a
+    // buyer verifies the lot they paid for. It goes to the provenance record,
+    // and where there is no video it is removed rather than left to be pressed.
+    const watch = tr.querySelector('.act');
+    if (watch) {
+      if (p.cid) goes(watch, `plot?name=${encodeURIComponent(p.crop || '')}`,
+                      `Watch the video for ${p.crop || 'this lot'} and check its date`);
+      else watch.remove();
+    }
     body.append(tr);
   }
+
+  // "Download" is the record of everything held about these purchases. It is
+  // built here from what is already on screen -- no route needed, and nothing
+  // leaves the browser.
+  const dl = ctx.root.querySelector('.act');
+  if (dl && dl.textContent.trim() === 'Download') {
+    acts(dl, 'Download your purchase record', () => {
+      const rows = [['crop', 'price', 'bought', 'pesticide', 'company', 'cid']];
+      for (const p of buys) {
+        rows.push([p.crop || '', p.price ?? '', p.purchaseDate || '',
+                   p.pesticide || '', p.pesticideCompany || '', p.cid || '']);
+      }
+      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join(NEWLINE);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      a.download = 'pestivid-purchases.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+  }
+
+  press(ctx.root);
 });
 
 // Same as the landing hero: a filename, a hash and a block number drawn as

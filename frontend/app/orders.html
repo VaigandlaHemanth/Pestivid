@@ -24,9 +24,13 @@
           padding: 0 0 9px; text-align: left; font-weight: 600; }
     .td { padding: 16px 0; vertical-align: top; box-shadow: inset 0 1px 0 #e4e9ee; }
     .pill { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 4px 9px; }
+    /* something that reads as a link has to be reachable like one */
+    .act  { display: inline-flex; align-items: center; min-height: 26px; font-size: 13.5px;
+            font-weight: 600; color: #01579b; }
+    .act:hover { color: #013f70; }
   </style>
 </head>
-<body data-page="orders" data-role="buyer" data-design-width="1320" data-design-height="1188">
+<body data-page="orders" data-role="buyer" data-design-width="1320" data-design-height="1195">
 <div class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #f3f6f9; color: #1d1a17; box-sizing: border-box;">
 
   <div style="background: #fff; padding: 15px 44px; display: flex; align-items: center; gap: 34px; box-shadow: inset 0 -1px 0 #e0e6ec;">
@@ -44,17 +48,18 @@
     <div data-bind="buyer.line" class="lbl">Deccan Cold Storage · buyer since March 2026</div>
     <h1 style="margin: 4px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.03em;">What you bought</h1>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1.6fr; gap: 20px; margin-top: 22px;">
-      <div style="background: #fff; padding: 20px 22px;" class="lift1">
+    <div style="display: grid; grid-template-columns: minmax(168px, max-content) minmax(248px, max-content) 1fr; margin-top: 26px; align-items: start; box-shadow: inset 0 1px 0 #1d1a17, inset 0 -1px 0 #e4e9ee;">
+      <div style="padding: 18px 26px 18px 0;">
         <div class="lbl">Lots bought</div>
-        <div class="m" style="font-size: 29px; font-weight: 700; letter-spacing: -0.025em; margin-top: 5px;">4</div>
+        <div data-fig="count" class="m" style="font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin-top: 4px;">4</div>
       </div>
-      <div style="background: #fff; padding: 20px 22px;" class="lift1">
+      <div style="padding: 18px 26px; box-shadow: inset 1px 0 0 #e4e9ee;">
         <div class="lbl">You have paid</div>
-        <div class="m" style="font-size: 29px; font-weight: 700; letter-spacing: -0.025em; margin-top: 5px;">₹3,86,000</div>
+        <div data-fig="paid" class="m" style="font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin-top: 4px;">₹3,86,000</div>
       </div>
-      <!-- the limit of the record, stated where the record is kept -->
-      <div style="background: #e9eef3; padding: 20px 22px;">
+      <!-- the limit of the record, stated where the record is kept. A note, not
+           a tile: giving it a fill made it look like a third statistic. -->
+      <div style="padding: 18px 0 18px 26px; box-shadow: inset 1px 0 0 #e4e9ee;">
         <div style="font-size: 15px; font-weight: 700;">We record the sale, not the delivery</div>
         <div style="font-size: 14px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
           There is no dispatched, no in transit, no delivered on this page, because we do not know
@@ -81,7 +86,7 @@
           </td>
           <td class="td">
             <div class="m" style="font-size: 18px; font-weight: 700;">₹49,500</div>
-            <div class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">She asked ₹44,000–₹52,000</div>
+            <div data-asked="" class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">She asked ₹44,000–₹52,000</div>
           </td>
           <td class="td m" style="font-size: 15px;">12 Aug 2026</td>
           <td class="td">
@@ -89,7 +94,7 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.6"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
               <div class="m" style="font-size: 14px; color: #006934; font-weight: 600;">18 Jul, block 878,410</div>
             </div>
-            <div style="font-size: 13.5px; color: #01579b; font-weight: 600; margin-top: 5px;">Watch it · check the date</div>
+            <div class="act" style="margin-top: 5px;">Watch it · check the date</div>
           </td>
           <td class="td" style="font-size: 14.5px; line-height: 1.45;">
             Mancozeb · Indofil
@@ -111,11 +116,11 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.6"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
               <div class="m" style="font-size: 14px; color: #006934; font-weight: 600;">9 Jul, block 875,982</div>
             </div>
-            <div style="font-size: 13.5px; color: #01579b; font-weight: 600; margin-top: 5px;">Watch it · check the date</div>
+            <div class="act" style="margin-top: 5px;">Watch it · check the date</div>
           </td>
           <!-- a blank field is not "organic". say which it is. -->
           <td class="td">
-            <div class="pill" style="background: #f2e6cd; color: #7c4a12;">He left this blank</div>
+            <div data-readout="" class="pill" style="background: #f2e6cd; color: #7c4a12;">He left this blank</div>
             <div style="font-size: 13.5px; line-height: 1.45; margin-top: 5px; color: #4a443d;">
               Blank means unanswered, not none.
             </div>
@@ -137,7 +142,7 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.6"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
               <div class="m" style="font-size: 14px; color: #006934; font-weight: 600;">21 Jun, block 872,344</div>
             </div>
-            <div style="font-size: 13.5px; color: #01579b; font-weight: 600; margin-top: 5px;">Watch it · check the date</div>
+            <div class="act" style="margin-top: 5px;">Watch it · check the date</div>
           </td>
           <td class="td" style="font-size: 14.5px; line-height: 1.45;">
             Chlorpyrifos · Dhanuka
@@ -156,7 +161,7 @@
           </td>
           <td class="td m" style="font-size: 15px;">19 Jun 2026</td>
           <td class="td">
-            <div class="pill" style="background: #f7e9e6; color: #a71930;">Matched another farmer</div>
+            <div data-readout="" class="pill" style="background: #f7e9e6; color: #a71930;">Matched another farmer</div>
             <div style="font-size: 13.5px; line-height: 1.45; margin-top: 5px; color: #4a443d;">
               94% of its frames match footage another farmer sent in May. The date on this file is
               still sound — whose field it shows is now in doubt.
@@ -169,17 +174,17 @@
       </tbody></table>
     </div>
 
-    <div style="display: flex; gap: 20px; margin-top: 22px; align-items: stretch;">
+    <div style="display: flex; gap: 20px; margin-top: 22px; align-items: flex-start;">
 
       <!-- the receipt. every field on it is one the server actually stores. -->
       <div style="width: 560px; background: #fff; padding: 24px 26px;" class="lift1">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
-          <div style="font-size: 17px; font-weight: 700;">Receipt — potato, 12 August</div>
-          <div style="font-size: 14px; color: #01579b; font-weight: 600;">Download</div>
+          <div data-bind="receipt.head" style="font-size: 17px; font-weight: 700;">Receipt — potato, 12 August</div>
+          <div class="act">Download</div>
         </div>
         <div style="margin-top: 16px;">
           <div style="display: flex; justify-content: space-between; padding: 9px 0; box-shadow: inset 0 -1px 0 #eef2f5;">
-            <div class="lbl">Paid</div><div class="m" style="font-size: 14.5px; font-weight: 600;">₹49,500</div>
+            <div class="lbl">Paid</div><div data-bind="receipt.paid" class="m" style="font-size: 14.5px; font-weight: 600;">₹49,500</div>
           </div>
           <div style="display: flex; justify-content: space-between; padding: 9px 0; box-shadow: inset 0 -1px 0 #eef2f5;">
             <div class="lbl">Transaction</div><div data-bind="receipt.tx" class="mono m" style="font-size: 13px;">7b41c9e2…a08f</div>

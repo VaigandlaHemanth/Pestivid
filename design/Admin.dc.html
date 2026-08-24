@@ -30,7 +30,7 @@
 
   <div style="background: #1d1a17; padding: 13px 40px; display: flex; align-items: center; gap: 14px;">
     <div style="font-size: 16px; font-weight: 700; color: #f6f3ef; letter-spacing: -0.02em;">Pestivid</div>
-    <div style="font-size: 12.5px; font-weight: 600; color: #1d1a17; background: #cfd3d6; padding: 3px 9px; letter-spacing: .04em;">INTERNAL</div>
+    <div data-readout style="font-size: 12.5px; font-weight: 600; color: #1d1a17; background: #cfd3d6; padding: 3px 9px; letter-spacing: .04em;">INTERNAL</div>
     <div style="flex-grow: 1;"></div>
     <div data-bind="me.line" class="m" style="font-size: 13.5px; color: #c4bdb6;">teja &middot; admin &middot; every action here is written to the audit collection under your name</div>
   </div>
@@ -50,11 +50,15 @@
       </div>
     </div>
 
-    <div style="display: flex; gap: 30px; margin-top: 26px; box-shadow: inset 0 -1px 0 #d9dcdf;">
-      <div class="tabOn">Same footage, two farmers &middot; 2</div>
-      <div class="tab">Hash not computed by us &middot; 1</div>
-      <div class="tab">Timestamps running late &middot; 3</div>
-      <div class="tab">Location looks impossible &middot; 0</div>
+    <!-- Not tabs. This page shows every category at once, so a selected tab
+         described a filter that does not exist -- and clicking any of the other
+         three did nothing, because what they named was already on screen below.
+         It is the count of each, in the order they appear. -->
+    <div style="display: flex; gap: 30px; align-items: baseline; margin-top: 26px; padding-bottom: 10px; box-shadow: inset 0 -1px 0 #e0e6ec;">
+      <div data-count="duplicate" class="tabOn">Same footage, two farmers &middot; 2</div>
+      <div data-count="unverified" class="tab">Hash not computed by us &middot; 1</div>
+      <div data-count="late" class="tab">Timestamps running late &middot; 3</div>
+      <div data-count="location" class="tab">Location looks impossible &middot; 0</div>
     </div>
 
     <!-- the open case, laid out so the two files can actually be compared -->
@@ -142,8 +146,8 @@
       <div style="display: flex; gap: 12px; margin-top: 20px; align-items: center; flex-wrap: wrap;">
         <div class="btn" style="background: #016abe; color: #fff;">Ask both of them, in one thread</div>
         <div class="btn" style="box-shadow: inset 0 0 0 1.5px #b9bfc4;">Same field, both are entitled &mdash; close it</div>
-        <div class="btn" style="box-shadow: inset 0 0 0 1.5px #b9bfc4;">Mark the later file as not their footage</div>
-        <div class="btn" style="box-shadow: inset 0 0 0 1.5px #b9bfc4; color: #4a443d;">Leave it open</div>
+        <div class="btn" style="box-shadow: inset 0 0 0 1.5px #a71930; color: #a71930;">Mark the later file as not their footage</div>
+        <div class="btn" style="color: #4a443d;">Leave it open</div>
       </div>
       <div style="font-size: 14px; line-height: 1.5; margin-top: 12px; color: #4a443d; max-width: 116ch;">
         Marking the later file does not delete it, hide it, or move its date &mdash; none of those are
@@ -153,10 +157,10 @@
       </div>
     </div>
 
-    <div style="display: flex; gap: 20px; margin-top: 22px; align-items: stretch;">
+    <div style="display: flex; gap: 20px; margin-top: 22px; align-items: flex-start;">
 
       <!-- operational health, because a stuck anchor is a broken promise -->
-      <div style="flex-grow: 1; background: #fff; padding: 22px 24px;" class="lift1">
+      <div data-panel="late" style="flex-grow: 1; background: #fff; padding: 22px 24px;" class="lift1">
         <div style="font-size: 16.5px; font-weight: 700;">Timestamps running late</div>
         <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Three batches, 41 videos, waiting longer than two days</div>
         <div style="margin-top: 14px;">
@@ -191,7 +195,7 @@
       </div>
 
       <div style="width: 400px; display: flex; flex-direction: column; gap: 20px;">
-        <div style="background: #fff; padding: 22px 24px;" class="lift1">
+        <div data-panel="unverified" style="background: #fff; padding: 22px 24px;" class="lift1">
           <div style="font-size: 16.5px; font-weight: 700;">Hash not computed by us</div>
           <div class="m" style="font-size: 26px; font-weight: 700; margin-top: 6px;">1</div>
           <div style="font-size: 14px; line-height: 1.5; margin-top: 4px; color: #4a443d;">

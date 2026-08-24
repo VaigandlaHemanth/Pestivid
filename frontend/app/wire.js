@@ -180,6 +180,11 @@ export function deClaimProps(root) {
     // thumbnail it rendered as a wrapped fragment of itself, which is worse
     // than the invented figure it replaced -- so in a box that narrow the
     // decoration is removed instead of re-lettered.
+    // A BOUND field is about to be filled with the real thing, so it must
+    // survive. Removing it left the orders receipt with four labels and four
+    // blank values -- Transaction, Video file SHA-256, Stored at, Date written
+    // into Bitcoin, all empty -- which reads as a page that failed to load.
+    if (el.hasAttribute('data-bind')) { el.textContent = ''; continue; }
     const box = el.getBoundingClientRect();
     const holder = el.closest('[style*="overflow: hidden"]');
     if (box.width < 190 || (holder && holder.getBoundingClientRect().width < 190)) {

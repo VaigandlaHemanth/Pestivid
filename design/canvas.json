@@ -191,7 +191,7 @@
    "x": 1410,
    "y": 47132,
    "w": 1320,
-   "h": 1188,
+   "h": 1195,
    "title": "Buyer 2 · what you bought",
    "expand": "fill"
   },
@@ -200,7 +200,7 @@
    "x": 0,
    "y": 49090,
    "w": 1320,
-   "h": 1679,
+   "h": 1689,
    "title": "Admin · what the system flagged",
    "expand": "fill"
   },
