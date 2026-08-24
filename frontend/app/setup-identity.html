@@ -20,12 +20,13 @@
            box-sizing: border-box; }
     .cap { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px; }
     .stp { font-size: 13px; color: #605a53; letter-spacing: .04em; }
-    .lang   { padding: 15px 17px; font-size: 19px; background: #eae4de; }
+    .lang   { padding: 15px 17px; font-size: 19px; background: #f6f3ef; box-shadow: inset 0 -1px 0 #c3bcb6; }
     .langOn { padding: 15px 17px; font-size: 19px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
     .fldL { font-size: 16px; font-weight: 600; }
     .fldB { background: #f6f3ef; height: 62px; margin-top: 7px; display: flex; align-items: center;
             padding: 0 16px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 17px; color: #4a443d; }
-    .row0 { display: flex; align-items: center; gap: 15px; padding: 0 20px; height: 70px; }
+    .row0 { display: flex; align-items: center; gap: 15px; padding: 0 20px; min-height: 70px;
+            background: #f6f3ef; box-shadow: inset 0 -1px 0 #c3bcb6; }
   </style>
 </head>
 <body data-page="setup-identity" data-role="public" data-design-width="360" data-design-height="800">
@@ -37,7 +38,7 @@
         <div style="flex-grow: 1; padding: 18px 20px;">
           <div>
             <div class="fldL">Your name</div>
-            <div class="fldB" style="color: #1d1a17; box-shadow: inset 0 0 0 2px #1d1a17;">Alice Farmer</div>
+            <div class="fldB" style="color: #1d1a17;">Alice Farmer</div>
           </div>
           <div style="margin-top: 17px;">
             <div class="fldL">Your phone number</div>

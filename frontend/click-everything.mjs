@@ -131,7 +131,8 @@ for (const slug of slugs) {
       return {
         url: location.pathname,
         html: document.body.innerHTML.length,
-        already: el?.getAttribute('aria-current') === 'true' || el?.getAttribute('aria-pressed') === 'true',
+        already: el?.getAttribute('aria-current') === 'true' || el?.getAttribute('aria-pressed') === 'true'
+                 || el?.getAttribute('aria-checked') === 'true',
       };
     }, i);
     try {

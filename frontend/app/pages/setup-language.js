@@ -3,7 +3,7 @@
 // Choosing a language is real and it persists. What it cannot yet do is change
 // the words, because only the English strings exist — so the screen says that
 // rather than switching to Telugu and showing English anyway.
-import { wire } from '../wire.js';
+import { wire, sayable, acts, press } from '../wire.js';
 import { state } from '../bind.js';
 
 const LANGS = {
@@ -49,15 +49,18 @@ if (root) {
   next?.setAttribute('data-act', '');
   next?.addEventListener('click', () => { location.href = './setup-identity.html'; });
 
-  // read-aloud is a recorded voice we do not have; say so rather than firing
-  // the robot speech synthesiser the copy promises it is not
-  const aloud = [...root.querySelectorAll('div')]
-    .find(d => d.children.length === 0 && d.textContent.trim() === 'Read this to me');
-  aloud?.setAttribute('data-act', '');
-  aloud?.addEventListener('click', () => {
-    const holder = document.createElement('div');
-    aloud.closest('div[style*="flex-shrink: 0"]')?.prepend(holder);
-    state(holder, 'waiting', 'There is no recording yet',
-      'The screen promises a recorded human voice, not a robot one, and we have not recorded it. Using the phone’s synthesiser here would break that promise quietly.');
-  });
+  // Read-aloud used to refuse: the copy promised a recorded human voice, which
+  // nobody has recorded, so the button explained itself instead of speaking.
+  // Home now reads aloud with the device voice, gated on a voice for the
+  // language existing -- and two screens taking opposite positions on the same
+  // question is the real inconsistency. So this one speaks too, the label no
+  // longer implies a person read it, and where the device has no voice the
+  // button is removed rather than left to explain.
+  const aloud = root.querySelector('[data-aloud]')?.parentElement;
+  const heading = root.querySelector('h1, [style*="font-size: 26px"], [style*="font-size: 25px"]');
+  const line = [heading?.textContent, ...[...root.querySelectorAll('.lang, .langOn')].map(c => c.textContent)]
+    .filter(Boolean).map(x => x.trim()).join('. ');
+  if (aloud && !sayable(aloud, line, 'Read this screen aloud')) aloud.remove();
+
+  press(root);
 }
