@@ -24,8 +24,11 @@
     .lb  { font-size: 16px; font-weight: 600; }
     .bx  { background: #f6f3ef; height: 58px; margin-top: 7px; display: flex; align-items: center;
            padding: 0 15px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 18px; font-weight: 600; }
-    .cp  { padding: 10px 13px; font-size: 15px; background: #eae4de; }
-    .cpOn{ padding: 10px 13px; font-size: 15px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
+    .cp  { min-height: 44px; box-sizing: border-box; padding: 10px 14px; font-size: 15px;
+           background: #eae4de; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .cpOn{ min-height: 44px; box-sizing: border-box; padding: 10px 14px; font-size: 15px;
+           background: #1d1a17; color: #f6f3ef; font-weight: 600; display: flex; align-items: center;
+           justify-content: center; text-align: center; }
     .hint{ font-size: 13.5px; line-height: 1.45; margin-top: 6px; color: #605a53; }
     /* the three tiers of the investor page, reused verbatim so the farmer can see
        which of her answers becomes which kind of claim */
@@ -90,7 +93,7 @@
           <div style="background: #f2e6cd; padding: 15px 16px; margin-top: 18px;">
             <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">What do you think they will get back?</div>
             <div style="display: flex; align-items: baseline; gap: 9px; margin-top: 9px;">
-              <div data-bind="roi.value" class="m" style="font-size: 26px; font-weight: 700;">34%</div>
+              <div data-bind="roi.value" class="m" style="font-size: 15.5px; font-weight: 700;">34%</div>
               <div data-bind="roi.basis" style="font-size: 14.5px; color: #4a443d;">worked out from your own last season</div>
             </div>
             <div style="font-size: 14px; line-height: 1.55; margin-top: 8px; color: #4a443d;">

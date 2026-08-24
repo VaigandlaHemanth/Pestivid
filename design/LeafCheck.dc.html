@@ -151,23 +151,26 @@
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 13px;">
-          <div style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35;">
-            Is it too late to save this crop?
+          <div data-ask style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1;">Is it too late to save this crop?</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
           </div>
-          <div style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35;">
-            What will it cost me to treat?
+          <div data-ask style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1;">What will it cost me to treat?</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
           </div>
-          <div style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35;">
-            Will it spread to my other plot?
+          <div data-ask style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1;">Will it spread to my other plot?</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
           </div>
         </div>
 
         <div style="display: flex; gap: 10px; align-items: stretch; margin-top: 13px;">
           <div style="flex-grow: 1; background: #f6f3ef; display: flex; align-items: center; padding: 0 14px; min-height: 54px;">
-            <div style="font-size: 15.5px; color: #4a443d;">Ask something else</div>
+            <div data-askfield style="font-size: 15.5px; color: #4a443d;">Ask something else</div>
           </div>
-          <div style="width: 54px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"></path></svg>
+          <div data-asksend style="width: 54px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
           </div>
         </div>
       </div>
@@ -240,7 +243,10 @@
         </div>
         <div style="margin-top: 12px; height: 54px; display: flex; align-items: center; justify-content: center; gap: 10px; background: #e7e1db;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M4 5h16v11H8l-4 4z"></path></svg>
-          <div style="margin-top: 12px; background: #e7e1db; padding: 14px 16px;">
+          <div style="font-size: 16px; font-weight: 600;">Ask about this photo</div>
+        </div>
+
+        <div style="margin-top: 12px; background: #e7e1db; padding: 14px 16px;">
           <div style="font-size: 15.5px; font-weight: 700;">Talk to someone who knows</div>
           <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
             Kisan Call Centre &mdash; free, and they speak Telugu.

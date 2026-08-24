@@ -24,15 +24,18 @@
     .lb  { font-size: 16px; font-weight: 600; }
     .bx  { background: #f6f3ef; height: 58px; margin-top: 7px; display: flex; align-items: center;
            padding: 0 15px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 18px; font-weight: 600; }
-    .cp  { padding: 10px 13px; font-size: 15px; background: #eae4de; }
-    .cpOn{ padding: 10px 13px; font-size: 15px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
+    .cp  { min-height: 44px; box-sizing: border-box; padding: 10px 14px; font-size: 15px;
+           background: #eae4de; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .cpOn{ min-height: 44px; box-sizing: border-box; padding: 10px 14px; font-size: 15px;
+           background: #1d1a17; color: #f6f3ef; font-weight: 600; display: flex; align-items: center;
+           justify-content: center; text-align: center; }
     .hint{ font-size: 13.5px; line-height: 1.45; margin-top: 6px; color: #605a53; }
     /* the three tiers of the investor page, reused verbatim so the farmer can see
        which of her answers becomes which kind of claim */
     .tier{ background: #fff; padding: 18px 20px; }
   </style>
 </head>
-<body data-page="ask-money-amount" data-role="farmer" data-design-width="360" data-design-height="942">
+<body data-page="ask-money-amount" data-role="farmer" data-design-width="360" data-design-height="990">
 <div class="ph f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto; ">
         <div class="hd">
           <div style="display: flex; align-items: center; gap: 11px;">
@@ -53,11 +56,11 @@
 
           <div style="margin-top: 18px;">
             <div class="lb">Until when?</div>
-            <div style="display: flex; gap: 8px; margin-top: 8px;">
-              <div class="cp">4 months</div>
-              <div class="cpOn">6 months</div>
-              <div class="cp">9 months</div>
-              <div class="cp">Other</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+              <div class="cp" data-chip="timeline">4 months</div>
+              <div class="cpOn" data-chip="timeline">6 months</div>
+              <div class="cp" data-chip="timeline">9 months</div>
+              <div class="cp" data-chip="timeline">Other</div>
             </div>
             <div class="hint">Harvest is due about a month before this. Investors see the date, not the number of months.</div>
           </div>
@@ -65,11 +68,11 @@
           <div style="margin-top: 18px;">
             <div class="lb">How are you growing it?</div>
             <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
-              <div class="cpOn">Normal, with sprays</div>
-              <div class="cp">No sprays at all</div>
-              <div class="cp">Water beds</div>
-              <div class="cp">Fish and plants</div>
-              <div class="cp">Building the soil back</div>
+              <div class="cpOn" data-chip="method">Normal, with sprays</div>
+              <div class="cp" data-chip="method">No sprays at all</div>
+              <div class="cp" data-chip="method">Water beds</div>
+              <div class="cp" data-chip="method">Fish and plants</div>
+              <div class="cp" data-chip="method">Building the soil back</div>
             </div>
             <div class="hint">Plain words on purpose. Nobody standing in a field calls it conventional or regenerative.</div>
           </div>

@@ -15,6 +15,7 @@
 // The refusal is the system working, so it is never styled as an error.
 import { requireUser, load, state } from './_guard.js';
 import { bind } from '../bind.js';
+import { asField, acts, press } from '../wire.js';
 
 const KEY = 'pv.leaf';
 const MODEL_ROOT = '/model';
@@ -74,7 +75,46 @@ export function leaf(slug) {
 
     // No verdict yet: this page is where a photograph is taken.
     const slot = ctx.root.querySelector('div[style*="#37322d"]');
-    const picker = document.createElement('input');
+    // ---- asking about the result -------------------------------------
+  // Three suggested questions, a field and a send button, all drawn and none of
+  // them wired. They hand the question to the chatbot with the verdict already
+  // attached, which is the point of them: the farmer should not have to explain
+  // the photo again.
+  const askAbout = (q) => {
+    if (!q) return;
+    const verdict = ctx.root.querySelector('[data-bind="verdict.name"]')?.textContent.trim();
+    const full = verdict ? `${q} (about a leaf the checker called ${verdict})` : q;
+    sessionStorage.setItem('pv.askText', full);   // not 'pv.ask' -- _askmoney.js owns that
+    location.href = './ask.html';
+  };
+  for (const row of ctx.root.querySelectorAll('[data-ask]')) {
+    acts(row, row.textContent.trim(), () => askAbout(row.textContent.trim()));
+  }
+  const askField = ctx.root.querySelector('[data-askfield]');
+  const askInput = askField && asField(askField, {
+    name: 'question', enterKeyHint: 'send',
+    placeholder: 'Ask something else', label: 'Your question about this leaf',
+  });
+  const askSend = ctx.root.querySelector('[data-asksend]');
+  if (askSend) {
+    const paint = () => {
+      const has = Boolean(askInput?.value.trim());
+      askSend.style.background = has ? '#016abe' : '#c3bcb6';
+      askSend.setAttribute('aria-disabled', String(!has));
+    };
+    askInput?.addEventListener('input', paint);
+    paint();
+    acts(askSend, 'Send your question', () => {
+      const v = askInput?.value.trim();
+      if (!v) { askInput?.focus(); return; }
+      askAbout(v);
+    });
+    askInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') askAbout(askInput.value.trim());
+    });
+  }
+
+  const picker = document.createElement('input');
     picker.type = 'file';
     // A bare file input has no name for a reader and no autocomplete for the
     // browser; both are one line each.

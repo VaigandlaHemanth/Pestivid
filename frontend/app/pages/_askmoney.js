@@ -21,8 +21,8 @@ const draft = {
 const byLabel = (root, t) => [...root.querySelectorAll('div')]
   .find(d => d.children.length === 0 && d.textContent.trim() === t);
 
-const chips = (root, cls, onPick) => {
-  const list = [...root.querySelectorAll(`.${cls}, .${cls}On`)];
+const chips = (root, cls, onPick, group) => {
+  const list = [...root.querySelectorAll(group ? `[data-chip="${group}"]` : `.${cls}, .${cls}On`)];
   list.forEach((el) => {
     el.setAttribute('data-act', '');
     el.setAttribute('role', 'radio');
@@ -70,10 +70,10 @@ export function stepVideo() {
         .find(d => !d.children.length && d.textContent.trim() && d !== m);
       if (status) {
         status.textContent = r.status;
-        status.style.color = r.proved ? '#006934' : r.ready ? '#4a443d' : '#78716a';
+        status.style.color = r.proved ? '#006934' : '#4a443d';
       }
       // A video we have not finished checking is shown, not hidden, with why
-      if (!r.ready) { el.style.opacity = '.62'; return; }
+      if (!r.ready) return;   // no opacity wash: it drops the row's own text below AA
       el.setAttribute('data-act', '');
       el.addEventListener('click', () => {
         draft.put({ cid: r.v.cid, crop: r.v.crop, location: r.v.location });
@@ -126,11 +126,15 @@ export function stepAmount() {
       'Fish and plants': 'aquaponic',
       'Building the soil back': 'regenerative',
     };
+    // Two questions, two groups. Selecting a growing method must not clear the
+    // timeline, which is what one shared group did.
     chips(ctx.root, 'cp', (text) => {
-      if (METHOD[text]) draft.put({ method: METHOD[text] });
       const months = /^(\d+) months?$/.exec(text);
       if (months) draft.put({ timeline: Number(months[1]) });
-    });
+    }, 'timeline');
+    chips(ctx.root, 'cp', (text) => {
+      if (METHOD[text]) draft.put({ method: METHOD[text] });
+    }, 'method');
 
     const notes = [...ctx.root.querySelectorAll('div')]
       .find(e => /Canal water has been steady/.test(e.textContent) && e.children.length === 0);

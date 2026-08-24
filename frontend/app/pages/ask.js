@@ -133,6 +133,15 @@ acts(send, 'Send your question', () => {
   paintSend();
 });
 
+// The leaf screen hands a question over with the verdict already attached, so
+// the farmer does not explain the photo twice.
+const handed = sessionStorage.getItem('pv.askText');
+if (handed) {
+  sessionStorage.removeItem('pv.askText');
+  if (input) input.value = handed;
+  setTimeout(() => ask(handed), 200);
+}
+
 press(root);
 
 // the suggestion chips are real questions
