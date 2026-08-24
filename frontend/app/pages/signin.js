@@ -5,18 +5,20 @@ import { state, oneByText } from '../bind.js';
 
 const root = wire('signin');
 
-const email = asField(oneByText('charlie@example.com', root), {
-  type: 'email', name: 'email', autocomplete: 'username',
-  inputMode: 'email', placeholder: 'you@example.com', label: 'Email address',
+// One field, either credential. A separate page for farmers was a second door
+// into the same room, on a product whose primary user is a farmer.
+const who = asField(oneByText('98765 43210', root), {
+  type: 'text', name: 'who', autocomplete: 'username',
+  placeholder: '98765 43210', label: 'Your phone number or email address',
 });
 const pass = asField(oneByText('••••••••', root), {
   type: 'password', name: 'password', autocomplete: 'current-password',
-  placeholder: 'Your password', label: 'Password',
+  placeholder: 'Your password or code', label: 'Your password or six number code',
 });
 
 // The label is a leaf div inside the filled box, and the box is what looks like
 // the button, so the box is what takes the handler. Its PARENT was taking it
-// before, which is the whole card: clicking the email field submitted the form.
+// before, which is the whole card: clicking the field submitted the form.
 const label = oneByText('Sign in', root);
 const box = label?.parentElement;
 const button = box && getComputedStyle(box).backgroundColor !== 'rgba(0, 0, 0, 0)' ? box : label;
@@ -49,16 +51,22 @@ if (show && pass) {
 
 let busy = false;
 async function submit() {
-  if (busy || !email || !pass || !button) return;
-  if (!email.value.trim() || !pass.value) {
-    return fail('Both fields, please', 'We cannot check an address without a password.');
+  if (busy || !who || !pass || !button) return;
+  if (!who.value.trim() || !pass.value) {
+    return fail('Both boxes, please', 'We cannot look you up without the code or password that goes with it.');
   }
   busy = true;
   clearError();
   const was = label.textContent;
   label.textContent = 'Signing in…';
   try {
-    const r = await api.auth.login(email.value.trim(), pass.value);
+    // Ten digits is a phone number, and a phone account's address is derived
+    // from it exactly as setup-identity registers one. Anything else is already
+    // an address, so nobody has to choose a door.
+    const typed = who.value.trim();
+    const digits = typed.replace(/[^\d]/g, '');
+    const asPhone = digits.length === 10 && !typed.includes('@');
+    const r = await api.auth.login(asPhone ? `${digits}@phone.pestivid.local` : typed, pass.value);
     session.set(r.token, r.user);
     const home = { farmer: 'home', investor: 'invest', buyer: 'market', admin: 'admin' }[r.user.role] || 'home';
     location.href = `./${home}.html`;
@@ -68,22 +76,18 @@ async function submit() {
     // Which of the two was wrong is not said, on purpose: saying it tells
     // somebody guessing whether the address exists.
     fail(bad ? 'That did not match' : 'Could not sign you in',
-         bad ? 'Check the address and the password, then try again.' : err.message);
+         bad ? 'Check the number or address, and the code or password, then try again.' : err.message);
   } finally { busy = false; }
 }
 
 button?.addEventListener('click', submit);
-for (const f of [email, pass]) {
+for (const f of [who, pass]) {
   f?.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
   f?.addEventListener('input', clearError);
 }
 // "Create an account" pointed nowhere; the page it needs now exists.
 const create = oneByText('Create an account', root);
 if (create) { create.setAttribute('data-act', ''); create.dataset.go = 'signup'; }
-// There is no phone app. A farmer signs in on this same site, with a phone
-// number instead of an address, so the link goes to that screen.
-const farmerIn = oneByText('Farmer sign-in', root);
-if (farmerIn) { farmerIn.setAttribute('data-act', ''); farmerIn.dataset.go = 'signin-farmer'; }
 
 // "Forgot?" was link-coloured, bold, and pointed at nothing: there is no reset
 // route in this product. Saying that beats a link that swallows the click --
@@ -105,4 +109,4 @@ if (forgot) {
   });
 }
 
-email?.focus();
+who?.focus();
