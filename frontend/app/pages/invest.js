@@ -71,9 +71,25 @@ if (ctx) load(ctx.root, async () => {
 
     // The evidence block only claims what the video record actually says. If a
     // date has not landed in a block yet, it says so instead of printing one.
+    // GET /videos/:cid/provenance answers { uploadedAt, integrity: { sha256 } }
+    // and carries NO anchor information; the block lives on
+    // GET /videos/:cid/anchor as { anchored, blockHeight }. This file read
+    // video.uploadTimestamp, video.videoFileHash, video.anchored and
+    // video.blockHeight -- none of which that response has -- so the evidence
+    // chain printed "not recorded" three times and "No fingerprint on the
+    // record" on the one panel this whole product exists to show, while the
+    // hash sat in the response it had just fetched.
     let video = null;
-    try { video = p.cid ? await api.videos.provenance(p.cid) : null; } catch { /* stated below */ }
-    const anchored = video?.anchored && video?.blockHeight;
+    let anchor = null;
+    if (p.cid) {
+      [video, anchor] = await Promise.all([
+        api.videos.provenance(p.cid).catch(() => null),
+        api.videos.anchor(p.cid).catch(() => null),
+      ]);
+    }
+    const sha = video?.integrity?.sha256 || null;
+    const shortSha = sha ? `sha256 ${sha.slice(0, 8)}…${sha.slice(-4)}` : null;
+    const anchored = Boolean(anchor?.anchored && anchor?.blockHeight);
 
     bind(ctx.root, {
       lot: {
@@ -85,14 +101,12 @@ if (ctx) load(ctx.root, async () => {
         goal: `of ${rupees(p.amount)}`,
       },
       file: {
-        meta: video?.videoFileHash
-          ? `sha256 ${String(video.videoFileHash).slice(0, 8)}…${String(video.videoFileHash).slice(-4)}`
-          : 'No file record',
+        meta: shortSha || 'No file record',
         count: p.cid ? '1 of 1' : '—',
       },
       proved: {
         line: anchored
-          ? `This exact video file has not been altered. Its date is written into Bitcoin block ${Number(video.blockHeight).toLocaleString('en-IN')}.`
+          ? `This exact video file has not been altered. Its date is written into Bitcoin block ${Number(anchor.blockHeight).toLocaleString('en-IN')}.`
           : 'This exact video file has not been altered. Its date has not landed in a block yet, so there is no block number to check — usually by tomorrow.',
       },
       told: {
@@ -132,19 +146,16 @@ if (ctx) load(ctx.root, async () => {
         const w = chain.querySelector(`[data-chain-when="${kind}"]`);
         const n = chain.querySelector(`[data-chain-note="${kind}"]`);
         const h = chain.querySelector(`[data-chain-head="${kind}"]`);
-        if (w) { if (time) w.textContent = time; else w.textContent = 'not recorded'; }
+        if (w) w.textContent = time == null ? 'not recorded' : time;
         if (n && note != null) n.textContent = note;
         if (h && head) h.textContent = head;
       };
-      const filmed = when(video?.uploadTimestamp);
+      const filmed = when(video?.uploadedAt);
       set('filmed', filmed, null);
-      set('hashed', filmed,
-        video?.videoFileHash
-          ? `sha256 ${String(video.videoFileHash).slice(0, 8)}…${String(video.videoFileHash).slice(-4)}`
-          : 'No fingerprint on the record');
+      set('hashed', filmed, shortSha || 'No fingerprint on the record');
       if (anchored) {
-        set('block', when(video.anchoredAt) || filmed,
-            `block ${Number(video.blockHeight).toLocaleString('en-IN')} — check it on any explorer`);
+        set('block', when(anchor.anchoredAt) || filmed,
+            `block ${Number(anchor.blockHeight).toLocaleString('en-IN')} — check it on any explorer`);
       } else {
         // The date has not landed, so the green goes: it is the one token this
         // product spends on a fact anybody can check, and there is not one yet.
@@ -152,7 +163,9 @@ if (ctx) load(ctx.root, async () => {
         if (dot) dot.style.background = '#78716a';
         const head = chain.querySelector('[data-chain-head="block"]');
         if (head) { head.style.color = '#4a443d'; head.textContent = 'Not in a block yet'; }
-        set('block', null, 'The proof job runs once a day, so usually by tomorrow.');
+        // Not "not recorded": nothing has happened yet, which is different from
+        // something happening and us failing to write it down.
+        set('block', '', 'The proof job runs once a day, so usually by tomorrow.');
       }
     }
 

@@ -22,10 +22,11 @@ export function bind(root, data) {
     if (!addressed(el.dataset.bind)) continue;
     const v = dig(data, el.dataset.bind);
     el.textContent = v == null || v === '' ? '—' : String(v);
+    el.setAttribute('data-filled', '');
   }
   for (const el of root.querySelectorAll('[data-bind-html]')) {
     const v = dig(data, el.dataset.bindHtml);
-    if (v != null) el.textContent = String(v);
+    if (v != null) { el.textContent = String(v); el.setAttribute('data-filled', ''); }
   }
   for (const el of root.querySelectorAll('[data-when]')) {
     let key = el.dataset.when, want = true;
@@ -181,10 +182,32 @@ export async function load(container, fn) {
   } catch (err) {
     console.error(err);
     const [h, d] = reason(err);
-    // append rather than replace: losing signal should not also lose the nav
-    const holder = document.createElement('div');
-    container.append(holder);
-    state(holder, err?.rateLimited ? 'waiting' : 'failed', h, d);
+
+    // A failed load used to leave every DRAWN figure on screen and append the
+    // message at the bottom. On confirm-investment that meant an investor read
+    // "You are sending ₹50,000 / your share 60% / this project still needs
+    // ₹3,20,000" -- all of it the artboard's -- with the failure notice BELOW
+    // the send button. Every field the page meant to fill and did not now says
+    // so, in place.
+    const unfilled = [...container.querySelectorAll('[data-bind], [data-bind-html]')]
+      .filter(el => !el.hasAttribute('data-filled'));
+    for (const el of unfilled) el.textContent = 'not loaded';
+
+    // And you can leave, but you cannot act. Navigation stays live; anything
+    // that would commit is refused, because the page does not know what it is
+    // acting on.
+    const box = document.createElement('div');
+    container.append(box);
+    for (const el of container.querySelectorAll('[data-act]')) {
+      if (el.closest('[data-chrome]') || el.hasAttribute('data-chrome')
+          || el.hasAttribute('data-back') || box.contains(el)) continue;
+      el.setAttribute('aria-disabled', 'true');
+      el.style.opacity = '0.55';
+      el.style.pointerEvents = 'none';
+    }
+    state(box, err?.rateLimited ? 'waiting' : 'failed', h, d);
+    // Put the reader at the message rather than wherever they happened to be.
+    box.scrollIntoView({ block: 'center' });
   }
 }
 

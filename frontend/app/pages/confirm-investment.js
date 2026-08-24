@@ -36,6 +36,16 @@ if (ctx) {
         title: p.title,
         meta: [p.farmerName, p.acres && `${p.acres} acres`, p.crop].filter(Boolean).join(' · '),
         needed: rupees(Math.max(0, (p.amount || 0) - (p.fundedAmount || 0))),
+        // These two were not bound at all -- the artboard's "60%" and
+        // "Harvest reported, about 7 weeks" were shown to an investor about to
+        // send money into a season whose real share is whatever the farmer
+        // agreed. Two of the four figures on this screen were decoration.
+        share: p.investorShare != null ? `${p.investorShare}%` : 'not stated',
+        when: p.settlementMode === 'full_repayment'
+          ? 'Harvest reported — the whole amount comes back'
+          : (p.timeline
+            ? `Harvest reported, about ${p.timeline} month${p.timeline === 1 ? '' : 's'}`
+            : 'When the harvest is reported'),
       },
       amount: rupees(amount),
     });
