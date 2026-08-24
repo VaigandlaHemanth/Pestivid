@@ -174,7 +174,11 @@ function assertSafeToSeed() {
                     .createHash('sha256').update(`seed:${v.cid}:${i}`)
                     .digest('hex').slice(0, 16)),
                 nFrames: 12,
-                durationSeconds: 12,
+                // The fingerprint samples twelve frames whatever the length, so
+                // nFrames is 12 and the DURATION is the clip's own. Seeding 12
+                // for both made every video in the app read "0:12", which makes
+                // a real list look like a template.
+                durationSeconds: 32 + (parseInt(v.cid.slice(-2), 36) % 17),
                 algorithm: 'dhash64/9x8',
             };
             v.provenance = { flags: [], reviewState: 'none' };

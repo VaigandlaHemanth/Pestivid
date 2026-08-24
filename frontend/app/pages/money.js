@@ -13,7 +13,7 @@
 // parts so the code addresses them by name rather than by position.
 import { requireUser, api, load, state } from './_guard.js';
 import { bind, rows, slot, dropSection } from '../bind.js';
-import { rupees } from '../api.js';
+import { rupees, whenShort } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { goes, press } from '../wire.js';
 
@@ -68,7 +68,12 @@ if (ctx) {
           // states one, removed when it does not -- the artboard's "they keep
           // 60%" was sitting on a row that also said nothing was being raised.
           share: p.investorShare != null ? `they keep ${p.investorShare}%` : null,
-          pct: Math.max(2, Math.min(100, Math.round((got / (p.amount || 1)) * 100))),
+          // The 2% floor exists so a tiny amount is still visible. It must not
+          // apply to nothing: a blue nub on a season with zero raised claims
+          // money arrived. Zero is drawn as zero.
+          pct: got > 0
+            ? Math.max(2, Math.min(100, Math.round((got / (p.amount || 1)) * 100)))
+            : 0,
           full,
         };
       }), (el, row) => {
@@ -91,9 +96,15 @@ if (ctx) {
     } else {
       rows(root, 'sell', lots.map(l => ({
         crop: l.crop || l.title || 'Lot',
-        price: l.pricePerQuintal != null ? rupees(l.pricePerQuintal) : null,
-        per: l.pricePerQuintal != null ? 'per quintal' : null,
-        qty: l.quantityQuintal != null ? `${l.quantityQuintal} quintal ready` : null,
+        // A Listing carries minPrice and maxPrice for the whole lot. It has no
+        // pricePerQuintal and no quantityQuintal -- the quantity field is
+        // commented out in the model -- so every one of these slots was read as
+        // null and REMOVED, and the rows showed a crop name and nothing else.
+        price: l.minPrice != null && l.maxPrice != null
+          ? `${rupees(l.minPrice)}–${rupees(l.maxPrice)}`
+          : (l.minPrice != null ? rupees(l.minPrice) : null),
+        per: l.minPrice != null ? 'for the whole lot' : null,
+        qty: l.status === 'sold' ? 'Sold' : (l.createdAt ? `Listed ${whenShort(l.createdAt)}` : null),
         // Nobody has asked is a fact; "2 buyers have asked" because the artboard
         // said so is the same kind of lie as inventing a hash.
         asked: l.enquiryCount > 0

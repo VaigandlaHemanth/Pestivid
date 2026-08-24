@@ -5,6 +5,9 @@ import { chromium } from 'playwright';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { needs } from './_needs.mjs';
+// Five pages are ABOUT something and are blank without an id.
+const QUERY = await needs();
 
 const API = 'http://127.0.0.1:3001/api';
 const APP = 'http://127.0.0.1:3001/app';
@@ -58,7 +61,7 @@ async function visit(page, slug, role) {
   const errs = [];
   const onErr = e => errs.push(String(e).slice(0, 80));
   page.on('pageerror', onErr);
-  await page.goto(`${APP}/${slug}.html`, { waitUntil: 'load' });
+  await page.goto(`${APP}/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
   await page.waitForTimeout(1500);
 
   const found = await page.evaluate((list) => {

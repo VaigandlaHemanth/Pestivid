@@ -1,6 +1,7 @@
 // Web Interface Guidelines checks that can be MEASURED rather than eyeballed,
 // run against the served pages so what is tested is what ships.
 import { chromium } from 'playwright';
+import { needs } from './_needs.mjs';
 const PAGES = process.argv.slice(2);
 const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', {
   method: 'POST', headers: { 'content-type': 'application/json' },
@@ -36,6 +37,8 @@ const ROLE = {
 };
 
 const b = await chromium.launch();
+// Five pages are ABOUT something and are blank without an id.
+const QUERY = await needs();
 const tokens = {};
 let total = 0;
 for (const slug of PAGES) {
@@ -45,7 +48,7 @@ for (const slug of PAGES) {
   if (role) await p.addInitScript(([t, u]) => {
     localStorage.setItem('pv.token', t); localStorage.setItem('pv.user', u);
   }, [tokens[role].token, JSON.stringify(tokens[role].user)]);
-  await p.goto(`http://127.0.0.1:3001/app/${slug}.html`, { waitUntil: 'load' });
+  await p.goto(`http://127.0.0.1:3001/app/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
   await p.waitForTimeout(1400);
 
   const f = await p.evaluate(() => {
@@ -136,7 +139,7 @@ for (const slug of PAGES) {
 
   const uniq = [...new Set(f)];
   total += uniq.length;
-  console.log(`\n## ${slug}.html`);
+  console.log(`\n## ${slug}.html${QUERY[slug] || ''}`);
   if (!uniq.length) console.log('  ✓ pass');
   else uniq.slice(0, 14).forEach(x => console.log(`  ${x}`));
   if (uniq.length > 14) console.log(`  … ${uniq.length - 14} more of the same kinds`);

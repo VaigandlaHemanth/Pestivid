@@ -143,7 +143,13 @@ export const api = {
   },
   investments: {
     mine: (investorId) => get(`/investments/investor/${investorId}`),
-    onProject: (projectId) => get(`/investments/project/${projectId}`),
+    // The route answers {project, investments}, and both callers treated the
+    // answer as an array. On the payout screen that threw
+    // "investments.reduce is not a function" ON SCREEN -- and because it threw
+    // before any bind ran, the page kept the artboard's numbers: a payout of
+    // 4,04,160 split between four named investors, none of it real.
+    onProject: (projectId) => get(`/investments/project/${projectId}`)
+      .then(r => (Array.isArray(r) ? r : (r?.investments || []))),
     create: (b) => post('/investments', b),
   },
   listings: {

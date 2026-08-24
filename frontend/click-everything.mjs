@@ -14,6 +14,7 @@ import { chromium } from 'playwright';
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { needs } from './_needs.mjs';
 
 const API = 'http://127.0.0.1:3001/api';
 const APP = 'http://127.0.0.1:3001/app';
@@ -36,9 +37,12 @@ const NO_CLICK = {
   signup: 'creates an account on every run',
   setup: 'creates an account on every run',
   'leaf-check': 'downloads 173 MB of model',
-  'leaf-check': 'downloads 173 MB of model',
+  payout: 'Send it reports a harvest, which is irreversible',
+  'report-harvest': 'walks into the payout confirmation',
 };
 
+// Five pages are ABOUT something and are blank without an id.
+const QUERY = await needs();
 const tokens = {};
 async function tokenFor(role) {
   if (!role) return null;
@@ -98,7 +102,7 @@ for (const slug of slugs) {
   };
 
   const page = await open();
-  await page.goto(`${APP}/${slug}.html`, { waitUntil: 'load' });
+  await page.goto(`${APP}/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
   await page.waitForTimeout(1400);
   const list = await page.evaluate(ENUMERATE);
   await page.close();
@@ -116,7 +120,7 @@ for (const slug of slugs) {
     const p = await open();
     const errs = [];
     p.on('pageerror', e => errs.push(String(e).slice(0, 70)));
-    await p.goto(`${APP}/${slug}.html`, { waitUntil: 'load' });
+    await p.goto(`${APP}/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
     await p.waitForTimeout(1200);
     // A control that is already the current one is not dead when clicking it
     // changes nothing -- selecting the row you are already reading is meant to

@@ -101,6 +101,15 @@ router.get('/', async (req, res) => {
              investorShare: request.investorShare,
              fundedAmount: request.fundedAmount,
              status: request.status,
+            // The harvest fields. Every shaper here omitted them, so no screen
+            // could ever see that a harvest HAD been reported: the payout page
+            // showed "nothing to divide yet" forever after the farmer sent it,
+            // and money.js could not tell a settled season from an open one.
+            outcome: request.outcome || null,
+            harvestRevenue: request.harvestRevenue ?? null,
+            inputCostBasis: request.inputCostBasis ?? null,
+            harvestReportedAt: request.harvestReportedAt
+                ? request.harvestReportedAt.toISOString() : null,
              createdAt: request.createdAt ? request.createdAt.toISOString() : null, // ISO string date
              // Investors and updates might be large, send only counts or summary in list view:
              investorCount: request.investors ? request.investors.length : 0,
@@ -165,6 +174,15 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
              investorShare: request.investorShare,
              fundedAmount: request.fundedAmount,
              status: request.status,
+            // The harvest fields. Every shaper here omitted them, so no screen
+            // could ever see that a harvest HAD been reported: the payout page
+            // showed "nothing to divide yet" forever after the farmer sent it,
+            // and money.js could not tell a settled season from an open one.
+            outcome: request.outcome || null,
+            harvestRevenue: request.harvestRevenue ?? null,
+            inputCostBasis: request.inputCostBasis ?? null,
+            harvestReportedAt: request.harvestReportedAt
+                ? request.harvestReportedAt.toISOString() : null,
              createdAt: request.createdAt ? request.createdAt.toISOString() : null,
              // Format embedded investors for frontend
              investors: request.investors.map(inv => ({
@@ -235,6 +253,15 @@ router.get('/:id', async (req, res) => {
              investorShare: request.investorShare,
              fundedAmount: request.fundedAmount,
              status: request.status,
+            // The harvest fields. Every shaper here omitted them, so no screen
+            // could ever see that a harvest HAD been reported: the payout page
+            // showed "nothing to divide yet" forever after the farmer sent it,
+            // and money.js could not tell a settled season from an open one.
+            outcome: request.outcome || null,
+            harvestRevenue: request.harvestRevenue ?? null,
+            inputCostBasis: request.inputCostBasis ?? null,
+            harvestReportedAt: request.harvestReportedAt
+                ? request.harvestReportedAt.toISOString() : null,
              createdAt: request.createdAt ? request.createdAt.toISOString() : null,
               // Format embedded investors for frontend
              investors: request.investors.map(inv => ({

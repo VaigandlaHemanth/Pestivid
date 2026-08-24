@@ -25,7 +25,21 @@ if (ctx) {
     const q = new URLSearchParams(location.search);
     const key = q.get('name');
     const all = await api.videos.mine(ctx.user._id || ctx.user.id);
-    const mine = key ? all.filter(v => (v.crop || v.location) === key) : all;
+
+    // Without ?name= this page has no plot. It used to fall back to `all` and
+    // present the farmer's whole library under the heading "4 videos on this
+    // plot" -- four different crops, called one field.
+    if (!key) {
+      // state() keeps the page header, and this header is a DRAWN specimen --
+      // "Canal plot / Two acres, potato, sown 12 June" -- so an honest empty
+      // state arrived under a plot that does not exist.
+      bind(root, { plot: { name: 'A plot', meta: 'None chosen yet',
+        stage: '', dates: '', videosLabel: '' } });
+      return state(root, 'empty', 'No plot chosen',
+        'This screen shows one plot at a time. Pick the one you want from your plots.',
+        { label: 'See my plots', go: 'plots' });
+    }
+    const mine = all.filter(v => (v.crop || v.location) === key);
 
     if (!mine.length) {
       return state(root, 'empty', 'No videos on this plot',
@@ -37,7 +51,10 @@ if (ctx) {
     const written = mine.filter(v => v.anchored && v.blockHeight).length;
     bind(root, { plot: {
       name: key || first.crop || first.location || 'Plot',
-      meta: [first.location, first.crop].filter(Boolean).join(' · '),
+      // The name IS usually the crop, so listing it again under itself read
+      // "Lettuce / Sunny Acres · Lettuce".
+      meta: [first.location, first.crop].filter(Boolean)
+        .filter(v => v !== (key || first.crop)).join(' · ') || 'Where you told us it is',
       // What this page actually knows, instead of a season length nobody stores.
       stage: `${mine.length} video${mine.length === 1 ? '' : 's'} on this plot`,
       dates: `${written} of ${mine.length} date${mine.length === 1 ? '' : 's'} written`,

@@ -141,7 +141,7 @@
         <div style="background: #f2e6cd; padding: 14px 15px;">
           <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">You can only do this once</div>
           <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
-            These two numbers decide what your four investors are paid. Check them before you send.
+            <span data-bind="whoIsPaid">These two numbers decide what your four investors are paid.</span> Check them before you send.
           </div>
         </div>
 
@@ -162,6 +162,21 @@
           </div>
         </div>
 
+        <!-- The whole product's central disclosure is that a crop can fail, and
+             there was no way on this screen to say that it had: the form
+             refused to move without a sale figure. The route has always taken
+             total_loss; the interface never offered it. -->
+        <div data-failed style="background: #f6f3ef; padding: 13px 15px; margin-top: 14px; display: flex; gap: 11px; align-items: flex-start; box-shadow: inset 0 0 0 1px #c3bcb6;">
+          <div data-failbox style="width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; box-shadow: inset 0 0 0 2px #78716a;"></div>
+          <div>
+            <div style="font-size: 15.5px; font-weight: 700;">The crop failed &mdash; there was nothing to sell</div>
+            <div style="font-size: 14px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+              Then there is no profit to share and you owe your investors nothing. Say so here rather
+              than putting a nought in the box above.
+            </div>
+          </div>
+        </div>
+
         <!-- the arithmetic, before they commit -->
         <div style="background: #f6f3ef; padding: 16px 17px; margin-top: 18px;">
           <div style="display: flex; justify-content: space-between; align-items: baseline;">
@@ -169,7 +184,7 @@
             <div data-bind="profit" class="m" style="font-size: 17px; font-weight: 700;">&#8377;6,73,600</div>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px;">
-            <div style="font-size: 15.5px;">Your investors get 60%</div>
+            <div data-bind="shareLine" style="font-size: 15.5px;">Your investors get 60%</div>
             <div data-bind="toInvestors" class="m" style="font-size: 17px; font-weight: 700;">&#8377;4,04,160</div>
           </div>
           <div style="height: 1px; background: #dcd6c9; margin: 12px 0;"></div>
@@ -178,7 +193,7 @@
             <div data-bind="youKeep" class="m" style="font-size: 22px; font-weight: 700;">&#8377;2,69,440</div>
           </div>
           <div style="font-size: 14px; line-height: 1.45; margin-top: 9px; color: #4a443d;">
-            Plus the &#8377;5,00,000 they already gave you, which you keep either way.
+            Plus the <span data-bind="principal">&#8377;5,00,000</span> they already gave you, which you keep either way.
           </div>
         </div>
       </div>

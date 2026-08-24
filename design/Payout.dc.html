@@ -31,7 +31,7 @@
     <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
     <div>
       <div data-title style="font-size: 21px; font-weight: 700; letter-spacing: -0.02em;">Check who gets what</div>
-      <div style="font-size: 14.5px; color: #605a53;">Canal plot &middot; nothing sent yet</div>
+      <div data-bind="seasonLine" style="font-size: 14.5px; color: #605a53;">Canal plot &middot; nothing sent yet</div>
     </div>
   </div>
 
@@ -47,7 +47,7 @@
         <div style="font-size: 15px; color: #605a53;">It cost you</div>
         <div data-bind="costs" class="m" style="font-size: 16px; font-weight: 600;">&#8377;2,58,400</div>
       </div>
-      <div style="font-size: 14.5px; color: #01579b; font-weight: 600; margin-top: 10px;">Change these numbers</div>
+      <div data-change style="font-size: 14.5px; color: #01579b; font-weight: 600; margin-top: 10px;">Change these numbers</div>
     </div>
 
     <div data-bind="countLine" style="font-size: 15px; color: #605a53; padding: 20px 20px 8px;">Four investors</div>
@@ -92,7 +92,7 @@
     <div style="padding: 18px 20px 0;">
       <div style="background: #f6f3ef; padding: 16px 17px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
-          <div style="font-size: 16px;">All four together</div>
+          <div data-bind="allLine" style="font-size: 16px;">All four together</div>
           <div data-bind="toInvestors" class="m" style="font-size: 20px; font-weight: 700;">&#8377;4,04,160</div>
         </div>
         <div style="height: 1px; background: #dcd6c9; margin: 12px 0;"></div>
@@ -106,7 +106,7 @@
     <div style="padding: 16px 20px 0;">
       <div style="background: #f2e6cd; padding: 15px 16px; display: flex; gap: 11px; align-items: flex-start;">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#7c4a12" stroke-width="2.1" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16v.01"></path></svg>
-        <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
+        <div data-bind-html="warning" style="font-size: 15px; line-height: 1.5; color: #4a443d;">
           <span style="font-weight: 700; color: #7c4a12;">This cannot be undone.</span> Once you send it,
           each person is told their amount and the season is closed.
         </div>
@@ -119,7 +119,7 @@
       <div style="font-size: 18px; font-weight: 700; color: #fff;">Send it</div>
     </div>
     <div style="height: 52px; margin-top: 10px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1.5px #c3bcb6;">
-      <div style="font-size: 16px; color: #4a443d;">Not yet, go back</div>
+      <div data-bind="backLabel" style="font-size: 16px; color: #4a443d;">Not yet, go back</div>
     </div>
   </div>
 
