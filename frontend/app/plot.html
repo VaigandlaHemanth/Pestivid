@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#f6f3ef">
+  <meta name="theme-color" content="#ffffff">
   <title>Plot</title>
   <!-- generated from design/Plot.dc.html by frontend/build-pages.mjs -- do not edit -->
   
@@ -37,23 +37,63 @@
       .tap { transition: none; }
       .tap:active { transform: none; opacity: .72; }
     }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .nav   { font-size: 15px; color: #605a53; }
+    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .card  { background: #fff; padding: 20px; }
+    .cardh { font-size: 16.5px; font-weight: 700; }
+    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .rail  { display: flex; flex-direction: column; gap: 16px; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </head>
-<body data-page="plot" data-role="farmer" data-design-width="360" data-design-height="1040">
-<div data-surface="phone" data-w="360" class="f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+<body data-page="plot" data-role="farmer" data-design-width="1320" data-design-height="940">
+<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
-  <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-    <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-    <div>
-      <div data-title="" data-bind="plot.name" style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Canal plot</div>
-      <div data-bind="plot.meta" style="font-size: 14.5px; color: #605a53;">Two acres · potato · sown 12 June</div>
+  <div class="bar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
+        <div class="brand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="navOn">My plots</div>
+          <div class="nav">Money</div>
+          <div class="nav">Messages</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+          <div data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial="" style="font-size: 13px; font-weight: 600;">A</div>
+        </div>
+      </div>
     </div>
-  </div>
+    <div class="pagehold" style="padding: 26px 28px 0;">
+      <div data-title="" data-bind="plot.name" class="pageh">Canal plot</div>
+      <div data-bind="plot.meta" class="pagesub"></div>
+    </div>
+
 
   <div style="flex-grow: 1;">
 
     <!-- where the season is. a bar, because a week number alone means nothing -->
-    <div style="background: #eae4de; padding: 17px 20px;">
+        <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
+      <div class="main">
+<div style="background: #eae4de; padding: 17px 20px;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div data-bind="plot.stage" class="m" style="font-size: 16px; font-weight: 600;">3 videos on this plot</div>
         <div data-bind="plot.dates" class="m" style="font-size: 15px; color: #605a53;">2 of 3 dates written</div>
@@ -62,11 +102,8 @@
         <div data-progress="" style="width: 100%; background: #1d1a17; transform-origin: left; transform: scaleX(.66);"></div>
       </div>
     </div>
-
-    <!-- the thing an investor is actually buying: a dated trail -->
-    <div data-bind="plot.videosLabel" class="sec">Videos of this plot</div>
-
-    <div class="vid">
+<div data-bind="plot.videosLabel" class="sec">Videos of this plot</div>
+<div class="vid">
       <div class="th"><div data-mark="" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout="" class="dur">0:41</div></div>
       <div style="flex-grow: 1;">
         <div class="m" style="font-size: 16px; font-weight: 600;">18 August, 6:44 am</div>
@@ -77,8 +114,7 @@
       </div>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
     </div>
-
-    <div class="vid" style="background: #eae4de;">
+<div class="vid" style="background: #eae4de;">
       <div class="th"><div data-mark="" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout="" class="dur">0:36</div></div>
       <div style="flex-grow: 1;">
         <div class="m" style="font-size: 16px; font-weight: 600;">11 August, 7:02 am</div>
@@ -89,9 +125,7 @@
       </div>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
     </div>
-
-    <!-- waiting, and told how long. the wait is the product working, not a fault -->
-    <div class="vid">
+<div class="vid">
       <div class="th"><div data-mark="" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout="" class="dur">0:29</div></div>
       <div style="flex-grow: 1;">
         <div class="m" style="font-size: 16px; font-weight: 600;">Today, 8:12 am</div>
@@ -99,17 +133,16 @@
       </div>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
     </div>
-
-    <div style="padding: 14px 20px 0;">
+<div style="padding: 14px 20px 0;">
       <div class="tap" style="background: #f6f3ef; box-shadow: inset 0 0 0 1.5px #1d1a17; height: 58px; display: flex; align-items: center; justify-content: center; gap: 10px;">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
         <div style="font-size: 17px; font-weight: 600; color: #1d1a17;">Record another one here</div>
       </div>
     </div>
-
-    <!-- money, on this plot only. the same numbers the Money screen totals up -->
-    <div class="sec">Money on this plot</div>
-    <div class="card">
+      </div>
+      <div class="rail">
+<div class="sec">Money on this plot</div>
+<div class="card">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div style="font-size: 16px;">Raised</div>
         <div class="m" style="font-size: 21px; font-weight: 700;">₹5,00,000</div>
@@ -126,9 +159,7 @@
         <div style="font-size: 17px; font-weight: 700; color: #fff;">Report the harvest</div>
       </div>
     </div>
-
-    <!-- the limit of the claim, on the page that makes the claim -->
-    <div style="padding: 18px 20px 0;">
+<div style="padding: 18px 20px 0;">
       <div style="background: #eae4de; padding: 14px 15px;">
         <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
           <span style="font-weight: 700;">Nobody has visited this field.</span> The acres, the crop and the
@@ -136,10 +167,12 @@
         </div>
       </div>
     </div>
+      </div>
+    </div>
+
   </div>
 
 
-  <!-- everything below this line needs a scroll on a 360x800 handset -->
   
 </div>
 <script type="module" src="./pages/plot.js"></script>

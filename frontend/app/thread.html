@@ -29,20 +29,59 @@
        they spare somebody typing a reply on a phone keyboard */
     .chip { background: #e7e1db; min-height: 46px; box-sizing: border-box; display: flex; align-items: center; padding: 10px 13px; font-size: 15px; }
     .cap  { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px; max-width: 46ch; }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .nav   { font-size: 15px; color: #605a53; }
+    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .card  { background: #fff; padding: 20px; }
+    .cardh { font-size: 16.5px; font-weight: 700; }
+    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .rail  { display: flex; flex-direction: column; gap: 16px; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </head>
-<body data-page="thread" data-role="any" data-design-width="360" data-design-height="800">
+<body data-page="thread" data-role="any" data-design-width="360" data-design-height="1078">
 <div data-surface="phone" data-w="360" class="ph f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto; ">
-        <div style="background: #f6f3ef; padding: 14px 18px 13px; display: flex; align-items: center; gap: 11px; flex-shrink: 0;">
-          <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-          <div data-readout="" style="width: 38px; height: 38px; background: #e7e1db; border-radius: 19px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700;">R</div>
-          <div style="flex-grow: 1;">
-            <div data-title="" data-bind="other.name" style="font-size: 18px; font-weight: 700;">Ravi Kumar</div>
-            <div data-bind="other.context" class="m" style="font-size: 13.5px; color: #605a53;">Put ₹2,00,000 into Canal plot</div>
-          </div>
+        <div class="bar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
+        <div class="brand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="nav">My plots</div>
+          <div class="nav">Money</div>
+          <div class="navOn">Messages</div>
         </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+          <div data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial="" style="font-size: 13px; font-weight: 600;">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagehold" style="padding: 26px 28px 0;">
+      <div data-title="" data-bind="other.name" class="pageh">Ravi Kumar</div>
+      <div data-bind="other.context" class="pagesub"></div>
+    </div>
 
-        <div style="flex-grow: 1; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;">
+
+            <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 340px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
+      <div class="main">
+<div style="flex-grow: 1; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;">
           <div class="them">
             <div class="t">Namaste Alice. Is the canal water reaching the far end of the plot this year?</div>
             <div class="m when">17 August, 9:12 am</div>
@@ -70,8 +109,7 @@
             </div>
           </div>
         </div>
-
-        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+<div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
           <div style="display: flex; gap: 9px; align-items: stretch;">
             <div style="flex-grow: 1; background: #ddd7d1; display: flex; align-items: center; padding: 0 14px; min-height: 56px;">
               <div data-reply="" style="font-size: 16px; color: #4a443d;">Write a message</div>
@@ -84,6 +122,12 @@
             These are kept on our server and are not scrambled. Assume we could read them.
           </div>
         </div>
+      </div>
+      <div class="rail">
+
+      </div>
+    </div>
+
       </div>
 <script type="module" src="./pages/thread.js"></script>
 </body>

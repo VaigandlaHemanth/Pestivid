@@ -50,34 +50,72 @@
     @media (prefers-reduced-transparency: reduce) {
       .gplate { background: rgba(12,11,10,.92); backdrop-filter: none; -webkit-backdrop-filter: none; }
     }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .nav   { font-size: 15px; color: #605a53; }
+    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .card  { background: #fff; padding: 20px; }
+    .cardh { font-size: 16.5px; font-weight: 700; }
+    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .rail  { display: flex; flex-direction: column; gap: 16px; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </head>
-<body data-page="leaf-check" data-role="farmer" data-design-width="360" data-design-height="1411">
+<body data-page="leaf-check" data-role="farmer" data-design-width="360" data-design-height="1831">
 <div style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-family: system-ui, 'Anek Latin', 'Noto Sans', sans-serif; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto; " data-surface="phone" data-w="360" class="scr">
-      <div class="hd">
-        <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-        <div class="hdt">Leaf check</div>
+      <div class="bar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
+        <div class="brand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="navOn">My plots</div>
+          <div class="nav">Money</div>
+          <div class="nav">Messages</div>
+        </div>
       </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+          <div data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial="" style="font-size: 13px; font-weight: 600;">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagehold" style="padding: 26px 28px 0;">
+      <div data-title="" class="pageh">leaf-check</div>
+    </div>
 
-      <div style="min-height: 140px; background: #37322d; position: relative; overflow: hidden;">
+
+          <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
+      <div class="main">
+<div style="min-height: 140px; background: #37322d; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 8px; border: 1px solid #605a53;"></div>
         <div data-bind="shot.file" data-readout="" class="gplate" style="position: absolute; left: 18px; top: 16px; padding: 7px 10px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #f6f3ef;">IMG_20260822_0914_IST.jpg<br>3024×4032 · 2.4 MB</div>
         <div data-readout="" class="gplate" style="position: absolute; left: 12px; bottom: 11px; padding: 5px 10px;">
           <div data-bind="shot.where" style="font-size: 12px; font-weight: 600; color: #f6f3ef;">Checked on your phone</div>
         </div>
       </div>
-
-      <div style="background: #fff; padding: 20px;">
+<div style="background: #fff; padding: 20px;">
         <div style="font-size: 15px; color: #605a53;">Most likely</div>
         <div data-title="" data-bind="verdict.name" style="font-size: 27px; font-weight: 700; letter-spacing: -0.028em; margin-top: 3px; line-height: 1.1;">Early blight</div>
         <div data-bind="verdict.note" class="sub" style="margin-top: 7px;">
           Dark rings on the older, lower leaves. Common, and treatable.
         </div>
       </div>
-
-      <!-- Treatment. Both of these belong to a DIAGNOSIS: shown under a
-           refusal they are spray guidance for a disease nobody named. -->
-      <div data-treatment="" style="padding: 20px;">
+<div data-treatment="" style="padding: 20px;">
         <div style="font-size: 17px; font-weight: 700;">Do these first — no spraying</div>
         <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 11px;">
           <div style="display: flex; gap: 11px; align-items: flex-start;">
@@ -94,9 +132,7 @@
           </div>
         </div>
       </div>
-
-      <!-- one chemical card. dose, name and register status inseparable. -->
-      <div data-treatment="" style="background: #fff; padding: 20px;">
+<div data-treatment="" style="background: #fff; padding: 20px;">
         <div style="font-size: 17px; font-weight: 700;">If you do spray</div>
 
         <div style="background: #f2e6cd; padding: 14px 15px; margin-top: 13px;">
@@ -125,21 +161,13 @@
           </div>
         </div>
       </div>
-
-      <div style="background: #1d1a17; padding: 16px 20px;">
+<div style="background: #1d1a17; padding: 16px 20px;">
         <div style="font-size: 14px; line-height: 1.55; color: #e7e1db;">
           This is guidance, not a prescription. Check the product and the amount with your extension
           officer before you spray. <span style="font-weight: 700; color: #fff;">The label is the law.</span>
         </div>
       </div>
-
-      <!-- Chat continues INSIDE the result, carrying the diagnosis as context.
-           The point is not convenience: sending a farmer to a separate chatbot
-           makes them re-describe a disease they have just been told the name of,
-           by typing it in Telugu on a phone keyboard. Here the model already
-           knows it said Early blight on this photo, so the first question can be
-           one tap. -->
-      <div data-retake="" style="padding: 20px; display: none;">
+<div data-retake="" style="padding: 20px; display: none;">
         <div style="font-size: 17px; font-weight: 700;">Take it again like this</div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 13px;">
@@ -200,7 +228,9 @@
         </div>
       </div>
     </div>
-      <div style="background: #e7e1db; padding: 18px 20px;">
+      </div>
+      <div class="rail">
+<div style="background: #e7e1db; padding: 18px 20px;">
         <div style="font-size: 17px; font-weight: 700;">Ask about this result</div>
         <div style="font-size: 14.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
           It already knows what it found on your photo. You do not have to explain it again.
@@ -230,6 +260,9 @@
           </div>
         </div>
       </div>
+      </div>
+    </div>
+
 
     </div>
 <script type="module" src="./pages/leaf-check.js"></script>

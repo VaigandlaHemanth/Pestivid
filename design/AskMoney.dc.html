@@ -31,6 +31,26 @@
     /* the three tiers of the investor page, reused verbatim so the farmer can see
        which of her answers becomes which kind of claim */
     .tier{ background: #fff; padding: 18px 20px; }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .nav   { font-size: 15px; color: #605a53; }
+    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .card  { background: #fff; padding: 20px; }
+    .cardh { font-size: 16.5px; font-weight: 700; }
+    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .rail  { display: flex; flex-direction: column; gap: 16px; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </helmet>
 
@@ -48,23 +68,35 @@
 
     <!-- the video first, because the server will not accept a request without one -->
     <div>
-      <div data-page="ask-money" class="ph f" style="min-height: 860px;">
-        <div class="hd">
-          <div style="display: flex; align-items: center; gap: 11px;">
-            <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-            <div data-title style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">Ask for money</div>
-          </div>
-          <!-- One header for three steps. It used to be drawn three times, on three
-               URLs, which meant a page load between "which field" and "how much" --
-               and a draft in sessionStorage to survive it. -->
-          <div style="display: flex; gap: 5px; margin-top: 12px;">
-            <div data-seg="1" style="flex: 1; height: 5px; background: #1d1a17;"></div>
-            <div data-seg="2" style="flex: 1; height: 5px; background: #d3ccc5;"></div>
-            <div data-seg="3" style="flex: 1; height: 5px; background: #d3ccc5;"></div>
-          </div>
+      <div data-page="ask-money" class="ph f" style="min-height: 980px;">
+        <div class="bar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
+        <div class="brand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="nav">My plots</div>
+          <div class="navOn">Money</div>
+          <div class="nav">Messages</div>
         </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+          <div data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial style="font-size: 13px; font-weight: 600;">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagehold" style="padding: 26px 28px 0;">
+      <div data-title class="pageh">Ask for money</div>
+    </div>
 
-        <div data-step="1" style="flex-grow: 1; padding: 18px;">
+
+            <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 340px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
+      <div class="main">
+<div data-step="1" style="flex-grow: 1; padding: 18px;">
           <div data-stepq style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
           <div style="height: 14px;"></div>
           <div data-bind="step1.hint" style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
@@ -121,7 +153,7 @@
             </div>
           </div>
         </div>
-        <div data-step="2" style="flex-grow: 1; padding: 18px; display: none;">
+<div data-step="2" style="flex-grow: 1; padding: 18px; display: none;">
           <div data-stepq style="font-size: 19px; font-weight: 700;">How much do you need?</div>
           <div style="height: 14px;"></div>
           <div class="lb">Amount</div>
@@ -159,7 +191,7 @@
             <div class="hint">Optional, and short is fine. Say what happened last year rather than what you hope for this one.</div>
           </div>
         </div>
-        <div data-step="3" style="flex-grow: 1; padding: 18px; display: none;">
+<div data-step="3" style="flex-grow: 1; padding: 18px; display: none;">
           <div data-stepq style="font-size: 19px; font-weight: 700;">How do they get paid?</div>
           <div style="height: 14px;"></div>
           <!-- two cards, each carrying its own failure case. this is the one
@@ -215,12 +247,16 @@
             </div>
           </div>
         </div>
-
-        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+      </div>
+      <div class="rail">
+<div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
           <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center;">
             <div data-next style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
           </div>
         </div>
+      </div>
+    </div>
+
       </div>
       <div class="stp" style="margin-top: 13px;">ONE SCREEN, THREE STEPS</div>
       <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">The video, the amount, and the one dangerous choice</div>

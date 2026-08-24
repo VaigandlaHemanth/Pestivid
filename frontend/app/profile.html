@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#f6f3ef">
+  <meta name="theme-color" content="#ffffff">
   <title>You and your settings</title>
   <!-- generated from design/Profile.dc.html by frontend/build-pages.mjs -- do not edit -->
   
@@ -37,22 +37,64 @@
     @media (prefers-reduced-motion: reduce) {
       [data-knob], [data-toggle] { transition: none; }
     }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .nav   { font-size: 15px; color: #605a53; }
+    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .card  { background: #fff; padding: 20px; }
+    .cardh { font-size: 16.5px; font-weight: 700; }
+    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .rail  { display: flex; flex-direction: column; gap: 16px; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </head>
-<body data-page="profile" data-role="farmer" data-design-width="360" data-design-height="1420">
-<div data-surface="phone" data-w="360" class="f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+<body data-page="profile" data-role="farmer" data-design-width="1320" data-design-height="1071">
+<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
-  <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-    <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-    <div data-title="" style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">You and your settings</div>
-  </div>
+  <div class="bar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
+        <div class="brand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="nav">My plots</div>
+          <div class="nav">Money</div>
+          <div class="nav">Messages</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+          <div data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial="" style="font-size: 13px; font-weight: 600;">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagehold" style="padding: 26px 28px 0;">
+      <div data-title="" class="pageh">You and your settings</div>
+    </div>
 
-  <div style="flex-grow: 1;">
+
+      <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 340px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
+      <div class="main">
+<div style="flex-grow: 1;">
 
     <!-- who -->
     <div style="background: #f6f3ef; padding: 20px; display: flex; gap: 15px; align-items: center;">
       <div style="width: 56px; height: 56px; flex-shrink: 0; background: #e7e1db; border-radius: 28px; display: flex; align-items: center; justify-content: center;">
-        <div style="font-size: 22px; font-weight: 700;">A</div>
+        <div data-avatar="" style="font-size: 22px; font-weight: 700;">A</div>
       </div>
       <div data-bind="name">
         <div style="font-size: 20px; font-weight: 700;">Alice Farmer</div>
@@ -138,7 +180,13 @@
 
     <!-- the honest bit -->
     <div style="padding: 20px;">
-      <div style="background: #f2e6cd; padding: 15px 16px;">
+      
+    </div>
+
+  </div>
+      </div>
+      <div class="rail">
+<div style="background: #f2e6cd; padding: 15px 16px;">
         <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">Videos cannot be deleted</div>
         <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
           Once a video is sent it is stored permanently and its date is written into a public record.
@@ -146,18 +194,16 @@
           worth anything to an investor.
         </div>
       </div>
-    </div>
-
-  </div>
-
-  <div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 18px;">
+<div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 18px;">
     <div style="height: 54px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 2px #a71930;">
       <div style="font-size: 16.5px; font-weight: 600; color: #a71930;">Sign out</div>
     </div>
   </div>
+      </div>
+    </div>
 
 
-  <!-- everything below this line needs a scroll on a 360x800 handset -->
+
   
 </div>
 <script type="module" src="./pages/profile.js"></script>

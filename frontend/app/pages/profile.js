@@ -63,7 +63,10 @@ if (ctx) {
   load(root, async () => {
     const me = await api.auth.me();
     const initial = (me.name || '?').trim()[0].toUpperCase();
-    const avatar = [...root.querySelectorAll('div')]
+    // Marked, because the nav bar now has an initial too and it comes first in
+    // document order: an unmarked lookup set the bar's and left the card's as
+    // the artboard's A.
+    const avatar = root.querySelector('[data-avatar]') || [...root.querySelectorAll('div')]
       .find(d => d.children.length === 0 && /^[A-Z]$/.test(d.textContent.trim()));
     if (avatar) avatar.textContent = initial;
     bind(root, {
