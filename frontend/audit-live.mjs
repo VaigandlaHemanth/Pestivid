@@ -30,8 +30,8 @@ const PLACEHOLDERS = [
 const ROLE_PAGES = {
   farmer: ['home', 'home-empty', 'plots', 'plot', 'money', 'messages', 'profile', 'record',
            'sent', 'ask', 'leaf-result', 'leaf-refusal', 'ask-money-video',
-           'ask-money-amount', 'ask-money-terms', 'payout', 'report-harvest', 'thread-farmer'],
-  investor: ['invest', 'portfolio', 'confirm-investment', 'thread-investor'],
+           'ask-money-amount', 'ask-money-terms', 'payout', 'report-harvest', 'thread'],
+  investor: ['invest', 'portfolio', 'confirm-investment', 'thread'],
   buyer: ['market', 'orders'],
   admin: ['admin'],
 };

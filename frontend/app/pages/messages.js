@@ -19,7 +19,7 @@ if (ctx) load(ctx.root, async () => {
 
   const items = [
     ...(notes || []).map(n => ({ head: n.title || n.message, body: n.title ? (n.message || '') : '', when: whenShort(n.timestamp || n.createdAt), unread: !n.read })),
-    ...(threads || []).map(t => ({ head: t.otherName || 'A message', body: t.lastMessageSnippet || '', when: whenShort(t.lastMessageTimestamp), unread: false, go: `thread-farmer.html?c=${t._id}` })),
+    ...(threads || []).map(t => ({ head: t.otherName || 'A message', body: t.lastMessageSnippet || '', when: whenShort(t.lastMessageTimestamp), unread: false, go: `thread.html?c=${t._id}` })),
   ];
   if (!items.length) {
     return state(ctx.root, 'empty', 'Nothing yet',

@@ -63,13 +63,9 @@
   "w": 360,
   "h": 990
  },
- "thread-farmer": {
+ "thread": {
   "w": 360,
   "h": 800
- },
- "thread-investor": {
-  "w": 360,
-  "h": 808
  },
  "ask": {
   "w": 360,

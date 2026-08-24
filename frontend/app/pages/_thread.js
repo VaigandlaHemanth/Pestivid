@@ -68,6 +68,13 @@ export function thread(slug) {
       }
     };
 
+    // Canned replies are the point of the chips on a phone held one-handed in a
+    // field. "Yes, I will" is not what an investor asking a question needs, so
+    // they belong to the farmer's side of the same page.
+    if (ctx.user.role !== 'farmer') {
+      const group = ctx.root.querySelector('.chip')?.parentElement?.parentElement;
+      group?.remove();
+    }
     for (const chip of ctx.root.querySelectorAll('.chip')) {
       acts(chip, chip.textContent.trim(), () => send(chip.textContent.trim()));
     }

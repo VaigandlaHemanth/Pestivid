@@ -22,7 +22,7 @@ const APPDIR = path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url
 const ROLE_OF = {
   landing: null, signin: null, signup: null, 'signin-farmer': null,
   'setup-language': null, 'setup-identity': null,
-  invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor', 'thread-investor': 'investor',
+  invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor', 'thread': 'investor',
   market: 'buyer', orders: 'buyer',
   admin: 'admin',
 };

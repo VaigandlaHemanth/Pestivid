@@ -172,7 +172,7 @@ if (ctx) load(ctx.root, async () => {
       askRow.onclick = async () => {
         try {
           const conv = await api.messages.open({ targetUserId: p.farmerWallet });
-          location.href = `./thread-investor.html?c=${conv._id || conv.id}`;
+          location.href = `./thread.html?c=${conv._id || conv.id}`;
         } catch (err) {
           state(askRow, 'failed', 'Could not open the conversation', err.message);
         }

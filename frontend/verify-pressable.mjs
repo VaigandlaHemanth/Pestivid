@@ -17,7 +17,7 @@ const ROLE = {
   landing: null, signin: null, signup: null, 'signin-farmer': null,
   'setup-language': null, 'setup-identity': null,
   invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor',
-  'thread-investor': 'investor', market: 'buyer', orders: 'buyer', admin: 'admin',
+  'thread': 'investor', market: 'buyer', orders: 'buyer', admin: 'admin',
 };
 const roleFor = (s) => (s in ROLE ? ROLE[s] : 'farmer');
 
