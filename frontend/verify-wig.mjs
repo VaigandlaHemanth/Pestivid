@@ -7,7 +7,7 @@ const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', 
   body: JSON.stringify({ email: `demo.${r}@pestivid.sim`, password: 'password123' }) })).json();
 const ROLE = { orders: 'buyer', admin: 'admin', 'report-harvest': 'farmer',
   'ask-money-video': 'farmer', 'ask-money-amount': 'farmer', 'ask-money-terms': 'farmer',
-  'leaf-result': 'farmer', 'leaf-refusal': 'farmer', 'setup-identity': null };
+  'leaf-check': 'farmer', 'leaf-check': 'farmer', 'setup-identity': null };
 
 const b = await chromium.launch();
 const tokens = {};

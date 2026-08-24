@@ -8,15 +8,21 @@
 //
 // predict() returns one of three states and the design has a page for each
 // side of the split:
-//   ok          -> leaf-result
-//   not_a_leaf  -> leaf-refusal
-//   uncertain   -> leaf-refusal
+//   ok          -> leaf-check
+//   not_a_leaf  -> the retake guidance on this same page
+//   uncertain   -> the same
 //
 // The refusal is the system working, so it is never styled as an error.
 import { requireUser, load, state } from './_guard.js';
 import { bind } from '../bind.js';
 import { asField, acts, press } from '../wire.js';
 import { multiStep } from '../steps.js';
+
+// A refusal shows the retake guidance that used to live on a page of its own.
+function revealRetake(on) {
+  const block = document.querySelector('[data-retake]');
+  if (block) block.style.display = on ? '' : 'none';
+}
 
 const KEY = 'pv.leaf';
 const MODEL_ROOT = '/model';
@@ -50,7 +56,9 @@ async function classifier(onProgress) {
 export function leaf(slug) {
   const ctx = requireUser(slug, ['farmer']);
   if (!ctx) return;
-  const wantRefusal = slug === 'leaf-refusal';
+  // One page, two verdicts. It used to location.replace() between two URLs
+  // for the same screen; a refusal is a verdict, not a destination.
+  const wantRefusal = false;
 
   load(ctx.root, async () => {
     const saved = JSON.parse(sessionStorage.getItem(KEY) || 'null');
@@ -59,7 +67,7 @@ export function leaf(slug) {
     if (saved) {
       const isRefusal = saved.status !== 'ok';
       if (isRefusal !== wantRefusal) {
-        location.replace(isRefusal ? './leaf-refusal.html' : './leaf-result.html');
+        revealRetake(isRefusal);
         return;
       }
       render(saved);
@@ -177,7 +185,7 @@ export function leaf(slug) {
           requestAnimationFrame(() => { card.style.opacity = '1'; card.style.transform = 'none'; });
         }
         const isRefusal = verdict.status !== 'ok';
-        location.replace(isRefusal ? './leaf-refusal.html' : './leaf-result.html');
+        revealRetake(isRefusal);
       } catch (err) {
         state(holder, 'failed', 'The checker did not run',
           `${err.message} Nothing has been sent anywhere — the photo never left your phone.`);
@@ -213,7 +221,7 @@ export function leaf(slug) {
     box.setAttribute('data-act', '');
     box.addEventListener('click', () => {
       sessionStorage.removeItem(KEY);
-      location.replace('./leaf-result.html');
+      location.replace('./leaf-check.html');
     });
   }
 }

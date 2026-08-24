@@ -20,7 +20,7 @@ if (ctx) {
     ['Record a video', 'record'],
     ['My plots',       'plots'],
     ['Money',          'money'],
-    ['Check a leaf',   'leaf-result'],
+    ['Check a leaf',   'leaf-check'],
     ['Ask a question', 'ask'],
   ];
   for (const [label, dest] of rows) {

@@ -60,7 +60,7 @@
   <div style="display: grid; grid-template-columns: 360px 360px; gap: 26px; margin-top: 24px;">
 
     <!-- ═══ a diagnosis ═══ -->
-    <div data-page="leaf-result" class="scr">
+    <div data-page="leaf-check" class="scr">
       <div class="hd">
         <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
         <div class="hdt">Leaf check</div>
@@ -144,65 +144,7 @@
            by typing it in Telugu on a phone keyboard. Here the model already
            knows it said Early blight on this photo, so the first question can be
            one tap. -->
-      <div style="background: #e7e1db; padding: 18px 20px;">
-        <div style="font-size: 17px; font-weight: 700;">Ask about this result</div>
-        <div style="font-size: 14.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
-          It already knows what it found on your photo. You do not have to explain it again.
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 13px;">
-          <div data-ask style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
-            <div style="flex-grow: 1;">Is it too late to save this crop?</div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
-          </div>
-          <div data-ask style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
-            <div style="flex-grow: 1;">What will it cost me to treat?</div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
-          </div>
-          <div data-ask style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
-            <div style="flex-grow: 1;">Will it spread to my other plot?</div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 10px; align-items: stretch; margin-top: 13px;">
-          <div style="flex-grow: 1; background: #f6f3ef; display: flex; align-items: center; padding: 0 14px; min-height: 54px;">
-            <div data-askfield style="font-size: 15.5px; color: #4a443d;">Ask something else</div>
-          </div>
-          <div data-asksend style="width: 54px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ═══ the refusal ═══ -->
-    <div data-page="leaf-refusal" class="scr">
-      <div class="hd">
-        <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-        <div class="hdt">Leaf check</div>
-      </div>
-
-      <div style="min-height: 140px; background: #37322d; position: relative; overflow: hidden;">
-        <div style="position: absolute; inset: 8px; border: 1px solid #605a53;"></div>
-        <div data-readout class="gplate" style="position: absolute; left: 18px; top: 16px; padding: 7px 10px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #f6f3ef;">IMG_20260822_0931_IST.jpg<br>3024&times;4032 &middot; 2.4 MB</div>
-        <div data-readout class="gplate" style="position: absolute; left: 12px; bottom: 11px; padding: 5px 10px;">
-          <div data-bind="refusal.headline" style="font-size: 12px; font-weight: 600; color: #f6f3ef;">Too close &mdash; the leaf runs off the edges</div>
-        </div>
-      </div>
-
-      <div style="background: #fff; padding: 20px;">
-        <div style="font-size: 15px; color: #605a53;">No answer</div>
-        <div data-title style="font-size: 27px; font-weight: 700; letter-spacing: -0.028em; margin-top: 3px; line-height: 1.14;">I cannot tell from this photo</div>
-        <div class="sub" style="margin-top: 8px;">
-          I have not given you a disease name, because I would be guessing. A wrong guess here costs you
-          a spray you do not need &mdash; money, and chemical on food.
-        </div>
-      </div>
-
-      <!-- the payload -->
-      <div style="padding: 20px;">
+      <div data-retake style="padding: 20px; display: none;">
         <div style="font-size: 17px; font-weight: 700;">Take it again like this</div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 13px;">
@@ -263,6 +205,64 @@
         </div>
       </div>
     </div>
+      <div style="background: #e7e1db; padding: 18px 20px;">
+        <div style="font-size: 17px; font-weight: 700;">Ask about this result</div>
+        <div style="font-size: 14.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+          It already knows what it found on your photo. You do not have to explain it again.
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 13px;">
+          <div data-ask style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1;">Is it too late to save this crop?</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
+          </div>
+          <div data-ask style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1;">What will it cost me to treat?</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
+          </div>
+          <div data-ask style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1;">Will it spread to my other plot?</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: stretch; margin-top: 13px;">
+          <div style="flex-grow: 1; background: #f6f3ef; display: flex; align-items: center; padding: 0 14px; min-height: 54px;">
+            <div data-askfield style="font-size: 15.5px; color: #4a443d;">Ask something else</div>
+          </div>
+          <div data-asksend style="width: 54px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ the refusal ═══ -->
+    <div data-retired="leaf-refusal" class="scr">
+      <div class="hd">
+        <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
+        <div class="hdt">Leaf check</div>
+      </div>
+
+      <div style="min-height: 140px; background: #37322d; position: relative; overflow: hidden;">
+        <div style="position: absolute; inset: 8px; border: 1px solid #605a53;"></div>
+        <div data-readout class="gplate" style="position: absolute; left: 18px; top: 16px; padding: 7px 10px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #f6f3ef;">IMG_20260822_0931_IST.jpg<br>3024&times;4032 &middot; 2.4 MB</div>
+        <div data-readout class="gplate" style="position: absolute; left: 12px; bottom: 11px; padding: 5px 10px;">
+          <div data-bind="refusal.headline" style="font-size: 12px; font-weight: 600; color: #f6f3ef;">Too close &mdash; the leaf runs off the edges</div>
+        </div>
+      </div>
+
+      <div style="background: #fff; padding: 20px;">
+        <div style="font-size: 15px; color: #605a53;">No answer</div>
+        <div data-title style="font-size: 27px; font-weight: 700; letter-spacing: -0.028em; margin-top: 3px; line-height: 1.14;">I cannot tell from this photo</div>
+        <div class="sub" style="margin-top: 8px;">
+          I have not given you a disease name, because I would be guessing. A wrong guess here costs you
+          a spray you do not need &mdash; money, and chemical on food.
+        </div>
+      </div>
+
+      <!-- the payload -->
 
   </div>
 

@@ -35,8 +35,8 @@ const NO_CLICK = {
   sent: 'uploads to storage, which costs a file of the free allowance',
   signup: 'creates an account on every run',
   'setup-identity': 'creates an account on every run',
-  'leaf-result': 'downloads 173 MB of model',
-  'leaf-refusal': 'downloads 173 MB of model',
+  'leaf-check': 'downloads 173 MB of model',
+  'leaf-check': 'downloads 173 MB of model',
 };
 
 const tokens = {};

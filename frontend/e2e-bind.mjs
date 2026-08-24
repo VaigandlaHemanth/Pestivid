@@ -49,8 +49,8 @@ const CHECKS = [
   ['setup-language', 'farmer',   'Choose your language'],
   ['setup-identity', 'farmer',   'phone number is your account name'],
   ['ask-money-video','farmer',   'Film the field first'],
-  ['leaf-result',    'farmer',   'Take a photo of one leaf'],
-  ['leaf-refusal',   'farmer',   'Take a photo of one leaf'],
+  ['leaf-check',    'farmer',   'Take a photo of one leaf'],
+  ['leaf-check',   'farmer',   'Take a photo of one leaf'],
 ];
 
 const browser = await chromium.launch();
