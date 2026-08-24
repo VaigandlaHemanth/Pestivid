@@ -45,7 +45,10 @@
 
   <!-- viewfinder -->
   <div style="flex-grow: 1; position: relative; background: #2a2622;">
-    <div style="position: absolute; inset: 0;">
+    <!-- The camera goes here. This was an unmarked empty div and record.js
+         looked for a background colour that is not on this board, so the
+         viewfinder was never inserted: the camera ran and showed nothing. -->
+    <div data-viewfinder style="position: absolute; inset: 0;">
     </div>
 
     <!-- framing guide: solid corners, not a dashed rectangle. A dashed line at
@@ -69,8 +72,8 @@
     <div style="position: absolute; left: 0; right: 0; bottom: 0;">
       <div class="bar" style="padding: 13px 18px;">
         <div style="display: flex; align-items: center; gap: 11px;">
-          <div style="width: 13px; height: 13px; border-radius: 50%; background: #a71930; flex-shrink: 0;"></div>
-          <div class="num" style="font-size: 24px; font-weight: 700; letter-spacing: -0.01em;">0:22</div>
+          <div data-reddot style="width: 13px; height: 13px; border-radius: 50%; background: #a71930; flex-shrink: 0;"></div>
+          <div data-bind="clip.elapsed" class="num" style="font-size: 24px; font-weight: 700; letter-spacing: -0.01em;">0:22</div>
           <div class="num" style="font-size: 15px; color: #c4bdb6;">of 0:45</div>
           <div style="flex-grow: 1;"></div>
           <div data-bind="clip.size" class="num" style="font-size: 15px; color: #c4bdb6;">6.1 MB</div>
@@ -94,17 +97,17 @@
       </div>
 
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <div style="width: 96px; height: 96px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
-          <div style="width: 36px; height: 36px; background: #a71930;"></div>
+        <div data-shutter style="width: 96px; height: 96px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+          <div data-shutter-icon style="width: 36px; height: 36px; border-radius: 50%; background: #a71930;"></div>
         </div>
-        <div style="font-size: 17px; font-weight: 700;">Stop</div>
+        <div data-shutter-label style="font-size: 17px; font-weight: 700;">Record</div>
       </div>
 
       <div style="width: 92px; display: flex; flex-direction: column; align-items: center; gap: 7px;">
-        <div style="width: 56px; height: 56px; background: rgba(255,255,255,.13); display: flex; align-items: center; justify-content: center;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ddd7d1" stroke-width="2"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#ddd7d1"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg>
+        <div data-mic style="width: 56px; height: 56px; background: rgba(255,255,255,.13); display: flex; align-items: center; justify-content: center;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ddd7d1" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 12a6.5 6.5 0 0 0 13 0"></path><path d="M12 18.5V21"></path></svg>
         </div>
-        <div style="font-size: 14px; line-height: 1.35; text-align: center; min-height: 38px; color: #d3ccc5;">Read to me</div>
+        <div data-miclabel style="font-size: 14px; line-height: 1.35; text-align: center; min-height: 38px; color: #d3ccc5;">Sound on</div>
       </div>
     </div>
 

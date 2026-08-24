@@ -47,7 +47,11 @@ if (ctx) load(ctx.root, async () => {
       + 'file here — it goes through exactly the same check, and the date is fixed when it reaches us.');
   }
 
-  const slot = ctx.root.querySelector('div[style*="#37322d"], div[style*="#0e0d0b"]');
+  // The board marks it. This used to look for a background colour that is not
+  // on the Record board at all -- #37322d and #0e0d0b, while the viewfinder is
+  // #2a2622 -- so the lookup returned null, no <video> was ever inserted, and
+  // the camera ran behind a blank rectangle.
+  const slot = ctx.root.querySelector('[data-viewfinder]');
   let chunks = [];
   let started = 0;
   let timer = null;
@@ -72,9 +76,18 @@ if (ctx) load(ctx.root, async () => {
   view.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;';
   slot?.prepend(view);
 
-  const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-    ? 'video/webm;codecs=vp9' : 'video/webm';
-  const rec = new MediaRecorder(stream, { mimeType: mime });
+  // mp4 first. A streaming WebM's container header goes out before the track
+  // layout is settled, so a content sniffer reads it as audio/webm -- which is
+  // exactly what storage said when it rejected every real recording. An mp4
+  // sniffs as video, and it is also the only thing iOS Safari will record.
+  const WANT = [
+    'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+    'video/mp4',
+    'video/webm;codecs=vp9,opus',
+    'video/webm',
+  ];
+  const mime = WANT.find(t => MediaRecorder.isTypeSupported(t)) || '';
+  const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
   rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
 
   // [data-progress], not a colour match. The record dot is #a71930 too and sits
@@ -82,10 +95,18 @@ if (ctx) load(ctx.root, async () => {
   // elapsed bar never moved once.
   const bar = ctx.root.querySelector('[data-progress]');
 
+  const clock = (secs) => {
+    const m = Math.floor(secs / 60);
+    const s2 = Math.floor(secs % 60);
+    return `${m}:${String(s2).padStart(2, '0')}`;
+  };
+
   const tick = () => {
     const secs = (Date.now() - started) / 1000;
     const bytes = chunks.reduce((a, c) => a + c.size, 0);
-    bind(ctx.root, { clip: { size: `${(bytes / 1e6).toFixed(1)} MB` } });
+    // The elapsed clock had no binding at all, so it read the artboard's 0:22
+    // for the whole recording however long a farmer walked.
+    bind(ctx.root, { clip: { size: `${(bytes / 1e6).toFixed(1)} MB`, elapsed: clock(secs) } });
     // scaleX, never width: a bar animated on width relayouts its parent every
     // frame, and this runs while the camera already owns the CPU.
     if (bar) bar.style.transform = `scaleX(${Math.min(1, secs / 45)})`;
@@ -96,11 +117,14 @@ if (ctx) load(ctx.root, async () => {
     clearInterval(timer);
     stream.getTracks().forEach(t => t.stop());
     if (thrown) { location.href = './home.html'; return; }
-    const blob = new Blob(chunks, { type: rec.mimeType });
+    // The base type, without the codecs parameter: what goes on the wire has to
+    // match what the upload ticket allows.
+    const base = (rec.mimeType || 'video/webm').split(';')[0];
+    const blob = new Blob(chunks, { type: base });
     // Not window.__pvClip: a navigation destroys window, so every clip filmed
     // arrived at a send screen that said there was no clip. See app/clip.js.
     putClip({
-      file: new File([blob], 'clip.webm', { type: blob.type }),
+      file: new File([blob], base === 'video/mp4' ? 'clip.mp4' : 'clip.webm', { type: base }),
       size: blob.size,
       duration: (Date.now() - started) / 1000,
     }).then(() => { location.href = './sent.html'; })
@@ -109,19 +133,71 @@ if (ctx) load(ctx.root, async () => {
         + 'Nothing left your phone.'));
   };
 
-  started = Date.now();
-  rec.start(1000);
-  tick();                       // the board draws the bar part-filled; zero it
-  timer = setInterval(tick, 500);
-
   const byLabel = (t) => [...ctx.root.querySelectorAll('div')]
     .find(d => d.children.length === 0 && d.textContent.trim() === t);
 
   const control = (t) => byLabel(t)?.parentElement || null;
 
-  acts(control('Stop'), 'Stop recording', () => {
-    if (rec.state !== 'inactive') rec.stop();
+  // ---- the shutter -----------------------------------------------------
+  // Recording used to begin the instant the page loaded. A farmer arrived on a
+  // screen that was already filming them walking up to the field, and the only
+  // way out was to stop or throw it away. The camera previews; the farmer
+  // decides when it starts.
+  const shutter = ctx.root.querySelector('[data-shutter]');
+  const shutterIcon = ctx.root.querySelector('[data-shutter-icon]');
+  const shutterLabel = ctx.root.querySelector('[data-shutter-label]');
+  const dot = ctx.root.querySelector('[data-reddot]');
+  const paintIdle = () => {
+    if (shutterIcon) {
+      shutterIcon.style.borderRadius = '50%';
+      shutterIcon.style.width = '36px';
+      shutterIcon.style.height = '36px';
+    }
+    if (shutterLabel) shutterLabel.textContent = 'Record';
+    if (bar) bar.style.transform = 'scaleX(0)';
+    // The red dot means "recording". Idle, it is not.
+    if (dot) dot.style.background = 'rgba(255,255,255,.28)';
+    bind(ctx.root, { clip: { elapsed: '0:00', size: '0.0 MB' } });
+  };
+  const paintRolling = () => {
+    if (shutterIcon) {
+      shutterIcon.style.borderRadius = '4px';
+      shutterIcon.style.width = '34px';
+      shutterIcon.style.height = '34px';
+    }
+    if (shutterLabel) shutterLabel.textContent = 'Stop';
+    if (dot) dot.style.background = '#a71930';
+  };
+  paintIdle();
+
+  const begin = () => {
+    if (rec.state !== 'inactive') return;
+    chunks = [];
+    started = Date.now();
+    rec.start(1000);
+    paintRolling();
+    tick();
+    timer = setInterval(tick, 500);
+  };
+
+  acts(shutter, 'Record', () => {
+    if (rec.state === 'inactive') begin();
+    else rec.stop();
   });
+
+  // The microphone. This slot held "Read to me", the last of the voice work,
+  // wired to nothing. Whether your own voice goes into the file is a real
+  // choice on a screen you use while talking to somebody.
+  const micBtn = ctx.root.querySelector('[data-mic]');
+  const micLabel = ctx.root.querySelector('[data-miclabel]');
+  let sound = true;
+  const paintMic = () => {
+    if (micLabel) micLabel.textContent = sound ? 'Sound on' : 'Sound off';
+    if (micBtn) micBtn.style.background = sound ? 'rgba(255,255,255,.13)' : 'rgba(167,25,48,.28)';
+    micBtn?.setAttribute('aria-pressed', String(!sound));
+    stream.getAudioTracks().forEach(t => { t.enabled = sound; });
+  };
+  if (micBtn) { acts(micBtn, 'Sound', () => { sound = !sound; paintMic(); }); paintMic(); }
 
   // Throwing the take away is irreversible and sits 56px from Stop, on a phone
   // held one-handed while walking. It asks once.

@@ -1,3 +1,5 @@
+import { deskNav } from './chrome.js';
+import { session } from './api.js';
 // Shared conduct for every generated page.
 //
 // The markup is cut from the artboards and must not be edited, so behaviour is
@@ -339,6 +341,11 @@ export function wire(slug) {
   heading(root);
   hideDecoration(root);
   watchControls(root);
+  // The desktop header, wired here rather than per page. Only seven of the
+  // twenty-four pages called appChrome, and invest.js -- the investor's first
+  // screen -- wired no navigation at all, so Portfolio and Messages were plain
+  // text an investor could not click.
+  deskNav(root, session.user);
   document.documentElement.dataset.ready = slug;
   return root;
 }
