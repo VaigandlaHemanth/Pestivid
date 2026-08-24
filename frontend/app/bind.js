@@ -112,6 +112,26 @@ export function state(container, kind, headline, detail, action) {
     });
     box.append(a);
   }
+  // An empty state must not replace the PAGE. Nine call sites handed this the
+  // page root, and replaceChildren() then took the header, the heading and the
+  // back arrow with it -- so "No season chosen" arrived on a screen with no
+  // title and no way off it. Handed a page root, it keeps the header and
+  // replaces what is below.
+  if (container.matches?.('body > div') && container.children.length > 1) {
+    const keep = [];
+    for (const child of container.children) {
+      // the header is whatever holds the title or the chrome
+      if (child.querySelector?.('[data-title], [data-chrome]') || child.matches?.('[data-title], [data-chrome]')) {
+        keep.push(child);
+        continue;
+      }
+      if (!keep.length && child === container.firstElementChild) keep.push(child);
+    }
+    if (keep.length && keep.length < container.children.length) {
+      container.replaceChildren(...keep, box);
+      return;
+    }
+  }
   container.replaceChildren(box);
 }
 

@@ -24,6 +24,38 @@ function pressFeedback(root) {
 /** A div that behaves like a button has to answer a keyboard and announce
  *  itself. The artboards are div soup by necessity; this repairs it at runtime
  *  rather than by editing markup that has to stay pixel-identical. */
+/** Promote anything that BECOMES a control after setup.
+ *
+ *  promoteControls() runs once, and page modules mark their controls after
+ *  that -- 24 call sites across 10 modules set data-act by hand, so none of
+ *  them got a role, a tabindex or a keyboard handler. Patching 24 call sites
+ *  fixes today; watching the attribute fixes tomorrow's too.
+ */
+function watchControls(root) {
+  const seen = new WeakSet();
+  const fix = (el) => {
+    if (seen.has(el)) return;
+    seen.add(el);
+    if (!el.hasAttribute('role')) el.setAttribute('role', el.dataset.act === 'link' ? 'link' : 'button');
+    if (!el.hasAttribute('tabindex')) el.tabIndex = 0;
+    if (el.dataset.kb) return;
+    el.dataset.kb = '1';
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+    });
+  };
+  new MutationObserver((records) => {
+    for (const r of records) {
+      if (r.type === 'attributes' && r.target.hasAttribute?.('data-act')) fix(r.target);
+      for (const n of r.addedNodes || []) {
+        if (n.nodeType !== 1) continue;
+        if (n.hasAttribute?.('data-act')) fix(n);
+        n.querySelectorAll?.('[data-act]').forEach(fix);
+      }
+    }
+  }).observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-act'] });
+}
+
 function promoteControls(root) {
   for (const el of root.querySelectorAll('[data-act]')) {
     if (!el.hasAttribute('role')) el.setAttribute('role', el.dataset.act === 'link' ? 'link' : 'button');
@@ -73,13 +105,22 @@ export function fill(root, data) {
  * like a display heading. Both are fixed here rather than in five page modules.
  */
 export function asField(el, opts = {}) {
+  // Two guidelines, applied once here instead of at thirty call sites:
+  // a field with no autocomplete makes the browser guess, and a placeholder
+  // that does not trail off reads as a value that is already there.
+  if (!('autocomplete' in opts)) opts.autocomplete = 'off';
+  if (opts.placeholder && !/[…:]$/.test(opts.placeholder)) opts.placeholder += '…';
+  // A code, an address or a phone number is not prose; do not underline it red.
+  if (/code|otp|phone|tel|email|offer|amount|reply|question/.test(String(opts.name || opts.type || ''))) {
+    opts.spellcheck = false;
+  }
   if (!el) return null;
   const existing = el.querySelector('input, textarea');
   if (existing) return existing;
   const cs = getComputedStyle(el);
   const input = document.createElement(opts.multiline ? 'textarea' : 'input');
   if (!opts.multiline) input.type = opts.type || 'text';
-  for (const k of ['name', 'placeholder', 'autocomplete', 'inputMode', 'maxLength', 'enterKeyHint', 'rows']) {
+  for (const k of ['name', 'placeholder', 'autocomplete', 'inputMode', 'maxLength', 'enterKeyHint', 'rows', 'spellcheck']) {
     if (opts[k] != null) input[k] = opts[k];
   }
   if (opts.label) input.setAttribute('aria-label', opts.label);
@@ -216,6 +257,40 @@ export function acts(el, name, fn) {
 /** Press feedback for controls a module marked after wire() ran. */
 export function press(root) { pressFeedback(root); }
 
+/* ------------------------------------------------------------------ *
+ * What the artboards cannot carry, because they are drawn.
+ * ------------------------------------------------------------------ */
+
+/** The page's title, announced as one.
+ *
+ *  The boards are div soup by necessity, so most pages handed a screen reader
+ *  no heading at all -- 31 pages with nothing to navigate by. The board marks
+ *  its title with data-title and this gives it the role, rather than retagging
+ *  it: verify-layout compares tag names, and an attribute changes nothing that
+ *  is drawn. Three boards already use a real <h1>; those are left alone.
+ */
+function heading(root) {
+  if (root.querySelector('h1')) return;
+  const t = root.querySelector('[data-title]');
+  if (!t) return;
+  t.setAttribute('role', 'heading');
+  t.setAttribute('aria-level', '1');
+}
+
+/** Icons drawn beside their own label are decoration.
+ *
+ *  Every glyph in this product sits next to the words it illustrates, so a
+ *  reader that announces them says everything twice. One with a <title> in it,
+ *  or one that is the whole of a control, is left alone.
+ */
+function hideDecoration(root) {
+  for (const svg of root.querySelectorAll('svg')) {
+    if (svg.querySelector('title') || svg.getAttribute('role')) continue;
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');   // IE/old-Edge put SVGs in the tab order
+  }
+}
+
 export function wire(slug) {
   const root = document.querySelector('body > div');
   if (!root) return;
@@ -227,6 +302,9 @@ export function wire(slug) {
   promoteControls(root);
   links(root);
   deClaimProps(root);
+  heading(root);
+  hideDecoration(root);
+  watchControls(root);
   document.documentElement.dataset.ready = slug;
   return root;
 }

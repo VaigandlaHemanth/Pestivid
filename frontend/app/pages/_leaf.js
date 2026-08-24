@@ -76,6 +76,10 @@ export function leaf(slug) {
     const slot = ctx.root.querySelector('div[style*="#37322d"]');
     const picker = document.createElement('input');
     picker.type = 'file';
+    // A bare file input has no name for a reader and no autocomplete for the
+    // browser; both are one line each.
+    picker.setAttribute('aria-label', 'Choose a photo of one leaf');
+    picker.setAttribute('autocomplete', 'off');
     picker.accept = 'image/*';
     picker.capture = 'environment';
     picker.className = 'sr';

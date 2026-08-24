@@ -49,7 +49,7 @@
        pure white -- and 64% is where it does. A third of the frame still shows
        through, blurred, so it still reads as glass.
 
-       14px of blur, not the hero's 18px: a blur wider than the plate's short
+       14px of blur, not the hero’s 18px: a blur wider than the plate’s short
        side stops frosting and starts smearing. The reduced-transparency
        fallback is the flat panel the board already drew, so asking for less
        transparency costs nothing here. */
@@ -132,7 +132,7 @@
     <div style="overflow: hidden; padding: 22px 26px;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div>
-          <div data-bind="list.title" style="font-size: 24px; font-weight: 700; letter-spacing: -0.025em;">Potato, organic</div>
+          <div data-title data-bind="list.title" style="font-size: 24px; font-weight: 700; letter-spacing: -0.025em;">Potato, organic</div>
           <div data-bind="list.sub" class="p" style="margin-top: 2px;">14 lots within 120 km of Hyderabad</div>
         </div>
         <div data-sort class="m" style="font-size: 14px; color: #605a53;">Cheapest first</div>
@@ -186,7 +186,7 @@
         </div>
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div class="p">Grown</div>
-          <div data-bind="lot.grown" style="font-size: 16px; font-weight: 600;">Organic &mdash; farmer's word</div>
+          <div data-bind="lot.grown" style="font-size: 16px; font-weight: 600;">Organic &mdash; farmer’s word</div>
         </div>
       </div>
 
@@ -223,7 +223,7 @@
       </div>
       <div class="p" style="font-size: 13.5px; margin-top: 10px;">
         Nothing is bought yet and no money moves. If she accepts, you get a receipt carrying the
-        video's fingerprint and the block its date went into.
+        video’s fingerprint and the block its date went into.
       </div>
     </div>
   </div>

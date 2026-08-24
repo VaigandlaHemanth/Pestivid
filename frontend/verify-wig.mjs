@@ -1,0 +1,109 @@
+// Web Interface Guidelines checks that can be MEASURED rather than eyeballed,
+// run against the served pages so what is tested is what ships.
+import { chromium } from 'playwright';
+const PAGES = process.argv.slice(2);
+const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', {
+  method: 'POST', headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ email: `demo.${r}@pestivid.sim`, password: 'password123' }) })).json();
+const ROLE = { orders: 'buyer', admin: 'admin', 'report-harvest': 'farmer',
+  'ask-money-video': 'farmer', 'ask-money-amount': 'farmer', 'ask-money-terms': 'farmer',
+  'leaf-result': 'farmer', 'leaf-refusal': 'farmer', 'setup-identity': null };
+
+const b = await chromium.launch();
+const tokens = {};
+let total = 0;
+for (const slug of PAGES) {
+  const role = ROLE[slug];
+  if (role && !tokens[role]) tokens[role] = await login(role);
+  const p = await b.newPage({ viewport: { width: 1440, height: 1000 } });
+  if (role) await p.addInitScript(([t, u]) => {
+    localStorage.setItem('pv.token', t); localStorage.setItem('pv.user', u);
+  }, [tokens[role].token, JSON.stringify(tokens[role].user)]);
+  await p.goto(`http://127.0.0.1:3001/app/${slug}.html`, { waitUntil: 'load' });
+  await p.waitForTimeout(1400);
+
+  const f = await p.evaluate(() => {
+    const out = [];
+    const say = (rule, what) => out.push(`${rule} — ${what}`);
+    const txt = (el) => (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+
+    // typography: straight quotes, three dots, non-tabular number columns
+    const body = document.body.innerText;
+    if (/\.\.\./.test(body)) say('ellipsis', 'literal "..." in copy');
+    const straight = body.match(/[A-Za-z]"[A-Za-z ]|[A-Za-z]'[A-Za-z]/g);
+    if (straight) say('curly quotes', `${straight.length} straight quote(s), e.g. ${straight[0]}`);
+
+    // forms
+    for (const el of document.querySelectorAll('input, textarea')) {
+      const id = el.name || el.type || 'input';
+      if (!el.getAttribute('aria-label') && !el.labels?.length) say('form label', `<input ${id}> unlabelled`);
+      if (!el.getAttribute('autocomplete')) say('autocomplete', `<input ${id}> has no autocomplete`);
+      if (el.placeholder && !/…$/.test(el.placeholder)) say('placeholder', `"${el.placeholder}" does not end in an ellipsis`);
+      if ((el.type === 'email' || /code|otp|phone|tel/.test(id)) && el.spellcheck) say('spellcheck', `<input ${id}> should disable spellcheck`);
+    }
+
+    // controls
+    for (const el of document.querySelectorAll('[data-act], [role="button"], [role="switch"], [role="radio"], [role="checkbox"]')) {
+      const name = el.getAttribute('aria-label') || txt(el);
+      if (!name) say('accessible name', `<${el.tagName.toLowerCase()}> control has none`);
+      if (el.tabIndex < 0) say('keyboard', `"${name}" is not focusable`);
+      const cs = getComputedStyle(el);
+      if (cs.touchAction !== 'manipulation') say('touch-action', `"${name}" lacks touch-action: manipulation`);
+    }
+
+    // animation anti-patterns
+    for (const el of document.querySelectorAll('body *')) {
+      if (/^(script|style|meta|link|title)$/i.test(el.tagName)) continue;
+      const cs = getComputedStyle(el);
+      // 'all' is the COMPUTED DEFAULT when nothing sets a transition, so it only
+      // means "transition: all" was written if a duration was written with it.
+      const dur = parseFloat(cs.transitionDuration) || 0;
+      if (cs.transitionProperty === 'all' && dur > 0) say('transition: all', txt(el) || el.tagName.toLowerCase());
+      if (cs.animationIterationCount === 'infinite') say('infinite loop', txt(el) || el.tagName.toLowerCase());
+    }
+
+    // images
+    for (const img of document.querySelectorAll('img')) {
+      if (!img.getAttribute('alt') && img.getAttribute('alt') !== '') say('img alt', img.src.slice(0, 40));
+      if (!img.width || !img.height) say('img dimensions', img.src.slice(0, 40));
+    }
+
+    // decorative svg should be hidden from the reader
+    let bareSvg = 0;
+    for (const svg of document.querySelectorAll('svg')) {
+      if (!svg.getAttribute('aria-hidden') && !svg.getAttribute('role') && !svg.querySelector('title')) bareSvg++;
+    }
+    if (bareSvg) say('aria-hidden', `${bareSvg} decorative <svg> not hidden from readers`);
+
+    // number columns should be tabular
+    for (const el of document.querySelectorAll('td, th')) {
+      const t = (el.textContent || '').trim();
+      if (/^[₹\d][\d,.\s₹%–-]*$/.test(t) && t.length > 1
+          && !/tabular-nums/.test(getComputedStyle(el).fontVariantNumeric)) {
+        say('tabular-nums', `table cell "${t.slice(0, 18)}" is not tabular`);
+      }
+    }
+
+    // headings
+    const hs = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]')]
+      .map(h => +(h.tagName[0] === 'H' ? h.tagName[1] : h.getAttribute('aria-level') || 2));
+    if (!hs.length) say('headings', 'page has no heading of any kind');
+    else if (hs[0] !== 1) say('headings', `first heading is level ${hs[0]}`);
+
+    // horizontal overflow
+    if (document.documentElement.scrollWidth > window.innerWidth + 1) {
+      say('overflow', `page scrolls sideways (${document.documentElement.scrollWidth}px)`);
+    }
+    return out;
+  });
+
+  const uniq = [...new Set(f)];
+  total += uniq.length;
+  console.log(`\n## ${slug}.html`);
+  if (!uniq.length) console.log('  ✓ pass');
+  else uniq.slice(0, 14).forEach(x => console.log(`  ${x}`));
+  if (uniq.length > 14) console.log(`  … ${uniq.length - 14} more of the same kinds`);
+  await p.close();
+}
+await b.close();
+console.log(`\n${total} findings across ${PAGES.length} pages`);

@@ -21,7 +21,7 @@
     .ic  { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center;
            justify-content: center; background: #e7e1db; }
 
-    /* Five rows in alternating fills is a data table wearing a menu's clothes:
+    /* Five rows in alternating fills is a data table wearing a menu’s clothes:
        it says these are five readings of the same kind, when one of them is the
        thing the whole product exists for and four are places to look something
        up. So: one surface, hairline rules, and the first row given the height
@@ -56,7 +56,7 @@
   <!-- header -->
   <div style="background: #f6f3ef; padding: 16px 20px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
     <div>
-      <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
+      <div data-title style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
       <div data-bind="whoWhere" style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Alice &middot; Kadapa</div>
     </div>
     <div style="display: flex; gap: 4px; align-items: center; margin-right: -10px;">
@@ -148,7 +148,7 @@
 
   <!-- The "Speak instead of typing" block that stood here is gone, along with
        the read-aloud speaker on every row. Both were drawn, then briefly made
-       real with the browser's own speech APIs, and then removed on request.
+       real with the browser’s own speech APIs, and then removed on request.
        They are removed rather than left drawn-and-dead, which is the whole
        reason this pass exists: a control a farmer can see and press has to do
        something. If voice comes back it comes back as a recorded human voice,

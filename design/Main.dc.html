@@ -64,13 +64,13 @@
 
     /* Below the fold nothing moved at all, which made the page feel like a
        screenshot. Scroll-driven, so there is no scroll listener and no
-       library: the browser ties the animation to the element's own view
+       library: the browser ties the animation to the element’s own view
        progress. Chrome 115+ and Safari 26+; everywhere else the content is
        simply already in place, which is the correct fallback. */
     @supports (animation-timeline: view()) {
       @media (prefers-reduced-motion: no-preference) {
         /* A step pane comes up, holds while it is the subject, and dims as it
-           leaves. Driven by the pane's own view progress. */
+           leaves. Driven by the pane’s own view progress. */
         @keyframes hold { 0% { opacity: .3; } 22%, 74% { opacity: 1; } 100% { opacity: .3; } }
         .step {
           animation: hold linear both;
@@ -111,7 +111,7 @@
        pure white -- and 64% is where it does. A third of the frame still shows
        through, blurred, so it still reads as glass.
 
-       14px of blur, not the hero's 18px: a blur wider than the plate's short
+       14px of blur, not the hero’s 18px: a blur wider than the plate’s short
        side stops frosting and starts smearing. The reduced-transparency
        fallback is the flat panel the board already drew, so asking for less
        transparency costs nothing here. */
@@ -197,7 +197,7 @@
 
     <!-- ══ what the evidence is worth, on its own band ══
        This sat inside the hero. A hero gets a headline, a line of subtext and
-       its buttons; a claim about somebody else's trial is a separate section
+       its buttons; a claim about somebody else’s trial is a separate section
        and it needs room for its own citation. -->
   <div class="reveal" style="background: #e7e1db; padding: 34px 72px; box-shadow: inset 0 -1px 0 #c3bcb6;">
     <div style="display: flex; align-items: flex-start; gap: 64px;">
@@ -244,7 +244,7 @@
         <div style="display: flex; gap: 13px; align-items: flex-start;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
           <div>
-            <div style="font-size: 16.5px; font-weight: 700; color: #01579b;">The farmer's word, labelled as such</div>
+            <div style="font-size: 16.5px; font-weight: 700; color: #01579b;">The farmer’s word, labelled as such</div>
             <div style="font-size: 15.5px; line-height: 1.5; color: #4a443d; margin-top: 2px;">Acreage, crop, sowing date, and the location their phone reported.</div>
           </div>
         </div>
