@@ -16,6 +16,7 @@
 import { requireUser, load, state } from './_guard.js';
 import { bind } from '../bind.js';
 import { asField, acts, press } from '../wire.js';
+import { multiStep } from '../steps.js';
 
 const KEY = 'pv.leaf';
 const MODEL_ROOT = '/model';
@@ -143,16 +144,28 @@ export function leaf(slug) {
         img.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;';
         slot.prepend(img);
       }
-      state(holder, 'waiting', 'Checking on your phone', 'Starting the checker…');
+      // The Multi Step Loader from design/Components.dc.html. One line of text
+      // with a percentage on the end was the indeterminate-spinner argument in
+      // another costume: it never said WHICH of the four things was happening,
+      // and 173 MB on a metered prepaid pack is a financial event, not a
+      // loading state.
+      const steps = multiStep(holder, [
+        { label: 'Asked you first', note: '173 MB, once. It never downloads on its own.' },
+        { label: 'Getting the checker', note: '' },
+        { label: 'Reading your photo', note: '' },
+        { label: 'Ready to use offline', note: 'It works with no signal from here on.' },
+      ]);
+      steps.at(1, 0, 'Starting');
       try {
         const clf = await classifier((msg, pct) => {
-          state(holder, 'waiting', 'Checking on your phone',
-            `${msg}${pct != null ? ` — ${Math.round(pct)}%` : ''}. This happens once; after that it works with no signal.`);
+          steps.at(1, pct, pct != null ? `${msg} — ${Math.round(pct)}% of 173 MB` : msg);
         });
+        steps.at(2, null, 'On this phone. Nothing is uploaded.');
         const verdict = await clf.predict(file);
         verdict.file = file.name;
         sessionStorage.setItem(KEY, JSON.stringify(verdict));
         localStorage.setItem('pv.model', '1');
+        steps.done();
         const isRefusal = verdict.status !== 'ok';
         location.replace(isRefusal ? './leaf-refusal.html' : './leaf-result.html');
       } catch (err) {

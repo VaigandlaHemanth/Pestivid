@@ -103,6 +103,48 @@ if (ctx) load(ctx.root, async () => {
       told2: {},
     });
 
+    // ---- the evidence chain -------------------------------------------
+    // Three events with real times, or removed. The green dot is the only green
+    // on the page and it belongs to the block alone: the two steps above it are
+    // our own word, so they are ink.
+    const chain = ctx.root.querySelector('[data-chain]');
+    if (chain && !video) {
+      // No video record, so the chain has no events. Three rows of "not
+      // recorded" is worse than not asking the question: the tier block below
+      // already says there is nothing to check.
+      chain.remove();
+    } else if (chain) {
+      const when = (iso) => (iso ? new Date(iso).toLocaleString('en-IN', {
+        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false,
+      }).toUpperCase().replace(',', '') : null);
+      const set = (kind, time, note, head) => {
+        const w = chain.querySelector(`[data-chain-when="${kind}"]`);
+        const n = chain.querySelector(`[data-chain-note="${kind}"]`);
+        const h = chain.querySelector(`[data-chain-head="${kind}"]`);
+        if (w) { if (time) w.textContent = time; else w.textContent = 'not recorded'; }
+        if (n && note != null) n.textContent = note;
+        if (h && head) h.textContent = head;
+      };
+      const filmed = when(video?.uploadTimestamp);
+      set('filmed', filmed, null);
+      set('hashed', filmed,
+        video?.videoFileHash
+          ? `sha256 ${String(video.videoFileHash).slice(0, 8)}…${String(video.videoFileHash).slice(-4)}`
+          : 'No fingerprint on the record');
+      if (anchored) {
+        set('block', when(video.anchoredAt) || filmed,
+            `block ${Number(video.blockHeight).toLocaleString('en-IN')} — check it on any explorer`);
+      } else {
+        // The date has not landed, so the green goes: it is the one token this
+        // product spends on a fact anybody can check, and there is not one yet.
+        const dot = chain.querySelector('[data-chain-dot="block"]');
+        if (dot) dot.style.background = '#78716a';
+        const head = chain.querySelector('[data-chain-head="block"]');
+        if (head) { head.style.color = '#4a443d'; head.textContent = 'Not in a block yet'; }
+        set('block', null, 'The proof job runs once a day, so usually by tomorrow.');
+      }
+    }
+
     const go = [...ctx.root.querySelectorAll('div')]
       .find(d => d.children.length === 0 && d.textContent.trim() === 'See the exact amount');
     if (go) goes(go.parentElement, `confirm-investment?project=${p._id || p.id}&amount=${offer}`,
