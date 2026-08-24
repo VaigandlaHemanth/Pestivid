@@ -78,8 +78,12 @@ for (const slug of PAGES) {
     // number columns should be tabular
     for (const el of document.querySelectorAll('td, th')) {
       const t = (el.textContent || '').trim();
-      if (/^[₹\d][\d,.\s₹%–-]*$/.test(t) && t.length > 1
-          && !/tabular-nums/.test(getComputedStyle(el).fontVariantNumeric)) {
+      // The cell may carry the figure in a child that IS tabular, which is how
+      // every money column in this product is built -- so ask whether the
+      // rendered digits are tabular, not whether the <td> happens to be.
+      const tabular = /tabular-nums/.test(getComputedStyle(el).fontVariantNumeric)
+        || [...el.querySelectorAll('*')].some(c => /tabular-nums/.test(getComputedStyle(c).fontVariantNumeric));
+      if (/^[₹\d][\d,.\s₹%–-]*$/.test(t) && t.length > 1 && !tabular) {
         say('tabular-nums', `table cell "${t.slice(0, 18)}" is not tabular`);
       }
     }
