@@ -62,16 +62,47 @@ function bubble(kind, text, source) {
   return el;
 }
 
+// What has been said so far, so a follow-up question makes sense. The route
+// bounds it to the last eight turns; this keeps them in order.
+const said = [];
+
+/**
+ * Markdown a model emitted anyway, turned back into readable text.
+ *
+ * The system prompt asks for plain text, but a model obeys that unevenly -- and
+ * the bubble sets textContent, so "- **Check the product label**" reached a
+ * farmer with every asterisk intact. Text in, text out: no HTML is built from
+ * model output.
+ */
+function plain(md) {
+  const NL = String.fromCharCode(10);
+  return String(md || '')
+    .replace(/```[\s\S]*?```/g, m => m.replace(/```/g, '').trim())
+    .replace(/^#{1,6}[ \t]*/gm, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    // The trailing lookahead has to allow punctuation, or "your *extension
+    // officer*." keeps its asterisks -- which is exactly how it arrives.
+    .replace(/(^|[ \t])\*([^*\r\n]+)\*(?=[ \t.,;:!?)\]]|$)/gm, '$1$2')
+    .replace(/(^|[ \t])_([^_\r\n]+)_(?=[ \t.,;:!?)\]]|$)/gm, '$1$2')
+    .replace(/^[ \t]*[-*+][ \t]+/gm, '• ')
+    .replace(/‑/g, '-')
+    .replace(/(\r?\n){3,}/g, NL + NL)
+    .trim();
+}
+
 let asking = false;
 async function ask(text) {
   if (!text || asking) return;
   asking = true;
   bubble('me', text);
+  said.push({ role: 'user', content: text });
   const pending = bubble('them', 'Looking through the documents…');
   try {
-    const r = await api.ai.ask(text, []);
+    const r = await api.ai.ask(text, said.slice(0, -1));
     pending.remove();
-    bubble('them', r.answer || r.message || 'The documents do not cover that.', r.source || r.citation);
+    const answer = plain(r.answer || r.message) || 'The documents do not cover that.';
+    said.push({ role: 'assistant', content: answer });
+    bubble('them', answer, r.source || r.citation);
   } catch (err) {
     pending.remove();
     const [h, d] = reason(err);

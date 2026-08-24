@@ -41,7 +41,21 @@ export function thread(slug) {
         el.className = r.mine ? 'me' : 'them';
         const t = el.querySelector('.t'); if (t) t.textContent = r.text;
         const w = el.querySelector('.when, .m');
-        if (w) w.textContent = r.when + (r.mine && r.read ? ' · read' : '');
+        if (w) {
+          w.textContent = r.when + (r.mine && r.read ? ' · read' : '');
+          // repeatRows clones ONE template for both sides, and the first bubble
+          // in the board is a received one -- so its meta colour, chosen for a
+          // light bubble, came out as #4a443d on the near-black sent bubble:
+          // 1.8:1, effectively invisible. The side decides the colour.
+          w.style.color = r.mine ? '#c4bdb6' : '#605a53';
+        }
+        // The read tick belongs to a sent message and the template may carry it
+        // either way round.
+        const tick = el.querySelector('svg');
+        if (tick) {
+          tick.style.display = r.mine && r.read ? '' : 'none';
+          tick.setAttribute('stroke', '#c4bdb6');
+        }
       });
     }
 

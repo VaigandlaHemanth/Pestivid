@@ -489,7 +489,7 @@ function assertSafeToSeed() {
 
 
              // Global notifications
-             { global: true, type: 'info', message: 'Welcome to PestiVid Demo Platform! Explore features.', timestamp: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), read: false }, // Older global notification
+             { global: true, type: 'info', message: 'Your account is set up. Film a field and its date is fixed the moment it reaches us.', timestamp: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), read: false }, // Older global notification
               { global: true, type: 'listing', message: '“Lettuce” is now listed by Demo Farmer.', timestamp: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000), read: false, itemId: demoLettuceVideo?._id, itemType: 'Listing' }, // New global listing notification
                { global: true, type: 'funding', message: 'Alice Farmer is asking for money for “Regenerative Corn Pilot”.', timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), read: false, itemId: aliceCornRequest?._id, itemType: 'FundingRequest' }, // New global funding notification
          ];

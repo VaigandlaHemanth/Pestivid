@@ -177,7 +177,16 @@ export const api = {
   },
   money: { transactions: (userId) => get(`/transactions/user/${userId}`) },
   ai: {
-    ask: (question, history) => post('/ai/chatbot', { question, history }),
+    // POST /ai/chatbot takes { messages: [{role, content}] } and answers
+    // { text }. This sent { question, history } and read r.answer, so the
+    // chatbot answered "Invalid chat data format" to every question ever asked
+    // -- and would have printed the not-covered fallback even on success.
+    ask: (question, history = []) => post('/ai/chatbot', {
+      messages: [
+        ...history.slice(-8).map(m => ({ role: m.role, content: String(m.content || '') })),
+        { role: 'user', content: String(question || '') },
+      ],
+    }).then(r => ({ ...r, answer: r?.text ?? r?.answer ?? '' })),
     leaf: (b) => post('/ai/analyze-plant', b),
   },
   admin: { flagged: () => get('/videos/review-queue') },
