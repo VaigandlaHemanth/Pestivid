@@ -161,7 +161,20 @@ for (const slug of slugs) {
       }, i);
     } catch { /* recorded below */ }
     await p.waitForTimeout(900);
-    const after = await p.evaluate(() => ({ url: location.pathname, html: document.body.innerHTML.length }));
+    // A control that navigates destroys the execution context, and reading the
+    // page afterwards threw and killed the whole run mid-sweep. A navigation is
+    // a RESULT here, not a failure, so wait for the new document and read that.
+    let after;
+    for (let t = 0; t < 3; t++) {
+      try {
+        after = await p.evaluate(() => ({ url: location.pathname, html: document.body.innerHTML.length }));
+        break;
+      } catch {
+        await p.waitForLoadState('load').catch(() => {});
+        await p.waitForTimeout(400);
+      }
+    }
+    if (!after) after = { url: before.url + '#gone', html: -1 };
     clicked++;
     if (errs.length) broke.push(`${c.name}: ${errs[0]}`);
     else if (after.url !== before.url) moved.push(`${c.name} -> ${after.url.split('/').pop()}`);

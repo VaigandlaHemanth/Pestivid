@@ -65,7 +65,7 @@ const SITE = (process.env.PESTIVID_SITE || '').replace(/\/+$/, '');
 
 const SEO_TITLE = 'Pestivid — farm video evidence with a date nobody can move';
 const SEO_DESC = 'Farmers film their crop. Pestivid fingerprints the file the moment it '
-  + 'arrives and writes that fingerprint into Bitcoin, so the date cannot be changed afterwards.';
+  + 'arrives and writes that fingerprint into Bitcoin, so the date cannot be changed later.';
 
 function seoHead(slug) {
   const out = ['  <link rel="icon" href="./favicon.svg" type="image/svg+xml">'];
@@ -223,10 +223,12 @@ export async function build() {
     const body = open2 + f.html.slice(open.length);
 
     writeFileSync(path.join(OUT, slug + '.html'), `<!doctype html>
-<html lang="en">
+<html lang="en-IN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="${f.w <= 400 ? '#f6f3ef' : '#ffffff'}">
   <title>${slug === 'landing' ? SEO_TITLE : meta.title + ' · Pestivid'}</title>

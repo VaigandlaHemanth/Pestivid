@@ -259,3 +259,37 @@ body > div[style*="width: 824px"] {
 @media (max-width: 900px) {
   [data-chatcol] { height: 68vh !important; min-height: 380px; }
 }
+
+/* ── control size, by touch ──────────────────────────────────────────────── */
+
+/* The HIG recommends 44x44 pt for a touch target and 28x28 with a pointer
+   (accessibility.md). The bar's words and the back chevron met the pointer
+   figure and not the touch one. This only fires on a phone, so the laptop
+   artboard the layout check compares against is untouched. */
+@media (max-width: 900px) {
+  .appnav, .appnavOn, .nav, .navOn, .appbrand, .brand {
+    min-height: 44px !important; display: flex !important; align-items: center;
+  }
+  [data-chrome="back"], [data-chrome="mail"], [data-chrome="you"] {
+    min-width: 44px !important; min-height: 44px !important;
+  }
+}
+
+/* Every wired control reaches the 44pt touch minimum on a phone. Inline links
+   inside a sentence are unaffected: an inline box ignores min-height, which is
+   exactly the exemption WCAG 2.5.8 makes for links in running text. */
+@media (max-width: 900px) {
+  /* Width only. The height comes from the drawing -- a blanket
+     `min-height: 44px !important` here outranked an inline `min-height: 430px`
+     and collapsed the leaf checker's viewfinder to 60px. min-width clamps a
+     declared width without needing !important, so a 32px round avatar reaches
+     the touch minimum without any rule being able to stomp a real dimension. */
+  [data-chrome="you"], [data-chrome="mail"], [data-chrome="back"],
+  [data-act][style*="border-radius: 16px"], [data-act][style*="border-radius: 50%"],
+  [data-act][style*="border-radius: 17px"] {
+    min-width: 44px; min-height: 44px;
+  }
+  /* A table action link. On a phone the rows already reflow to blocks, so a
+     real touch height here costs nothing. */
+  .act[data-act], .act[data-go] { min-height: 44px; }
+}

@@ -161,6 +161,10 @@ export function asField(el, opts = {}) {
     if (h > Math.max(96, mine * 4)) break;
   }
   if (box) {
+    // Named, not inferred. `cursor: text` is an INHERITED property, so every
+    // descendant of the box computes to it and a walk looking for it matches the
+    // input's own parent -- which is the 17px sliver, not the 56px box.
+    box.setAttribute('data-fieldbox', '');
     box.style.cursor = 'text';
     box.addEventListener('mousedown', (e) => {
       if (e.target === input || input.contains(e.target)) return;
@@ -274,9 +278,48 @@ export function deClaimProps(root) {
  * so marking and promoting happen together here.
  * ------------------------------------------------------------------ */
 
+/* The painted box, not the word inside it.
+ *
+ * Half the boards draw a button as a filled div with a bare label div inside,
+ * and a module marks the LABEL -- so "Continue" was a 77x24 control sitting in
+ * the middle of a 568x60 blue rectangle, and clicking the rectangle anywhere
+ * except the seven characters of the word did nothing at all. That is a dead
+ * button as far as a user is concerned, and the HIG minimum control size
+ * (28x28 with a pointer, 44x44 by touch) is the measure that catches it.
+ *
+ * Climbs ONE level, and only when there is no ambiguity: the parent is painted
+ * or ringed, it is bigger, it holds nothing but this label, and it is not
+ * already a control itself. A list row with several children is left alone.
+ */
+function paintedTarget(el) {
+  const up = el.parentElement;
+  if (!up || up.matches('[data-act], [data-go], a[href], button')) return el;
+  // A parent that holds the label plus a decorative glyph is still one button.
+  // What disqualifies it is another CONTROL or other text.
+  const siblings = [...up.children].filter(n => n !== el);
+  if (siblings.some(n => n.matches('[data-act], [data-go], a[href], button, input'))) return el;
+  if ((up.textContent || '').trim() !== (el.textContent || '').trim()) return el;
+  const mine = el.getBoundingClientRect();
+  const theirs = up.getBoundingClientRect();
+  if (theirs.height <= mine.height + 3 && theirs.width <= mine.width + 3) return el;
+  if (theirs.height > 96) return el;
+  const cs = getComputedStyle(up);
+  const bg = cs.backgroundColor || '';
+  const painted = bg && bg !== 'transparent' && !/rgba\(0, 0, 0, 0\)/.test(bg);
+  const ringed = cs.boxShadow && cs.boxShadow !== 'none';
+  const own = getComputedStyle(el).backgroundColor;
+  if (own && own !== bg && !/rgba\(0, 0, 0, 0\)/.test(own)) return el;
+  // An UNPAINTED parent counts too when it holds nothing but these words: a
+  // market row is a 59px band with a 26px label in it, and the dead 33px was
+  // the part of the row a thumb actually lands on.
+  if (!painted && !ringed && theirs.height < mine.height + 12) return el;
+  return up;
+}
+
 /** Promote one element that has just been marked as a control. */
 export function promote(el, name) {
   if (!el) return null;
+  el = paintedTarget(el);
   el.setAttribute('data-act', el.dataset.act || '');
   if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
   if (!el.hasAttribute('tabindex')) el.tabIndex = 0;
@@ -304,18 +347,20 @@ function containIfNested(el) {
  *  44px glyph in a 76px row leaves most of what looks pressable dead. */
 export function goes(el, dest, name) {
   if (!el) return null;
-  el.dataset.go = dest;
-  promote(el, name);
-  containIfNested(el);
+  const target = promote(el, name);
+  target.dataset.go = dest;
+  containIfNested(target);
   return el;
 }
 
 /** A control that does something here. */
 export function acts(el, name, fn) {
   if (!el) return null;
-  promote(el, name);
-  containIfNested(el);
-  el.addEventListener('click', fn);
+  // promote() may hand the role to the painted box around a bare label. The
+  // handler has to go on the same element, or the padding stays dead.
+  const target = promote(el, name);
+  containIfNested(target);
+  target.addEventListener('click', fn);
   return el;
 }
 

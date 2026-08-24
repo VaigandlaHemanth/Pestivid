@@ -32,9 +32,13 @@
        fifteen, which only works because they really are the same classes. */
     .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
              justify-content: space-between; flex-shrink: 0; }
-    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
-    .appnav   { font-size: 15px; color: #605a53; }
-    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    /* A nav item was a 20px-tall word: under the 28x28 pointer minimum and
+       well under 44x44 by touch, which is the HIG recommended control size.
+       The bar centres its items, so giving them a real height moves nothing
+       and makes the whole word-plus-air pressable. */
+    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
     .railcard  { background: #fff; color: #1d1a17; padding: 20px; }
     .railh { font-size: 16.5px; font-weight: 700; }
     .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }

@@ -93,12 +93,20 @@ if (ctx) {
       // The board drew each switch in whatever state read best; the stored
       // preference decides it, and an unset one starts off.
       let on = spec ? localStorage.getItem(spec.key) === '1' : false;
+      // The whole row is the switch, so the row carries the role and the state.
+      // Leaving role="switch" on the pill after the row took over the click made
+      // it a switch with no name and no way to focus it -- worse than either.
+      const swap = (row && row !== track) ? row : track;
       const paint = () => {
         track.style.background = on ? '#016abe' : '#c3bcb6';
         if (knob) knob.style.transform = on ? 'translateX(20px)' : 'translateX(0)';
-        track.setAttribute('aria-checked', String(on));
+        swap.setAttribute('aria-checked', String(on));
       };
-      track.setAttribute('role', 'switch');
+      swap.setAttribute('role', 'switch');
+      if (swap !== track) {
+        track.removeAttribute('role');
+        track.setAttribute('aria-hidden', 'true');
+      }
       const val = row?.querySelector('.val');
       const describe = () => {
         if (spec?.zoom && val) val.textContent = on ? 'Currently larger' : 'Currently normal';
@@ -107,7 +115,11 @@ if (ctx) {
       describe();
 
       let notice = null;
-      acts(track, label, () => {
+      // A 50x30 pill is under the 44pt touch minimum and stretching it into an
+      // oval to satisfy the number would be worse. The row is the control, the
+      // way a Settings row is on a phone: the label toggles it too. `row` above
+      // is the same element -- there is no second one to declare.
+      acts(swap, label, () => {
         on = !on;
         if (spec) localStorage.setItem(spec.key, on ? '1' : '0');
         paint();
