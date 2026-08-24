@@ -16,7 +16,12 @@
 
 /* ── the root panel ─────────────────────────────────────────────────────── */
 
-html, body { max-width: 100%; overflow-x: hidden; }
+/* clip, not hidden. overflow-x: hidden makes html a scroll container, and a
+   scroll container BREAKS position: sticky for everything inside it -- which
+   silently killed the landing page's pinned column, so the left half of a
+   1440px window was empty grey for two thousand pixels of scroll. overflow-x:
+   clip crops the same overflow without creating the container. */
+html, body { max-width: 100%; overflow-x: clip; }
 
 /* A desktop panel pinned to its design width becomes a maximum instead, so it
    can narrow without pushing the page sideways. */
@@ -110,11 +115,52 @@ body > div[style*="width: 824px"] {
 /* ── the landing page, which is the widest thing here ───────────────────── */
 
 @media (max-width: 900px) {
-  /* The hero's text column is placed with a hard left margin and a fixed width. */
+  /* The glass nav is absolute at top: 0 over the hero, drawn 66px tall for a
+     1320px canvas. At 390px its four right-hand items wrap to a second row, the
+     bar grows to about 110px, and "Sign in" landed on top of "A field you can
+     see." So below 900px the nav joins the flow and the headline follows it. */
+  [data-page="landing"] .glass.e1 {
+    position: static !important;
+    flex-wrap: wrap;
+    row-gap: 10px;
+    padding: 14px 20px !important;
+  }
+  [data-page="landing"] .glass.e1 > div:last-child {
+    gap: 16px !important;
+    flex-wrap: wrap;
+  }
+  /* The hero's text column is placed with a hard left margin and a fixed width,
+     and no longer has to clear an absolute bar. */
   [style*="margin: 146px 0 0 72px"] {
-    margin: 96px 20px 0 20px !important;
+    margin: 30px 20px 0 20px !important;
     width: auto !important;
   }
+  /* Two buttons side by side inside 350px are 165px each, and both labels broke
+     across two lines. A call to action that wraps reads as a mistake. */
+  [data-page="landing"] .e4 {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  [data-page="landing"] .e4 > div {
+    text-align: center;
+    padding: 16px 20px !important;
+  }
+  /* A 22px inset frame drawn around a 660px hero becomes, on a phone whose hero
+     is twice that tall, a hairline running down through the paragraph. */
+  [data-page="landing"] [style*="position: absolute; inset: 22px"] { display: none; }
+
+  /* The evidence band is a flex row with a 64px gap and two 28ch measures. At
+     390px that left "adoption / when farm / advice / arrives by / video," --
+     two or three words a line, for the one claim on the page that cites a
+     source. It stacks, and the citation goes under what it is citing. */
+  [data-page="landing"] .reveal > [style*="gap: 64px"] {
+    flex-direction: column;
+    gap: 22px !important;
+  }
+  [data-page="landing"] .reveal [style*="max-width: 28ch"],
+  [data-page="landing"] .reveal [style*="max-width: 34ch"] { max-width: 100% !important; }
+  /* "₹4 vs ₹38" broke after the "vs". */
+  [data-page="landing"] .reveal .num { white-space: nowrap; }
   /* The evidence readout is pinned to the hero's bottom-right corner, which on
      a phone is on top of the buttons. */
   [data-bind="evidence.meta"] { display: none !important; }

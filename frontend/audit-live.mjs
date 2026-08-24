@@ -15,6 +15,12 @@ const APPDIR = path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url
 // Strings that exist only in the artboards. Deliberately excludes names that
 // are also seeded users -- Alice Farmer, Bob Buyer, Lakshmi Devi and the rest
 // are real rows, and flagging them made the audit cry wolf.
+// The generic markers, which this file did not look for at all -- so three
+// literal "[PLACEHOLDER: SEBI / regulatory status]" strings sat in the landing
+// page footer through every clean run of this audit.
+const MARKERS = ['[PLACEHOLDER', 'PLACEHOLDER:', 'Lorem ipsum', 'lorem ipsum',
+  'TODO', 'FIXME', 'TBD', 'XXXX', 'coming soon', 'Coming soon'];
+
 const PLACEHOLDERS = [
   '98765 43210', 'Kadapa, Andhra Pradesh',
   // 'Canal plot' was here. It appears inside the landing page's specimen
@@ -66,12 +72,16 @@ async function visit(page, slug, role) {
     const unnamed = [...document.querySelectorAll('[data-act]')]
       .filter(e => !e.getAttribute('aria-label') && !e.textContent.trim())
       .length;
-    return { hits, dashes, unnamed };
-  }, PLACEHOLDERS);
+    // an element whose value was stripped and left blank beside its own label
+    const orphans = [...document.querySelectorAll('[data-declaimed]')]
+      .filter(e => !e.textContent.trim()).length;
+    return { hits, dashes, unnamed, orphans };
+  }, PLACEHOLDERS.concat(MARKERS));
 
   page.off('pageerror', onErr);
   if (found.hits.length) problems.push([slug, role, 'placeholder', found.hits.join(', ')]);
   if (found.dashes.length) problems.push([slug, role, 'empty field', found.dashes.join(', ')]);
+  if (found.orphans) problems.push([slug, role, 'blank value', `${found.orphans} label(s) with nothing beside them`]);
   if (found.unnamed) problems.push([slug, role, 'unnamed control', `${found.unnamed} with no name`]);
   if (errs.length) problems.push([slug, role, 'script error', errs[0]]);
 }

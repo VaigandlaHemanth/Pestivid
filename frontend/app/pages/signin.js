@@ -19,7 +19,14 @@ const pass = asField(oneByText('••••••••', root), {
 // The label is a leaf div inside the filled box, and the box is what looks like
 // the button, so the box is what takes the handler. Its PARENT was taking it
 // before, which is the whole card: clicking the field submitted the form.
-const label = oneByText('Sign in', root);
+// The page's own heading now says "Sign in" too, and oneByText returns the
+// FIRST match in document order -- so a text lookup here would have handed the
+// handler to the h1 and left the most important button in the product dead.
+// The board marks it.
+const label = root?.querySelector('[data-submit]')
+  ? [...root.querySelectorAll('[data-submit] div, [data-submit]')]
+      .find(e => e.textContent.trim() === 'Sign in')
+  : oneByText('Sign in', root);
 const box = label?.parentElement;
 const button = box && getComputedStyle(box).backgroundColor !== 'rgba(0, 0, 0, 0)' ? box : label;
 button?.setAttribute('data-act', '');

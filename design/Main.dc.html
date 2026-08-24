@@ -184,8 +184,8 @@
         the season and are paid from the harvest.
       </p>
       <div class="e4" style="display: flex; gap: 12px; margin-top: 30px;">
-        <div style="background: #1d1a17; padding: 16px 28px;" class="lift2 tap">
-          <div style="font-size: 16.5px; font-weight: 600; color: #fff;">I farm, get funded</div>
+        <div style="background: #fdfcfa; padding: 16px 28px;" class="lift2 tap">
+          <div style="font-size: 16.5px; font-weight: 600; color: #1d1a17;">I farm, get funded</div>
         </div>
         <div class="glass tap" style="padding: 16px 28px;">
           <div class="ots" style="font-size: 16.5px; font-weight: 600; color: #fff;">I want to invest</div>
@@ -256,10 +256,21 @@
         <div style="padding: 16px 22px; display: flex; justify-content: space-between; align-items: baseline; box-shadow: inset 0 -1px 0 #c3bcb6;">
           <div style="font-size: 15px; font-weight: 700;">Record of evidence</div>
           <div style="font-size: 12.5px; color: #605a53;">an example, filled in</div>
-          <div class="num" style="font-size: 13px; color: #4a443d;">no. 0000418</div>
         </div>
 
+        <!-- A frame of the video the record is about. It was an empty dark
+             rectangle, which on a card labelled "an example, filled in" read as
+             an image that had failed to load. Same technique as the hero: three
+             bands of decreasing frequency read as a field running to a horizon
+             without pretending to be a photograph. -->
         <div style="height: 200px; background: #37322d; position: relative; overflow: hidden;">
+          <div style="position: absolute; left: 0; right: 0; top: 0; height: 38%;
+                      background: linear-gradient(180deg, #8d857a 0%, #9c9388 60%, #a9a094 100%);"></div>
+          <div style="position: absolute; left: 0; right: 0; top: 36%; height: 1px; background: rgba(154,145,136,.5);"></div>
+          <div style="position: absolute; left: -14%; right: -14%; top: 37%; height: 22%;
+                      background: repeating-linear-gradient(177deg, #4d463e 0 4px, #3a352f 4px 9px);"></div>
+          <div style="position: absolute; left: -22%; right: -22%; top: 58%; bottom: 0;
+                      background: repeating-linear-gradient(179deg, #625a4e 0 14px, #3d3831 14px 31px);"></div>
         </div>
 
         <div style="padding: 18px 22px;">
@@ -284,7 +295,7 @@
       </div>
 
       <!-- the stamp: the one animated moment on the page -->
-      <div class="stamp" style="position: absolute; right: -22px; top: 232px; width: 132px; height: 132px; border-radius: 50%; border: 3px solid #01579b; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,253,249,.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); transform: rotate(-5.5deg);">
+      <div class="stamp" style="position: absolute; right: -22px; top: 96px; width: 132px; height: 132px; border-radius: 50%; border: 3px solid #01579b; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,253,249,.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); transform: rotate(-5.5deg);">
         <div style="font-size: 12px; font-weight: 700; color: #01579b;">DATE PROVED</div>
         <div class="num" style="font-size: 19px; font-weight: 800; color: #01579b; letter-spacing: -0.01em; margin-top: 2px;">18 AUG</div>
         <div class="num" style="font-size: 12px; font-weight: 600; color: #01579b;">2026</div>
@@ -319,7 +330,7 @@
 
       <div>
         <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
-          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: center; padding: 26px 0;">
+          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: baseline; padding: 26px 0;">
             <div class="num" style="font-size: 40px; font-weight: 700; line-height: .9; color: #605a53;">{{s.n}}</div>
             <div>
               <h3 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">{{s.title}}</h3>
@@ -403,10 +414,10 @@
         Nothing on this site is agronomic or financial advice.
       </div>
     </div>
-    <div style="font-size: 13.5px; line-height: 1.8; text-align: right; color: #ded7d0;">
-      [PLACEHOLDER: registered entity]<br>
-      [PLACEHOLDER: SEBI / regulatory status]<br>
-      [PLACEHOLDER: grievance officer and contact]
+    <div style="font-size: 13.5px; line-height: 1.8; text-align: right; max-width: 46ch; color: #ded7d0;">
+      No company is registered behind this yet, and it holds no SEBI registration.<br>
+      Money you put in is a private agreement with a farmer, not a regulated product.<br>
+      There is nobody to escalate to, which is itself a reason to commit little.
     </div>
   </div>
 

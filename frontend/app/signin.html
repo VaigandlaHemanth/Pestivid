@@ -86,7 +86,7 @@
               min-height: 44px; box-sizing: border-box; display: flex; align-items: center; }
   </style>
 </head>
-<body data-page="signin" data-role="public" data-design-width="1280" data-design-height="1127">
+<body data-page="signin" data-role="public" data-design-width="1280" data-design-height="1124">
 <div data-surface="desk" data-w="1280" class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #ddd7d1; color: #1d1a17; box-sizing: border-box;">
 
     <div class="r1" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 56px; box-shadow: inset 0 -1px 0 #c3bcb6;">
@@ -96,10 +96,52 @@
 
     <div style="max-width: 880px; margin: 0 auto; padding: 46px 24px 56px;">
 
-      <div class="r1">
-        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.034em; line-height: 1.06; max-width: 22ch;">
-          Read the record, then decide.
-        </h1>
+
+      <!-- The form. Deliberately the smallest thing on the page: two fields on
+           a page whose job was to show you the record. -->
+      <div class="r1" style="display: grid; grid-template-columns: 1fr 372px; gap: 44px; align-items: start;">
+        <div>
+          <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.034em; line-height: 1.06;">Sign in</h1>
+          <div style="font-size: 15.5px; line-height: 1.55; margin-top: 6px; max-width: 44ch; color: #4a443d;">
+            Farmers, investors and buyers, all here. Your phone number if you farm,
+            your email address if you do not — the same box takes either, and
+            we work out which.
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 14.5px; font-weight: 600;">Phone number or email</div>
+          <div class="fld" style="margin-top: 6px; box-shadow: inset 0 0 0 1px #c3bcb6;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg>
+            <div style="font-size: 16px; color: #1d1a17;">98765 43210</div>
+          </div>
+
+          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 16px;">
+            <div style="font-size: 14.5px; font-weight: 600;">Password or six number code</div>
+            <div style="font-size: 14px; font-weight: 600; color: #01579b;">Forgot?</div>
+          </div>
+          <div class="fld" style="margin-top: 6px; box-shadow: inset 0 0 0 1px #c3bcb6;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8"><rect x="4" y="10" width="16" height="10"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+            <div class="num" style="font-size: 18px; letter-spacing: .16em; color: #1d1a17;">••••••••</div>
+            <div style="flex-grow: 1;"></div>
+            <div style="font-size: 14px; font-weight: 600; color: #01579b;">Show</div>
+          </div>
+
+          <div data-submit="" class="tap" style="background: #1d1a17; min-height: 56px; margin-top: 18px; display: flex; align-items: center; justify-content: center;">
+            <div style="font-size: 16.5px; font-weight: 600; color: #fff;">Sign in</div>
+          </div>
+
+          <div style="font-size: 13.5px; line-height: 1.5; margin-top: 12px; color: #605a53;">
+            We do not post anything, and we do not sell who you are. The only mail
+            you get is about a season you funded.
+          </div>
+        </div>
+      </div>
+
+      <div class="r3" style="margin-top: 46px; padding-top: 34px; box-shadow: inset 0 1px 0 #c3bcb6;">
+        <h2 style="margin: 0; font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.1; max-width: 34ch;">
+          What you will be reading, once you are in
+        </h2>
         <p style="font-size: 17px; line-height: 1.5; margin: 12px 0 0; max-width: 62ch; color: #4a443d;">
           This is one of the records behind a season. Every project you can fund is
           laid out exactly like it, in these three parts, in this order.
@@ -162,47 +204,6 @@
               Which is why there is no projected return anywhere in this product. A
               total loss can return less than you put in.
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- The form. Deliberately the smallest thing on the page: two fields on
-           a page whose job was to show you the record. -->
-      <div class="r3" style="margin-top: 40px; display: grid; grid-template-columns: 1fr 372px; gap: 44px; align-items: start; padding-top: 30px; box-shadow: inset 0 1px 0 #c3bcb6;">
-        <div>
-          <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">Sign in</div>
-          <div style="font-size: 15.5px; line-height: 1.55; margin-top: 6px; max-width: 44ch; color: #4a443d;">
-            Farmers, investors and buyers, all here. Your phone number if you farm,
-            your email address if you do not — the same box takes either, and
-            we work out which.
-          </div>
-        </div>
-
-        <div>
-          <div style="font-size: 14.5px; font-weight: 600;">Phone number or email</div>
-          <div class="fld" style="margin-top: 6px; box-shadow: inset 0 0 0 1px #c3bcb6;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg>
-            <div style="font-size: 16px; color: #1d1a17;">98765 43210</div>
-          </div>
-
-          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 16px;">
-            <div style="font-size: 14.5px; font-weight: 600;">Password or six number code</div>
-            <div style="font-size: 14px; font-weight: 600; color: #01579b;">Forgot?</div>
-          </div>
-          <div class="fld" style="margin-top: 6px; box-shadow: inset 0 0 0 1px #c3bcb6;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8"><rect x="4" y="10" width="16" height="10"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
-            <div class="num" style="font-size: 18px; letter-spacing: .16em; color: #1d1a17;">••••••••</div>
-            <div style="flex-grow: 1;"></div>
-            <div style="font-size: 14px; font-weight: 600; color: #01579b;">Show</div>
-          </div>
-
-          <div class="tap" style="background: #1d1a17; min-height: 56px; margin-top: 18px; display: flex; align-items: center; justify-content: center;">
-            <div style="font-size: 16.5px; font-weight: 600; color: #fff;">Sign in</div>
-          </div>
-
-          <div style="font-size: 13.5px; line-height: 1.5; margin-top: 12px; color: #605a53;">
-            We do not post anything, and we do not sell who you are. The only mail
-            you get is about a season you funded.
           </div>
         </div>
       </div>

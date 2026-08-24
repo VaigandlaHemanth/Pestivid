@@ -192,11 +192,36 @@ export function deClaimProps(root) {
     const box = el.getBoundingClientRect();
     const holder = el.closest('[style*="overflow: hidden"]');
     if (box.width < 190 || (holder && holder.getBoundingClientRect().width < 190)) {
+      // A LABELLED value must not be removed, for the same reason a bound one
+      // must not: it orphans the label. The landing page's "Record of evidence"
+      // lost its Fingerprint value that way -- a card whose entire argument is
+      // the fingerprint, showing the word and then nothing. So when the holder
+      // has a sibling that carries text, it gets the short honest value; only a
+      // lone decoration is removed.
+      const labelled = [...(el.parentElement?.children || [])]
+        .some(sib => sib !== el && sib.textContent.trim());
+      if (labelled) {
+        el.textContent = SHORT_VALUE(el.textContent);
+        el.setAttribute('data-declaimed', '');
+        continue;
+      }
       el.remove();
       continue;
     }
     el.textContent = 'The file, its fingerprint and the block its date went into';
     el.setAttribute('data-declaimed', '');
+  }
+
+  // What a stripped prop says when it is a VALUE beside its own label, where
+  // "its fingerprint" next to "Fingerprint" would be a tautology and a sentence
+  // would not fit. It says what will be there instead of pretending it is.
+  function SHORT_VALUE(v) {
+    if (/sha256|[0-9a-f]{8}…/i.test(v)) return 'computed on our server';
+    if (/^\s*[Bb]lock/.test(v)) return 'once its date lands';
+    if (/^VID_/.test(v)) return 'the file we received';
+    if (/^IMG_/.test(v)) return 'the photo you took';
+    if (/bafybeih/.test(v)) return 'pinned on IPFS';
+    return 'filled in from the real record';
   }
 
   function IN_SENTENCE(m) {

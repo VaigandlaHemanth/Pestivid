@@ -20,7 +20,7 @@ const email = asField(oneByText('ravi@example.com', root), {
 });
 const pass = asField(oneByText('••••••••', root), {
   type: 'password', name: 'new-password', autocomplete: 'new-password',
-  placeholder: 'Eight or more', label: 'Password',
+  placeholder: 'Your new password', label: 'Password',
 });
 
 // role
@@ -129,4 +129,9 @@ for (const f of [name, email, pass]) f?.addEventListener('input', clearError);
 const back = oneByText('Sign in', root);
 if (back) { back.setAttribute('data-act', ''); back.dataset.go = 'signin'; }
 
-name?.focus();
+name?.focus()// The farmer route. It was a sentence telling a farmer to sign in, on the one
+// page a farmer without an account cannot use.
+const farmerRoute = oneByText('Set up a farmer account', root);
+if (farmerRoute) { farmerRoute.setAttribute('data-act', ''); farmerRoute.dataset.go = 'setup'; }
+
+;
