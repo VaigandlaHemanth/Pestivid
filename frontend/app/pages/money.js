@@ -80,7 +80,8 @@ if (ctx) {
           bar.style.background = row.full ? '#1d1a17' : '#01579b';
         }
         const st = slot(el, 'state');
-        if (st && !row.full) { st.style.color = '#01579b'; st.style.fontWeight = '600'; }
+        // weight without the link colour: it is a state, not somewhere to go
+        if (st && !row.full) { st.style.color = '#4a443d'; st.style.fontWeight = '600'; }
       });
     }
 

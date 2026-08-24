@@ -9,17 +9,25 @@
 // the same site laid out for a 360px handset.
 import { api, session } from '../api.js';
 import { wire, asField } from '../wire.js';
+import { languagePicker } from '../lang.js';
 import { state, oneByText } from '../bind.js';
 
 const root = wire('signin-farmer');
 if (root) {
+  // The same picker the setup and profile screens use. These three chips were
+  // plain divs, so they looked pressable and were not -- on the first screen a
+  // farmer sees, where choosing a language is the whole point of them being
+  // there. No notice panel here: this screen has no room and the choice is
+  // restated on setup.
+  languagePicker(root, null);
+
   const phone = asField(oneByText('+91 98765 43210', root) || oneByText('98765 43210', root), {
     type: 'tel', name: 'tel', autocomplete: 'tel', inputMode: 'numeric',
     placeholder: '98765 43210', label: 'Your phone number',
   });
 
   const code = asField(oneByText('••••••', root), {
-    type: 'password', name: 'current-password', autocomplete: 'current-password',
+    type: 'password', name: 'code', autocomplete: 'current-password',
     inputMode: 'numeric', maxLength: 6, placeholder: '••••••',
     label: 'Your six number code',
   });

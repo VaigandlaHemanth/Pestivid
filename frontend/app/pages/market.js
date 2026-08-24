@@ -170,6 +170,17 @@ if (ctx) {
     };
 
     function show(l) {
+    // Clicking a row replaces this whole column. A browsing investor does that
+    // tens of times a day, so the change is announced and not performed: 140ms
+    // of opacity, no travel, nothing to wait for.
+    const col = ctx.root.querySelector('[data-bind="lot.who"], [data-bind="lot.title"]')
+      ?.closest('div[style*="padding"]');
+    if (col) {
+      col.style.transition = 'opacity 140ms var(--e-smooth, ease)';
+      col.style.opacity = '.55';
+      requestAnimationFrame(() => { col.style.opacity = '1'; });
+    }
+
       open = l;
       const proved = l.cid ? dateState({ cid: l.cid, anchored: l.anchored, blockHeight: l.blockHeight }) : null;
       bind(root, {

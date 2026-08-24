@@ -109,7 +109,11 @@ export function asField(el, opts = {}) {
   // a field with no autocomplete makes the browser guess, and a placeholder
   // that does not trail off reads as a value that is already there.
   if (!('autocomplete' in opts)) opts.autocomplete = 'off';
-  if (opts.placeholder && !/[…:]$/.test(opts.placeholder)) opts.placeholder += '…';
+  // An ellipsis belongs on an instruction that trails off, not on a specimen of
+  // the value. "98765 43210…" and "••••••…" read as part of what you are meant
+  // to type, which is worse than no ellipsis at all.
+  const specimen = /^[\d\s+•·.,₹-]+$/.test(opts.placeholder || '');
+  if (opts.placeholder && !specimen && !/[…:]$/.test(opts.placeholder)) opts.placeholder += '…';
   // A code, an address or a phone number is not prose; do not underline it red.
   if (/code|otp|phone|tel|email|offer|amount|reply|question/.test(String(opts.name || opts.type || ''))) {
     opts.spellcheck = false;

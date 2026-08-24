@@ -74,6 +74,23 @@ if (ack) {
     paintButton();
   });
 }
+// "Show" reveals the password on the sign-in screen and did nothing here, on
+// the screen where somebody is TYPING a password for the first time and most
+// wants to check it.
+const show = oneByText('Show', root);
+if (show && pass) {
+  show.setAttribute('data-act', '');
+  show.setAttribute('role', 'switch');
+  show.setAttribute('aria-checked', 'false');
+  show.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const on = pass.type === 'password';
+    pass.type = on ? 'text' : 'password';
+    show.textContent = on ? 'Hide' : 'Show';
+    show.setAttribute('aria-checked', String(on));
+  });
+}
+
 button?.setAttribute('data-act', '');
 button?.setAttribute('role', 'button');
 if (button) button.tabIndex = 0;

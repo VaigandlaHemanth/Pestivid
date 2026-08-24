@@ -89,7 +89,18 @@ export function state(container, kind, headline, detail, action) {
   }[kind] || ['#eae4de', '#1d1a17', '#4a443d'];
   const box = document.createElement('div');
   box.setAttribute('role', kind === 'failed' ? 'alert' : 'status');
-  box.style.cssText = `background: ${tone[0]}; padding: 16px 17px; margin: 16px 20px;`;
+  // These arrive in place of something the reader was looking at -- an error
+  // over a form, an empty state over a list -- so they come in rather than
+  // teleport. Opacity and transform only, and the travel is 6px: this is a
+  // message appearing, not a panel sliding.
+  box.style.cssText = `background: ${tone[0]}; padding: 16px 17px; margin: 16px 20px;`
+    + ' opacity: 0; transform: translateY(6px);'
+    + ' transition: opacity var(--t-press, 120ms) var(--e-smooth, ease),'
+    + ' transform var(--t-release, 260ms) var(--e-snappy, ease);';
+  requestAnimationFrame(() => {
+    box.style.opacity = '1';
+    box.style.transform = 'none';
+  });
   const h = document.createElement('div');
   h.style.cssText = `font-size: 15.5px; font-weight: 700; color: ${tone[1]};`;
   h.textContent = headline;

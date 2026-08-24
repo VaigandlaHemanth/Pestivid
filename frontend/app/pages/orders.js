@@ -105,8 +105,11 @@ if (ctx) load(ctx.root, async () => {
   // "Download" is the record of everything held about these purchases. It is
   // built here from what is already on screen -- no route needed, and nothing
   // leaves the browser.
-  const dl = ctx.root.querySelector('.act');
-  if (dl && dl.textContent.trim() === 'Download') {
+  // Not querySelector('.act'): that is the first "Watch it" link in the table,
+  // so the download handler was attached to a row and the button got nothing.
+  const dl = [...ctx.root.querySelectorAll('.act')]
+    .find(a => a.textContent.trim() === 'Download');
+  if (dl) {
     acts(dl, 'Download your purchase record', () => {
       const rows = [['crop', 'price', 'bought', 'pesticide', 'company', 'cid']];
       for (const p of buys) {

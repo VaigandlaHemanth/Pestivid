@@ -99,6 +99,15 @@ if (ctx) {
       if (!d) return;
       d.className = proved ? 'dotD' : 'dotOk';
       d.innerHTML = TICK;
+      // The farmer is watching this step complete, so it completes visibly.
+      const mark = d.firstElementChild;
+      if (mark) {
+        mark.style.opacity = '0';
+        mark.style.transform = 'scale(.5)';
+        mark.style.transition = 'opacity var(--t-press, 120ms) var(--e-smooth, ease),'
+          + ' transform var(--t-bouncy, 830ms) var(--e-bouncy, ease)';
+        requestAnimationFrame(() => { mark.style.opacity = '1'; mark.style.transform = 'none'; });
+      }
     };
 
     // ---- send -------------------------------------------------------

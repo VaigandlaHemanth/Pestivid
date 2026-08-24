@@ -166,6 +166,16 @@ export function leaf(slug) {
         sessionStorage.setItem(KEY, JSON.stringify(verdict));
         localStorage.setItem('pv.model', '1');
         steps.done();
+        // The one moment in this product that has waited minutes for an answer.
+        // 830ms on the bouncy spring, once, on the verdict only.
+        const card = ctx.root.querySelector('[data-bind="verdict.name"]')?.closest('div[style*="background"]');
+        if (card) {
+          card.style.transform = 'scale(.97)';
+          card.style.opacity = '0';
+          card.style.transition = 'opacity var(--t-press, 120ms) var(--e-smooth, ease),'
+            + ' transform var(--t-bouncy, 830ms) var(--e-bouncy, ease)';
+          requestAnimationFrame(() => { card.style.opacity = '1'; card.style.transform = 'none'; });
+        }
         const isRefusal = verdict.status !== 'ok';
         location.replace(isRefusal ? './leaf-refusal.html' : './leaf-result.html');
       } catch (err) {

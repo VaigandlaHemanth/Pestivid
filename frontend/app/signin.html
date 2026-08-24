@@ -74,6 +74,13 @@
        Nothing on glass carries a money figure, a verification claim or body copy.
        Labels get their own shadow so legibility never depends on the backdrop. */
     .ots { text-shadow: 0 1px 5px rgba(0,0,0,.55); }
+      /* the farmer sign-in language chips. Same look as the inline styles they
+       replace; the class is what lets one shared picker drive every screen that
+       offers a language, and 44px is the floor for the only control up here. */
+    .lang   { background: #fff; color: #37322d; padding: 9px 14px; font-size: 15px;
+              min-height: 44px; box-sizing: border-box; display: flex; align-items: center; }
+    .langOn { background: #1d1a17; color: #fff; padding: 9px 14px; font-size: 15px; font-weight: 600;
+              min-height: 44px; box-sizing: border-box; display: flex; align-items: center; }
   </style>
 </head>
 <body data-page="signin" data-role="public" data-design-width="1280" data-design-height="1127">

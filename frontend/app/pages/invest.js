@@ -52,6 +52,17 @@ if (ctx) load(ctx.root, async () => {
   press(ctx.root);
 
   async function show(p) {
+    // Clicking a row replaces this whole column. A browsing investor does that
+    // tens of times a day, so the change is announced and not performed: 140ms
+    // of opacity, no travel, nothing to wait for.
+    const col = ctx.root.querySelector('[data-bind="lot.who"], [data-bind="lot.title"]')
+      ?.closest('div[style*="padding"]');
+    if (col) {
+      col.style.transition = 'opacity 140ms var(--e-smooth, ease)';
+      col.style.opacity = '.55';
+      requestAnimationFrame(() => { col.style.opacity = '1'; });
+    }
+
     const farmer = p.farmerName || 'The farmer';
     const needed = Math.max(0, (p.amount || 0) - (p.fundedAmount || 0));
     // What we would put in is what is still needed, capped at a sane first

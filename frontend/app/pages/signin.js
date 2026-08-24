@@ -85,4 +85,24 @@ if (create) { create.setAttribute('data-act', ''); create.dataset.go = 'signup';
 const farmerIn = oneByText('Farmer sign-in', root);
 if (farmerIn) { farmerIn.setAttribute('data-act', ''); farmerIn.dataset.go = 'signin-farmer'; }
 
+// "Forgot?" was link-coloured, bold, and pointed at nothing: there is no reset
+// route in this product. Saying that beats a link that swallows the click --
+// and it is the same answer the profile screen gives for the farmer's code.
+const forgot = oneByText('Forgot?', root);
+if (forgot) {
+  forgot.setAttribute('data-act', '');
+  forgot.addEventListener('click', () => {
+    const slot = forgot.closest('div')?.parentElement;
+    let holder = slot?.querySelector('[data-forgot]');
+    if (!holder) {
+      holder = document.createElement('div');
+      holder.setAttribute('data-forgot', '');
+      slot?.after(holder);
+    }
+    state(holder, 'waiting', 'No reset from here yet',
+      'There is no way to reset a password in the app yet. Write to us and we will do it by hand — '
+      + 'we would rather say that than open a screen that cannot finish.');
+  });
+}
+
 email?.focus();

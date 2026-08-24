@@ -78,8 +78,9 @@ if (ctx) {
         .reverse().find(d => !d.children.length && d.textContent.trim());
       if (status) {
         status.textContent = row.s.short || row.s.text;
+        // not #01579b: link blue on a state turns a reading into a link
         status.style.color = row.s.kind === 'proved' ? '#006934'
-                          : row.s.kind === 'waiting' ? '#01579b' : '#7c4a12';
+                          : row.s.kind === 'waiting' ? '#4a443d' : '#7c4a12';
       }
 
       // A row about one video has to open that video.

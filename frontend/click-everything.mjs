@@ -130,7 +130,14 @@ for (const slug of slugs) {
       const el = els[n];
       return {
         url: location.pathname,
-        html: document.body.innerHTML.length,
+        html: (() => {
+          // a cheap 32-bit hash, not a length: swapping two equal-length class
+          // names nets to zero characters and hid a working control
+          const h = document.body.innerHTML;
+          let x = 5381;
+          for (let i = 0; i < h.length; i++) x = ((x * 33) ^ h.charCodeAt(i)) >>> 0;
+          return x;
+        })(),
         already: el?.getAttribute('aria-current') === 'true' || el?.getAttribute('aria-pressed') === 'true'
                  || el?.getAttribute('aria-checked') === 'true',
       };

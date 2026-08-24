@@ -51,7 +51,14 @@ function bubble(kind, text, source) {
     t.textContent = source;
     s.append(t); el.append(s);
   }
+  // A bubble arriving with no bridge is the case this rule exists for. It comes
+  // up from where the composer is, which is where the reader is looking.
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(8px)';
+  el.style.transition = 'opacity var(--t-press, 120ms) var(--e-smooth, ease),'
+    + ' transform var(--t-snappy, 568ms) var(--e-snappy, ease)';
   thread?.insertBefore(el, thread.querySelector('div[style*="flex-grow: 1"]'));
+  requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'none'; });
   return el;
 }
 
