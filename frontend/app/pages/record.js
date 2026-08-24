@@ -6,12 +6,45 @@
 import { requireUser, load, state } from './_guard.js';
 import { bind } from '../bind.js';
 import { acts, press } from '../wire.js';
+import { putClip } from '../clip.js';
+
+/**
+ * The camera is unavailable. Say why, and give the farmer the way through that
+ * the old copy promised and did not provide: pick a file the camera app made.
+ * It runs through the same upload and the same server-side hash, so nothing
+ * about the evidence is weaker -- only the filming happened elsewhere.
+ */
+function refuse(headline, detail) {
+  const pick = document.createElement('input');
+  pick.type = 'file';
+  pick.accept = 'video/*';
+  pick.style.cssText = 'position: absolute; width: 1px; height: 1px; opacity: 0;';
+  pick.addEventListener('change', async () => {
+    const file = pick.files?.[0];
+    if (!file) return;
+    try {
+      await putClip({ file, size: file.size, duration: 0, fromCameraApp: true });
+      location.href = './sent.html';
+    } catch {
+      state(ctx.root, 'failed', 'That file could not be held',
+        'This browser will not keep a video between screens. Try a different browser.');
+    }
+  });
+  ctx.root.append(pick);
+  // The panel is drawn 800px tall because it is a viewfinder. With no camera
+  // there is nothing to view, and the leftover was a thousand pixels of black
+  // under a red box. The page becomes as tall as what it actually has to say.
+  ctx.root.style.minHeight = 'auto';
+  return state(ctx.root, 'failed', headline, detail,
+    { label: 'Pick a file instead', act: () => pick.click() });
+}
 
 const ctx = requireUser('record', ['farmer']);
 if (ctx) load(ctx.root, async () => {
   if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
-    return state(ctx.root, 'failed', 'This phone will not record here',
-      'The browser does not give a web page the camera. Film with the camera app and send the file instead.');
+    return refuse('This phone will not record here',
+      'The browser does not give a web page the camera. Film with your camera app, then pick the '
+      + 'file here — it goes through exactly the same check, and the date is fixed when it reaches us.');
   }
 
   const slot = ctx.root.querySelector('div[style*="#37322d"], div[style*="#0e0d0b"]');
@@ -26,8 +59,9 @@ if (ctx) load(ctx.root, async () => {
       audio: true,
     });
   } catch {
-    return state(ctx.root, 'failed', 'We cannot see through the camera',
-      'You said no, or another app is holding it. Nothing is being recorded.');
+    return refuse('We cannot see through the camera',
+      'You said no, or another app is holding it. Nothing is being recorded. Allow the camera in '
+      + 'your browser settings and open this screen again, or pick a file you already filmed.');
   }
 
   const view = document.createElement('video');
@@ -63,12 +97,16 @@ if (ctx) load(ctx.root, async () => {
     stream.getTracks().forEach(t => t.stop());
     if (thrown) { location.href = './home.html'; return; }
     const blob = new Blob(chunks, { type: rec.mimeType });
-    window.__pvClip = {
+    // Not window.__pvClip: a navigation destroys window, so every clip filmed
+    // arrived at a send screen that said there was no clip. See app/clip.js.
+    putClip({
       file: new File([blob], 'clip.webm', { type: blob.type }),
       size: blob.size,
       duration: (Date.now() - started) / 1000,
-    };
-    location.href = './sent.html';
+    }).then(() => { location.href = './sent.html'; })
+      .catch(() => state(ctx.root, 'failed', 'The clip could not be held',
+        'It was filmed but this browser will not keep it between screens, so it has not been sent. '
+        + 'Nothing left your phone.'));
   };
 
   started = Date.now();

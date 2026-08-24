@@ -26,6 +26,7 @@ import { bind } from '../bind.js';
 import { sendVideo } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { acts, press } from '../wire.js';
+import { takeClip, dropClip } from '../clip.js';
 
 const ctx = requireUser('sent', ['farmer']);
 
@@ -37,7 +38,10 @@ if (ctx) {
 
   load(ctx.root, async () => {
     const root = ctx.root;
-    const clip = window.__pvClip || null;      // handed over by the record screen
+    // Handed over by the record screen through IndexedDB. It used to be read
+    // off `window`, which the navigation from record.html had already thrown
+    // away -- so this screen always said there was no clip.
+    const clip = await takeClip();
     bind(root, { clip: { line: clip
       ? `${Math.round(clip.duration || 0)} seconds · ${(clip.size / 1e6).toFixed(1)} MB · on your phone`
       : 'Nothing filmed yet' } });
@@ -115,6 +119,19 @@ if (ctx) {
     const send = [...root.querySelectorAll('div')]
       .find(d => d.children.length === 0 && d.textContent.trim() === 'Keep it and send');
     const button = send?.parentElement;
+
+    // "Throw this one away" was drawn in alarm red and never handled: the one
+    // control on this screen whose whole purpose is that nothing has left the
+    // phone yet. click-everything skips this page (it spends storage), so
+    // nothing caught it.
+    const bin = [...root.querySelectorAll('div')]
+      .find(d => d.children.length === 0 && d.textContent.trim() === 'Throw this one away');
+    if (bin) {
+      acts(bin.parentElement || bin, 'Throw this one away', async () => {
+        await dropClip();
+        location.href = './home.html';
+      });
+    }
 
     acts(button, 'Keep it and send', async () => {
       if (plots.length && !chosen) {

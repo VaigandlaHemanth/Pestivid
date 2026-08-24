@@ -122,9 +122,14 @@ export function state(container, kind, headline, detail, action) {
   p.style.cssText = `font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: ${tone[2]};`;
   p.textContent = detail;
   box.append(h, p);
-  if (action && action.label && action.go) {
+  // An action is either somewhere to go or something to do. The record screen's
+  // camera refusal needs the second kind: it opens a file picker rather than
+  // navigating, and without it that screen was a red panel over a black void
+  // with no way forward at all.
+  if (action && action.label && (action.go || action.act)) {
     const a = document.createElement('div');
-    a.dataset.go = action.go;
+    if (action.go) a.dataset.go = action.go;
+    if (action.act) a.addEventListener('click', action.act);
     a.dataset.act = '';
     a.setAttribute('role', 'button');
     a.tabIndex = 0;

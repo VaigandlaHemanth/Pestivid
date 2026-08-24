@@ -7,6 +7,23 @@
 import { requireUser, api, load } from './_guard.js';
 import { bind, oneByText } from '../bind.js';
 import { press, goes } from '../wire.js';
+import { rupees } from '../api.js';
+
+// Only the seasons that are still open are worth summarising: a closed one is
+// history and belongs on the money screen, not on the row that leads to it.
+// FundingRequest.status is one of pending | partially_funded | funded |
+// completed | cancelled, and the money that has arrived is `fundedAmount`.
+// Written from the model rather than guessed: reading a field that does not
+// exist is how the portfolio page came to show three wrong numbers.
+const OPEN = ['pending', 'partially_funded', 'funded'];
+function moneyLine(projects) {
+  const open = (projects || []).filter(p => OPEN.includes(p.status));
+  if (!open.length) return 'Nothing asked for yet';
+  const asked = open.reduce((a, p) => a + (p.amount || 0), 0);
+  const inHand = open.reduce((a, p) => a + (p.fundedAmount || 0), 0);
+  if (!asked) return `${open.length} season${open.length === 1 ? '' : 's'} open`;
+  return `${rupees(inHand)} in of ${rupees(asked)} asked for`;
+}
 
 const ctx = requireUser('home', ['farmer']);
 
@@ -59,6 +76,9 @@ if (ctx) {
           ? `${videos.length} video${videos.length === 1 ? '' : 's'} filed`
           : 'Nothing filed yet',
       },
+      // The most useful line on a farmer's home screen: how much has actually
+      // come in against what was asked for. The row carried no line at all.
+      money: { line: moneyLine(projects) },
     });
 
     // The empty first run used to be a page of its own, home-empty.html, which
