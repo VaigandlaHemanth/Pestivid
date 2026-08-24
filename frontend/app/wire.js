@@ -141,6 +141,35 @@ export function asField(el, opts = {}) {
     opts.multiline ? 'resize: vertical' : '',
   ].filter(Boolean).join('; ') + ';';
   el.replaceChildren(input);
+
+  // The tap target is the BOX, not the text slot inside it.
+  //
+  // `el` is the drawn text node -- 21px tall inside a field that looks 48px --
+  // so the input landed as a sliver in the middle of it and a finger aimed at
+  // the top or bottom third of the field hit nothing. That is what "I cannot
+  // type in that text box" was. The drawn geometry is not moved, because
+  // verify-layout compares it: instead the visible box focuses the input, the
+  // same way the six-digit code strip already does.
+  // Found by SIZE, walking up a few levels: a field box is taller than its text
+  // slot and still field-sized. A selector on background colour matched the
+  // whole 269px footer band instead, and put a text cursor on it.
+  const mine = el.getBoundingClientRect().height;
+  let box = null;
+  for (let n = el.parentElement, hop = 0; n && hop < 4; n = n.parentElement, hop++) {
+    const h = n.getBoundingClientRect().height;
+    if (h > mine + 4 && h <= Math.max(96, mine * 4)) { box = n; break; }
+    if (h > Math.max(96, mine * 4)) break;
+  }
+  if (box) {
+    box.style.cursor = 'text';
+    box.addEventListener('mousedown', (e) => {
+      if (e.target === input || input.contains(e.target)) return;
+      // A control inside the box -- a Show link, a send arrow -- keeps its click.
+      if (e.target.closest?.('[data-act]') && !box.matches('[data-act]')) return;
+      e.preventDefault();
+      input.focus();
+    });
+  }
   return input;
 }
 

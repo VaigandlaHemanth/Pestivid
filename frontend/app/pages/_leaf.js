@@ -17,6 +17,7 @@ import { requireUser, load, state } from './_guard.js';
 import { bind } from '../bind.js';
 import { asField, acts, press } from '../wire.js';
 import { multiStep } from '../steps.js';
+import { plainText } from '../bind.js';
 
 // A refusal shows the retake guidance that used to live on a page of its own.
 function revealRetake(on) {
@@ -174,6 +175,11 @@ export function leaf(slug) {
         sessionStorage.setItem(KEY, JSON.stringify(verdict));
         localStorage.setItem('pv.model', '1');
         steps.done();
+        // render() was only ever called on LOAD, from saved state. A fresh
+        // check stored its verdict and never drew it, so a farmer waited out a
+        // 173 MB download, picked a leaf, and the screen went on saying "No
+        // diagnosis yet". The answer existed and was never shown.
+        render(verdict);
         // The one moment in this product that has waited minutes for an answer.
         // 830ms on the bouncy spring, once, on the verdict only.
         const card = ctx.root.querySelector('[data-bind="verdict.name"]')?.closest('div[style*="background"]');
@@ -195,25 +201,35 @@ export function leaf(slug) {
 
   function render(v) {
     const pct = v.confidence != null ? `${Math.round(v.confidence * 100)}% sure` : '';
+    const ok = v.status === 'ok';
+
+    // A REFUSAL IS A VERDICT AND HAS TO SAY SO.
+    //
+    // refusal.headline only exists inside the retake block, which is hidden
+    // until a refusal earns it -- so a refused photo rendered the verdict card
+    // as "Most likely / — / —" and then went on to show the full Mancozeb spray
+    // guidance underneath. Spray advice for a disease nobody named is the most
+    // dangerous thing this screen could do. The refusal states itself in the
+    // verdict card, and the treatment sections go.
+    const headline = v.status === 'not_a_leaf'
+      ? 'That does not look like a potato leaf'
+      : 'Not sure enough to name anything';
     bind(ctx.root, {
       shot: { file: v.file || 'your photo', where: `Checked on your phone · ${v.ms} ms` },
       verdict: {
-        name: v.status === 'ok' ? v.disease : '—',
-        note: v.status === 'ok'
+        name: ok ? v.disease : headline,
+        note: ok
           ? `${WORDS[v.disease] || ''} ${pct}${v.runner_up ? `, and it could be ${v.runner_up}` : ''}.`.trim()
-          : '',
+          : plainText(v.message) || 'Take it again with the whole leaf in frame and a little space around it.',
       },
-      refusal: { headline: v.status === 'not_a_leaf'
-        ? 'That does not look like a potato leaf'
-        : 'Not sure enough to name anything' },
+      refusal: { headline },
     });
-    // The refusal already carries the correct wording from the model, which
-    // says explicitly not to fill the frame. Use its words, not ours.
-    if (v.status !== 'ok' && v.message) {
-      const note = ctx.root.querySelector('[data-bind="refusal.headline"]')?.parentElement
-        ?.querySelector('div:not([data-bind])');
-      if (note) note.textContent = v.message;
+    for (const sec of ctx.root.querySelectorAll('[data-treatment]')) {
+      sec.style.display = ok ? '' : 'none';
     }
+    // "Most likely" is a claim about a diagnosis. There is not one.
+    const kicker = ctx.root.querySelector('[data-bind="verdict.name"]')?.previousElementSibling;
+    if (kicker && !ok) kicker.textContent = 'The checker refused';
     const again = document.createElement('div');
     ctx.root.append(again);
     state(again, 'empty', 'Check another leaf', 'This clears the result and opens the camera.');

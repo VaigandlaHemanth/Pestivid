@@ -47,7 +47,7 @@ if (ctx) {
     });
     const report = [...root.querySelectorAll('div')]
       .find(d => d.textContent.trim() === 'Report the harvest')?.closest('div[style*="background: #fff"]');
-    if (due) goes(report, 'report-harvest', 'Report the harvest');
+    if (due) goes(report, `report-harvest?project=${due._id}`, 'Report the harvest');
     else report?.remove();
 
     // ---- money coming in ---------------------------------------------

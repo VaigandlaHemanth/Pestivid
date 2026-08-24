@@ -4,6 +4,7 @@
 import { requireUser, api, load, state } from './_guard.js';
 import { oneByText, reason } from '../bind.js';
 import { asField, acts, press } from '../wire.js';
+import { plainText } from '../bind.js';
 
 const ctx = requireUser('ask', ['farmer', 'investor', 'buyer', 'admin']);
 // The board drew an example exchange so the bubbles could be judged. Keep the
@@ -66,29 +67,8 @@ function bubble(kind, text, source) {
 // bounds it to the last eight turns; this keeps them in order.
 const said = [];
 
-/**
- * Markdown a model emitted anyway, turned back into readable text.
- *
- * The system prompt asks for plain text, but a model obeys that unevenly -- and
- * the bubble sets textContent, so "- **Check the product label**" reached a
- * farmer with every asterisk intact. Text in, text out: no HTML is built from
- * model output.
- */
-function plain(md) {
-  const NL = String.fromCharCode(10);
-  return String(md || '')
-    .replace(/```[\s\S]*?```/g, m => m.replace(/```/g, '').trim())
-    .replace(/^#{1,6}[ \t]*/gm, '')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    // The trailing lookahead has to allow punctuation, or "your *extension
-    // officer*." keeps its asterisks -- which is exactly how it arrives.
-    .replace(/(^|[ \t])\*([^*\r\n]+)\*(?=[ \t.,;:!?)\]]|$)/gm, '$1$2')
-    .replace(/(^|[ \t])_([^_\r\n]+)_(?=[ \t.,;:!?)\]]|$)/gm, '$1$2')
-    .replace(/^[ \t]*[-*+][ \t]+/gm, '• ')
-    .replace(/‑/g, '-')
-    .replace(/(\r?\n){3,}/g, NL + NL)
-    .trim();
-}
+// plainText is shared with the leaf checker; see app/bind.js.
+
 
 let asking = false;
 async function ask(text) {
@@ -100,7 +80,7 @@ async function ask(text) {
   try {
     const r = await api.ai.ask(text, said.slice(0, -1));
     pending.remove();
-    const answer = plain(r.answer || r.message) || 'The documents do not cover that.';
+    const answer = plainText(r.answer || r.message) || 'The documents do not cover that.';
     said.push({ role: 'assistant', content: answer });
     bubble('them', answer, r.source || r.citation);
   } catch (err) {

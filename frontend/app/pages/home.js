@@ -52,7 +52,10 @@ if (ctx) {
   if (glyphs[0]) goes(glyphs[0], 'messages', 'Messages');
   if (glyphs[1]) goes(glyphs[1], 'profile', 'Your profile');
 
-  goes(oneByText('Report the harvest', root)?.parentElement, 'report-harvest', 'Report the harvest');
+  // Wired below, in the data callback: this ran at setup, before anything knew
+  // WHICH season needed reporting, so it linked to report-harvest with no id --
+  // and that page, opened without one, is a dead end saying "No season chosen".
+  // Every one of the three routes into it had the same fault.
 
   // Read-aloud and speech input were here. Both are gone -- the drawn speaker
   // on every row and the "Speak instead of typing" block have left the board
@@ -68,6 +71,8 @@ if (ctx) {
       api.projects.mine(ctx.user._id || ctx.user.id).catch(() => []),
     ]);
     const due = (projects || []).find(p => p.status === 'funded' && !p.harvestReportedAt);
+    const reportBtn = oneByText('Report the harvest', root)?.parentElement;
+    if (reportBtn && due) goes(reportBtn, `report-harvest?project=${due._id}`, 'Report the harvest');
     bind(root, {
       whoWhere: me.name,
       todo: { headline: due ? `${due.title} is ready to harvest` : 'Nothing needs you today' },

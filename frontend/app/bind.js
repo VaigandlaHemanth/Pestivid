@@ -315,3 +315,32 @@ export function dropSection(root, sec, ...rowNames) {
   for (const n of rowNames)
     root.querySelectorAll(`[data-row="${n}"]`).forEach(el => el.remove());
 }
+
+/**
+ * Markdown that a model emitted anyway, turned back into readable text.
+ *
+ * Two places show model prose: the chatbot's bubbles and the leaf checker's
+ * refusal. Both set textContent, so "- **Check the label**" reached a farmer
+ * with every asterisk and hyphen intact. Text in, text out -- no HTML is ever
+ * built from model output.
+ *
+ * Written with String.fromCharCode for the newline and the bullet: composing
+ * this file from a script twice turned \n inside a regex literal into a real
+ * line break, and the second time it shipped a SyntaxError to two pages.
+ */
+export function plainText(md) {
+  const NL = String.fromCharCode(10);
+  const BULLET = String.fromCharCode(8226, 32);
+  return String(md || '')
+    .replace(/```[\s\S]*?```/g, m => m.replace(/```/g, "").trim())
+    .replace(/^#{1,6}[ \t]*/gm, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    // The trailing lookahead allows punctuation, or "your *extension officer*."
+    // keeps its asterisks -- which is exactly how it arrives.
+    .replace(/(^|[ \t])\*([^*\r\n]+)\*(?=[ \t.,;:!?)\]]|$)/gm, '$1$2')
+    .replace(/(^|[ \t])_([^_\r\n]+)_(?=[ \t.,;:!?)\]]|$)/gm, '$1$2')
+    .replace(/^[ \t]*[-*+][ \t]+/gm, BULLET)
+    .replace(/\u2011/g, '-')
+    .replace(/(\r?\n){3,}/g, NL + NL)
+    .trim();
+}

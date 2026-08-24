@@ -124,7 +124,7 @@ if (ctx) {
       const report = [...root.querySelectorAll('div')]
         .find(d => d.children.length === 0 && d.textContent.trim() === 'Report the harvest')?.parentElement;
       if (here.harvestReportedAt) report?.remove();
-      else goes(report, 'report-harvest', 'Report the harvest');
+      else goes(report, `report-harvest?project=${here._id}`, 'Report the harvest');
     }
 
     goes([...root.querySelectorAll('div')]
