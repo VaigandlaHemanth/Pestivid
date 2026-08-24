@@ -95,81 +95,44 @@ if (input) {
 }
 
 /* ---- the composer button -------------------------------------------------
- * The board drew a microphone and the caption said "Hold the blue button and
- * speak", over a handler that sent whatever was typed. There was no speech
- * capture anywhere in frontend/, and home.js has been writing sessionStorage
- * 'pv.listen' since it was built with nothing on earth reading it.
- *
- * Voice is the stated accommodation for a farmer who cannot type Telugu, so it
- * is real here where the browser has the API. Where it does not, the mic is
- * swapped for the arrow and the caption stops promising speech -- rather than
- * leaving a microphone glyph over a text send, which is the version that tells
- * a farmer the app is broken.
+ * The board drew a microphone and the caption promised speech. There is no
+ * speech capture in this product and there is not going to be one for now, so
+ * the microphone has left the board and the button is the arrow it always
+ * should have been: it sends what is typed. The caption no longer promises
+ * anything it cannot do.
  * ------------------------------------------------------------------------- */
-const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-const mic = root.querySelector('[data-mic]');
-const arrow = root.querySelector('[data-arrow]');
-const caption = root.querySelector('[data-caption]');
-
 const submit = () => { const t = input?.value.trim(); if (input) input.value = ''; ask(t); };
 
-if (!Rec) {
-  if (mic) mic.style.display = 'none';
-  if (arrow) arrow.style.display = '';
-  if (caption) {
-    caption.textContent = 'This phone will not let a web page listen, so type the question. '
-      + 'This is not a doctor or an agronomist — check anything important with your extension officer.';
-  }
-  acts(send, 'Send your question', submit);
-} else {
-  const rec = new Rec();
-  rec.lang = document.documentElement.lang || localStorage.getItem('pv.lang') || 'en-IN';
-  rec.interimResults = true;
-  rec.continuous = false;
-  let listening = false;
+// Inactive until there is something to send, the same way the investor's
+// confirm button waits for its acknowledgement -- a full-strength blue button
+// that silently does nothing is the defect this whole pass has been removing.
+const paintSend = () => {
+  const has = Boolean(input?.value.trim());
+  send.style.background = has ? '#016abe' : '#c3bcb6';
+  send.setAttribute('aria-disabled', String(!has));
+};
+input?.addEventListener('input', paintSend);
+paintSend();
 
-  const stopLook = () => {
-    listening = false;
-    send.setAttribute('aria-pressed', 'false');
-    send.style.background = '#016abe';
-  };
-  rec.onresult = (e) => {
-    let heard = '';
-    for (const r of e.results) heard += r[0].transcript;
-    if (input) input.value = heard.trim();
-  };
-  rec.onerror = (e) => {
-    stopLook();
-    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-      // Refused the microphone: say so once, and leave the typed path working.
-      if (caption) caption.textContent = 'You did not allow the microphone, so type the question instead.';
+acts(send, 'Send your question', () => {
+  if (!input?.value.trim()) {
+    // Say why nothing happened, once, next to the thing that is missing.
+    let hint = root.querySelector('[data-hint]');
+    if (!hint) {
+      hint = document.createElement('div');
+      hint.setAttribute('data-hint', '');
+      hint.style.cssText = 'font-size: 13.5px; line-height: 1.45; margin-top: 8px; color: #7c4a12;';
+      send.closest('div[style*="align-items: stretch"]')?.after(hint);
     }
-  };
-  rec.onend = () => {
-    stopLook();
-    // Speaking then falling silent means "send it" -- a farmer mid-field should
-    // not have to find a second button afterwards.
-    if (input?.value.trim()) submit();
-  };
-
-  send.setAttribute('aria-pressed', 'false');
-  acts(send, 'Speak your question', () => {
-    if (listening) { rec.stop(); return; }
-    if (input?.value.trim()) { submit(); return; }   // something typed: send it
-    try {
-      rec.start();
-      listening = true;
-      send.setAttribute('aria-pressed', 'true');
-      send.style.background = '#a71930';             // recording, same red as Record
-    } catch { stopLook(); }
-  });
-
-  // home.js's "Speak instead of typing" sets this and nothing ever read it.
-  if (sessionStorage.getItem('pv.listen') === '1') {
-    sessionStorage.removeItem('pv.listen');
-    setTimeout(() => send.click(), 250);
+    hint.textContent = 'Type a question first, or tap one of the suggestions above.';
+    input?.focus();
+    return;
   }
-}
+  root.querySelector('[data-hint]')?.remove();
+  submit();
+  paintSend();
+});
+
 press(root);
 
 // the suggestion chips are real questions

@@ -31,9 +31,6 @@
     .row + .row { box-shadow: inset 0 1px 0 #e4dfd8; }
     .row.first { align-items: flex-start; padding-top: 18px; padding-bottom: 18px; }
     .row.first .lab { font-size: 21px; font-weight: 700; letter-spacing: -0.016em; }
-    /* read-aloud is a control, so it gets a control's target rather than a bare glyph */
-    .say { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center;
-           justify-content: center; margin-right: -10px; }
     :root {
       --e-smooth: linear(0,0.0234,0.0805,0.1562,0.2403,0.326,0.409,0.4867,0.5576,0.6213,0.6777,0.727,0.7697,0.8065,0.838,0.8647,0.8874,0.9065,0.9225,0.9359,0.9471,0.9564,0.9641,0.9705,0.9758,0.9802,0.9838,0.9867,0.9892,0.9911,0.9928,0.9941,0.9952,0.9961,0.9968,0.9974,0.9979,0.9983,0.9986,0.9989,1);
       --e-snappy: linear(0,0.0218,0.0768,0.1523,0.2388,0.3293,0.4187,0.5039,0.5826,0.6536,0.7164,0.7711,0.818,0.8576,0.8905,0.9176,0.9395,0.9571,0.9708,0.9814,0.9895,0.9954,0.9997,1.0026,1.0045,1.0056,1.0062,1.0063,1.0061,1.0057,1.0052,1.0047,1.0041,1.0036,1.003,1.0025,1.0021,1.0017,1.0014,1.0011,1);
@@ -97,7 +94,6 @@
         <div class="lab">Record a video</div>
         <div class="nat" style="line-height: 1.4; margin-top: 3px;">The date is fixed the moment it arrives.</div>
       </div>
-      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
     </div>
 
     <div class="row">
@@ -108,7 +104,6 @@
         <div class="lab">My plots</div>
         <div data-bind="plots.waiting" class="nat m">2 videos</div>
       </div>
-      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
     </div>
 
     <div class="row">
@@ -118,7 +113,6 @@
       <div style="flex-grow: 1;">
         <div class="lab">Money</div>
       </div>
-      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
     </div>
 
     <div class="row">
@@ -128,7 +122,6 @@
       <div style="flex-grow: 1;">
         <div class="lab">Check a leaf</div>
       </div>
-      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
     </div>
 
     <div class="row">
@@ -138,7 +131,6 @@
       <div style="flex-grow: 1;">
         <div class="lab">Ask a question</div>
       </div>
-      <div class="say"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.8" style="flex-shrink: 0;"><path d="M4 9v6h3.5L13 20V4L7.5 9z" fill="#1d1a17"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path></svg></div>
     </div>
     </div>
 
@@ -154,14 +146,13 @@
          district to ask about -- both real work, neither a page fix. -->
   </div>
 
-  <!-- speak, always reachable -->
-  <div style="flex-shrink: 0; background: #f6f3ef; padding: 16px 20px 18px; margin-top: 12px;">
-    <div style="background: #e7e1db; height: 58px; display: flex; align-items: center; justify-content: center; gap: 11px;">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"></path></svg>
-      <div style="font-size: 17px; font-weight: 600;">Speak instead of typing</div>
-    </div>
-  </div>
-
+  <!-- The "Speak instead of typing" block that stood here is gone, along with
+       the read-aloud speaker on every row. Both were drawn, then briefly made
+       real with the browser's own speech APIs, and then removed on request.
+       They are removed rather than left drawn-and-dead, which is the whole
+       reason this pass exists: a control a farmer can see and press has to do
+       something. If voice comes back it comes back as a recorded human voice,
+       which is what the copy always promised. -->
 
   <!-- everything below this line needs a scroll on a 360x800 handset -->
   <div data-fold style="position: absolute; left: 0; right: 0; top: 800px; height: 0; border-top: 1px dashed rgba(167,25,48,.45); pointer-events: none;">

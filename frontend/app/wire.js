@@ -213,59 +213,6 @@ export function acts(el, name, fn) {
   return el;
 }
 
-/** Read-aloud, only where the device can actually speak.
- *
- *  The artboards drew a speaker on several rows and the sign-in page used to
- *  claim the app "reads every screen aloud". Nobody had recorded anything, so
- *  that claim came out. This is the honest version: the browser's own voice,
- *  used only when a voice for the page's language is installed. Returns false
- *  when it cannot speak, and the caller removes the button -- a speaker that
- *  does nothing is worse than no speaker, because someone who needs it will
- *  conclude the app is broken rather than that the drawing was decoration.
- *
- *  Voices load asynchronously in Chrome, so a first call can see an empty list;
- *  the button is kept if the API exists and re-checked on voiceschanged. */
-const LANG = () => document.documentElement.lang || localStorage.getItem('pv.lang') || 'en-IN';
-let voicesReady = false;
-if (window.speechSynthesis) {
-  speechSynthesis.addEventListener?.('voiceschanged', () => { voicesReady = true; });
-}
-export function voiceFor(lang) {
-  if (!window.speechSynthesis) return null;
-  const want = (lang || LANG()).toLowerCase().split('-')[0];
-  const all = speechSynthesis.getVoices() || [];
-  return all.find(v => v.lang.toLowerCase().startsWith(want))
-      || all.find(v => v.lang.toLowerCase().startsWith('en')) || null;
-}
-export function sayable(el, text, name) {
-  if (!el || !window.speechSynthesis || !text) return false;
-  el.setAttribute('aria-pressed', 'false');
-  const stop = () => {
-    speechSynthesis.cancel();
-    document.querySelectorAll('[aria-pressed="true"][data-speaking]').forEach(n => {
-      n.removeAttribute('data-speaking'); n.setAttribute('aria-pressed', 'false');
-    });
-  };
-  acts(el, name || 'Read aloud', () => {
-    // Speaking with no visible acknowledgement is the same bug as a button that
-    // does nothing: the person cannot tell whether it worked, and cannot stop
-    // it. So it is a toggle -- press to start, press again to stop -- and the
-    // pressed state is drawn.
-    const speaking = el.hasAttribute('data-speaking');
-    stop();
-    if (speaking) return;
-    const v = voiceFor();
-    const u = new SpeechSynthesisUtterance(text);
-    if (v) { u.voice = v; u.lang = v.lang; }
-    u.rate = 0.92;                       // a shade under default; these are instructions
-    u.onend = u.onerror = stop;
-    el.setAttribute('data-speaking', '');
-    el.setAttribute('aria-pressed', 'true');
-    speechSynthesis.speak(u);
-  });
-  return true;
-}
-
 /** Press feedback for controls a module marked after wire() ran. */
 export function press(root) { pressFeedback(root); }
 

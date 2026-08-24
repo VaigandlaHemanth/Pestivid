@@ -121,8 +121,8 @@ body[data-role="public"] { background: var(--ground); }
    back over 260ms so the surface settles rather than flicking. */
 [data-act][data-pressed] { transform: scale(.97); transition-duration: 120ms; }
 
-/* A toggle that is on says so. Used by the read-aloud buttons: a ring rather
-   than a dim, because dimming a live control reads as disabled. */
+/* A toggle that is on says so: a ring rather than a dim, because dimming a
+   live control reads as disabled. */
 [data-act][aria-pressed="true"] {
   box-shadow: inset 0 0 0 2px var(--action);
   transition: box-shadow var(--t-press) var(--e-press);

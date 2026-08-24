@@ -6,7 +6,7 @@
 // Binding data is not the same as building a page.
 import { requireUser, api, load } from './_guard.js';
 import { bind, oneByText } from '../bind.js';
-import { press, goes, acts, sayable } from '../wire.js';
+import { press, goes } from '../wire.js';
 
 const ctx = requireUser('home', ['farmer']);
 
@@ -37,35 +37,9 @@ if (ctx) {
 
   goes(oneByText('Report the harvest', root)?.parentElement, 'report-harvest', 'Report the harvest');
 
-  // ---- read aloud ------------------------------------------------------
-  // The speaker on every row used to be a drawing. Read-aloud matters more
-  // here than anywhere else in the product, so it is real now -- but only
-  // when the device can actually speak the language. sayable() returns false
-  // when no matching voice is installed, and then the button is removed
-  // rather than left there to do nothing.
-  for (const [label] of rows) {
-    const row = oneByText(label, root)?.closest('.row');
-    const btn = row?.querySelector('.say');
-    if (!btn) continue;
-    const line = [label, row.querySelector('.nat')?.textContent?.trim()]
-      .filter(Boolean).join('. ');
-    if (!sayable(btn, line, `Read aloud: ${label}`)) btn.remove();
-  }
-
-  // ---- speech input ----------------------------------------------------
-  // Same rule. Chrome has webkitSpeechRecognition, most other browsers do not,
-  // so the button exists only where it can work. It hands what it hears to the
-  // chatbot, which is the one screen on this app that takes a sentence.
-  const speak = oneByText('Speak instead of typing', root)?.parentElement;
-  const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (speak && !Rec) {
-    speak.parentElement?.remove();
-  } else if (speak) {
-    acts(speak, 'Speak instead of typing', () => {
-      sessionStorage.setItem('pv.listen', '1');
-      location.href = './ask.html';
-    });
-  }
+  // Read-aloud and speech input were here. Both are gone -- the drawn speaker
+  // on every row and the "Speak instead of typing" block have left the board
+  // too, rather than being left visible and dead.
 
   press(root);
 
