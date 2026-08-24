@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#f6f3ef">
+  <meta name="theme-color" content="#ffffff">
   <title>Money</title>
   <!-- generated from design/Money.dc.html by frontend/build-pages.mjs -- do not edit -->
   
@@ -23,21 +23,60 @@
     .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
     .sub { font-size: 15px; line-height: 1.5; color: #4a443d; }
     .sec { font-size: 17px; font-weight: 700; color: #37322d; }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .nav   { font-size: 15px; color: #605a53; }
+    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .card  { background: #fff; padding: 20px; }
+    .cardh { font-size: 16.5px; font-weight: 700; }
+    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .rail  { display: flex; flex-direction: column; gap: 16px; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </head>
-<body data-page="money" data-role="farmer" data-design-width="360" data-design-height="1255">
-<div data-surface="phone" data-w="360" class="f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+<body data-page="money" data-role="farmer" data-design-width="1320" data-design-height="940">
+<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
-  <div style="background: #fff; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-    <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-    <div data-title="" style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Money</div>
-  </div>
+  <div class="bar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
+        <div class="brand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="nav">My plots</div>
+          <div class="navOn">Money</div>
+          <div class="nav">Messages</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+          <div data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial="" style="font-size: 13px; font-weight: 600;">A</div>
+        </div>
+      </div>
+    </div>
 
-  <div style="flex-grow: 1;">
+    <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 26px 28px 30px;">
 
+      <!-- what a farmer can still act on -->
+      <div class="main">
+        <div data-title="" class="pageh" style="margin-bottom: 18px;">Money</div>
     <!-- ONE thing to do. Ink, not ochre and not green: this is the primary
          action, and green belongs only to a healthy leaf. -->
-    <div style="background: #1d1a17; padding: 20px;">
+    <div style="background: #1d1a17; padding: 24px 26px; display: flex; flex-direction: column; align-items: flex-start;">
       <div style="font-size: 15px; color: #c3bcb6;">Needs you today</div>
       <div data-bind="due.headline" style="font-size: 22px; font-weight: 700; color: #fff; line-height: 1.25; margin-top: 5px;">
         Canal plot is ready to harvest
@@ -46,7 +85,7 @@
         Four investors are waiting to be paid. Tell us what you sold it for, and what it cost you to grow.
         We work out each person’s share.
       </div>
-      <div style="background: #fff; height: 60px; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+      <div style="background: #fff; min-height: 56px; margin-top: 16px; padding: 0 26px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; align-self: flex-start;">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2"><path d="M4 5h16v11H8l-4 4z"></path></svg>
         <div style="font-size: 18px; font-weight: 700;">Report the harvest</div>
       </div>
@@ -57,11 +96,11 @@
     </div>
 
     <!-- money coming in -->
-    <div data-sec="raise" style="padding: 20px 20px 10px;">
+    <div data-sec="raise" style="padding: 6px 0 12px;">
       <div class="sec">Money coming in</div>
     </div>
 
-    <div data-row="raise" style="background: #fff; padding: 16px 20px;">
+    <div data-row="raise" style="background: #fff; padding: 18px 20px;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div data-slot="name" style="font-size: 18px; font-weight: 600;">Canal plot</div>
         <div data-slot="amount" class="num" style="font-size: 19px; font-weight: 700;">₹5,00,000</div>
@@ -90,7 +129,7 @@
     </div>
 
     <!-- selling -->
-    <div data-sec="sell" style="padding: 20px 20px 10px;">
+    <div data-sec="sell" style="padding: 26px 0 12px;">
       <div class="sec">Produce you are selling</div>
     </div>
 
@@ -110,12 +149,16 @@
     </div>
 
     <!-- last season’s receipt, deliberately shaped like a UPI history -->
-    <div data-sec="paid" style="padding: 20px 20px 10px;">
+    
+      </div>
+
+      <!-- the rail: last season, a receipt rather than a task. There is nothing left to do about it. -->
+      <div class="rail">
+<div data-sec="paid" style="padding: 20px 20px 10px;">
       <div class="sec">What you paid out last season</div>
       <div data-bind="lastSeason.name" class="sub" style="margin-top: 3px;">Canal plot, March 2026</div>
     </div>
-
-    <div style="background: #fff;">
+<div style="background: #fff;">
       <div style="display: contents;">
         <div data-row="payout" style="display: flex; align-items: center; gap: 13px; padding: 14px 20px; background: #f6f3ef;">
           <div data-readout="" style="width: 40px; height: 40px; flex-shrink: 0; background: #e7e1db; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
@@ -174,11 +217,8 @@
         </div>
       </div>
     </div>
-
-  </div>
-
-
-  <!-- everything below this line needs a scroll on a 360x800 handset -->
+      </div>
+    </div>
   
 </div>
 <script type="module" src="./pages/money.js"></script>

@@ -156,6 +156,15 @@ if (ctx) {
         'When you raise for a season or sell a lot, every figure lands on this page.',
         { label: 'Ask for money', go: 'ask-money' });
     }
+    // With no settled season the rail is empty, and a 372px column of nothing
+    // beside the work is worse than no column. The main takes the width.
+    const grid = root.querySelector('div[style*="grid-template-columns: 1fr 372px"]');
+    const rail = grid?.lastElementChild;
+    if (grid && rail && !rail.textContent.trim()) {
+      rail.remove();
+      grid.style.gridTemplateColumns = 'minmax(0, 1fr)';
+    }
+
     press(root);
   });
 }
