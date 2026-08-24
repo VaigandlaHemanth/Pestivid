@@ -9,6 +9,9 @@
   <!-- generated from design/Setup.dc.html by frontend/build-pages.mjs -- do not edit -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&amp;display=swap">
   <link rel="stylesheet" href="./tokens.css">
+  <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
+       at a design's own width. -->
+  <link rel="stylesheet" href="./responsive.css">
   <style>
 
     body { margin: 0; }
@@ -30,7 +33,7 @@
   </style>
 </head>
 <body data-page="setup-language" data-role="public" data-design-width="360" data-design-height="800">
-<div class="ph f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto; ">
+<div data-surface="phone" data-w="360" class="ph f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto; ">
         <div style="background: #f6f3ef; padding: 26px 20px 20px; flex-shrink: 0;">
           <div style="font-size: 24px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
           <div data-title="" style="font-size: 17px; color: #4a443d; margin-top: 3px;">Choose your language</div>

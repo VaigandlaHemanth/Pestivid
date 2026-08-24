@@ -1,0 +1,132 @@
+/* Making fixed-width drawings behave like pages.
+ *
+ * The artboards are drawings: each panel is pinned to one width -- 1320 for the
+ * desktop surfaces, 360 for the farmer's phone screens -- because that is what
+ * an artboard is. The generated pages inherited that literally, and measuring
+ * all 31 said so plainly: 7 overflowed a 390px phone (the landing page by
+ * 361px, so half of it was simply off-screen) and 22 rendered as a 360px sliver
+ * in the middle of a 1440px laptop window.
+ *
+ * Inline styles cannot carry a media query, and the markup must stay identical
+ * to its board or verify-layout is meaningless. So the adaptation lives here,
+ * addressed by the attribute selectors the boards already give us, and applies
+ * only away from each design's own width. At 1320 and at 360 nothing in this
+ * file fires, which is what keeps the drawings honest.
+ */
+
+/* ── the root panel ─────────────────────────────────────────────────────── */
+
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* A desktop panel pinned to its design width becomes a maximum instead, so it
+   can narrow without pushing the page sideways. */
+body > div[style*="width: 1320px"],
+body > div[style*="width: 1280px"],
+body > div[style*="width: 1200px"],
+body > div[style*="width: 824px"] {
+  width: 100% !important;
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* A phone panel on a laptop was a 360px column in a field of grey. It grows to
+   a comfortable measure and centres -- these are still one-column screens, so
+   the measure is what matters, not filling the window. */
+@media (min-width: 760px) {
+  /* build-pages writes the design width as a MAX-width on the wrapper, so that
+     is what has to be raised. */
+  body > div[style*="max-width: 360px"],
+  body > div[style*="max-width: 380px"] {
+    /* 860, not 620, and no shadow: a shadow makes it a phone-shaped card
+       floating on a desktop, which is the thing that reads as wrong. At 860 the
+       rows stretch and the header spans, so it reads as a page. */
+    max-width: 860px !important;
+  }
+}
+
+/* ── multi-column layouts, below the desktop breakpoint ─────────────────── */
+
+/* A breakpoint has to be below the design's OWN width or the page reflows while
+   its artboard does not -- which is how confirm-investment, drawn at 824px,
+   stopped matching when a 1100px rule fired on it. So: the wide boards collapse
+   below 1100, and everything else waits until 820, which is under every design
+   width in this product. */
+@media (max-width: 1100px) {
+  [data-w="1320"] [style*="grid-template-columns"],
+  [data-w="1280"] [style*="grid-template-columns"],
+  [data-w="1200"] [style*="grid-template-columns"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 820px) {
+  /* Every desktop surface in this product is a two- or three-column grid with
+     at least one fixed track. Below 1100px the tracks stop fitting, which is
+     what pushed the invest, market, orders and portfolio pages sideways. */
+  [data-surface="desk"] [style*="grid-template-columns"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  /* A fixed sidebar or rail becomes a full-width band above the content. */
+  [style*="width: 372px"], [style*="width: 380px"], [style*="width: 260px"],
+  [style*="width: 372px;"], [style*="width: 330px"] {
+    width: auto !important;
+  }
+  /* Two-up flex rows stack rather than squeeze. */
+  [style*="display: flex"][style*="gap: 20px"],
+  [style*="display: flex"][style*="gap: 28px"],
+  [style*="display: flex"][style*="gap: 26px"] {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 700px) {
+  /* Scoped to [data-surface="desk"]: these overrides exist to bring a DESKTOP
+     layout down to a phone. Applying them to a board that was already drawn at
+     360px changes a design at its own width, which is exactly what made three
+     pages stop matching their artboards. */
+  [data-surface="desk"] [style*="padding: 28px 30px"],
+  [data-surface="desk"] [style*="padding: 24px 26px"],
+  [data-surface="desk"] [style*="padding: 22px 24px"],
+  [data-surface="desk"] [style*="padding: 20px 22px"],
+  [data-surface="desk"] [style*="padding: 20px 56px"],
+  [data-surface="desk"] [style*="padding: 46px 24px"] {
+    padding: 18px 16px !important;
+  }
+  /* A measure set in ch was chosen for a wide column. */
+  [data-surface="desk"] [style*="max-width: 62ch"],
+  [data-surface="desk"] [style*="max-width: 64ch"],
+  [data-surface="desk"] [style*="max-width: 70ch"],
+  [data-surface="desk"] [style*="max-width: 92ch"],
+  [data-surface="desk"] [style*="max-width: 44ch"],
+  [data-surface="desk"] [style*="max-width: 46ch"] {
+    max-width: 100% !important;
+  }
+  /* A table with five columns is not a phone layout. Let it scroll inside its
+     own box rather than taking the page with it. */
+  table { display: block; overflow-x: auto; }
+}
+
+/* ── the landing page, which is the widest thing here ───────────────────── */
+
+@media (max-width: 900px) {
+  /* The hero's text column is placed with a hard left margin and a fixed width. */
+  [style*="margin: 146px 0 0 72px"] {
+    margin: 96px 20px 0 20px !important;
+    width: auto !important;
+  }
+  /* The evidence readout is pinned to the hero's bottom-right corner, which on
+     a phone is on top of the buttons. */
+  [data-bind="evidence.meta"] { display: none !important; }
+  /* Display type set for a 1320px canvas. */
+  h1[style*="font-size: 62px"], [style*="font-size: 62px"] { font-size: 40px !important; }
+  [style*="font-size: 56px"] { font-size: 36px !important; }
+  [style*="font-size: 40px"] { font-size: 30px !important; }
+  [style*="font-size: 34px"] { font-size: 27px !important; }
+  [style*="font-size: 32px"] { font-size: 26px !important; }
+  [style*="font-size: 30px"] { font-size: 25px !important; }
+}
+
+/* ── things that must never change ──────────────────────────────────────── */
+
+/* Reduced motion is handled in tokens.css; nothing here animates. */

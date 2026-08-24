@@ -82,7 +82,12 @@ const report = [];
 
 for (const slug of slugs) {
   const size = SIZES[slug], board = originOf(slug);
-  const a = await browser.newPage({ viewport: { width: 1500, height: Math.max(size.h, 600) } });
+  // The BOARD is rendered at a wide viewport because an artboard is a fixed-size
+  // drawing that does not care. The PAGE is now responsive, so it has to be
+  // rendered at the design's own width or this compares a phone layout against
+  // its own desktop reflow -- which is what produced three false mismatches
+  // when responsive.css landed. Responsive behaviour is proved separately.
+  const a = await browser.newPage({ viewport: { width: Math.max(size.w, 1500), height: Math.max(size.h, 600) } });
   await a.goto(pathToFileURL(path.join(DESIGN, board)).href, { waitUntil: 'load' });
   await a.addScriptTag({ content: shim });
   await a.evaluate(() => document.querySelectorAll('[data-fold]').forEach(n => n.remove()));

@@ -139,7 +139,9 @@ export async function build() {
     const clamp = f.w > 400 ? 'max-width: none;' : `max-width: ${f.w}px;`;
     style = `box-sizing: border-box; width: 100%; ${clamp} margin-left: auto; margin-right: auto; min-height: 100vh; `
       + (f.inherited ? f.inherited + '; ' : '') + style;
-    let open2 = open.replace(/\sdata-page="[^"]*"/, '');
+    // The root says which kind of surface it is, so responsive.css can adapt a
+    // desktop layout without also rewriting a phone one that is already narrow.
+    let open2 = open.replace(/\sdata-page="[^"]*"/, ` data-surface="${f.w > 400 ? 'desk' : 'phone'}" data-w="${f.w}"`);
     open2 = /style="/.test(open2) ? open2.replace(/style="[^"]*"/, `style="${style}"`)
                                   : open2.replace(/^<div/, `<div style="${style}"`);
     const body = open2 + f.html.slice(open.length);
@@ -155,6 +157,9 @@ export async function build() {
   <!-- generated from design/${f.from} by frontend/build-pages.mjs -- do not edit -->
   ${f.links}
   <link rel="stylesheet" href="./tokens.css">
+  <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
+       at a design's own width. -->
+  <link rel="stylesheet" href="./responsive.css">
   <style>
 ${f.css.trimEnd()}
   </style>
