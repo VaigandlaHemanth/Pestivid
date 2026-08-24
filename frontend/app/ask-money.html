@@ -38,22 +38,26 @@
     .tier{ background: #fff; padding: 18px 20px; }
   </style>
 </head>
-<body data-page="ask-money-video" data-role="farmer" data-design-width="360" data-design-height="880">
+<body data-page="ask-money" data-role="farmer" data-design-width="360" data-design-height="894">
 <div data-surface="phone" data-w="360" class="ph f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto; ">
         <div class="hd">
           <div style="display: flex; align-items: center; gap: 11px;">
             <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
             <div data-title="" style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">Ask for money</div>
           </div>
+          <!-- One header for three steps. It used to be drawn three times, on three
+               URLs, which meant a page load between "which field" and "how much" --
+               and a draft in sessionStorage to survive it. -->
           <div style="display: flex; gap: 5px; margin-top: 12px;">
-            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
-            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
-            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
+            <div data-seg="1" style="flex: 1; height: 5px; background: #1d1a17;"></div>
+            <div data-seg="2" style="flex: 1; height: 5px; background: #d3ccc5;"></div>
+            <div data-seg="3" style="flex: 1; height: 5px; background: #d3ccc5;"></div>
           </div>
         </div>
 
-        <div style="flex-grow: 1; padding: 18px;">
-          <div style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
+        <div data-step="1" style="flex-grow: 1; padding: 18px;">
+          <div data-stepq="" style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
+          <div style="height: 14px;"></div>
           <div data-bind="step1.hint" style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
             Pick a video of it. You cannot ask for money without one.
           </div>
@@ -108,13 +112,107 @@
             </div>
           </div>
         </div>
+        <div data-step="2" style="flex-grow: 1; padding: 18px; display: none;">
+          <div data-stepq="" style="font-size: 19px; font-weight: 700;">How much do you need?</div>
+          <div style="height: 14px;"></div>
+          <div class="lb">Amount</div>
+          <div data-bind="amount" class="bx m" style="height: 64px; font-size: 23px; font-weight: 700; box-shadow: inset 0 0 0 2px #1d1a17;">₹5,00,000</div>
+          <div class="hint">Seed, fertiliser, labour, water, transport for the whole season.</div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">Until when?</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+              <div class="cp" data-chip="timeline">4 months</div>
+              <div class="cpOn" data-chip="timeline">6 months</div>
+              <div class="cp" data-chip="timeline">9 months</div>
+              <div class="cp" data-chip="timeline">Other</div>
+            </div>
+            <div class="hint">Harvest is due about a month before this. Investors see the date, not the number of months.</div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">How are you growing it?</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+              <div class="cpOn" data-chip="method">Normal, with sprays</div>
+              <div class="cp" data-chip="method">No sprays at all</div>
+              <div class="cp" data-chip="method">Water beds</div>
+              <div class="cp" data-chip="method">Fish and plants</div>
+              <div class="cp" data-chip="method">Building the soil back</div>
+            </div>
+            <div class="hint">Plain words on purpose. Nobody standing in a field calls it conventional or regenerative.</div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">Anything they should know?</div>
+            <div style="background: #f6f3ef; min-height: 96px; margin-top: 7px; padding: 13px 15px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 15.5px; line-height: 1.5; color: #4a443d;">
+              Canal water has been steady this year. Last Rabi I sold 40 quintal off this plot.
+            </div>
+            <div class="hint">Optional, and short is fine. Say what happened last year rather than what you hope for this one.</div>
+          </div>
+        </div>
+        <div data-step="3" style="flex-grow: 1; padding: 18px; display: none;">
+          <div data-stepq="" style="font-size: 19px; font-weight: 700;">How do they get paid?</div>
+          <div style="height: 14px;"></div>
+          <!-- two cards, each carrying its own failure case. this is the one
+               question on which a farmer can lose their land. -->
+          <div style="background: #f6f3ef; padding: 15px 16px; box-shadow: inset 0 0 0 2px #1d1a17;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <div style="width: 20px; height: 20px; flex-shrink: 0; background: #1d1a17; border-radius: 10px; margin-top: 2px;"></div>
+              <div>
+                <div style="font-size: 17px; font-weight: 700;">Share the profit</div>
+                <div style="font-size: 14.5px; line-height: 1.55; margin-top: 4px; color: #4a443d;">
+                  They take a share of whatever is left after your costs. <span style="font-weight: 700;">If the
+                  crop fails there is no profit, and you owe them nothing.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: #f6f3ef; padding: 15px 16px; margin-top: 10px;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <div style="width: 20px; height: 20px; flex-shrink: 0; box-shadow: inset 0 0 0 2px #78716a; border-radius: 10px; margin-top: 2px;"></div>
+              <div>
+                <div style="font-size: 17px; font-weight: 700;">Pay the whole amount back</div>
+                <div style="font-size: 14.5px; line-height: 1.55; margin-top: 4px; color: #4a443d;">
+                  You return the <span data-bind="terms.amount">₹5,00,000</span> whatever happens.
+                  <span style="font-weight: 700; color: #a71930;">If the crop fails you still owe it.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div data-share="" style="margin-top: 18px;">
+            <div class="lb">What share of the profit?</div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <div class="cp">40%</div>
+              <div class="cp">50%</div>
+              <div class="cpOn">60%</div>
+              <div class="cp">70%</div>
+            </div>
+            <div class="hint">You keep the rest, plus the <span data-bind="terms.amount">₹5,00,000</span> they gave you.</div>
+          </div>
+
+          <!-- the required roi field, handled so it cannot read as a promise -->
+          <div style="background: #f2e6cd; padding: 15px 16px; margin-top: 18px;">
+            <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">What do you think they will get back?</div>
+            <div style="margin-top: 9px;">
+              <div data-bind="roi.value" class="m" style="font-size: 15.5px; font-weight: 700;">34%</div>
+              <div data-bind="roi.basis" style="font-size: 14.5px; line-height: 1.5; margin-top: 2px; color: #4a443d;">worked out from your own last season</div>
+            </div>
+            <div style="font-size: 14px; line-height: 1.55; margin-top: 8px; color: #4a443d;">
+              <span data-bind="roi.source">You sold ₹9,32,000 and spent ₹2,58,400 last Rabi, and we filled this in from those numbers so it is not a figure pulled from the air.</span>
+              <span style="font-weight: 700;">It will be
+              shown as your guess, never as a promise, and nobody will be paid on it.</span>
+            </div>
+          </div>
+        </div>
 
         <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
           <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center;">
-            <div style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
+            <div data-next="" style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
           </div>
         </div>
       </div>
-<script type="module" src="./pages/ask-money-video.js"></script>
+<script type="module" src="./pages/ask-money.js"></script>
 </body>
 </html>

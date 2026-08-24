@@ -363,13 +363,17 @@ function assertSafeToSeed() {
 
         // --- Create Demo Purchases ---
         console.log('Creating demo purchases...');
-        // Let's have Bob Buyer purchase the demo farmer's Cucumber listing
-        if (demoCucumbersListing && bobUser && demoFarmerUser) {
+        // The demo buyer buys the demo farmer's Cucumber listing.
+        //
+        // This was Bob's purchase, and demo.buyer@pestivid.sim -- the account the
+        // whole demo signs in as -- owned nothing. So the orders page could only
+        // ever be seen in its empty state by the person the demo is for.
+        if (demoCucumbersListing && demoBuyerUser && demoFarmerUser) {
             const purchaseTxHash = generateSimulatedTxHash('sim_purchase_cukes_bob');
             const purchaseDate = new Date(Date.now() - 0.1 * 24 * 60 * 60 * 1000); // Very recent
 
             const purchase = new Purchase({
-                 buyerWallet: bobUser._id,
+                 buyerWallet: demoBuyerUser._id,
                  listingId: demoCucumbersListing._id,
                  price: 49500, // an offer inside the range the farmer listed
                  purchaseDate: purchaseDate,
@@ -387,7 +391,7 @@ function assertSafeToSeed() {
              // Create associated transactions for this purchase
               // Transaction for the buyer (purchase)
               const buyerTransaction = new Transaction({
-                  userId: bobUser._id,
+                  userId: demoBuyerUser._id,
                   txHash: purchaseTxHash,
                   type: 'purchase',
                   amount: purchase.price,
@@ -408,7 +412,7 @@ function assertSafeToSeed() {
               await farmerTransaction.save();
               console.log('Demo purchase/sale transactions created.');
         } else {
-            console.log('Could not create demo purchase: Cucumber listing, Bob buyer, or Demo Farmer user not found.');
+            console.log('Could not create demo purchase: Cucumber listing, demo buyer, or Demo Farmer user not found.');
         }
 
         console.log('Demo purchases created.');
@@ -423,7 +427,7 @@ function assertSafeToSeed() {
          const conversations = [
              {
                  participants: demoConvParticipants1, // Demo Farmer <-> Demo Buyer
-                 lastMessageSnippet: 'Yes, about the tomatoes...',
+                 lastMessageSnippet: 'Yes, about the tomatoes…',
                  lastMessageTimestamp: new Date(Date.now() - 0.02 * 24 * 60 * 60 * 1000), // Very recent
              },
               {
@@ -470,7 +474,7 @@ function assertSafeToSeed() {
          console.log('Creating demo notifications...');
          const notifications = [
               // Notification for Demo Farmer about purchase
-             { recipient: demoFarmerUser._id, type: 'purchase', message: `Your listing "${demoCucumbersListing?.crop || 'N/A'}" was purchased by Bob Buyer!`, timestamp: new Date(Date.now() - 0.1 * 24 * 60 * 60 * 1000), read: false, itemId: demoCucumbersListing?._id, itemType: 'Listing' },
+             { recipient: demoFarmerUser._id, type: 'purchase', message: `“${demoCucumbersListing?.crop || 'your lot'}” was bought by ${demoBuyerUser.name}.`, timestamp: new Date(Date.now() - 0.1 * 24 * 60 * 60 * 1000), read: false, itemId: demoCucumbersListing?._id, itemType: 'Listing' },
               // Notification for Demo Investor about investment
              { recipient: demoInvestorUser._id, type: 'investment', message: 'Your investment of ₹1,00,000 in the wheat season successful!', timestamp: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoWheatRequest._id) && i.amount === 10.0)?._id, itemType: 'Investment' },
              { recipient: demoInvestorUser._id, type: 'investment', message: 'Your investment of ₹55,000 in the wheat season successful!', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoWheatRequest._id) && i.amount === 5.5)?._id, itemType: 'Investment' },
@@ -482,8 +486,8 @@ function assertSafeToSeed() {
 
              // Global notifications
              { global: true, type: 'info', message: 'Welcome to PestiVid Demo Platform! Explore features.', timestamp: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), read: false }, // Older global notification
-              { global: true, type: 'listing', message: 'New listing: "Lettuce" from Demo Farmer is available!', timestamp: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000), read: false, itemId: demoLettuceVideo?._id, itemType: 'Listing' }, // New global listing notification
-               { global: true, type: 'funding', message: 'New opportunity: "Regenerative Corn Pilot" by Alice Farmer!', timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), read: false, itemId: aliceCornRequest?._id, itemType: 'FundingRequest' }, // New global funding notification
+              { global: true, type: 'listing', message: '“Lettuce” is now listed by Demo Farmer.', timestamp: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000), read: false, itemId: demoLettuceVideo?._id, itemType: 'Listing' }, // New global listing notification
+               { global: true, type: 'funding', message: 'Alice Farmer is asking for money for “Regenerative Corn Pilot”.', timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), read: false, itemId: aliceCornRequest?._id, itemType: 'FundingRequest' }, // New global funding notification
          ];
          const createdNotifications = await Notification.insertMany(notifications);
           console.log(`${createdNotifications.length} demo notifications created.`);

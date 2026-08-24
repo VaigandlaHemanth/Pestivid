@@ -143,7 +143,7 @@ if (ctx) {
     if (!all.length && !lots.length) {
       state(root, 'empty', 'No money has moved yet',
         'When you raise for a season or sell a lot, every figure lands on this page.',
-        { label: 'Ask for money', go: 'ask-money-video' });
+        { label: 'Ask for money', go: 'ask-money' });
     }
     press(root);
   });

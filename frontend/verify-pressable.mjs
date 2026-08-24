@@ -15,7 +15,7 @@ const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', 
 
 const ROLE = {
   landing: null, signin: null, signup: null, 'signin-farmer': null,
-  'setup-language': null, 'setup-identity': null,
+  setup: null,
   invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor',
   'thread': 'investor', market: 'buyer', orders: 'buyer', admin: 'admin',
 };

@@ -21,7 +21,7 @@ const APPDIR = path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url
 
 const ROLE_OF = {
   landing: null, signin: null, signup: null, 'signin-farmer': null,
-  'setup-language': null, 'setup-identity': null,
+  setup: null,
   invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor', 'thread': 'investor',
   market: 'buyer', orders: 'buyer',
   admin: 'admin',
@@ -34,7 +34,7 @@ const NO_CLICK = {
   record: 'takes the camera',
   sent: 'uploads to storage, which costs a file of the free allowance',
   signup: 'creates an account on every run',
-  'setup-identity': 'creates an account on every run',
+  setup: 'creates an account on every run',
   'leaf-check': 'downloads 173 MB of model',
   'leaf-check': 'downloads 173 MB of model',
 };

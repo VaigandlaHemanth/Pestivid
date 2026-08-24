@@ -5,7 +5,7 @@ const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', 
   method: 'POST', headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ email: `demo.${r}@pestivid.sim`, password: 'password123' }) })).json();
 const ROLE = { landing: null, signin: null, signup: null, 'signin-farmer': null,
-  'setup-language': null, 'setup-identity': null, invest: 'investor', portfolio: 'investor',
+  setup: null, invest: 'investor', portfolio: 'investor',
   'confirm-investment': 'investor', 'thread': 'investor', market: 'buyer',
   orders: 'buyer', admin: 'admin' };
 const b = await chromium.launch(); const tok = {};

@@ -18,8 +18,8 @@
            box-sizing: border-box; }
     .cap { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px; }
     .stp { font-size: 13px; color: #605a53; letter-spacing: .04em; }
-    .lang   { padding: 15px 17px; font-size: 19px; background: #f6f3ef; box-shadow: inset 0 -1px 0 #c3bcb6; }
-    .langOn { padding: 15px 17px; font-size: 19px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
+    .lang   { padding: 11px 15px; font-size: 18px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; }
+    .langOn { padding: 11px 15px; font-size: 18px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
     .fldL { font-size: 16px; font-weight: 600; }
     .fldB { background: #f6f3ef; height: 62px; margin-top: 7px; display: flex; align-items: center;
             padding: 0 16px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 17px; color: #4a443d; }
@@ -31,7 +31,7 @@
 <div class="a" style="width: 1200px; background: #e7e1db; color: #1d1a17; padding: 28px 28px 34px; box-sizing: border-box; position: relative;">
 
   <div style="font-size: 15px; color: #605a53;">Opening the app for the very first time</div>
-  <h2 style="margin: 5px 0 0; font-size: 27px; font-weight: 700; letter-spacing: -0.028em;">Three screens, then they are filming</h2>
+  <h2 style="margin: 5px 0 0; font-size: 27px; font-weight: 700; letter-spacing: -0.028em;">One screen, then they are filming</h2>
   <p style="margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; max-width: 104ch; color: #4a443d;">
     No splash animation, no carousel of value propositions, no tour. Somebody standing in a field on a
     borrowed phone is not going to swipe through four slides about blockchain, and every second before
@@ -42,7 +42,7 @@
 
     <!-- 1 ─────────── language, before literally anything else ─────────── -->
     <div>
-      <div data-page="setup-language" class="ph f" style="min-height: 800px;">
+      <div data-retired="setup-language" class="ph f" style="min-height: 800px;">
         <div style="background: #f6f3ef; padding: 26px 20px 20px; flex-shrink: 0;">
           <div style="font-size: 24px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
           <div data-title style="font-size: 17px; color: #4a443d; margin-top: 3px;">Choose your language</div>
@@ -63,8 +63,8 @@
           </div>
         </div>
       </div>
-      <div class="stp" style="margin-top: 13px;">STEP 1 OF 3</div>
-      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Language, before the account</div>
+      <div class="stp" style="margin-top: 13px;">WAS STEP 1 OF 3</div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Retired &mdash; folded into the one setup screen</div>
       <div class="cap" style="max-width: 44ch;">
         Every option is written in its own script, and the list is the whole screen &mdash; no logo
         animation ahead of it. The read-aloud button is here rather than three screens later, because
@@ -74,13 +74,28 @@
 
     <!-- 2 ─────────── who you are, and what we refuse to ask ─────────── -->
     <div>
-      <div data-page="setup-identity" class="ph f" style="min-height: 800px;">
+      <div data-page="setup" class="ph f" style="min-height: 800px;">
         <div style="background: #f6f3ef; padding: 22px 20px 18px; flex-shrink: 0;">
-          <div data-title style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Who are you?</div>
-          <div style="font-size: 15px; color: #605a53; margin-top: 2px;">Two things, and a code to get back in</div>
+          <div style="font-size: 24px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
+          <div data-title style="font-size: 17px; color: #4a443d; margin-top: 3px;">Set this up once, then film</div>
         </div>
         <div style="flex-grow: 1; padding: 18px 20px;">
+          <!-- Language first, because it decides what the rest of this screen says.
+               It was its own screen, which meant a tap and a page load between
+               choosing Telugu and being asked your name. -->
           <div>
+            <div class="fldL">Your language</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+            <div class="langOn">English</div>
+            <div class="lang">&#3108;&#3142;&#3122;&#3137;&#3095;&#3137;</div>
+            <div class="lang">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</div>
+            <div class="lang">&#2980;&#2990;&#3007;&#2996;&#3021;</div>
+            <div class="lang">&#2476;&#2494;&#2434;&#2482;&#2494;</div>
+            <div class="lang">&#3221;&#3240;&#3277;&#3240;&#3233;</div>
+            <div class="lang">&#2350;&#2352;&#2366;&#2336;&#2368;</div>
+            </div>
+          </div>
+          <div style="margin-top: 20px;">
             <div class="fldL">Your name</div>
             <div class="fldB" style="color: #1d1a17;">Alice Farmer</div>
           </div>
@@ -121,12 +136,14 @@
           </div>
         </div>
       </div>
-      <div class="stp" style="margin-top: 13px;">STEP 2 OF 3</div>
-      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Three fields, and a refusal</div>
+      <div class="stp" style="margin-top: 13px;">THE WHOLE FIRST RUN</div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">One screen: language, three fields, a refusal</div>
       <div class="cap" style="max-width: 44ch;">
-        Name, phone, four digits. No email, no password with a capital letter and a symbol, no crop
-        survey, no acreage &mdash; those get asked when they are needed and not before. The panel
-        listing what we do not want is doing more work here than any of the fields.
+        Language was a screen of its own and the account was the next one, so somebody standing in a
+        field crossed two page loads before the camera. It is one screen now. No email, no password
+        with a capital letter and a symbol, no crop survey, no acreage &mdash; those get asked when
+        they are needed and not before. The panel listing what we do not want is doing more work here
+        than any of the fields.
       </div>
     </div>
 

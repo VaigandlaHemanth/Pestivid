@@ -39,30 +39,34 @@
   <div style="font-size: 15px; color: #605a53;">The longest form in the product, and the one most likely to be abandoned</div>
   <h2 style="margin: 5px 0 0; font-size: 27px; font-weight: 700; letter-spacing: -0.028em;">Asking for money</h2>
   <p style="margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; max-width: 106ch; color: #4a443d;">
-    Eleven fields the server insists on, cut into three screens with the hardest decision on its own.
-    Nothing is asked twice, nothing is asked that can be worked out, and the two questions that decide
-    whether a farmer loses money are not sliders buried among the rest.
+    Eleven fields the server insists on, in three steps of one screen with the hardest decision alone
+    at the end. Nothing is asked twice, nothing is asked that can be worked out, and the two questions
+    that decide whether a farmer loses money are not sliders buried among the rest.
   </p>
 
   <div style="display: flex; gap: 36px; margin-top: 22px; align-items: flex-start;">
 
-    <!-- 1 ─────────── the video first, because the server will not accept it without one ─────────── -->
+    <!-- the video first, because the server will not accept a request without one -->
     <div>
-      <div data-page="ask-money-video" class="ph f" style="min-height: 860px;">
+      <div data-page="ask-money" class="ph f" style="min-height: 860px;">
         <div class="hd">
           <div style="display: flex; align-items: center; gap: 11px;">
             <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
             <div data-title style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">Ask for money</div>
           </div>
+          <!-- One header for three steps. It used to be drawn three times, on three
+               URLs, which meant a page load between "which field" and "how much" --
+               and a draft in sessionStorage to survive it. -->
           <div style="display: flex; gap: 5px; margin-top: 12px;">
-            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
-            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
-            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
+            <div data-seg="1" style="flex: 1; height: 5px; background: #1d1a17;"></div>
+            <div data-seg="2" style="flex: 1; height: 5px; background: #d3ccc5;"></div>
+            <div data-seg="3" style="flex: 1; height: 5px; background: #d3ccc5;"></div>
           </div>
         </div>
 
-        <div style="flex-grow: 1; padding: 18px;">
-          <div style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
+        <div data-step="1" style="flex-grow: 1; padding: 18px;">
+          <div data-stepq style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
+          <div style="height: 14px;"></div>
           <div data-bind="step1.hint" style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
             Pick a video of it. You cannot ask for money without one.
           </div>
@@ -117,38 +121,9 @@
             </div>
           </div>
         </div>
-
-        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
-          <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center;">
-            <div style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
-          </div>
-        </div>
-      </div>
-      <div class="stp" style="margin-top: 13px;">SCREEN 1 OF 3</div>
-      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">The video, then two words</div>
-      <div class="cap">
-        The server refuses a request with no video attached, so it is the first question rather than a
-        forgotten step at the end. A video whose date has not landed yet is shown, not hidden, with the
-        reason and the wait &mdash; hiding it reads as a bug.
-      </div>
-    </div>
-
-    <!-- 2 ─────────── how much, how long, how grown ─────────── -->
-    <div>
-      <div data-page="ask-money-amount" class="ph f" style="min-height: 860px;">
-        <div class="hd">
-          <div style="display: flex; align-items: center; gap: 11px;">
-            <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-            <div data-title style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">How much do you need?</div>
-          </div>
-          <div style="display: flex; gap: 5px; margin-top: 12px;">
-            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
-            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
-            <div style="flex: 1; height: 5px; background: #d3ccc5;"></div>
-          </div>
-        </div>
-
-        <div style="flex-grow: 1; padding: 18px;">
+        <div data-step="2" style="flex-grow: 1; padding: 18px; display: none;">
+          <div data-stepq style="font-size: 19px; font-weight: 700;">How much do you need?</div>
+          <div style="height: 14px;"></div>
           <div class="lb">Amount</div>
           <div data-bind="amount" class="bx m" style="height: 64px; font-size: 23px; font-weight: 700; box-shadow: inset 0 0 0 2px #1d1a17;">&#8377;5,00,000</div>
           <div class="hint">Seed, fertiliser, labour, water, transport for the whole season.</div>
@@ -184,38 +159,9 @@
             <div class="hint">Optional, and short is fine. Say what happened last year rather than what you hope for this one.</div>
           </div>
         </div>
-
-        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
-          <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center;">
-            <div style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
-          </div>
-        </div>
-      </div>
-      <div class="stp" style="margin-top: 13px;">SCREEN 2 OF 3</div>
-      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Four answers, three of them taps</div>
-      <div class="cap">
-        The growing method is a five-value list in the database with names like conventional and
-        aquaponic. Those are the words the schema uses, not the words a farmer uses, so the chips say
-        what they mean and the enum is translated behind them.
-      </div>
-    </div>
-
-    <!-- 3 ─────────── the decision that can cost them everything ─────────── -->
-    <div>
-      <div data-page="ask-money-terms" class="ph f" style="min-height: 860px;">
-        <div class="hd">
-          <div style="display: flex; align-items: center; gap: 11px;">
-            <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-            <div data-title style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">How do they get paid?</div>
-          </div>
-          <div style="display: flex; gap: 5px; margin-top: 12px;">
-            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
-            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
-            <div style="flex: 1; height: 5px; background: #1d1a17;"></div>
-          </div>
-        </div>
-
-        <div style="flex-grow: 1; padding: 18px;">
+        <div data-step="3" style="flex-grow: 1; padding: 18px; display: none;">
+          <div data-stepq style="font-size: 19px; font-weight: 700;">How do they get paid?</div>
+          <div style="height: 14px;"></div>
           <!-- two cards, each carrying its own failure case. this is the one
                question on which a farmer can lose their land. -->
           <div style="background: #f6f3ef; padding: 15px 16px; box-shadow: inset 0 0 0 2px #1d1a17;">
@@ -237,14 +183,14 @@
               <div>
                 <div style="font-size: 17px; font-weight: 700;">Pay the whole amount back</div>
                 <div style="font-size: 14.5px; line-height: 1.55; margin-top: 4px; color: #4a443d;">
-                  You return the &#8377;5,00,000 whatever happens.
+                  You return the <span data-bind="terms.amount">&#8377;5,00,000</span> whatever happens.
                   <span style="font-weight: 700; color: #a71930;">If the crop fails you still owe it.</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div style="margin-top: 18px;">
+          <div data-share style="margin-top: 18px;">
             <div class="lb">What share of the profit?</div>
             <div style="display: flex; gap: 8px; margin-top: 8px;">
               <div class="cp">40%</div>
@@ -252,19 +198,19 @@
               <div class="cpOn">60%</div>
               <div class="cp">70%</div>
             </div>
-            <div class="hint">You keep the rest, plus the &#8377;5,00,000 they gave you.</div>
+            <div class="hint">You keep the rest, plus the <span data-bind="terms.amount">&#8377;5,00,000</span> they gave you.</div>
           </div>
 
           <!-- the required roi field, handled so it cannot read as a promise -->
           <div style="background: #f2e6cd; padding: 15px 16px; margin-top: 18px;">
             <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">What do you think they will get back?</div>
-            <div style="display: flex; align-items: baseline; gap: 9px; margin-top: 9px;">
+            <div style="margin-top: 9px;">
               <div data-bind="roi.value" class="m" style="font-size: 15.5px; font-weight: 700;">34%</div>
-              <div data-bind="roi.basis" style="font-size: 14.5px; color: #4a443d;">worked out from your own last season</div>
+              <div data-bind="roi.basis" style="font-size: 14.5px; line-height: 1.5; margin-top: 2px; color: #4a443d;">worked out from your own last season</div>
             </div>
             <div style="font-size: 14px; line-height: 1.55; margin-top: 8px; color: #4a443d;">
-              You sold &#8377;9,32,000 and spent &#8377;2,58,400 last Rabi. We filled this in from those
-              numbers so it is not a figure pulled from the air. <span style="font-weight: 700;">It will be
+              <span data-bind="roi.source">You sold &#8377;9,32,000 and spent &#8377;2,58,400 last Rabi, and we filled this in from those numbers so it is not a figure pulled from the air.</span>
+              <span style="font-weight: 700;">It will be
               shown as your guess, never as a promise, and nobody will be paid on it.</span>
             </div>
           </div>
@@ -272,16 +218,19 @@
 
         <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
           <div style="background: #016abe; height: 58px; display: flex; align-items: center; justify-content: center;">
-            <div style="font-size: 17px; font-weight: 700; color: #fff;">See what investors will see</div>
+            <div data-next style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
           </div>
         </div>
       </div>
-      <div class="stp" style="margin-top: 13px;">SCREEN 3 OF 3</div>
-      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Two ways to settle, one of them dangerous</div>
-      <div class="cap">
-        The database offers profit share or full repayment and treats them as equivalent. They are not:
-        one cannot bankrupt a farmer and the other can. Each card carries its own crop-failure sentence,
-        in the card, at the moment of choosing.
+      <div class="stp" style="margin-top: 13px;">ONE SCREEN, THREE STEPS</div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">The video, the amount, and the one dangerous choice</div>
+      <div class="cap" style="max-width: 92ch;">
+        This was three URLs and three drawn headers for one form, which is why the module kept a draft
+        in sessionStorage: it had to survive two page loads. It is one screen now &mdash; the step
+        changes in place, the bar above fills, and nothing is lost if a signal drops. The order stands:
+        the server refuses a request with no video, so the video is asked first rather than forgotten
+        at the end; and the settlement choice is last and alone, because it is the one question on
+        which a farmer can lose their land.
       </div>
     </div>
   </div>

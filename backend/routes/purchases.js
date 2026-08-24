@@ -279,7 +279,7 @@ router.post('/', authenticateToken, async (req, res) => {
               const notification = new Notification({
                   recipient: updatedListing.farmerWallet, // Farmer's ID
                   type: 'purchase', // Custom notification type
-                  message: `Your listing "${savedPurchase.crop || 'N/A'}" was purchased by ${buyerDisplayName} for ${savedPurchase.price.toFixed(2)} SOL!`,
+                  message: `“${savedPurchase.crop || 'your lot'}” was bought by ${buyerDisplayName}.`,
                   itemId: savedPurchase.listingId, // Link to the listing document
                   itemType: 'Listing',
                   read: false, // Initially unread for the farmer

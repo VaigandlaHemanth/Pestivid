@@ -89,11 +89,25 @@ export function state(container, kind, headline, detail, action) {
   }[kind] || ['#eae4de', '#1d1a17', '#4a443d'];
   const box = document.createElement('div');
   box.setAttribute('role', kind === 'failed' ? 'alert' : 'status');
+  // The 20px side margin exists so a box dropped into an UNPADDED container
+  // lines up with padded content around it. In a container that is already
+  // padded it indents twice, which is what made the setup screen's notice sit
+  // 20px inside every panel above it. So: ask the container.
+  // Nine call sites append an unpadded holder div into a padded panel, so
+  // asking the container alone still indented twice. Climb while the padding is
+  // zero: the question is "am I already inside something padded", not "is my
+  // immediate parent padded".
+  let side = 20;
+  for (let n = container instanceof Element ? container : null, hop = 0;
+       n && hop < 4; n = n.parentElement, hop++) {
+    const pl = parseFloat(getComputedStyle(n).paddingLeft) || 0;
+    if (pl > 8) { side = 0; break; }
+  }
   // These arrive in place of something the reader was looking at -- an error
   // over a form, an empty state over a list -- so they come in rather than
   // teleport. Opacity and transform only, and the travel is 6px: this is a
   // message appearing, not a panel sliding.
-  box.style.cssText = `background: ${tone[0]}; padding: 16px 17px; margin: 16px 20px;`
+  box.style.cssText = `background: ${tone[0]}; padding: 16px 17px; margin: 16px ${side}px;`
     + ' opacity: 0; transform: translateY(6px);'
     + ' transition: opacity var(--t-press, 120ms) var(--e-smooth, ease),'
     + ' transform var(--t-release, 260ms) var(--e-snappy, ease);';

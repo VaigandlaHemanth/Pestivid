@@ -35,7 +35,7 @@ const code = '246813';
   const page = await browser.newPage();
   const errs = [];
   page.on('pageerror', e => errs.push(String(e).slice(0, 90)));
-  await page.goto(`${APP}/setup-identity.html`, { waitUntil: 'load' });
+  await page.goto(`${APP}/setup.html`, { waitUntil: 'load' });
   await page.waitForTimeout(500);
 
   await page.fill('input[name="name"]', `Testcase Farmer ${stamp}`);
@@ -94,7 +94,7 @@ const code = '246813';
     localStorage.setItem('pv.token', t); localStorage.setItem('pv.user', u);
   }, [token, JSON.stringify({ _id: userId, name: 'Testcase Farmer', role: 'farmer' })]);
 
-  await page.goto(`${APP}/ask-money-video.html`, { waitUntil: 'load' });
+  await page.goto(`${APP}/ask-money.html`, { waitUntil: 'load' });
   await page.waitForTimeout(1500);
   // a video whose date has not landed is deliberately not selectable, so this
   // clicks whatever the page offers and reports what happened
@@ -113,23 +113,25 @@ const code = '246813';
   });
   await page.waitForTimeout(300);
   const picked = await page.evaluate(() => JSON.parse(sessionStorage.getItem('pv.ask') || '{}').cid || null);
-  ok('choosing a video is remembered between screens', Boolean(picked));
+  ok('choosing a video is remembered', Boolean(picked));
 
   if (picked) {
     await page.evaluate(() => {
       const d = JSON.parse(sessionStorage.getItem('pv.ask'));
       sessionStorage.setItem('pv.ask', JSON.stringify({ ...d, crop: 'Potato', acres: 2 }));
     });
-    await page.goto(`${APP}/ask-money-amount.html`, { waitUntil: 'load' });
-    await page.waitForTimeout(900);
+    // One page now: Next reveals the amount step rather than loading a URL.
+    await page.getByText('Next', { exact: true }).click();
+    await page.waitForTimeout(400);
     await page.fill('input[inputmode="numeric"]', '500000');
     await page.getByText('6 months', { exact: true }).click();
     await page.getByText('No sprays at all', { exact: true }).click();
     await page.getByText('Next', { exact: true }).click();
-    await page.waitForTimeout(1200);
-    ok('the amount step moves on to the terms', /ask-money-terms/.test(page.url()), page.url().split('/app/')[1]);
+    await page.waitForTimeout(600);
+    const onTerms = await page.evaluate(() =>
+      getComputedStyle(document.querySelector('[data-step="3"]')).display !== 'none');
+    ok('the amount step reveals the terms step, in place', onTerms);
 
-    await page.waitForTimeout(900);
     const termsText = await page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
     ok('with no finished season it refuses to invent a return',
        /not known|nothing to work it out from/.test(termsText));

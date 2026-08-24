@@ -1,4 +1,9 @@
-// Creating the account: a name, a phone number, and a six-number code.
+// The whole first run: language, a name, a phone number, a six-number code.
+//
+// Language used to be a screen of its own, so a farmer standing in a field took
+// a tap and a page load to get from "Telugu" to "what is your name". It is the
+// first band of this screen now, because it decides what the rest of the screen
+// says.
 //
 // The server stores an email and a password, so the phone number becomes the
 // account name and the code becomes the password. The screen says that out
@@ -10,15 +15,22 @@
 // rate-limited server-side, and it wants replacing with a one-time code sent to
 // the phone. That route does not exist yet.
 import { api, session } from '../api.js';
-import { wire, asField } from '../wire.js';
+import { wire, asField, press } from '../wire.js';
 import { state } from '../bind.js';
+import { languagePicker } from '../lang.js';
 
-const root = wire('setup-identity');
+const root = wire('setup');
 
 const byText = (t) => [...root.querySelectorAll('div')]
   .find(d => d.children.length === 0 && d.textContent.trim() === t);
 
 if (root) {
+  // The picker is shared with the profile screen, so a farmer who comes back to
+  // change language taps the same component that worked here.
+  const langNotice = document.createElement('div');
+  languagePicker(root, langNotice);
+  root.querySelector('.lang')?.parentElement?.after(langNotice);
+
   const name = asField(byText('Alice Farmer'),
     { type: 'text', name: 'name', autocomplete: 'name', placeholder: 'Your name', label: 'Your name' });
   const phone = asField(byText('98765 43210'),
@@ -84,4 +96,6 @@ if (root) {
         err.status === 409 ? 'Sign in with it instead.' : err.message);
     }
   });
+
+  press(root);
 }

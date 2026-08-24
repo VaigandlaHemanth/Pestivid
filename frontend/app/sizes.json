@@ -11,13 +11,9 @@
   "w": 1280,
   "h": 1215
  },
- "setup-language": {
+ "setup": {
   "w": 360,
-  "h": 800
- },
- "setup-identity": {
-  "w": 360,
-  "h": 800
+  "h": 971
  },
  "home": {
   "w": 360,
@@ -39,17 +35,9 @@
   "w": 360,
   "h": 1040
  },
- "ask-money-video": {
+ "ask-money": {
   "w": 360,
-  "h": 880
- },
- "ask-money-amount": {
-  "w": 360,
-  "h": 990
- },
- "ask-money-terms": {
-  "w": 360,
-  "h": 860
+  "h": 894
  },
  "money": {
   "w": 360,

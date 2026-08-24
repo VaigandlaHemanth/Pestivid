@@ -46,9 +46,8 @@ const CHECKS = [
   // the nine that were placeholders until now
   ['landing',        'farmer',   'A field you can see'],
   ['home-empty',     'farmer',   null],
-  ['setup-language', 'farmer',   'Choose your language'],
-  ['setup-identity', 'farmer',   'phone number is your account name'],
-  ['ask-money-video','farmer',   'Film the field first'],
+  ['setup',          'farmer',   'phone number is your account name'],
+  ['ask-money',      'farmer',   'Film the field first'],
   ['leaf-check',    'farmer',   'Take a photo of one leaf'],
   ['leaf-check',   'farmer',   'Take a photo of one leaf'],
 ];

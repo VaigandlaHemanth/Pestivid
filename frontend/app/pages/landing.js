@@ -31,7 +31,7 @@ if (root) {
   })();
 
   // the two calls to action are the only controls here
-  for (const [label, to] of [['I farm — get funded', 'setup-language'],
+  for (const [label, to] of [['I farm — get funded', 'setup'],
                              ['I want to invest', 'signin'],
                              ['Sign in', 'signin']]) {
     const el = [...root.querySelectorAll('div')]

@@ -45,7 +45,9 @@ if (ctx) load(ctx.root, async () => {
     tx: short(top.txHash), hash: short(top.videoFileHash), cid: short(top.cid),
     block: top.blockHeight ? `Block ${Number(top.blockHeight).toLocaleString('en-IN')}` : 'Not written into a block yet',
   } : {
-    head: 'No receipt yet', paid: '—',
+    // An em dash where money belongs reads as a fault, which is the same
+    // reason the hash rows below say it in words.
+    head: 'No receipt yet', paid: 'No purchase yet',
     tx: 'No purchase yet', hash: 'No purchase yet', cid: 'No purchase yet',
     block: 'No purchase yet',
   } });

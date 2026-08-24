@@ -29,13 +29,12 @@ const PLACEHOLDERS = [
 
 const ROLE_PAGES = {
   farmer: ['home', 'home-empty', 'plots', 'plot', 'money', 'messages', 'profile', 'record',
-           'sent', 'ask', 'leaf-check', 'leaf-check', 'ask-money-video',
-           'ask-money-amount', 'ask-money-terms', 'payout', 'report-harvest', 'thread'],
+           'sent', 'ask', 'leaf-check', 'leaf-check', 'ask-money', 'payout', 'report-harvest', 'thread'],
   investor: ['invest', 'portfolio', 'confirm-investment', 'thread'],
   buyer: ['market', 'orders'],
   admin: ['admin'],
 };
-const PUBLIC = ['landing', 'signin', 'signup', 'signin-farmer', 'setup-language', 'setup-identity'];
+const PUBLIC = ['landing', 'signin', 'signup', 'signin-farmer', 'setup'];
 
 const login = async (email) => {
   const r = await fetch(API + '/auth/login', {

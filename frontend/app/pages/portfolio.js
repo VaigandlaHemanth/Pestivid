@@ -138,9 +138,15 @@ if (ctx) {
       }
 
       if (tds[4]) {
-        tds[4].textContent = inv.payoutAmount != null && inv.payoutAmount > 0
-          ? rupees(inv.payoutAmount)
+        // A column that is money on one row and words on the next: the drawn
+        // cell was styled for "Not yet", so a real payout landed in it grey and
+        // without tabular figures, and would not line up under the row above.
+        const paid = inv.payoutAmount != null && inv.payoutAmount > 0;
+        tds[4].textContent = paid ? rupees(inv.payoutAmount)
           : inv.status === 'cancelled' ? 'Nothing' : 'Not yet';
+        tds[4].classList.toggle('m', paid);
+        tds[4].style.color = paid ? '#1d1a17' : '#605a53';
+        tds[4].style.fontWeight = paid ? '600' : '';
       }
 
       body.append(tr);

@@ -240,7 +240,7 @@ router.post('/', authenticateToken, async (req, res) => {
                   const notification = new Notification({
                       global: true, // This is a global notification for the marketplace
                       type: 'listing', // Custom notification type
-                      message: `New listing: "${savedListing.crop}" from a farmer available on the marketplace!`,
+                      message: `“${savedListing.crop}” is now listed by a farmer.`,
                       itemId: savedListing._id, // Link to the new listing document
                       itemType: 'Listing',
                   });
@@ -377,7 +377,7 @@ router.put('/:id/notify', authenticateToken, async (req, res) => {
               const notification = new Notification({
                   global: true, // This notification is for the marketplace (buyers)
                   type: 'listing', // Custom notification type
-                  message: `New listing: "${listing.crop}" from a farmer available on the marketplace!`,
+                  message: `“${listing.crop}” is now listed by a farmer.`,
                   itemId: listing._id, // Link to the listing document
                   itemType: 'Listing',
               });

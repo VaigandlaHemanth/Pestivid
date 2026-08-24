@@ -127,6 +127,38 @@ body > div[style*="width: 824px"] {
   [style*="font-size: 30px"] { font-size: 25px !important; }
 }
 
+/* ── the setup screen's code strip ──────────────────────────────────────── */
+
+/* Six boxes drawn as flex: 1 across a 360px phone are 51px each, which is a
+   code. Across the 860px the phone panel is given on a laptop they are 145px
+   each, which reads as six empty text fields. A code is a fixed-size thing. */
+@media (min-width: 760px) {
+  [data-page="setup"] [style*="flex: 1"][style*="height: 62px"] { max-width: 62px; }
+}
+
+/* ── the desktop nav bar on a narrow window ──────────────────────────────── */
+
+/* One white bar, 60 or 66px tall, holding the wordmark, three or four
+   destinations and the signed-in person. At 390px those overlap: "Messages" ran
+   into "Demo Buyer · buyer" on the market page, and the bar could not grow
+   because its height was fixed in the drawing. */
+@media (max-width: 820px) {
+  [data-surface="desk"] [style*="justify-content: space-between"][style*="height: 60px"],
+  [data-surface="desk"] [style*="justify-content: space-between"][style*="height: 66px"] {
+    height: auto !important;
+    min-height: 60px;
+    flex-wrap: wrap;
+    row-gap: 4px;
+    padding: 10px 16px !important;
+  }
+  /* The destinations themselves, drawn with a 24px gap for a 1320px canvas. */
+  [data-surface="desk"] [style*="justify-content: space-between"] [style*="gap: 30px"],
+  [data-surface="desk"] [style*="justify-content: space-between"] [style*="gap: 24px"] {
+    gap: 14px !important;
+    flex-wrap: wrap;
+  }
+}
+
 /* ── things that must never change ──────────────────────────────────────── */
 
 /* Reduced motion is handled in tokens.css; nothing here animates. */

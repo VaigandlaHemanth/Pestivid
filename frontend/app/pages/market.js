@@ -33,13 +33,34 @@ if (ctx) {
       .sort((a, b) => (a.minPrice || 0) - (b.minPrice || 0));
 
     const list = root.querySelector('[data-list="lots"]');
-    const detail = root.querySelector('[data-bind="lot.file"]')?.closest('div[style*="grid-template-columns"]')
-                || root.querySelector('[data-bind="lot.file"]')?.parentElement?.parentElement;
+    // Was closest('div[style*="grid-template-columns"]') from inside the panel.
+    // The PAGE is a three-column grid, so on a week with nothing listed that
+    // climbed past the panel and removed the whole page -- filters, listings
+    // and all -- and then wrote the empty message into a detached node. The
+    // market rendered as a nav bar over nothing, and every checker passed it.
+    const detail = root.querySelector('[data-detail]');
+    const listings = root.querySelector('[data-listings]');
 
     if (!active.length) {
       detail?.remove();
-      return state(list || root, 'empty', 'No lots are for sale',
-        'Nobody has produce listed this week. Nothing has gone wrong.');
+      root.querySelector('[data-bind="list.sub"]')?.remove();
+      bind(root, { list: { title: 'Nothing is for sale this week' } });
+      // The rail's drawn counts -- 14 potato, 9 wheat, 6 corn -- are specimens
+      // that nobody counted, and the code that replaces them with real ones
+      // runs below this return. So they have to go here too, or an empty week
+      // shows a filter offering fourteen lots of potato.
+      const crops = root.querySelector('[data-crops]');
+      if (crops) {
+        const none = document.createElement('div');
+        none.style.cssText = 'font-size: 14.5px; line-height: 1.5; color: #605a53;';
+        none.textContent = 'Nothing to filter yet.';
+        crops.replaceChildren(none);
+      }
+      root.querySelector('[data-sort]')?.remove();
+      // Into the listings column, which is still attached.
+      return state(list?.parentElement || listings || root, 'empty', 'No lots are for sale',
+        'Nobody has produce listed this week. Nothing has gone wrong, and the filters on the '
+        + 'left will start counting as soon as somebody lists something.');
     }
 
     // ---- the filter rail ---------------------------------------------

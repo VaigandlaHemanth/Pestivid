@@ -5,9 +5,35 @@ const PAGES = process.argv.slice(2);
 const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', {
   method: 'POST', headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ email: `demo.${r}@pestivid.sim`, password: 'password123' }) })).json();
-const ROLE = { orders: 'buyer', admin: 'admin', 'report-harvest': 'farmer',
-  'ask-money-video': 'farmer', 'ask-money-amount': 'farmer', 'ask-money-terms': 'farmer',
-  'leaf-check': 'farmer', 'leaf-check': 'farmer', 'setup-identity': null };
+// Roles are derived from build-pages.mjs so this map cannot drift out of date.
+// It did: a five-entry map meant eighteen pages loaded with no token, bounced
+// to sign-in, and were audited as the sign-in page under their own names.
+const ROLE = {
+  'admin': 'admin',
+  'ask': 'farmer',
+  'ask-money': 'farmer',
+  'confirm-investment': 'investor',
+  'home': 'farmer',
+  'invest': 'investor',
+  'landing': null,
+  'leaf-check': 'farmer',
+  'market': 'buyer',
+  'messages': 'farmer',
+  'money': 'farmer',
+  'orders': 'buyer',
+  'payout': 'farmer',
+  'plot': 'farmer',
+  'plots': 'farmer',
+  'portfolio': 'investor',
+  'profile': 'farmer',
+  'record': 'farmer',
+  'report-harvest': 'farmer',
+  'sent': 'farmer',
+  'setup': null,
+  'signin': null,
+  'signup': null,
+  'thread': 'farmer',
+};
 
 const b = await chromium.launch();
 const tokens = {};
@@ -38,7 +64,14 @@ for (const slug of PAGES) {
       const id = el.name || el.type || 'input';
       if (!el.getAttribute('aria-label') && !el.labels?.length) say('form label', `<input ${id}> unlabelled`);
       if (!el.getAttribute('autocomplete')) say('autocomplete', `<input ${id}> has no autocomplete`);
-      if (el.placeholder && !/…$/.test(el.placeholder)) say('placeholder', `"${el.placeholder}" does not end in an ellipsis`);
+      // The ellipsis belongs on an instruction that trails off, not on a
+      // SPECIMEN of the value wanted: "98765 43210…" is not a phone number.
+      // Same exemption wire.js applies when it builds the field, so the two
+      // agree instead of the checker reporting what the code deliberately did.
+      const specimen = /^[\d\s+•·.,₹-]+$/.test(el.placeholder || '');
+      if (el.placeholder && !specimen && !/[…:]$/.test(el.placeholder)) {
+        say('placeholder', `"${el.placeholder}" does not end in an ellipsis`);
+      }
       if ((el.type === 'email' || /code|otp|phone|tel/.test(id)) && el.spellcheck) say('spellcheck', `<input ${id}> should disable spellcheck`);
     }
 
