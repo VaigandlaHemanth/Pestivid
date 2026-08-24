@@ -61,12 +61,35 @@ if (ctx) {
       },
     });
 
-    // Do not leave a call to action pointing at nothing. The whole dark block
-    // goes, not just the button: "Needs you today" over an empty space reads
-    // like something failed to load.
+    // The empty first run used to be a page of its own, home-empty.html, which
+    // said something home's empty state did not: WHY it is empty and what to do
+    // about it. A first run is a state of this screen, not another destination,
+    // so the words moved here and the page went away.
+    const nothingYet = !videos.length;
     if (!due) {
       const btn = oneByText('Report the harvest', root);
       btn?.closest('div[style*="background: #016abe"]')?.remove();
+    }
+    if (nothingYet) {
+      const band = root.querySelector('div[style*="background: #1d1a17"]');
+      const head = root.querySelector('[data-bind="todo.headline"]');
+      const kicker = head?.previousElementSibling;
+      if (kicker) kicker.textContent = 'Start here';
+      if (head) head.textContent = 'Walk across your field and film it';
+      if (band && head) {
+        const why = document.createElement('div');
+        why.style.cssText = 'font-size: 15px; line-height: 1.5; margin-top: 7px; color: #c4bdb6;';
+        why.textContent = 'This is empty because you have not filmed anything yet. '
+          + 'Forty seconds is enough, and the date is fixed the moment it reaches us.';
+        head.after(why);
+        const go = document.createElement('div');
+        go.style.cssText = 'background: #016abe; min-height: 56px; margin-top: 14px; display: flex;'
+          + ' align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: #fff;';
+        go.textContent = 'Film your field';
+        band.append(go);
+        goes(go, 'record', 'Film your field');
+        press(root);
+      }
     }
 
     // The unread badge showed the artboard's "2" whatever the truth was. There

@@ -28,7 +28,6 @@ export const PAGES = {
   'signup':             { title: 'Create an account', role: 'public' },
   'setup-language':     { title: 'Choose your language', role: 'public' },
   'setup-identity':     { title: 'Who are you?', role: 'public' },
-  'home-empty':         { title: 'Pestivid', role: 'farmer' },
   'home':               { title: 'Pestivid', role: 'farmer' },
   'record':             { title: 'Record a video', role: 'farmer' },
   'sent':               { title: 'That is saved', role: 'farmer' },

@@ -76,7 +76,7 @@ if (root) {
       await api.auth.register({ name: name.value.trim(), email, password: code.value, role: 'farmer', phone: digits });
       const r = await api.auth.login(email, code.value);
       session.set(r.token, r.user);
-      location.href = './home-empty.html';
+      location.href = './home.html';   // home carries the first-run state now
     } catch (err) {
       go.textContent = label;
       state(holder, 'failed',
