@@ -280,9 +280,15 @@ router.post('/change-password', authenticateToken, async (req, res) => {
             message: 'Both currentPassword and newPassword are required.',
         });
     }
-    if (typeof newPassword !== 'string' || newPassword.length < 8) {
+    // Six, not eight. The User schema's minimum is 6 and registration enforces
+    // 6, because a farmer's credential IS a six-number code -- the setup screen
+    // asks for exactly six digits. Demanding 8 here meant a farmer could create
+    // an account and then never change its code: the only value the product
+    // lets them choose was refused by the route that changes it.
+    const MIN = 6;
+    if (typeof newPassword !== 'string' || newPassword.length < MIN) {
         return res.status(400).json({
-            message: 'The new password must be at least 8 characters.',
+            message: `The new password or code must be at least ${MIN} characters.`,
             code: 'password_too_short',
         });
     }

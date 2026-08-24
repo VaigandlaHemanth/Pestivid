@@ -9,7 +9,7 @@
 import { requireUser, api, session, load, state } from './_guard.js';
 import { bind } from '../bind.js';
 import { appChrome } from '../chrome.js';
-import { acts, goes, press } from '../wire.js';
+import { acts, goes, press, asField } from '../wire.js';
 import { languagePicker } from '../lang.js';
 
 const ctx = requireUser('profile');
@@ -156,23 +156,145 @@ if (ctx) {
     const rowFor = (text) => [...root.querySelectorAll('.lab')]
       .find(d => d.textContent.trim() === text)?.closest('.row, .row2');
 
-    // Changing the code is changing the password, and there is no route for it.
-    // Saying so beats a row that swallows the tap.
-    const code = rowFor('Change your code');
-    if (code) acts(code, 'Change your code', () => {
-      let holder = code.nextElementSibling?.hasAttribute?.('data-note')
-        ? code.nextElementSibling : null;
+    // ---- changing the code -------------------------------------------
+    // This row said "there is no way to change the code in the app yet". There
+    // is: POST /auth/change-password has been there all along and api.js
+    // already wrapped it. The route demanded eight characters while
+    // registration demands six, so the one credential the product lets a
+    // farmer choose was refused by the route that changes it. Both are six now.
+    const isFarmer = ctx.user.role === 'farmer';
+    // (the wording follows the role: a farmer picks a code, others a password)
+
+    const codeRow = rowFor('Change your code');
+    if (codeRow) acts(codeRow, 'Change your code', () => {
+      if (codeRow.nextElementSibling?.hasAttribute?.('data-codeform')) {
+        codeRow.nextElementSibling.remove();
+        return;
+      }
+      const form = document.createElement('div');
+      form.setAttribute('data-codeform', '');
+      form.style.cssText = 'background: #f6f3ef; padding: 16px 18px;'
+        + ' box-shadow: inset 0 -1px 0 #c3bcb6;';
+
+      const line = (text, css) => {
+        const d = document.createElement('div');
+        d.style.cssText = css;
+        d.textContent = text;
+        return d;
+      };
+      const field = (labelText, name) => {
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'margin-top: 12px;';
+        wrap.append(line(labelText, 'font-size: 14.5px; font-weight: 600;'));
+        const box = document.createElement('div');
+        box.style.cssText = 'background: #fff; min-height: 52px; margin-top: 6px;'
+          + ' display: flex; align-items: center; padding: 0 14px;'
+          + ' box-shadow: inset 0 0 0 1px #c3bcb6;';
+        const slot = document.createElement('div');
+        slot.style.cssText = 'font-size: 17px; flex: 1 1 auto; min-width: 0;';
+        box.append(slot);
+        wrap.append(box);
+        const input = asField(slot, {
+          type: 'password', name,
+          autocomplete: name === 'current-password' ? 'current-password' : 'new-password',
+          // inputMode only, never maxLength. Capping this at six truncated
+          // "password123" to "passwo" and the route rightly said the current
+          // password was wrong -- a farmer whose credential is longer than six
+          // could not have got past this box at all.
+          inputMode: isFarmer ? 'numeric' : undefined,
+          placeholder: isFarmer ? 'Six numbers or more' : 'At least six characters',
+          label: labelText,
+        });
+        return { wrap, input };
+      };
+
+      const now = field('What you use now', 'current-password');
+      const next = field('What you want instead', 'new-password');
+      const button = line('Change it',
+        'background: #1d1a17; color: #fff; min-height: 52px; margin-top: 14px;'
+        + ' display: flex; align-items: center; justify-content: center;'
+        + ' font-size: 16px; font-weight: 600;');
+      const note = document.createElement('div');
+
+      form.append(
+        line('Six characters or more. Changing it signs you out on every other phone.',
+          'font-size: 14px; line-height: 1.5; color: #4a443d;'),
+        now.wrap, next.wrap, button, note,
+      );
+      codeRow.after(form);
+      press(root);
+
+      acts(button, 'Change it', async () => {
+        const a = now.input?.value || '';
+        const b = next.input?.value || '';
+        if (!a || !b) {
+          return state(note, 'waiting', 'Both boxes',
+            'We need the one you use now and the one you want instead.');
+        }
+        if (b.length < 6) {
+          return state(note, 'waiting', 'Six or more',
+            'Anything shorter than six characters is refused.');
+        }
+        const was = button.textContent;
+        button.textContent = 'Changing…';
+        try {
+          await api.auth.changePassword(a, b);
+          button.remove();
+          state(note, 'proved', 'Changed',
+            'Use the new one next time. Every other phone signed in as you is signed out.');
+        } catch (err) {
+          button.textContent = was;
+          state(note, 'failed', 'Not changed', err.message);
+        }
+      });
+    });
+
+    // ---- the export ---------------------------------------------------
+    // "Download everything we hold" navigated to the plots list. It downloads
+    // now, built in the browser from the same routes the screens already use,
+    // so it exposes nothing that was not already this account's to read.
+    const dlRow = rowFor('Your videos and money records');
+    if (dlRow) acts(dlRow, 'Download everything we hold', async () => {
+      let holder = dlRow.nextElementSibling?.hasAttribute?.('data-note')
+        ? dlRow.nextElementSibling : null;
       if (!holder) {
         holder = document.createElement('div');
         holder.setAttribute('data-note', '');
-        code.after(holder);
+        dlRow.after(holder);
       }
-      state(holder, 'waiting', 'Not from here yet',
-        'There is no way to change the code in the app yet. Until there is, ask us and we will '
-        + 'reset it — we would rather tell you that than open a screen that cannot finish.');
-    });
+      state(holder, 'waiting', 'Collecting it', 'Built on your phone. Nothing is sent anywhere.');
 
-    goes(rowFor('Your videos and money records'), 'plots', 'Your videos and money records');
+      const id = ctx.user._id || ctx.user.id;
+      const safe = (p) => p.catch(() => null);
+      const [me, videos, seasons, investments, purchases, notes] = await Promise.all([
+        safe(api.auth.me()),
+        safe(api.videos.mine(id)),
+        safe(api.projects.mine(id)),
+        safe(api.investments.mine(id)),
+        safe(api.purchases.asBuyer(id)),
+        safe(api.notifications.mine(id)),
+      ]);
+      const doc = {
+        exported: new Date().toISOString(),
+        about: 'Everything Pestivid holds about this account, as the app can read it.',
+        you: me, videos, seasons, investments, purchases, notifications: notes,
+      };
+      const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = href;
+      a.download = 'pestivid-'
+        + String(me?.name || 'account').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.json';
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(href), 4000);
+
+      const n = (list) => (list || []).length;
+      state(holder, 'proved', 'Downloaded',
+        n(videos) + ' videos, ' + n(seasons) + ' seasons, ' + n(investments) + ' investments and '
+        + n(purchases) + ' purchases, as a JSON file in your downloads.');
+    });
 
     const out = [...root.querySelectorAll('div')]
       .find(d => d.children.length === 0 && d.textContent.trim() === 'Sign out');

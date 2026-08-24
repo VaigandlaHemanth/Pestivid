@@ -11,10 +11,19 @@ export function thread(slug) {
   load(ctx.root, async () => {
     const cid = new URLSearchParams(location.search).get('c');
     if (!cid) return state(ctx.root, 'empty', 'No conversation chosen', 'Open a message from the messages list.');
-    const msgs = await api.messages.inThread(cid);
     const me = String(ctx.user._id || ctx.user.id);
+    // The conversation list is where the other person's NAME lives. The message
+    // endpoint answers a bare array, so a conversation nobody has written in
+    // yet -- which is every conversation a buyer has just opened from a lot --
+    // had no name at all and the header said "Them".
+    const [msgs, threads] = await Promise.all([
+      api.messages.inThread(cid),
+      api.messages.threads(me).catch(() => []),
+    ]);
+    const listed = (threads || []).find(t => String(t._id || t.id) === String(cid));
     const other = msgs.find(m => String(m.sender?._id || m.sender) !== me);
-    const otherName = other?.senderName || other?.sender?.name || 'Them';
+    const otherName = other?.senderName || other?.sender?.name
+      || listed?.otherName || 'Them';
     bind(ctx.root, { other: {
       name: otherName,
       context: `${msgs.length} message${msgs.length === 1 ? '' : 's'}`,

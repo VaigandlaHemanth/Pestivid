@@ -203,10 +203,30 @@ if (ctx) {
     }
 
       open = l;
+      // Reaching the farmer. An investor has had this on their screen all
+      // along; a buyer could only bid, with no way to ask anything first.
+      const msgRow = root.querySelector('[data-message]');
+      if (msgRow) {
+        if (l.farmerWallet) {
+          promote(msgRow, l.farmerName ? `Message ${l.farmerName}` : 'Message the farmer');
+          // assigned, not added: this runs again on every lot click
+          msgRow.onclick = async () => {
+            try {
+              const conv = await api.messages.open({ targetUserId: l.farmerWallet });
+              location.href = `./thread.html?c=${conv._id || conv.id}`;
+            } catch (err) {
+              state(msgRow, 'failed', 'Could not open the conversation', err.message);
+            }
+          };
+        } else {
+          msgRow.style.display = 'none';
+        }
+      }
       const proved = l.cid ? dateState({ cid: l.cid, anchored: l.anchored, blockHeight: l.blockHeight }) : null;
       bind(root, {
         lot: {
           who: [l.farmerName, l.location].filter(Boolean).join(' · '),
+          ask: l.farmerName ? `Message ${l.farmerName}` : 'Message the farmer',
           accept: `${rupees(l.minPrice)} – ${rupees(l.maxPrice)}`,
           what: l.crop ? `${l.crop}, sold whole` : 'Sold whole',
           grown: l.method ? `${l.method} — farmer's word` : 'Not stated',
