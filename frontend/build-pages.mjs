@@ -12,7 +12,7 @@
 //
 //   node frontend/build-pages.mjs
 import { chromium } from 'playwright';
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -27,7 +27,7 @@ export const PAGES = {
   'signin':             { title: 'Sign in', role: 'public' },
   'signup':             { title: 'Create an account', role: 'public' },
   setup:                { title: 'Set this up once, then film', role: 'public' },
-  'home':               { title: 'Pestivid', role: 'farmer' },
+  'home':               { title: 'Home', role: 'farmer' },
   'record':             { title: 'Record a video', role: 'farmer' },
   'sent':               { title: 'That is saved', role: 'farmer' },
   'plots':              { title: 'My plots', role: 'farmer' },
@@ -39,7 +39,7 @@ export const PAGES = {
   'thread':             { title: 'Message', role: 'any' },
   'ask':                { title: 'Ask a question', role: 'farmer' },
   'profile':            { title: 'You and your settings', role: 'farmer' },
-  'leaf-check':        { title: 'Leaf check', role: 'farmer' },
+  'leaf-check':        { title: 'Check a leaf', role: 'farmer' },
   'invest':             { title: 'Open for funding', role: 'investor' },
   'confirm-investment': { title: 'Confirm your investment', role: 'investor' },
   'report-harvest':     { title: 'Report the harvest', role: 'farmer' },
@@ -48,6 +48,89 @@ export const PAGES = {
   'orders':             { title: 'What you bought', role: 'buyer' },
   'admin':              { title: 'Flagged by the system', role: 'admin' },
 };
+
+/* ── what a crawler and a link preview see ────────────────────────────────
+ * Only the landing page is worth indexing: everything else is behind a token,
+ * and an indexed sign-in shell is noise that competes with the page you want
+ * found. So landing gets the full set and the other twenty-three get noindex.
+ *
+ * Absolute URLs need an origin, and this repo has no domain yet. Rather than
+ * ship a guessed one -- a wrong canonical is worse than none, it points every
+ * signal at a URL that does not exist -- canonical, og:url and the sitemap are
+ * emitted only when PESTIVID_SITE is set at build time:
+ *
+ *     PESTIVID_SITE=https://pestivid.example node frontend/build-pages.mjs
+ */
+const SITE = (process.env.PESTIVID_SITE || '').replace(/\/+$/, '');
+
+const SEO_TITLE = 'Pestivid — farm video evidence with a date nobody can move';
+const SEO_DESC = 'Farmers film their crop. Pestivid fingerprints the file the moment it '
+  + 'arrives and writes that fingerprint into Bitcoin, so the date cannot be changed afterwards.';
+
+function seoHead(slug) {
+  const out = ['  <link rel="icon" href="./favicon.svg" type="image/svg+xml">'];
+  if (slug !== 'landing') {
+    // Behind a token, and nothing here is a landing page for anything.
+    out.push('  <meta name="robots" content="noindex, follow">');
+    return out.join('\n');
+  }
+  out.push(`  <meta name="description" content="${SEO_DESC}">`);
+  out.push('  <meta name="robots" content="index, follow">');
+  if (SITE) out.push(`  <link rel="canonical" href="${SITE}/">`);
+  out.push('  <meta property="og:type" content="website">');
+  out.push('  <meta property="og:site_name" content="Pestivid">');
+  out.push(`  <meta property="og:title" content="${SEO_TITLE}">`);
+  out.push(`  <meta property="og:description" content="${SEO_DESC}">`);
+  if (SITE) {
+    out.push(`  <meta property="og:url" content="${SITE}/">`);
+    out.push(`  <meta property="og:image" content="${SITE}/app/og.png">`);
+    out.push('  <meta property="og:image:width" content="1200">');
+    out.push('  <meta property="og:image:height" content="630">');
+    out.push('  <meta property="og:image:alt" content="Pestivid: a field you can see, a date nobody can move.">');
+    out.push('  <meta name="twitter:card" content="summary_large_image">');
+  } else {
+    // A relative og:image is ignored by most scrapers, so claim nothing.
+    out.push('  <meta name="twitter:card" content="summary">');
+  }
+  out.push(`  <meta name="twitter:title" content="${SEO_TITLE}">`);
+  out.push(`  <meta name="twitter:description" content="${SEO_DESC}">`);
+  // Organization and WebSite only. No HowTo (deprecated) and no FAQPage (rich
+  // results retired), and nothing this product cannot substantiate: no ratings,
+  // no address, no founder, no trial results.
+  const graph = [
+    { '@type': 'Organization', name: 'Pestivid', description: SEO_DESC,
+      ...(SITE ? { url: SITE + '/', logo: SITE + '/app/favicon.svg' } : {}) },
+    { '@type': 'WebSite', name: 'Pestivid', inLanguage: 'en-IN',
+      ...(SITE ? { url: SITE + '/' } : {}) },
+  ];
+  out.push('  <script type="application/ld+json">'
+    + JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })
+    + '</script>');
+  return out.join('\n');
+}
+
+function writeCrawlerFiles(slugs) {
+  const lines = ['User-agent: *', 'Allow: /', '',
+    '# Everything under /app/ except the landing page carries a noindex meta tag:',
+    '# they need a token to say anything, and CSS and JS have to stay crawlable',
+    '# for the landing page to render, so nothing is Disallowed here.'];
+  if (SITE) lines.push('', `Sitemap: ${SITE}/sitemap.xml`);
+  writeFileSync(path.join(OUT, '..', 'robots.txt'), lines.join('\n') + '\n');
+
+  if (!SITE) {
+    // A sitemap from an earlier build still names that earlier origin, so it
+    // goes rather than lingering as a file full of URLs nobody serves.
+    rmSync(path.join(OUT, '..', 'sitemap.xml'), { force: true });
+    return 'robots.txt (no sitemap: PESTIVID_SITE is not set)';
+  }
+  const urls = [`${SITE}/`];
+  writeFileSync(path.join(OUT, '..', 'sitemap.xml'),
+    '<?xml version="1.0" encoding="UTF-8"?>\n'
+    + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + urls.map(u => `  <url><loc>${u}</loc></url>`).join('\n')
+    + '\n</urlset>\n');
+  return `robots.txt and sitemap.xml (${urls.length} url)`;
+}
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) await build();
 
@@ -146,8 +229,9 @@ export async function build() {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="${f.w <= 400 ? '#f6f3ef' : '#ffffff'}">
-  <title>${meta.title}</title>
+  <title>${slug === 'landing' ? SEO_TITLE : meta.title + ' · Pestivid'}</title>
   <!-- generated from design/${f.from} by frontend/build-pages.mjs -- do not edit -->
+${seoHead(slug)}
   ${f.links}
   <link rel="stylesheet" href="./tokens.css">
   <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
@@ -167,6 +251,7 @@ ${body}
   }
   writeFileSync(path.join(OUT, 'sizes.json'), JSON.stringify(sizes, null, 1));
   console.log(`generated ${wrote} pages into frontend/app/`);
+  console.log(`  ${writeCrawlerFiles(Object.keys(PAGES))}`);
   if (missing.length) console.log(`  NOT FOUND in any artboard: ${missing.join(', ')}`);
   const extra = Object.keys(found).filter(s => !PAGES[s]);
   if (extra.length) console.log(`  marked but not listed: ${extra.join(', ')}`);

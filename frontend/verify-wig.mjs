@@ -1,8 +1,13 @@
 // Web Interface Guidelines checks that can be MEASURED rather than eyeballed,
 // run against the served pages so what is tested is what ships.
 import { chromium } from 'playwright';
+import { readdirSync } from 'node:fs';
 import { needs } from './_needs.mjs';
-const PAGES = process.argv.slice(2);
+// No arguments used to mean NO PAGES, and the summary still read like a pass
+// ("0 findings across 0 pages"). It now means every page.
+const PAGES = (process.argv.slice(2).length
+  ? process.argv.slice(2)
+  : readdirSync('frontend/app').filter(f => f.endsWith('.html')).map(f => f.replace('.html', '')).sort());
 const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', {
   method: 'POST', headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ email: `demo.${r}@pestivid.sim`, password: 'password123' }) })).json();

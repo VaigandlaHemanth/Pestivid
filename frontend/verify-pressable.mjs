@@ -9,6 +9,7 @@
 // control -- a painted or ringed box holding a short label, or a chevron, or
 // link-coloured text -- and reports the ones with no handler behind them.
 import { chromium } from 'playwright';
+import { readdirSync } from 'node:fs';
 import { needs } from './_needs.mjs';
 // Five pages are ABOUT something and are blank without an id.
 const QUERY = await needs();
@@ -78,7 +79,12 @@ const FIND = () => {
   return out;
 };
 
-const slugs = process.argv.slice(2);
+// Run bare it audited NOTHING and still printed "0 things ... across 0 pages",
+// which reads like a pass. No arguments now means every page.
+const slugs = process.argv.slice(2).length
+  ? process.argv.slice(2)
+  : readdirSync('frontend/app').filter(f => f.endsWith('.html')).map(f => f.replace('.html', '')).sort();
+if (!slugs.length) { console.error('no pages found in frontend/app'); process.exit(1); }
 const b = await chromium.launch();
 const tok = {};
 let total = 0;

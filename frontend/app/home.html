@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#ffffff">
-  <title>Pestivid</title>
+  <title>Home · Pestivid</title>
   <!-- generated from design/Home.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta name="robots" content="noindex, follow">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&amp;display=swap">
   <link rel="stylesheet" href="./tokens.css">
   <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
@@ -24,11 +26,11 @@
        already carry. The farmer used to get a phone header on a 360px panel,
        so the product read as two products: a desktop app for the people with
        money and a stretched phone for the person doing the work. */
-    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
              justify-content: space-between; flex-shrink: 0; }
-    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
-    .nav   { font-size: 15px; color: #605a53; }
-    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .appnav   { font-size: 15px; color: #605a53; }
+    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
 
     /* ── the rail cards ───────────────────────────────────────────────────
        .row and .lab keep their names because home.js finds every destination
@@ -45,10 +47,10 @@
 
     /* the plots table: the reason this is a laptop page and not a menu. A
        phone made you open a plot to find out whether its date had landed. */
-    .th { display: grid; grid-template-columns: 82px 1fr 150px 196px 34px; gap: 16px;
+    .colh { display: grid; grid-template-columns: 82px 1fr 150px 196px 34px; gap: 16px;
           padding: 12px 20px; font-size: 11.5px; font-weight: 600; letter-spacing: .05em;
           color: #605a53; box-shadow: inset 0 -1px 0 #e4e9ee; }
-    .tr { display: grid; grid-template-columns: 82px 1fr 150px 196px 34px; gap: 16px;
+    .colr { display: grid; grid-template-columns: 82px 1fr 150px 196px 34px; gap: 16px;
           padding: 14px 20px; align-items: center; box-shadow: inset 0 -1px 0 #e4e9ee; }
     .thumb { width: 82px; height: 56px; background: #37322d; position: relative; overflow: hidden; }
     .dur { position: absolute; left: 6px; bottom: 5px; font-size: 11px; color: #ded7d0; }
@@ -79,13 +81,13 @@
 <div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-family: system-ui, 'Anek Latin', 'Noto Sans', sans-serif; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
     <!-- ══ the shell ══ -->
-    <div class="bar">
+    <div class="appbar">
       <div style="display: flex; align-items: baseline; gap: 30px;">
-        <div class="brand">Pestivid</div>
+        <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
-          <div class="navOn">My plots</div>
-          <div class="nav">Money</div>
-          <div class="nav">Messages</div>
+          <div class="appnavOn">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnav">Messages</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -133,12 +135,12 @@
         </div>
 
         <div class="lift1" style="background: #fff; margin-top: 12px;">
-          <div class="th">
+          <div class="colh">
             <div></div><div>PLOT</div><div>FILED</div><div>WHERE THE DATE IS</div><div></div>
           </div>
           <!-- One drawn row, cloned per video. The three that stood here were an
                example of the spacing, not three plots anybody had. -->
-          <div data-row="plot" class="tr">
+          <div data-row="plot" class="colr">
             <div class="thumb">
               <div style="position: absolute; inset: 6px; border: 1px solid #605a53;"></div>
               <div data-slot="dur" class="dur m">0:47</div>

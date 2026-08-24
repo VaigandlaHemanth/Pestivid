@@ -4,9 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#f6f3ef">
-  <title>Leaf check</title>
+  <meta name="theme-color" content="#ffffff">
+  <title>Check a leaf · Pestivid</title>
   <!-- generated from design/LeafCheck.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta name="robots" content="noindex, follow">
   
   <link rel="stylesheet" href="./tokens.css">
   <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
@@ -56,32 +58,32 @@
        already carry. The farmer used to get a phone header on a 360px panel,
        so the product read as two products: a desktop app for the people with
        money and a stretched phone for the person doing the work.
-       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
        fifteen, which only works because they really are the same classes. */
-    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
              justify-content: space-between; flex-shrink: 0; }
-    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
-    .nav   { font-size: 15px; color: #605a53; }
-    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
-    .card  { background: #fff; padding: 20px; }
-    .cardh { font-size: 16.5px; font-weight: 700; }
-    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .appnav   { font-size: 15px; color: #605a53; }
+    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .railcard  { background: #fff; color: #1d1a17; padding: 20px; }
+    .railh { font-size: 16.5px; font-weight: 700; }
+    .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
     .rail  { display: flex; flex-direction: column; gap: 16px; }
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </head>
-<body data-page="leaf-check" data-role="farmer" data-design-width="360" data-design-height="1831">
-<div style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-family: system-ui, 'Anek Latin', 'Noto Sans', sans-serif; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto; " data-surface="phone" data-w="360" class="scr">
-      <div class="bar">
+<body data-page="leaf-check" data-role="farmer" data-design-width="1320" data-design-height="1285">
+<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-family: system-ui, 'Anek Latin', 'Noto Sans', sans-serif; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+      <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
         <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-        <div class="brand">Pestivid</div>
+        <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
-          <div class="navOn">My plots</div>
-          <div class="nav">Money</div>
-          <div class="nav">Messages</div>
+          <div class="appnavOn">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnav">Messages</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -95,20 +97,37 @@
       </div>
     </div>
     <div class="pagehold" style="padding: 26px 28px 0;">
-      <div data-title="" class="pageh">leaf-check</div>
+      <div data-title="" class="pageh">Check a leaf</div>
     </div>
 
 
           <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
       <div class="main">
-<div style="min-height: 140px; background: #37322d; position: relative; overflow: hidden;">
+<div style="min-height: 430px; background: #37322d; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 8px; border: 1px solid #605a53;"></div>
+
+        <!-- Until there is a photo, this IS the page. The affordance used to be a
+             box the script prepended above the app bar, which is why nobody could
+             find where to put a leaf in. -->
+        <div data-capture="" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 30px;">
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#c3bcb6" stroke-width="1.6"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg>
+          <div style="font-size: 20px; font-weight: 700; color: #f6f3ef; text-align: center;">One leaf, filling most of the frame</div>
+          <div style="font-size: 15px; line-height: 1.5; color: #c3bcb6; text-align: center; max-width: 44ch;">
+            The photo is read on this machine. It is never uploaded, and no part of it reaches us.
+          </div>
+          <div data-choose="" style="background: #016abe; min-height: 52px; box-sizing: border-box; padding: 0 26px; display: flex; align-items: center; justify-content: center; margin-top: 4px;">
+            <div style="font-size: 17px; font-weight: 700; color: #fff;">Choose a photo</div>
+          </div>
+        </div>
+
+        <!-- where the download-and-read steps are drawn, over the photo -->
+        <div data-loadhold="" style="position: absolute; left: 20px; right: 20px; bottom: 44px;"></div>
         <div data-bind="shot.file" data-readout="" class="gplate" style="position: absolute; left: 18px; top: 16px; padding: 7px 10px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #f6f3ef;">IMG_20260822_0914_IST.jpg<br>3024×4032 · 2.4 MB</div>
         <div data-readout="" class="gplate" style="position: absolute; left: 12px; bottom: 11px; padding: 5px 10px;">
           <div data-bind="shot.where" style="font-size: 12px; font-weight: 600; color: #f6f3ef;">Checked on your phone</div>
         </div>
       </div>
-<div style="background: #fff; padding: 20px;">
+<div data-verdictcard="" style="background: #fff; padding: 20px;">
         <div style="font-size: 15px; color: #605a53;">Most likely</div>
         <div data-title="" data-bind="verdict.name" style="font-size: 27px; font-weight: 700; letter-spacing: -0.028em; margin-top: 3px; line-height: 1.1;">Early blight</div>
         <div data-bind="verdict.note" class="sub" style="margin-top: 7px;">
@@ -161,47 +180,16 @@
           </div>
         </div>
       </div>
-<div style="background: #1d1a17; padding: 16px 20px;">
+<div data-treatment="" style="background: #1d1a17; padding: 16px 20px;">
         <div style="font-size: 14px; line-height: 1.55; color: #e7e1db;">
           This is guidance, not a prescription. Check the product and the amount with your extension
           officer before you spray. <span style="font-weight: 700; color: #fff;">The label is the law.</span>
         </div>
       </div>
 <div data-retake="" style="padding: 20px; display: none;">
-        <div style="font-size: 17px; font-weight: 700;">Take it again like this</div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 13px;">
-          <div>
-            <div style="min-height: 92px; background: #37322d; position: relative; overflow: hidden;">
-            </div>
-            <div style="font-size: 14px; font-weight: 600; margin-top: 7px; color: #37322d;">Whole leaf, room around it</div>
-          </div>
-          <div>
-            <div style="min-height: 92px; background: #37322d; position: relative; overflow: hidden;">
-              <div style="position: absolute; left: -24%; top: -36%; width: 152%; height: 188%; background: #4a443d;"></div>
-              <!-- a drawn cross-out, not an abstract warning glyph -->
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" style="position: absolute; right: 7px; bottom: 7px;"><circle cx="12" cy="12" r="9.4" fill="rgba(20,18,15,.6)"></circle><path d="M8 8l8 8M16 8l-8 8"></path></svg>
-            </div>
-            <div style="font-size: 14px; font-weight: 600; margin-top: 7px; color: #37322d;">Not filling the frame</div>
-          </div>
-        </div>
-
-        <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 11px;">
-          <div style="display: flex; gap: 11px; align-items: flex-start;">
-            <div class="num" style="font-size: 15px; font-weight: 700; color: #01579b; flex-shrink: 0; width: 14px;">1</div>
-            <div class="sub">Step back until the <span style="font-weight: 700;">whole leaf</span> fits, with a little space around it.</div>
-          </div>
-          <div style="display: flex; gap: 11px; align-items: flex-start;">
-            <div class="num" style="font-size: 15px; font-weight: 700; color: #01579b; flex-shrink: 0; width: 14px;">2</div>
-            <div class="sub">One leaf only. Do not zoom in on a single spot.</div>
-          </div>
-          <div style="display: flex; gap: 11px; align-items: flex-start;">
-            <div class="num" style="font-size: 15px; font-weight: 700; color: #01579b; flex-shrink: 0; width: 14px;">3</div>
-            <div class="sub">Hold the phone straight above it, in daylight, with no shadow falling across it.</div>
-          </div>
-        </div>
-
-      <div style="background: #fff; padding: 20px;">
+        <!-- The three rules are stated once, in the rail, where they are also read
+             BEFORE the photo is taken. What belongs here is what to do next. -->
+        <div>
         <div style="background: #1d1a17; height: 60px; display: flex; align-items: center; justify-content: center; gap: 11px;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
           <div style="font-size: 18px; font-weight: 700; color: #fff;">Take another photo</div>
@@ -230,7 +218,32 @@
     </div>
       </div>
       <div class="rail">
-<div style="background: #e7e1db; padding: 18px 20px;">
+
+<!-- Before a photo: how to take one the checker will accept. That is the whole
+     difference between a verdict and a refusal, so it is said before the
+     mistake rather than after it. -->
+<div data-framing="" class="railcard">
+        <div class="railh">Take it like this</div>
+        <div style="display: flex; flex-direction: column; gap: 11px; margin-top: 11px;">
+          <div style="display: flex; gap: 11px;">
+            <div class="num" style="color: #016abe; font-weight: 700; flex-shrink: 0;">1</div>
+            <div class="railp" style="margin-top: 0;">The whole leaf, with a little space around it. Step back rather than zoom in.</div>
+          </div>
+          <div style="display: flex; gap: 11px;">
+            <div class="num" style="color: #016abe; font-weight: 700; flex-shrink: 0;">2</div>
+            <div class="railp" style="margin-top: 0;">One leaf only, not a handful and not a whole row.</div>
+          </div>
+          <div style="display: flex; gap: 11px;">
+            <div class="num" style="color: #016abe; font-weight: 700; flex-shrink: 0;">3</div>
+            <div class="railp" style="margin-top: 0;">Even daylight, straight above, no shadow across it.</div>
+          </div>
+        </div>
+        <div class="railp" style="box-shadow: inset 0 1px 0 #e7e1db; padding-top: 12px; margin-top: 14px;">
+          The checker refuses rather than guesses. A photo it cannot read gets no name at all.
+        </div>
+      </div>
+
+<div data-askcard="" style="background: #e7e1db; padding: 18px 20px;">
         <div style="font-size: 17px; font-weight: 700;">Ask about this result</div>
         <div style="font-size: 14.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
           It already knows what it found on your photo. You do not have to explain it again.

@@ -83,6 +83,24 @@ app.use(express.json({ limit: '10mb' }));
 // Optional: Serve static files (like your index.html, CSS, JS bundles) from this backend.
 // If you put your frontend index.html in a public folder at the same level as the backend folder,
 // uncommenting the line below will make it accessible directly from this server (e.g., at http://localhost:3000).
+// The root URL is the landing page, not the legacy single-page app that
+// happens to be called index.html. This runs BEFORE express.static, which would
+// otherwise answer "/" with frontend/index.html.
+// The page's own links are relative to /app/, so serving the file verbatim at
+// "/" 404s its script. A <base> makes one file correct at both URLs, and keeps
+// "/" as the canonical address rather than redirecting to a path.
+const LANDING = path.join(__dirname, '../frontend/app/landing.html');
+let landingAtRoot = null;
+app.get(['/', '/index.html'], (req, res, next) => {
+    try {
+        if (landingAtRoot === null || process.env.NODE_ENV !== 'production') {
+            const html = require('fs').readFileSync(LANDING, 'utf8');
+            landingAtRoot = html.replace('<head>', '<head><base href="/app/">');
+        }
+        res.type('html').send(landingAtRoot);
+    } catch (err) { next(err); }
+});
+
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 
@@ -271,9 +289,11 @@ app.use('/api/notifications', require('./routes/notifications')); // Mount notif
 app.use('/api/ai', require('./routes/ai'));           // Mount AI proxy routes under /api/ai
 
 
-// Basic test route for the root path
-app.get('/', (req, res) => {
-    res.send('PestiVid Backend API is running!');
+// The root path serves the landing page (mounted above, before the static
+// middleware). This used to answer it with the string "PestiVid Backend API is
+// running!", which never fired because express.static got there first.
+app.get('/healthz', (req, res) => {
+    res.type('text/plain').send('ok');
 });
 
 

@@ -175,11 +175,12 @@ body > div[style*="width: 824px"] {
 
 /* ── the setup screen's code strip ──────────────────────────────────────── */
 
-/* Six boxes drawn as flex: 1 across a 360px phone are 51px each, which is a
-   code. Across the 860px the phone panel is given on a laptop they are 145px
-   each, which reads as six empty text fields. A code is a fixed-size thing. */
-@media (min-width: 760px) {
-  [data-page="setup"] [style*="flex: 1"][style*="height: 62px"] { max-width: 62px; }
+/* The board now draws these 62px square, which is what a code looks like. On a
+   narrow phone six of them plus gaps do not fit, so there and only there they go
+   back to sharing the width. */
+@media (max-width: 470px) {
+  [data-page="setup"] [data-codebox] {
+    width: auto !important; flex: 1 1 0 !important; }
 }
 
 /* ── the desktop nav bar on a narrow window ──────────────────────────────── */
@@ -210,39 +211,51 @@ body > div[style*="width: 824px"] {
 /* Fifteen boards moved from 360px phone panels to 1320px laptop layouts, all
    sharing three class names: .bar for the top bar, .th and .tr for a table.
    These are the rules that fold that shell onto a phone, written once because
-   the shell is one thing.
+   the shell is one thing. The names are prefixed so a
+   board that already owned .bar or .th keeps its own.
 
    Without them the table's five fixed tracks forced the page 1322px wide inside
    a 390px viewport: the date column was simply off-screen. */
 @media (max-width: 900px) {
   /* The bar grows instead of clipping the signed-in name. */
-  [data-surface="desk"] .bar {
+  [data-surface="desk"] .appbar {
     height: auto !important;
     min-height: 60px;
     flex-wrap: wrap;
     row-gap: 6px;
     padding: 10px 16px !important;
   }
-  [data-surface="desk"] .bar > div { flex-wrap: wrap; row-gap: 4px; }
+  [data-surface="desk"] .appbar > div { flex-wrap: wrap; row-gap: 4px; }
 
   /* A column header means nothing once the rows are no longer columns. */
-  [data-surface="desk"] .th { display: none !important; }
+  [data-surface="desk"] .colh { display: none !important; }
 
   /* Each row becomes a card: thumbnail beside the name, everything else under
      it, and the chevron goes because the whole row is already the target. */
-  [data-surface="desk"] .tr {
+  [data-surface="desk"] .colr {
     display: flex !important;
     flex-wrap: wrap;
     gap: 5px 14px;
     align-items: center;
   }
-  [data-surface="desk"] .tr > *:nth-child(1) { flex: 0 0 auto; }
-  [data-surface="desk"] .tr > *:nth-child(2) { flex: 1 1 55%; min-width: 0; }
-  [data-surface="desk"] .tr > *:nth-child(3),
-  [data-surface="desk"] .tr > *:nth-child(4) { flex: 1 1 100%; }
-  [data-surface="desk"] .tr > *:nth-child(5) { display: none; }
+  [data-surface="desk"] .colr > *:nth-child(1) { flex: 0 0 auto; }
+  [data-surface="desk"] .colr > *:nth-child(2) { flex: 1 1 55%; min-width: 0; }
+  [data-surface="desk"] .colr > *:nth-child(3),
+  [data-surface="desk"] .colr > *:nth-child(4) { flex: 1 1 100%; }
+  [data-surface="desk"] .colr > *:nth-child(5) { display: none; }
 }
 
 /* ── things that must never change ──────────────────────────────────────── */
 
 /* Reduced motion is handled in tokens.css; nothing here animates. */
+
+/* ── the two conversations, on a phone ───────────────────────────────────── */
+
+/* The rule for these screens is the same at every width: the messages move and
+   the composer does not. So the column keeps its fixed height on a phone too --
+   sized to the viewport rather than to a laptop -- and the transcript goes on
+   scrolling inside it. A 656px column on an 844px phone left the composer
+   halfway up the screen with a void above it. */
+@media (max-width: 900px) {
+  [data-chatcol] { height: 68vh !important; min-height: 380px; }
+}

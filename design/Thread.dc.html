@@ -16,8 +16,8 @@
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
     .ph { width: 360px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column;
           box-sizing: border-box; }
-    .them { background: #f6f3ef; padding: 13px 15px; max-width: 268px; }
-    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 15px; max-width: 262px; margin-left: auto; }
+    .them { background: #fff; padding: 14px 16px; max-width: 520px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 14px 16px; max-width: 440px; margin-left: auto; }
     .t    { font-size: 15.5px; line-height: 1.5; }
     .when { font-size: 12.5px; color: #4a443d; margin-top: 5px; }
     /* quick replies are chips, not a rotating prompt: still text, tappable, and
@@ -30,16 +30,16 @@
        already carry. The farmer used to get a phone header on a 360px panel,
        so the product read as two products: a desktop app for the people with
        money and a stretched phone for the person doing the work.
-       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
        fifteen, which only works because they really are the same classes. */
-    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
              justify-content: space-between; flex-shrink: 0; }
-    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
-    .nav   { font-size: 15px; color: #605a53; }
-    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
-    .card  { background: #fff; padding: 20px; }
-    .cardh { font-size: 16.5px; font-weight: 700; }
-    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .appnav   { font-size: 15px; color: #605a53; }
+    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .railcard  { background: #fff; color: #1d1a17; padding: 20px; }
+    .railh { font-size: 16.5px; font-weight: 700; }
+    .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
     .rail  { display: flex; flex-direction: column; gap: 16px; }
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
     .main  { display: flex; flex-direction: column; }
@@ -60,15 +60,15 @@
 
     <!-- ══ FARMER ══ -->
     <div>
-      <div data-page="thread" class="ph f" style="min-height: 880px;">
-        <div class="bar">
+      <div data-page="thread" class="f" style="width: 1320px; min-height: 880px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+        <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
         <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-        <div class="brand">Pestivid</div>
+        <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
-          <div class="nav">My plots</div>
-          <div class="nav">Money</div>
-          <div class="navOn">Messages</div>
+          <div class="appnav">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnavOn">Messages</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -87,9 +87,10 @@
     </div>
 
 
-            <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 340px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
+            <div style="flex-grow: 1; display: grid; grid-template-columns: minmax(0, 880px) 340px; gap: 26px; padding: 22px 28px 30px; align-items: start; justify-content: space-between;">
       <div class="main">
-<div style="flex-grow: 1; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;">
+<div data-chatcol style="height: 628px; background: #f6f3ef; display: flex; flex-direction: column;">
+          <div data-transcript style="flex-grow: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
           <div class="them">
             <div class="t">Namaste Alice. Is the canal water reaching the far end of the plot this year?</div>
             <div class="m when">17 August, 9:12 am</div>
@@ -108,7 +109,9 @@
 
           <div style="flex-grow: 1;"></div>
 
-          <div>
+          </div>
+
+          <div style="flex-shrink: 0; padding: 2px 20px 12px;">
             <div style="font-size: 13.5px; color: #605a53; margin-bottom: 7px;">Tap one to answer</div>
             <div style="display: flex; flex-wrap: wrap; gap: 7px;">
               <div class="chip">Yes, I will</div>
@@ -116,8 +119,7 @@
               <div class="chip">The far end is dry</div>
             </div>
           </div>
-        </div>
-<div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+        <div data-sendfail style="flex-shrink: 0; padding: 13px 20px 16px; box-shadow: inset 0 1px 0 #ddd7d1;">
           <div style="display: flex; gap: 9px; align-items: stretch;">
             <div style="flex-grow: 1; background: #ddd7d1; display: flex; align-items: center; padding: 0 14px; min-height: 56px;">
               <div data-reply style="font-size: 16px; color: #4a443d;">Write a message</div>
@@ -131,8 +133,30 @@
           </div>
         </div>
       </div>
+      </div>
       <div class="rail">
-
+        <div class="railcard">
+          <div style="display: flex; align-items: center; gap: 11px;">
+            <div style="width: 42px; height: 42px; background: #e1e6ec; border-radius: 21px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <div data-avatar style="font-size: 17px; font-weight: 600;">R</div>
+            </div>
+            <div>
+              <div data-bind="other.name" class="railh">Ravi Kumar</div>
+              <div style="font-size: 13.5px; color: #605a53; margin-top: 1px;">Put money into one of your seasons</div>
+            </div>
+          </div>
+          <div class="railp">
+            That is the only reason anyone can write to you here. Nobody else can start a
+            conversation, and neither can we.
+          </div>
+        </div>
+        <div class="railcard">
+          <div class="railh">Words only</div>
+          <div class="railp">
+            There is no photo button because the server keeps text and nothing else. Video of your
+            field goes through <b>Film your field</b>, where it is hashed and timestamped.
+          </div>
+        </div>
       </div>
     </div>
 

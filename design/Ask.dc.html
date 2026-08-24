@@ -12,8 +12,13 @@
     a { color: #01579b; } a:hover { color: #013f70; }
     .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
-    .them { background: #f6f3ef; padding: 14px 16px; max-width: 285px; }
-    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 16px; max-width: 250px; margin-left: auto; }
+    /* The answer is a document, not a person. HIG generative-ai: never let
+       someone think a machine is a human. So an answer is a white card with the
+       page it was quoted from along the bottom; a farmer's own words stay a
+       dark bubble. Same classes ask.js already builds -- only the material
+       changed. */
+    .them { background: #fff; padding: 15px 17px; max-width: 560px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 14px 17px; max-width: 440px; margin-left: auto; }
     .p    { font-size: 15.5px; line-height: 1.5; }
     /* Suggestion CHIPS, not a rotating placeholder. See the note on the
        components board: a placeholder that cycles is moving text, and NN/g’s
@@ -27,16 +32,16 @@
        already carry. The farmer used to get a phone header on a 360px panel,
        so the product read as two products: a desktop app for the people with
        money and a stretched phone for the person doing the work.
-       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
        fifteen, which only works because they really are the same classes. */
-    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
              justify-content: space-between; flex-shrink: 0; }
-    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
-    .nav   { font-size: 15px; color: #605a53; }
-    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
-    .card  { background: #fff; padding: 20px; }
-    .cardh { font-size: 16.5px; font-weight: 700; }
-    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .appnav   { font-size: 15px; color: #605a53; }
+    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .railcard  { background: #fff; color: #1d1a17; padding: 20px; }
+    .railh { font-size: 16.5px; font-weight: 700; }
+    .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
     .rail  { display: flex; flex-direction: column; gap: 16px; }
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
     .main  { display: flex; flex-direction: column; }
@@ -46,14 +51,14 @@
 
 <div data-page="ask" class="f" style="width: 1320px; min-height: 860px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
-  <div class="bar">
+  <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
         <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-        <div class="brand">Pestivid</div>
+        <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
-          <div class="nav">My plots</div>
-          <div class="nav">Money</div>
-          <div class="nav">Messages</div>
+          <div class="appnav">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnav">Messages</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -71,9 +76,16 @@
     </div>
 
 
-  <div style="flex-grow: 1; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px;">
+  <!-- A laptop conversation: the transcript scrolls inside a column of fixed
+       height and the composer never moves, which is what was asked for. The
+       rail says who is answering -- because it is not a person, and a farmer is
+       entitled to know that before acting on a sentence. -->
+  <div style="flex-grow: 1; display: grid; grid-template-columns: minmax(0, 880px) 340px; gap: 26px; padding: 22px 28px 30px; align-items: start; justify-content: space-between;">
 
-    <div class="them">
+    <div data-chatcol style="height: 656px; background: #f6f3ef; display: flex; flex-direction: column;">
+
+      <div data-transcript style="flex-grow: 1; overflow-y: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;">
+<div class="them">
       <div class="p">What do you want to ask? I answer from government farming documents, and I will tell you when they do not cover something.</div>
     </div>
 
@@ -108,6 +120,57 @@
         bottle to your extension officer &mdash; do not estimate, and do not let a shopkeeper estimate
         for you.
       </div>
+      <div class="p" style="margin-top: 9px; color: #605a53;">The number for the Kisan Call Centre is beside this conversation.</div>
+    </div>
+
+          <div style="flex-grow: 1;"></div>
+      </div>
+
+      <!-- Predefined questions, kept where they can always be reached. HIG:
+           for an open-ended prompt, offer curated examples rather than an empty
+           box. They also spare a farmer typing Telugu on a keyboard. -->
+      <div style="flex-shrink: 0; padding: 4px 22px 14px;">
+        <div style="font-size: 14px; color: #605a53; margin-bottom: 8px;">Or tap one of these</div>
+        <div style="display: flex; gap: 8px;">
+          <div class="chip">When should I water after spraying?</div>
+          <div class="chip">Which potato variety resists blight?</div>
+        </div>
+      </div>
+
+      <div style="flex-shrink: 0; padding: 14px 22px 18px; box-shadow: inset 0 1px 0 #ddd7d1;">
+        <div style="display: flex; gap: 10px; align-items: stretch;">
+          <div style="flex-grow: 1; background: #ddd7d1; display: flex; align-items: center; padding: 0 15px; min-height: 58px;">
+            <div style="font-size: 16px; color: #4a443d;">Type your question</div>
+          </div>
+          <div data-send style="width: 58px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <span data-arrow><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg></span>
+          </div>
+        </div>
+        <div data-caption style="font-size: 13.5px; line-height: 1.45; margin-top: 10px; color: #605a53;">
+          This is not a doctor or an agronomist &mdash; check anything important with your extension
+          officer.
+        </div>
+      </div>
+    </div>
+
+    <div class="rail">
+      <div class="railcard">
+        <div class="railh">This is a machine, not an officer</div>
+        <div class="railp">
+          It answers from general farming knowledge, and quotes a government document by page
+          number when one covers your question. Every answer says which of the two it was. It can
+          be wrong, and it has never seen your field.
+        </div>
+      </div>
+      <div class="railcard">
+        <div class="railh">It will not tell you a quantity</div>
+        <div class="railp">
+          How much to mix depends on the bottle in your hand and on what is registered for potato in
+          your district. That number comes off the label, not from here.
+        </div>
+      </div>
+      <!-- the standing fallback for every time this cannot answer. ask.js finds
+           it by this background, so the colour is load-bearing. -->
       <div style="margin-top: 12px; background: #e7e1db; padding: 12px 13px;">
         <div style="font-size: 15px; font-weight: 600;">Kisan Call Centre</div>
         <a class="m" data-call href="tel:18001801551" style="display: flex; align-items: center; gap: 8px; min-height: 48px; margin-top: 4px; font-size: 19px; font-weight: 700; color: #01579b; text-decoration: none;">
@@ -117,35 +180,7 @@
         <div style="font-size: 14px; color: #605a53; margin-top: 3px;">Free &middot; 6 am to 10 pm &middot; speaks Telugu</div>
       </div>
     </div>
-
-    <div style="flex-grow: 1;"></div>
-
-    <!-- static suggestion chips -->
-    <div>
-      <div style="font-size: 14px; color: #605a53; margin-bottom: 8px;">Or tap one of these</div>
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <div class="chip">When should I water after spraying?</div>
-        <div class="chip">Which potato variety resists blight?</div>
-      </div>
-    </div>
   </div>
-
-  <!-- input: voice first, because typing Telugu on a phone is the barrier -->
-  <div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 18px;">
-    <div style="display: flex; gap: 10px; align-items: stretch;">
-      <div style="flex-grow: 1; background: #ddd7d1; display: flex; align-items: center; padding: 0 15px; min-height: 58px;">
-        <div style="font-size: 16px; color: #4a443d;">Type your question</div>
-      </div>
-      <div data-send style="width: 58px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-        <span data-arrow><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg></span>
-      </div>
-    </div>
-    <div data-caption style="font-size: 13.5px; line-height: 1.45; margin-top: 10px; color: #605a53;">
-      This is not a doctor or an agronomist &mdash; check anything important with your extension
-      officer.
-    </div>
-  </div>
-
 
   
 </div>

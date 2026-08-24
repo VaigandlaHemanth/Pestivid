@@ -38,7 +38,12 @@ if (root) {
 
   // six drawn boxes become one field, so a password manager and a numeric
   // keypad both work; the boxes stay as the visual
-  const boxes = [...root.querySelectorAll('div[style*="flex: 1"][style*="height: 62px"]')];
+  // Marked, not matched on a style string. This looked for `flex: 1` and a
+  // 62px height; the day the boxes were given a fixed width instead, the
+  // selector found nothing, no input was created, and the whole first run
+  // had no way to set a code. Nothing said so -- the page still rendered.
+  const boxes = [...root.querySelectorAll('[data-codebox]')];
+  if (!boxes.length) console.error('setup: no [data-codebox] in the board');
   const strip = boxes[0]?.parentElement;
   let code = null;
   if (strip) {
@@ -69,7 +74,9 @@ if (root) {
   }
 
   const holder = document.createElement('div');
-  root.querySelector('div[style*="flex-grow: 1"]')?.append(holder);
+  // The rail, not the flex parent: appended to the parent it became a second
+  // COLUMN and took 200px off the form beside it.
+  (root.querySelector('.rail') || root.querySelector('div[style*="flex-grow: 1"]'))?.append(holder);
   state(holder, 'empty', 'Your phone number is your account name',
     'That is how you sign in on a new phone. Write it down with the six numbers if you need to.');
 

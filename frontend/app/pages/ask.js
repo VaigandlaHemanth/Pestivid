@@ -31,7 +31,9 @@ if (thread) {
   const bubbles = [...thread.querySelectorAll('.them, .me')];
   bubbles.slice(1).forEach(b => b.remove());
 }
-if (callPanel && composerRow?.parentElement) {
+// On the laptop board the panel is already in the rail, standing beside the
+// conversation instead of inside it, so there is nothing to lift.
+if (callPanel && !callPanel.closest('.rail') && composerRow?.parentElement) {
   callPanel.style.marginTop = '0';
   callPanel.style.marginBottom = '12px';
   composerRow.parentElement.insertBefore(callPanel, composerRow);
@@ -60,7 +62,27 @@ function bubble(kind, text, source) {
     + ' transform var(--t-snappy, 568ms) var(--e-snappy, ease)';
   thread?.insertBefore(el, thread.querySelector('div[style*="flex-grow: 1"]'));
   requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'none'; });
+  // The transcript scrolls now, so a new message can land below the fold. Keep
+  // the newest one in view -- and jump rather than glide when travel is off.
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.scrollIntoView({ block: 'end', behavior: still ? 'auto' : 'smooth' });
   return el;
+}
+
+/* Where the sentence came from -----------------------------------------------
+ * r.source is the PIPELINE name ('rag'), not a citation -- printing it put the
+ * word "rag" under an answer as though it were a document. A real citation only
+ * exists when the retrieval server was up and returned chunks, which carry a
+ * page number. When it did not, the answer is general knowledge and the screen
+ * has to say so rather than imply a document nobody quoted.
+ */
+function provenance(r) {
+  const hits = Array.isArray(r.retrieved) ? r.retrieved.filter(d => d && d.page != null) : [];
+  if (hits.length) {
+    const pages = [...new Set(hits.map(d => d.page))].slice(0, 3).join(', ');
+    return 'Government document, page ' + pages;
+  }
+  return 'General farming knowledge, not quoted from a document.';
 }
 
 // What has been said so far, so a follow-up question makes sense. The route
@@ -82,7 +104,7 @@ async function ask(text) {
     pending.remove();
     const answer = plainText(r.answer || r.message) || 'The documents do not cover that.';
     said.push({ role: 'assistant', content: answer });
-    bubble('them', answer, r.source || r.citation);
+    bubble('them', answer, provenance(r));
   } catch (err) {
     pending.remove();
     const [h, d] = reason(err);

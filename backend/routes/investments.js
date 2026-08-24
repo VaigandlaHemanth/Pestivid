@@ -8,6 +8,15 @@ const FundingRequest = mongoose.model('FundingRequest'); // Get FundingRequest m
 const Transaction = mongoose.model('Transaction'); // Get Transaction model to record investments/payouts
 const { authenticateToken } = require('./auth'); // Import the authentication middleware
 
+/* Notification amounts, in the currency the product is actually denominated in.
+ * Four of these strings said "SOL" -- a leftover from a Solana-era codebase --
+ * while every screen in the app shows rupees. A farmer reading "invested 50000
+ * SOL in your project" has been told a number in a currency that does not
+ * appear anywhere else in the product.
+ */
+const rupees = (n) => '₹' + Math.round(Number(n) || 0).toLocaleString('en-IN',
+  { maximumFractionDigits: 0 });
+
 /**
  * First name of a populated user ref, or a safe fallback.
  *
@@ -419,7 +428,7 @@ router.post('/', authenticateToken, async (req, res) => {
               const farmerNotification = new Notification({
                   recipient: updatedFundingRequest.farmerWallet, // Farmer's ID
                   type: 'investment', // Custom notification type
-                  message: `${firstName(req.user, 'An investor')} invested ${parsedAmount.toFixed(2)} SOL in your project "${updatedFundingRequest.title}"!`,
+                  message: `${firstName(req.user, 'An investor')} put ${rupees(parsedAmount)} into your season “${updatedFundingRequest.title}”.`,
                   itemId: updatedFundingRequest._id, // Link to the funding request document
                   itemType: 'FundingRequest',
                   read: false,
@@ -702,7 +711,7 @@ router.put('/:id/progress', authenticateToken, async (req, res) => {
                        const payoutNotification = new Notification({
                            recipient: investment.investorWallet,
                            type: 'payout', // Custom type
-                           message: `Payout received for "${investment.projectTitle}": ${investment.payoutAmount.toFixed(2)} SOL!`,
+                           message: `Your share of “${investment.projectTitle}” has been sent: ${rupees(investment.payoutAmount)}.`,
                            itemId: investment._id, // Link to the investment document
                            itemType: 'Investment',
                            read: false,
@@ -718,7 +727,7 @@ router.put('/:id/progress', authenticateToken, async (req, res) => {
                        const farmerNotification = new Notification({
                            recipient: investment.farmerWallet, // The farmer's ID
                            type: 'payout', // Re-using 'payout' type, or could create 'investment_harvested'
-                           message: `Payout processed for an investment in "${investment.projectTitle}". Investor received ${investment.payoutAmount.toFixed(2)} SOL.`,
+                           message: `${rupees(investment.payoutAmount)} has gone out for “${investment.projectTitle}”.`,
                            itemId: investment._id,
                            itemType: 'Investment',
                            read: false,

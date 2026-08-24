@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#ffffff">
-  <title>Check who gets what</title>
+  <title>Check who gets what · Pestivid</title>
   <!-- generated from design/Payout.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta name="robots" content="noindex, follow">
   
   <link rel="stylesheet" href="./tokens.css">
   <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
@@ -34,16 +36,16 @@
        already carry. The farmer used to get a phone header on a 360px panel,
        so the product read as two products: a desktop app for the people with
        money and a stretched phone for the person doing the work.
-       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
        fifteen, which only works because they really are the same classes. */
-    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
              justify-content: space-between; flex-shrink: 0; }
-    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
-    .nav   { font-size: 15px; color: #605a53; }
-    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
-    .card  { background: #fff; padding: 20px; }
-    .cardh { font-size: 16.5px; font-weight: 700; }
-    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .appnav   { font-size: 15px; color: #605a53; }
+    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .railcard  { background: #fff; color: #1d1a17; padding: 20px; }
+    .railh { font-size: 16.5px; font-weight: 700; }
+    .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
     .rail  { display: flex; flex-direction: column; gap: 16px; }
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
     .main  { display: flex; flex-direction: column; }
@@ -53,14 +55,14 @@
 <body data-page="payout" data-role="farmer" data-design-width="1320" data-design-height="900">
 <div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
-  <div class="bar">
+  <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
         <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-        <div class="brand">Pestivid</div>
+        <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
-          <div class="nav">My plots</div>
-          <div class="navOn">Money</div>
-          <div class="nav">Messages</div>
+          <div class="appnav">My plots</div>
+          <div class="appnavOn">Money</div>
+          <div class="appnav">Messages</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">

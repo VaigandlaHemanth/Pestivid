@@ -47,6 +47,11 @@ if (ctx) {
       : 'Nothing filmed yet' } });
 
     if (!clip) {
+      // The page heading is "That is saved". It is not, and a title claiming a
+      // success above a body reporting nothing is the screen contradicting
+      // itself in the two places a reader looks first.
+      const title = root.querySelector('[data-title]');
+      if (title) title.textContent = 'Nothing to send';
       return state(root, 'empty', 'There is no clip to send',
         'Film your field first. Nothing has been lost — there was simply nothing here.',
         { label: 'Film the field', go: 'record' });

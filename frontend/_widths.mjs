@@ -24,18 +24,39 @@ for (const slug of slugs.sort()) {
                                    [tok[role].token, JSON.stringify(tok[role].user)]);
     await p.goto(`http://127.0.0.1:3001/app/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
     await p.waitForTimeout(1100);
-    out[tag] = await p.evaluate(() => ({
-      over: document.documentElement.scrollWidth - window.innerWidth,
-      root: Math.round(document.querySelector('body > div')?.getBoundingClientRect().width || 0),
-    }));
+    out[tag] = await p.evaluate(() => {
+      // `body > div` is the app bar, which is full-bleed on every page, so this
+      // measured 1440 whether the drawing underneath was 1320 wide or 360. Five
+      // pages sat at phone width for a whole pass and this said nothing.
+      // Measure the band the content actually occupies instead.
+      let l = Infinity, r = -Infinity;
+      for (const e of document.querySelectorAll('body *')) {
+        const b = e.getBoundingClientRect();
+        if (b.width < 2 || b.height < 2) continue;
+        const st = getComputedStyle(e);
+        if (st.visibility === 'hidden' || st.display === 'none' || st.position === 'fixed') continue;
+        l = Math.min(l, b.left); r = Math.max(r, b.right);
+      }
+      return {
+        over: document.documentElement.scrollWidth - window.innerWidth,
+        band: Number.isFinite(l) ? Math.round(r - l) : 0,
+        drawn: Number(document.body.dataset.designWidth || 0),
+      };
+    });
     await p.close();
   }
   const overflows = out.phone.over > 1;
-  const slivered = out.laptop.root > 0 && out.laptop.root < 700;
+  // Two independent signals: what the board was drawn at, and what the page
+  // actually fills. confirm-investment is a deliberately narrow card and says so.
+  const NARROW_BY_DESIGN = new Set(['confirm-investment']);
+  const slivered = !NARROW_BY_DESIGN.has(slug)
+    && ((out.laptop.drawn > 0 && out.laptop.drawn < 1000)
+        || (out.laptop.band > 0 && out.laptop.band < 900));
   if (overflows) broken++;
   if (slivered) sliver++;
   const flag = [overflows ? `phone overflows by ${out.phone.over}px` : '',
-                slivered ? `laptop shows a ${out.laptop.root}px sliver` : ''].filter(Boolean).join(' + ');
+                slivered ? `drawn at ${out.laptop.drawn}px, fills ${out.laptop.band}px of 1440` : '']
+                  .filter(Boolean).join(' + ');
   if (flag) console.log(`  ${slug.padEnd(20)} ${flag}`);
 }
 await b.close();

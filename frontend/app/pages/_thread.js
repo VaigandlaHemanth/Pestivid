@@ -29,8 +29,13 @@ export function thread(slug) {
       context: `${msgs.length} message${msgs.length === 1 ? '' : 's'}`,
     } });
     // The avatar showed the artboard's "R" whoever the conversation was with.
-    const avatar = [...ctx.root.querySelectorAll('div')]
-      .find(d => d.children.length === 0 && /^[A-Z]$/.test(d.textContent.trim()));
+    // Marked, not guessed: the first childless single capital letter on the page
+    // is the nav bar's own avatar, which is the signed-in farmer, not the person
+    // being talked to. Relabelling that one renamed the wrong human.
+    const avatar = ctx.root.querySelector('[data-avatar]')
+      || [...ctx.root.querySelectorAll('div')]
+        .find(d => d.children.length === 0 && !d.closest('.appbar')
+                   && /^[A-Z]$/.test(d.textContent.trim()));
     if (avatar) avatar.textContent = (otherName.trim()[0] || '?').toUpperCase();
     // repeatRows, never repeat(): repeat() ends in container.replaceChildren()
     // and the container here is the whole bubble column, which also holds the
@@ -90,6 +95,12 @@ export function thread(slug) {
         state(ctx.root.querySelector('[data-sendfail]') || ctx.root, 'failed', h, d);
       }
     };
+
+    // The transcript scrolls now, so a conversation opens in the middle of
+    // itself unless it is sent to the end. The newest message is the one being
+    // answered, so that is what has to be on screen.
+    const tape = ctx.root.querySelector('[data-transcript]');
+    if (tape) requestAnimationFrame(() => { tape.scrollTop = tape.scrollHeight; });
 
     // Canned replies are the point of the chips on a phone held one-handed in a
     // field. "Yes, I will" is not what an investor asking a question needs, so

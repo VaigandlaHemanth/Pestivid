@@ -383,7 +383,7 @@ router.post('/', authenticateToken, async (req, res) => {
               const notification = new Notification({
                   global: true, // This is a global notification for the investment marketplace
                   type: 'funding', // Custom notification type
-                  message: `New investment opportunity: "${savedRequest.title}" by a farmer is seeking funding!`,
+                  message: `A farmer is asking for money to grow “${savedRequest.title}”, with a video anyone can check.`,
                   itemId: savedRequest._id, // Link to the new funding request document
                   itemType: 'FundingRequest',
               });
@@ -596,7 +596,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
                   const notifications = investorsInProject.map(investorId => ({
                       recipient: investorId, // Target the specific investor
                       type: 'update', // Custom notification type
-                      message: `Update posted for project "${request.title}" (${newUpdate.date}): ${newUpdate.text.substring(0, 50)}...`,
+                      message: `New word on “${request.title}”: ${newUpdate.text.slice(0, 90)}${newUpdate.text.length > 90 ? '…' : ''}`,
                       itemId: request._id, // Link to the funding request document
                       itemType: 'FundingRequest',
                       // Add a way to link to the specific update? Maybe include update._id

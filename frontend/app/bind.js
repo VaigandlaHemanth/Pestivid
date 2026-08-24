@@ -108,7 +108,11 @@ export function state(container, kind, headline, detail, action) {
   // over a form, an empty state over a list -- so they come in rather than
   // teleport. Opacity and transform only, and the travel is 6px: this is a
   // message appearing, not a panel sliding.
-  box.style.cssText = `background: ${tone[0]}; padding: 16px 17px; margin: 16px ${side}px;`
+  // A sentence set across 1400px is not a sentence anybody reads. These boxes
+  // were drawn for a 360px panel and inherited the whole laptop width when the
+  // farmer pages widened.
+  box.style.cssText = `background: ${tone[0]}; padding: 18px 20px; margin: 16px ${side}px;`
+    + ' max-width: 720px; box-sizing: border-box;'
     + ' opacity: 0; transform: translateY(6px);'
     + ' transition: opacity var(--t-press, 120ms) var(--e-smooth, ease),'
     + ' transform var(--t-release, 260ms) var(--e-snappy, ease);';
@@ -122,6 +126,8 @@ export function state(container, kind, headline, detail, action) {
   const p = document.createElement('div');
   p.style.cssText = `font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: ${tone[2]};`;
   p.textContent = detail;
+  box.style.display = 'flex';
+  box.style.flexDirection = 'column';
   box.append(h, p);
   // An action is either somewhere to go or something to do. The record screen's
   // camera refusal needs the second kind: it opens a file picker rather than
@@ -134,8 +140,11 @@ export function state(container, kind, headline, detail, action) {
     a.dataset.act = '';
     a.setAttribute('role', 'button');
     a.tabIndex = 0;
-    a.style.cssText = 'margin-top: 13px; min-height: 48px; background: #1d1a17; color: #fff;'
-      + ' display: flex; align-items: center; justify-content: center;'
+    // A button is the width of its label plus room to hit it, not the width of
+    // whatever it happens to sit in.
+    a.style.cssText = 'margin-top: 14px; min-height: 48px; background: #1d1a17; color: #fff;'
+      + ' display: inline-flex; align-self: flex-start; padding: 0 28px;'
+      + ' align-items: center; justify-content: center;'
       + ' font-size: 16px; font-weight: 600; cursor: pointer;';
     a.textContent = action.label;
     a.addEventListener('keydown', e => {

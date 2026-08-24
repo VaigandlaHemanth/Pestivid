@@ -103,7 +103,9 @@ if (ctx) {
     // reporting the harvest: nothing is paid to anybody until it happens.
     const projects = (await api.projects.mine(ctx.user._id || ctx.user.id).catch(() => [])) || [];
     const here = projects.find(p => p.title === key) || projects.find(p => !p.harvestReportedAt);
-    const money = root.querySelector('.card');
+    // .pcard, not .card: the shared laptop shell owns .railcard now and this
+    // board's own money card needed a name of its own.
+    const money = root.querySelector('.pcard');
 
     if (!here) {
       // No season is riding on this plot, so there is nothing to report and no

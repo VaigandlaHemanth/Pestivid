@@ -13,11 +13,11 @@
     .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
     .sec { font-size: 15px; color: #605a53; padding: 20px 20px 8px; }
-    .card { background: #f6f3ef; padding: 16px 20px; }
+    .pcard { background: #f6f3ef; padding: 16px 20px; }
     /* a video row on a plot: thumbnail, date, and the one fact that matters —
        whether its date is now beyond changing */
     .vid { background: #f6f3ef; padding: 13px 20px; display: flex; gap: 13px; align-items: center; }
-    .th  { width: 66px; height: 50px; flex-shrink: 0; background: #37322d; position: relative; }
+    .pthumb  { width: 66px; height: 50px; flex-shrink: 0; background: #37322d; position: relative; }
     .dur { position: absolute; bottom: 3px; right: 3px; background: rgba(29,26,23,.82); color: #f6f3ef;
            font-size: 11px; padding: 1px 4px; font-variant-numeric: tabular-nums; }
     /* Press, declared here so the artboard shows the behaviour rather than
@@ -37,16 +37,16 @@
        already carry. The farmer used to get a phone header on a 360px panel,
        so the product read as two products: a desktop app for the people with
        money and a stretched phone for the person doing the work.
-       responsive.css folds .bar, .th and .tr onto a phone once, for all
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
        fifteen, which only works because they really are the same classes. */
-    .bar   { background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center;
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
              justify-content: space-between; flex-shrink: 0; }
-    .brand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
-    .nav   { font-size: 15px; color: #605a53; }
-    .navOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
-    .card  { background: #fff; padding: 20px; }
-    .cardh { font-size: 16.5px; font-weight: 700; }
-    .cardp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
+    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em; }
+    .appnav   { font-size: 15px; color: #605a53; }
+    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17; }
+    .railcard  { background: #fff; color: #1d1a17; padding: 20px; }
+    .railh { font-size: 16.5px; font-weight: 700; }
+    .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
     .rail  { display: flex; flex-direction: column; gap: 16px; }
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
     .main  { display: flex; flex-direction: column; }
@@ -56,14 +56,14 @@
 
 <div data-page="plot" class="f" style="width: 1320px; min-height: 940px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
-  <div class="bar">
+  <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
         <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-        <div class="brand">Pestivid</div>
+        <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
-          <div class="navOn">My plots</div>
-          <div class="nav">Money</div>
-          <div class="nav">Messages</div>
+          <div class="appnavOn">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnav">Messages</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -98,7 +98,7 @@
     </div>
 <div data-bind="plot.videosLabel" class="sec">Videos of this plot</div>
 <div class="vid">
-      <div class="th"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:41</div></div>
+      <div class="pthumb"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:41</div></div>
       <div style="flex-grow: 1;">
         <div class="m" style="font-size: 16px; font-weight: 600;">18 August, 6:44 am</div>
         <div style="display: flex; align-items: center; gap: 5px; margin-top: 3px;">
@@ -109,7 +109,7 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
     </div>
 <div class="vid" style="background: #eae4de;">
-      <div class="th"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:36</div></div>
+      <div class="pthumb"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:36</div></div>
       <div style="flex-grow: 1;">
         <div class="m" style="font-size: 16px; font-weight: 600;">11 August, 7:02 am</div>
         <div style="display: flex; align-items: center; gap: 5px; margin-top: 3px;">
@@ -120,7 +120,7 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
     </div>
 <div class="vid">
-      <div class="th"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:29</div></div>
+      <div class="pthumb"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:29</div></div>
       <div style="flex-grow: 1;">
         <div class="m" style="font-size: 16px; font-weight: 600;">Today, 8:12 am</div>
         <div style="font-size: 14px; color: #4a443d; margin-top: 3px;">On our server &middot; date being written, usually by tomorrow</div>
@@ -136,7 +136,7 @@
       </div>
       <div class="rail">
 <div class="sec">Money on this plot</div>
-<div class="card">
+<div class="pcard">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div style="font-size: 16px;">Raised</div>
         <div class="m" style="font-size: 21px; font-weight: 700;">&#8377;5,00,000</div>

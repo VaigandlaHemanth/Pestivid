@@ -15,22 +15,9 @@ import { putClip } from '../clip.js';
  * about the evidence is weaker -- only the filming happened elsewhere.
  */
 function refuse(headline, detail) {
-  const pick = document.createElement('input');
-  pick.type = 'file';
-  pick.accept = 'video/*';
-  pick.style.cssText = 'position: absolute; width: 1px; height: 1px; opacity: 0;';
-  pick.addEventListener('change', async () => {
-    const file = pick.files?.[0];
-    if (!file) return;
-    try {
-      await putClip({ file, size: file.size, duration: 0, fromCameraApp: true });
-      location.href = './sent.html';
-    } catch {
-      state(ctx.root, 'failed', 'That file could not be held',
-        'This browser will not keep a video between screens. Try a different browser.');
-    }
-  });
-  ctx.root.append(pick);
+  // The picker is the rail's card, already wired. A refusal points at it
+  // rather than building a second hidden one.
+  const pick = ctx.root.querySelector('input[type="file"]');
   // The panel is drawn 800px tall because it is a viewfinder. With no camera
   // there is nothing to view, and the leftover was a thousand pixels of black
   // under a red box. The page becomes as tall as what it actually has to say.
@@ -39,7 +26,44 @@ function refuse(headline, detail) {
     { label: 'Pick a file instead', act: () => pick.click() });
 }
 
+/**
+ * The file path, wired once for the whole screen.
+ *
+ * It used to exist only inside refuse(), as a hidden input created when the
+ * camera was denied. On a laptop that is backwards: the clip was almost
+ * certainly filmed on a phone and copied across, so choosing a file is the main
+ * path and it is a drawn card in the rail.
+ */
+function wireFileCard(root) {
+  const choose = root.querySelector('[data-choose]');
+  if (!choose) return null;
+  const pick = document.createElement('input');
+  pick.type = 'file';
+  pick.accept = 'video/*';
+  pick.setAttribute('aria-label', 'Choose a video from this machine');
+  pick.setAttribute('autocomplete', 'off');
+  pick.style.cssText = 'position: absolute; width: 1px; height: 1px; opacity: 0;';
+  root.append(pick);
+  pick.addEventListener('change', async () => {
+    const file = pick.files?.[0];
+    if (!file) return;
+    const was = choose.textContent;
+    choose.textContent = 'Holding it…';
+    try {
+      await putClip({ file, size: file.size, duration: 0, fromCameraApp: true });
+      location.href = './sent.html';
+    } catch {
+      choose.textContent = was;
+      state(root, 'failed', 'That file could not be held',
+        'This browser will not keep a video between screens. Try a different browser.');
+    }
+  });
+  acts(choose, 'Choose a file', () => pick.click());
+  return pick;
+}
+
 const ctx = requireUser('record', ['farmer']);
+if (ctx) wireFileCard(ctx.root);
 if (ctx) load(ctx.root, async () => {
   if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
     return refuse('This phone will not record here',
@@ -147,7 +171,12 @@ if (ctx) load(ctx.root, async () => {
   const shutterIcon = ctx.root.querySelector('[data-shutter-icon]');
   const shutterLabel = ctx.root.querySelector('[data-shutter-label]');
   const dot = ctx.root.querySelector('[data-reddot]');
+  // Throw away only exists while something is recording. On the idle screen
+  // there is nothing to throw away, and it sat next to the shutter on a page
+  // somebody is about to press.
+  const binBtn = control('Throw away');
   const paintIdle = () => {
+    if (binBtn) binBtn.style.visibility = 'hidden';
     if (shutterIcon) {
       shutterIcon.style.borderRadius = '50%';
       shutterIcon.style.width = '36px';
@@ -160,6 +189,7 @@ if (ctx) load(ctx.root, async () => {
     bind(ctx.root, { clip: { elapsed: '0:00', size: '0.0 MB' } });
   };
   const paintRolling = () => {
+    if (binBtn) binBtn.style.visibility = 'visible';
     if (shutterIcon) {
       shutterIcon.style.borderRadius = '4px';
       shutterIcon.style.width = '34px';

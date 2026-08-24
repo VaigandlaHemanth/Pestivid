@@ -48,8 +48,8 @@ const CHECKS = [
   ['home-empty',     'farmer',   null],
   ['setup',          'farmer',   'phone number is your account name'],
   ['ask-money',      'farmer',   'Film the field first'],
-  ['leaf-check',    'farmer',   'Take a photo of one leaf'],
-  ['leaf-check',   'farmer',   'Take a photo of one leaf'],
+  // The capture prompt is the plate itself now, not a box above the app bar.
+  ['leaf-check',    'farmer',   'One leaf, filling most of the frame'],
 ];
 
 const browser = await chromium.launch();

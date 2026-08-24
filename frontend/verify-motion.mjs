@@ -6,6 +6,7 @@
 //   3. no duration or easing outside the tokens in tokens.css
 //   4. reduced motion keeps opacity and colour and drops travel
 import { chromium } from 'playwright';
+import { readdirSync } from 'node:fs';
 import { needs } from './_needs.mjs';
 
 const APP = 'http://127.0.0.1:3001/app';
@@ -21,7 +22,11 @@ const LAYOUT = ['width', 'height', 'top', 'left', 'right', 'bottom', 'margin',
   'padding', 'font-size', 'border-width', 'flex', 'grid'];
 
 const QUERY = await needs();
-const pages = process.argv.slice(2);
+// No arguments used to mean NO PAGES, and the summary still read like a pass
+// ("0 findings across 0 pages"). It now means every page.
+const pages = (process.argv.slice(2).length
+  ? process.argv.slice(2)
+  : readdirSync('frontend/app').filter(f => f.endsWith('.html')).map(f => f.replace('.html', '')).sort());
 const b = await chromium.launch();
 const tok = {};
 let problems = 0;

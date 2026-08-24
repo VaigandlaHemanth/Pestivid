@@ -25,6 +25,50 @@ function revealRetake(on) {
   if (block) block.style.display = on ? '' : 'none';
 }
 
+/* WHAT THIS SCREEN IS SHOWING RIGHT NOW ------------------------------------
+ * Three phases, and every block belongs to exactly one of them. Before this
+ * existed the page shipped a verdict card reading "No diagnosis yet" with the
+ * full Mancozeb spray guidance underneath it and a live "Ask about this result"
+ * beside it -- treatment for a disease nobody had named. HIG generative-ai:
+ * do not present an output before there is one.
+ *   'ask'      no photo yet. The plate is a capture surface and nothing else.
+ *   'verdict'  a name. Verdict, treatment, and questions about it.
+ *   'refused'  no name. Verdict and how to retake. No treatment, ever.
+ */
+function phase(root, which) {
+  // style.display = '' DELETES the declaration, which threw away the board's
+  // own `display: flex` and left the capture block stacked top-left. Remember
+  // what the drawing said once, and put that back.
+  const show = (sel, on) => {
+    for (const el of root.querySelectorAll(sel)) {
+      // A block the board drew as display:none has no shown value to restore,
+      // so the drawn 'none' would win forever. Fall back to the stylesheet.
+      if (el.dataset.disp == null) {
+        const drawn = el.style.display || '';
+        el.dataset.disp = drawn === 'none' ? '' : drawn;
+      }
+      el.style.display = on ? el.dataset.disp : 'none';
+    }
+  };
+  show('[data-capture]',    which === 'ask');
+  show('[data-framing]',    which !== 'verdict');
+  show('[data-verdictcard]', which !== 'ask');
+  show('[data-treatment]',  which === 'verdict');
+  show('[data-askcard]',    which === 'verdict');
+  show('[data-retake]',     which === 'refused');
+  // The filename plate over an empty viewfinder read as a photo that existed.
+  // the filename plate and the "checked on your phone" plate, wrappers and all:
+  // an emptied wrapper is still a grey rectangle sitting on the viewfinder
+  for (const sel of ['[data-bind="shot.file"]', '[data-bind="shot.where"]']) {
+    const el = root.querySelector(sel);
+    const box = el && (el.closest('[data-readout]') || el);
+    if (box) {
+      if (box.dataset.disp == null) box.dataset.disp = box.style.display || '';
+      box.style.display = which === 'ask' ? 'none' : box.dataset.disp;
+    }
+  }
+}
+
 const KEY = 'pv.leaf';
 const MODEL_ROOT = '/model';
 
@@ -68,7 +112,7 @@ export function leaf(slug) {
     if (saved) {
       const isRefusal = saved.status !== 'ok';
       if (isRefusal !== wantRefusal) {
-        revealRetake(isRefusal);
+        render(saved);
         return;
       }
       render(saved);
@@ -135,22 +179,32 @@ export function leaf(slug) {
     picker.className = 'sr';
     ctx.root.append(picker);
 
-    const holder = document.createElement('div');
-    ctx.root.prepend(holder);
-    state(holder, 'empty', 'Take a photo of one leaf',
-      'The whole leaf in the frame with a little space around it, in even daylight. Do not zoom in — filling the frame is what makes the checker refuse.');
-    holder.firstElementChild.setAttribute('data-act', '');
-    holder.firstElementChild.addEventListener('click', () => picker.click());
+    // prepend() put the only way into this screen ABOVE the app bar, outside
+    // the drawing, which is why a farmer could not find where the photo went.
+    // The plate itself is the affordance now; this only holds the progress.
+    const holder = ctx.root.querySelector('[data-loadhold]') || (() => {
+      const d = document.createElement('div'); ctx.root.prepend(d); return d;
+    })();
+    phase(ctx.root, 'ask');
+    const choose = ctx.root.querySelector('[data-choose]');
+    if (choose) acts(choose, 'Choose a photo of one leaf', () => picker.click());
+    const plate = ctx.root.querySelector('[data-capture]')?.parentElement;
+    if (plate) acts(plate, 'Choose a photo of one leaf', () => picker.click());
 
     picker.addEventListener('change', async () => {
       const file = picker.files?.[0];
       if (!file) return;
       const preview = URL.createObjectURL(file);
+      // The photo is here, so the invitation to pick one goes.
+      const cap = ctx.root.querySelector('[data-capture]');
+      if (cap) cap.style.display = 'none';
       if (slot) {
         const img = document.createElement('img');
         img.src = preview;
         img.alt = 'The leaf you photographed';
-        img.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;';
+        // contain, not cover: the whole leaf is the thing being judged, and a
+        // portrait photo in a landscape plate loses its ends to a crop.
+        img.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;';
         slot.prepend(img);
       }
       // The Multi Step Loader from design/Components.dc.html. One line of text
@@ -224,14 +278,12 @@ export function leaf(slug) {
       },
       refusal: { headline },
     });
-    for (const sec of ctx.root.querySelectorAll('[data-treatment]')) {
-      sec.style.display = ok ? '' : 'none';
-    }
+    phase(ctx.root, ok ? 'verdict' : 'refused');
     // "Most likely" is a claim about a diagnosis. There is not one.
     const kicker = ctx.root.querySelector('[data-bind="verdict.name"]')?.previousElementSibling;
     if (kicker && !ok) kicker.textContent = 'The checker refused';
     const again = document.createElement('div');
-    ctx.root.append(again);
+    (ctx.root.querySelector('.rail') || ctx.root).append(again);
     state(again, 'empty', 'Check another leaf', 'This clears the result and opens the camera.');
     const box = again.firstElementChild;
     box.setAttribute('data-act', '');
