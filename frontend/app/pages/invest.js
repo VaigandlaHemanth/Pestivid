@@ -23,7 +23,10 @@ if (ctx) load(ctx.root, async () => {
 
   repeat(list, open.map(p => ({
     title: p.title,
-    meta: [p.acres && `${p.acres} acres`, p.method, p.timeline && `${p.timeline} months`].filter(Boolean).join(' · '),
+    // One dot, not two: the size and the method are one fact about the land,
+    // the length is a separate one.
+    meta: [[p.acres && `${p.acres} acres`, p.method].filter(Boolean).join(', '),
+           p.timeline && `${p.timeline} months`].filter(Boolean).join(' · '),
     raised: rupees(p.fundedAmount || 0),
     goal: `of ${rupees(p.amount)}`,
     pct: Math.min(100, Math.round(100 * (p.fundedAmount || 0) / (p.amount || 1))) + '%',

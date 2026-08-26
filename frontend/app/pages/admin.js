@@ -31,7 +31,7 @@ if (ctx) {
 
   load(root, async () => {
     const { bind } = await import('../bind.js');
-    bind(root, { me: { line: `${ctx.user.name} · admin · every action here is written to the audit collection under your name` } });
+    bind(root, { me: { line: `${ctx.user.name}, admin. Every action here is written to the audit collection under your name` } });
 
     // GET /videos/review-queue answers { state, count, truncated, items } -- not
     // an array and not { videos }. Reading it as either left items as an object
