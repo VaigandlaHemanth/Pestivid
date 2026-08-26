@@ -196,7 +196,7 @@ export function deClaimProps(root) {
   // ONLY of prop tokens, the whole run goes and one honest line takes its
   // place. A token sitting inside a real sentence is still swapped in place.
   const PROP = /VID_\d{8}_\d{6}_IST\.mp4|IMG_\d{8}_\d{4}_IST\.jpg|sha256\s+[0-9a-f]{4,}(?:…|\.\.\.)?[0-9a-f]*|[0-9a-f]{8}…[0-9a-f]{4}|bafybeih…?[0-9a-z]*|[Bb]lock\s*(?:9xx,xxx|[\d,]{4,})|8(?:81|78),\d{3}|1080×1920|30fps|10\.1 MB|no\.\s*0{3,}\d+/g;
-  const FILLER = /^[\s·,.\-–|/]*$/;
+  const FILLER = /^[\s·,.\-, |/]*$/;
 
   const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes = [];

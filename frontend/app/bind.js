@@ -21,7 +21,7 @@ export function bind(root, data) {
   for (const el of root.querySelectorAll('[data-bind]')) {
     if (!addressed(el.dataset.bind)) continue;
     const v = dig(data, el.dataset.bind);
-    el.textContent = v == null || v === '' ? '—' : String(v);
+    el.textContent = v == null || v === '' ? 'not yet' : String(v);
     el.setAttribute('data-filled', '');
   }
   for (const el of root.querySelectorAll('[data-bind-html]')) {
@@ -45,6 +45,43 @@ export function bind(root, data) {
   return root;
 }
 
+/* A list arriving from the server ---------------------------------------------
+ *
+ * Every list on this product is empty until a fetch resolves, and then the rows
+ * appear all at once with no bridge. verify-motion-coverage put a number on it:
+ * seventeen of twenty-four pages had press feedback and nothing else, so the one
+ * moment where the screen changes shape was the one moment with no motion.
+ *
+ * One recipe, applied in the shared row helper rather than seventeen times:
+ *   purpose    preventing a jarring change -- rows replace a blank
+ *   frequency  once per page load, which is where a stagger is affordable
+ *   budget     568ms on the snappy spring, the token this product already uses
+ *   stagger    45ms, capped at eight rows so a long list does not crawl
+ *
+ * transform and opacity only, one shot, and under reduced motion the fade stays
+ * while the travel goes -- the rule this repo already holds itself to.
+ */
+const STILL = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+export function arrive(els) {
+  if (!els || !els.length) return;
+  const still = STILL();
+  els.forEach((el, i) => {
+    if (!el || el.nodeType !== 1) return;
+    const wait = Math.min(i, 8) * 45;
+    el.style.opacity = '0';
+    if (!still) el.style.transform = 'translateY(8px)';
+    el.style.transition = `opacity var(--t-press, 120ms) var(--e-smooth, ease) ${wait}ms,`
+      + ` transform var(--t-snappy, 568ms) var(--e-snappy, ease) ${wait}ms`;
+  });
+  requestAnimationFrame(() => {
+    for (const el of els) {
+      if (!el || el.nodeType !== 1) continue;
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    }
+  });
+}
+
 /**
  * Repeat the first child of a container once per row.
  *
@@ -60,12 +97,14 @@ export function repeat(container, rows, decorate) {
     container.__tpl = first.cloneNode(true);
   }
   container.replaceChildren();
-  rows.forEach((row, i) => {
+  const made = rows.map((row, i) => {
     const el = container.__tpl.cloneNode(true);
     bind(el, row);
     if (decorate) decorate(el, row, i);
     container.append(el);
+    return el;
   });
+  arrive(made);
 }
 
 /**
@@ -177,7 +216,7 @@ export function state(container, kind, headline, detail, action) {
 
 /** The message for a failure, in the words the screens use elsewhere. */
 export function reason(err) {
-  if (err?.offline) return ['No connection', 'Your phone cannot reach us. Nothing is lost — try again when you have a bar of signal.'];
+  if (err?.offline) return ['No connection', 'Your phone cannot reach us. Nothing is lost, try again when you have a bar of signal.'];
   if (err?.rateLimited) return ['Too many questions just now', 'We are on a free allowance and it is used up for the minute. Wait a moment and ask again.'];
   if (err?.status === 404) return ['Not there', 'That is not something we hold.'];
   if (err?.status >= 500) return ['Our end broke', 'This is our fault, not yours. Nothing you sent has been lost.'];
@@ -258,6 +297,7 @@ export function repeatRows(root, selector, rows, decorate) {
     return el;
   });
   anchor.remove();
+  arrive(made);
   return made;
 }
 
@@ -307,6 +347,7 @@ export function rows(root, name, items, decorate) {
     made.push(el);
   }
   tpl.remove();
+  arrive(made);
   return made;
 }
 

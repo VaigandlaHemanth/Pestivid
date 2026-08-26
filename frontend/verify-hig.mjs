@@ -165,9 +165,13 @@ const AUDIT = (touch) => {
     }
 
     // --- sentence case ----------------------------------------------------
-    if (own.length > 11 && own === own.toUpperCase() && /[A-Z]{4,}/.test(own)
-        && !/^[\d\s\W]+$/.test(own)) {
-      out.caps.push(own.slice(0, 40));
+    // What the SCREEN says, not what the DOM holds. Three live boards uppercased
+    // their table headers and section labels with text-transform, so the text
+    // node read "Lot" while the page shouted "LOT", and this check saw nothing.
+    const shown = cs.textTransform === 'uppercase' ? own.toUpperCase() : own;
+    if (shown.length > 11 && shown === shown.toUpperCase() && /[A-Z]{4,}/.test(shown)
+        && !/^[\d\s\W]+$/.test(shown)) {
+      out.caps.push(shown.slice(0, 40) + (cs.textTransform === 'uppercase' ? '  (via CSS)' : ''));
     }
   }
   return out;

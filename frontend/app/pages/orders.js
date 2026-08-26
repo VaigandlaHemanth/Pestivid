@@ -1,5 +1,5 @@
 import { requireUser, api, load, state } from './_guard.js';
-import { bind } from '../bind.js';
+import { bind, arrive } from '../bind.js';
 import { rupees, dayMonth } from '../api.js';
 import { goes, acts, press } from '../wire.js';
 
@@ -40,7 +40,7 @@ if (ctx) load(ctx.root, async () => {
   const top = buys[0];
   const short = (v) => (v ? `${String(v).slice(0, 8)}…${String(v).slice(-4)}` : 'not recorded');
   bind(ctx.root, { receipt: top ? {
-    head: `Receipt — ${top.crop || 'lot'}, ${dayMonth(top.purchaseDate)}`,
+    head: `Receipt, ${top.crop || 'lot'}, ${dayMonth(top.purchaseDate)}`,
     paid: rupees(top.price),
     tx: short(top.txHash), hash: short(top.videoFileHash), cid: short(top.cid),
     block: top.blockHeight ? `Block ${Number(top.blockHeight).toLocaleString('en-IN')}` : 'Not written into a block yet',
@@ -67,6 +67,8 @@ if (ctx) load(ctx.root, async () => {
   const header = body.children[0], tpl = body.children[1]?.cloneNode(true);
   if (!tpl) return;
   body.replaceChildren(header);
+  // The table replaces a blank, so the rows arrive rather than appear.
+  const built = [];
   for (const p of buys) {
     const tr = tpl.cloneNode(true), tds = tr.querySelectorAll('td');
     tds[0]?.querySelector('div')?.replaceChildren(document.createTextNode(p.crop || 'Lot'));
@@ -88,7 +90,7 @@ if (ctx) load(ctx.root, async () => {
     const asked = tr.querySelector('[data-asked]');
     if (asked) {
       if (p.minPrice != null && p.maxPrice != null) {
-        asked.textContent = `She asked ${rupees(p.minPrice)}–${rupees(p.maxPrice)}`;
+        asked.textContent = `She asked ${rupees(p.minPrice)}, ${rupees(p.maxPrice)}`;
       } else asked.remove();
     }
     const dated = tr.querySelector('[data-dated]');
@@ -109,7 +111,9 @@ if (ctx) load(ctx.root, async () => {
       else watch.remove();
     }
     body.append(tr);
+    built.push(tr);
   }
+  arrive(built);
 
   // "Download" is the record of everything held about these purchases. It is
   // built here from what is already on screen -- no route needed, and nothing

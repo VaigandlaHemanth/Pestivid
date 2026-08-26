@@ -100,7 +100,7 @@ if (ctx) {
           note.setAttribute('data-note', '');
           btn.parentElement?.after(note);
         }
-        state(note, 'waiting', NOT_YET[0], `“${label}” — ${NOT_YET[1]}`);
+        state(note, 'waiting', NOT_YET[0], `“${label}”, ${NOT_YET[1]}`);
       });
     }
 

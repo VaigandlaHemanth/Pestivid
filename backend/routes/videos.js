@@ -732,7 +732,7 @@ router.post('/upload-url', authenticateToken, limits.uploadBurstLimiter, async (
         const busy = err.response && err.response.status === 429;
         return res.status(busy ? 429 : 502).json({
             message: busy
-                ? 'We are asking storage too often just now. Wait a moment and try again — nothing is lost.'
+                ? 'We are asking storage too often just now. Wait a moment and try again, nothing is lost.'
                 : 'Could not get an upload address from storage. Try again.',
         });
     }

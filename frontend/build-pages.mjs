@@ -35,10 +35,14 @@ export const PAGES = {
   'ask-money':          { title: 'Ask for money', role: 'farmer' },
   'money':              { title: 'Money', role: 'farmer' },
   'payout':             { title: 'Check who gets what', role: 'farmer' },
-  'messages':           { title: 'Messages', role: 'farmer' },
+  // Shared by all four roles, so not the farmer's. A buyer reaching a page
+  // marked 'farmer' got the farmer's nav bar and thought they were in the wrong
+  // app -- which they were.
+  'messages':           { title: 'Messages', role: 'any' },
+  'notifications':      { title: 'What has happened', role: 'any' },
   'thread':             { title: 'Message', role: 'any' },
   'ask':                { title: 'Ask a question', role: 'farmer' },
-  'profile':            { title: 'You and your settings', role: 'farmer' },
+  'profile':            { title: 'You and your settings', role: 'any' },
   'leaf-check':        { title: 'Check a leaf', role: 'farmer' },
   'invest':             { title: 'Open for funding', role: 'investor' },
   'confirm-investment': { title: 'Confirm your investment', role: 'investor' },

@@ -32,7 +32,10 @@ const CHECKS = [
   ['home',           'farmer',   people.farmer.name.split(' ').slice(0, 2).join(' ')],
   ['plots',          'farmer',   'not filmed anything yet'],
   ['money',          'farmer',   null],
-  ['messages',       'farmer',   'you have not read'],
+  // Messages is conversations now; the notices moved behind the envelope, and
+  // the unread count moved with them.
+  ['messages',       'farmer',   'conversation'],
+  ['notifications',  'farmer',   'you have not read'],
   ['payout',         'farmer',   'No season chosen'],
   ['report-harvest', 'farmer',   'No season chosen'],
   ['thread',  'farmer',   'No conversation chosen'],

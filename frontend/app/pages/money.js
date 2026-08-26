@@ -101,7 +101,7 @@ if (ctx) {
         // commented out in the model -- so every one of these slots was read as
         // null and REMOVED, and the rows showed a crop name and nothing else.
         price: l.minPrice != null && l.maxPrice != null
-          ? `${rupees(l.minPrice)}–${rupees(l.maxPrice)}`
+          ? `${rupees(l.minPrice)}, ${rupees(l.maxPrice)}`
           : (l.minPrice != null ? rupees(l.minPrice) : null),
         per: l.minPrice != null ? 'for the whole lot' : null,
         qty: l.status === 'sold' ? 'Sold' : (l.createdAt ? `Listed ${whenShort(l.createdAt)}` : null),

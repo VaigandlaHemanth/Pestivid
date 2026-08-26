@@ -49,7 +49,9 @@ export function appChrome(root, opts = {}) {
 
   const mail = root.querySelector('[data-chrome="mail"]');
   if (mail) {
-    goes(mail, 'messages', 'Messages');
+    // The badge counts unread NOTICES, so the envelope goes where they are.
+    // It used to land on Messages, which is what conflated the two.
+    goes(mail, 'notifications', 'What has happened');
     // The count is deskNav's, below: it runs on every page, and doing it here
     // as well meant seven pages asked the server for the same list twice.
   }
@@ -86,12 +88,53 @@ const DEST = {
   'What you bought': 'orders',
 };
 
+/* THE NAV BELONGS TO WHOEVER IS SIGNED IN -------------------------------------
+ *
+ * messages, thread and profile are shared by all four roles, but their boards
+ * draw ONE bar and it is the farmer's. deskNav only wired the labels it found,
+ * so a buyer who clicked Messages arrived on a page headed "My plots · Money ·
+ * Messages" -- someone else's app, with their own avatar in the corner. The bar
+ * is relabelled for the signed-in role before anything is wired.
+ *
+ * Three slots, because the boards draw three. Messages is last for everybody:
+ * it is the one destination all four roles share.
+ */
+const NAV = {
+  farmer:   ['My plots', 'Money', 'Messages'],
+  investor: ['Browse', 'Portfolio', 'Messages'],
+  buyer:    ['Buy produce', 'My orders', 'Messages'],
+  admin:    ['Browse', 'Buy produce', 'Messages'],
+};
+
+function relabel(root, user, inHeader) {
+  const want = NAV[user?.role];
+  if (!want) return;
+  /* The BAR, not "the top 110px". The page heading on Messages is the word
+   * "Messages", it sits just under the bar, and it is a known destination -- so
+   * the geometric filter found four nav slots where there are three, the count
+   * check bailed, and a buyer went on seeing the farmer's bar. */
+  const bar = root.querySelector('.appbar, .bar, header') || root;
+  const slots = [...bar.querySelectorAll('div, span, a')]
+    .filter(el => inHeader(el))
+    .filter(el => {
+      const t = el.textContent.trim();
+      if (!(t in DEST)) return false;
+      const kid = el.querySelector('div, span');
+      return !(kid && kid.textContent.trim() === t);
+    });
+  if (slots.length !== want.length) return;   // an unfamiliar bar is left alone
+  slots.forEach((el, i) => {
+    if (el.textContent.trim() !== want[i]) el.textContent = want[i];
+  });
+}
+
 // Where a page falls back to when it was opened cold, per page. Only the ones
 // whose answer is not simply the role's home need an entry.
 const BACK = {
   record: 'plots', 'leaf-check': 'plots', sent: 'record', plot: 'plots',
   payout: 'money', 'report-harvest': 'money', 'ask-money': 'money',
   thread: 'messages', setup: 'signin', profile: 'home', ask: 'home',
+  notifications: 'home',
 };
 
 export function deskNav(root, user) {
@@ -105,6 +148,8 @@ export function deskNav(root, user) {
     const r = el.getBoundingClientRect();
     return r.top >= 0 && r.top < 110 && r.height > 0;
   };
+  relabel(root, user, inHeader);
+
   const labels = [...root.querySelectorAll('div, span, a')]
     .filter(el => inHeader(el))
     .filter(el => {

@@ -111,7 +111,7 @@ if (forgot) {
       slot?.after(holder);
     }
     state(holder, 'waiting', 'No reset from here yet',
-      'There is no way to reset a password in the app yet. Write to us and we will do it by hand — '
+      'There is no way to reset a password in the app yet. Write to us and we will do it by hand, '
       + 'we would rather say that than open a screen that cannot finish.');
   });
 }

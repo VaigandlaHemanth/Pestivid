@@ -117,10 +117,10 @@ async function ask(text) {
       // this scrolls to the live one instead of printing a copy.
       const panel = root.querySelector('[data-call]')?.closest('div[style*="background: #e7e1db"]');
       if (panel) {
-        bubble('them', 'The Kisan Call Centre answers when we cannot. Their number is on this screen — tap it to call.');
+        bubble('them', 'The Kisan Call Centre answers when we cannot. Their number is on this screen, tap it to call.');
         panel.scrollIntoView({ block: 'center', behavior: 'smooth' });
       } else {
-        bubble('them', 'Kisan Call Centre — 1800 180 1551. Free, 6 am to 10 pm, and they speak Telugu.');
+        bubble('them', 'Kisan Call Centre, 1800 180 1551. Free, 6 am to 10 pm, and they speak Telugu.');
       }
     }
   } finally { asking = false; }

@@ -102,16 +102,16 @@ if (ctx) load(ctx.root, async () => {
       },
       file: {
         meta: shortSha || 'No file record',
-        count: p.cid ? '1 of 1' : '—',
+        count: p.cid ? '1 of 1' : 'not yet',
       },
       proved: {
         line: anchored
           ? `This exact video file has not been altered. Its date is written into Bitcoin block ${Number(anchor.blockHeight).toLocaleString('en-IN')}.`
-          : 'This exact video file has not been altered. Its date has not landed in a block yet, so there is no block number to check — usually by tomorrow.',
+          : 'This exact video file has not been altered. Its date has not landed in a block yet, so there is no block number to check, usually by tomorrow.',
       },
       told: {
         ask: `Ask ${farmer.split(' ')[0]} a question`,
-        title: `${farmer} told us — nobody has checked`,
+        title: `${farmer} told us, nobody has checked`,
         body: [
           'That this is their land',
           p.acres ? `that it is ${p.acres} acres` : null,
@@ -155,7 +155,7 @@ if (ctx) load(ctx.root, async () => {
       set('hashed', filmed, shortSha || 'No fingerprint on the record');
       if (anchored) {
         set('block', when(anchor.anchoredAt) || filmed,
-            `block ${Number(anchor.blockHeight).toLocaleString('en-IN')} — check it on any explorer`);
+            `block ${Number(anchor.blockHeight).toLocaleString('en-IN')}, check it on any explorer`);
       } else {
         // The date has not landed, so the green goes: it is the one token this
         // product spends on a fact anybody can check, and there is not one yet.

@@ -221,7 +221,7 @@ export function leaf(slug) {
       steps.at(1, 0, 'Starting');
       try {
         const clf = await classifier((msg, pct) => {
-          steps.at(1, pct, pct != null ? `${msg} — ${Math.round(pct)}% of 173 MB` : msg);
+          steps.at(1, pct, pct != null ? `${msg}, ${Math.round(pct)}% of 173 MB` : msg);
         });
         steps.at(2, null, 'On this phone. Nothing is uploaded.');
         const verdict = await clf.predict(file);
@@ -248,7 +248,7 @@ export function leaf(slug) {
         revealRetake(isRefusal);
       } catch (err) {
         state(holder, 'failed', 'The checker did not run',
-          `${err.message} Nothing has been sent anywhere — the photo never left your phone.`);
+          `${err.message} Nothing has been sent anywhere, the photo never left your phone.`);
       }
     });
   });

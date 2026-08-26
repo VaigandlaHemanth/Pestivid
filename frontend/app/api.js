@@ -97,7 +97,7 @@ export async function sendVideo(file, meta, onProgress) {
         // refusal, and the clip is still on the phone either way.
         return reject(new ApiError(xhr.status, {
           message: xhr.status === 429
-            ? 'Storage is busy just now. Your video is still on your phone — it will go on the next try.'
+            ? 'Storage is busy just now. Your video is still on your phone, it will go on the next try.'
             : 'Storage would not take the file.',
         }, 'upload'));
       }
@@ -195,11 +195,11 @@ export const api = {
 // ---- formatting, in one place so two screens cannot disagree ----------------
 
 /** Indian grouping, no decimals, and a real rupee sign. */
-export const rupees = (n) => n == null ? '—'
+export const rupees = (n) => n == null ? 'not yet'
   : '₹' + Math.round(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
 export const dayMonth = (iso) => {
-  if (!iso) return '—';
+  if (!iso) return 'not yet';
   const d = new Date(iso);
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
 };

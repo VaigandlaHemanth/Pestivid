@@ -12,7 +12,7 @@
 // the "Waiting on" sentence kept the artboard's text on every row -- four
 // different seasons all "Growing", all "Week 11 of 18", all waiting on Alice.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind } from '../bind.js';
+import { bind, arrive } from '../bind.js';
 import { rupees, dayMonth } from '../api.js';
 import { goes, press } from '../wire.js';
 
@@ -83,7 +83,7 @@ if (ctx) {
     const body = table?.querySelector('tr')?.parentElement;
     if (!mine.length) {
       return state(table?.parentElement || root, 'empty', 'You have not funded a season yet',
-        'When you do, every one you fund stays on this page — including any that fail.',
+        'When you do, every one you fund stays on this page, including any that fail.',
         { label: 'See what is open', go: 'invest' });
     }
 
@@ -92,6 +92,8 @@ if (ctx) {
     if (!tpl) return;
     body.replaceChildren(header);
 
+    // The table replaces a blank, so the rows arrive rather than appear.
+    const built = [];
     for (const inv of mine) {
       const tr = tpl.cloneNode(true);
       const tds = tr.querySelectorAll('td');
@@ -153,7 +155,9 @@ if (ctx) {
       }
 
       body.append(tr);
+      built.push(tr);
     }
+    arrive(built);
 
     press(root);
   });

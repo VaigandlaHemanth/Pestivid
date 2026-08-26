@@ -26,12 +26,12 @@ if (root) {
     } catch {
       // A marketing page that cannot reach the API should still read fine, so
       // the figure goes blank rather than the page shouting about it.
-      bind(root, { funded: '—' });
+      bind(root, { funded: 'not yet' });
     }
   })();
 
   // the two calls to action are the only controls here
-  for (const [label, to] of [['I farm — get funded', 'setup'],
+  for (const [label, to] of [['I farm, get funded', 'setup'],
                              ['I want to invest', 'signin'],
                              ['Sign in', 'signin']]) {
     const el = [...root.querySelectorAll('div')]

@@ -24,7 +24,7 @@ const SWITCHES = [
     // So the preference is stored and the screen says what it does and does
     // not do, rather than implying a queue that is not there.
     note: ['This is remembered, not enforced yet',
-           'Nothing here can hold an upload back until you have wi-fi — that needs the app to keep '
+           'Nothing here can hold an upload back until you have wi-fi, that needs the app to keep '
            + 'working after you close it, which it does not do yet. Your choice is saved for when it can.'],
   },
   {

@@ -286,7 +286,7 @@ if (ctx) load(ctx.root, async () => {
         : (settled
           ? `You sold ${rupees(settled.harvestRevenue)} and spent ${rupees(settled.inputCostBasis)} last season, `
             + 'and we filled this in from those numbers so it is not a figure pulled from the air.'
-          : 'There is nothing to work it out from, so we are not putting a number here — and an '
+          : 'There is nothing to work it out from, so we are not putting a number here, and an '
             + 'investor will read the same two words you are reading.'),
     } });
   };
@@ -310,7 +310,7 @@ if (ctx) load(ctx.root, async () => {
     nextLabel.textContent = 'Sending…';
     try {
       const created = await api.projects.create({
-        title: `${f.crop || 'Crop'} — ${f.acres || 1} acres`,
+        title: `${f.crop || 'Crop'}, ${f.acres || 1} acres`,
         crop: f.crop || 'Crop',
         acres: f.acres || 1,
         amount: f.amount,

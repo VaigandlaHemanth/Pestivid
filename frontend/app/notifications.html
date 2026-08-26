@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#ffffff">
-  <title>Messages · Pestivid</title>
+  <title>What has happened · Pestivid</title>
   <!-- generated from design/Messages.dc.html by frontend/build-pages.mjs -- do not edit -->
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <meta name="robots" content="noindex, follow">
@@ -68,7 +68,7 @@
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </head>
-<body data-page="messages" data-role="any" data-design-width="1320" data-design-height="900">
+<body data-page="notifications" data-role="any" data-design-width="1320" data-design-height="900">
 <div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
   <div class="appbar">
@@ -78,7 +78,7 @@
         <div style="display: flex; gap: 24px; align-items: baseline;">
           <div class="appnav">My plots</div>
           <div class="appnav">Money</div>
-          <div class="appnavOn">Messages</div>
+          <div class="appnav">Messages</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -92,7 +92,7 @@
       </div>
     </div>
     <div class="pagehold" style="padding: 26px 28px 0;">
-      <div data-title="" class="pageh">Messages</div>
+      <div data-title="" class="pageh">What has happened</div>
       <div data-bind="unreadLine" class="pagesub"></div>
     </div>
 
@@ -103,11 +103,9 @@
         <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
       <div class="main">
 
-        <!-- Conversations, and nothing else. This page carried the system's
-             notices too, so a buyer with one chat and eighteen notices found the
-             chat at row nineteen and reported the product had no chat at all.
-             The notices moved behind the envelope in the bar, which is where
-             their unread count was being displayed all along. -->
+        <!-- The system talking: a date that landed, money that moved, a lot that
+             sold. Reached by the envelope in the bar, whose unread badge has
+             always counted exactly these. -->
 
 <div class="nu">
       <div class="ic">
@@ -168,8 +166,8 @@
 <div style="padding: 22px 20px;">
       <div style="background: #eae4de; padding: 15px 16px;">
         <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
-          Only people with money in one of your seasons can write to you. Nobody else can start a
-          conversation, and neither can we.
+          Only your own plots and your own money appear here. We do not send offers or advertisements,
+          and there is nothing to unsubscribe from.
         </div>
       </div>
     </div>
@@ -181,6 +179,6 @@
 
   
 </div>
-<script type="module" src="./pages/messages.js"></script>
+<script type="module" src="./pages/notifications.js"></script>
 </body>
 </html>

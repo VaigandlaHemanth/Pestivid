@@ -134,9 +134,9 @@ if (ctx) {
       where: l.location || '',
       // A lot is sold whole for an offer inside a range. There is no unit rate,
       // because Purchase has no quantity and dividing by weight would invent one.
-      price: `${rupees(l.minPrice)}–${rupees(l.maxPrice)}`,
+      price: `${rupees(l.minPrice)}, ${rupees(l.maxPrice)}`,
       qty: l.crop || '',
-      stamp: l.cid ? 'Dated video attached' : 'No video — not listed as proved',
+      stamp: l.cid ? 'Dated video attached' : 'No video, not listed as proved',
     })));
 
     const rows = [...(list?.children || [])];
@@ -186,7 +186,7 @@ if (ctx) {
             ? `Below her lowest of ${rupees(lo)}. She can still see it, but she is unlikely to accept.`
             : n > hi
               ? `Above her asking price of ${rupees(hi)}. She can accept it, and you may be paying more than you need to.`
-              : 'Inside her range, so she can accept it. She is not obliged to — she can refuse or wait for a better offer, and there is no auction clock pushing either of you.';
+              : 'Inside her range, so she can accept it. She is not obliged to, she can refuse or wait for a better offer, and there is no auction clock pushing either of you.';
       }
     };
 
@@ -227,9 +227,9 @@ if (ctx) {
         lot: {
           who: [l.farmerName, l.location].filter(Boolean).join(' · '),
           ask: l.farmerName ? `Message ${l.farmerName}` : 'Message the farmer',
-          accept: `${rupees(l.minPrice)} – ${rupees(l.maxPrice)}`,
+          accept: `${rupees(l.minPrice)}, ${rupees(l.maxPrice)}`,
           what: l.crop ? `${l.crop}, sold whole` : 'Sold whole',
-          grown: l.method ? `${l.method} — farmer's word` : 'Not stated',
+          grown: l.method ? `${l.method}, farmer's word` : 'Not stated',
           // never a hash the server did not give us
           file: l.cid ? `sha256 ${String(l.videoFileHash || '').slice(0, 8)}…` : 'No video on this lot',
           when: l.createdAt ? whenShort(l.createdAt) : '',

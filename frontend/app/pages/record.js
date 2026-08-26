@@ -68,7 +68,7 @@ if (ctx) load(ctx.root, async () => {
   if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
     return refuse('This phone will not record here',
       'The browser does not give a web page the camera. Film with your camera app, then pick the '
-      + 'file here — it goes through exactly the same check, and the date is fixed when it reaches us.');
+      + 'file here, it goes through exactly the same check, and the date is fixed when it reaches us.');
   }
 
   // The board marks it. This used to look for a background colour that is not

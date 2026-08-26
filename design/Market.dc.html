@@ -178,7 +178,7 @@
       <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div class="p">She will accept</div>
-          <div data-bind="lot.accept" class="m" style="font-size: 17px; font-weight: 700;">&#8377;44,000 &ndash; &#8377;52,000</div>
+          <div data-bind="lot.accept" class="m" style="font-size: 17px; font-weight: 700;">&#8377;44,000-&#8377;52,000</div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div class="p">The lot</div>
@@ -186,7 +186,7 @@
         </div>
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div class="p">Grown</div>
-          <div data-bind="lot.grown" style="font-size: 16px; font-weight: 600;">Organic &mdash; farmer’s word</div>
+          <div data-bind="lot.grown" style="font-size: 16px; font-weight: 600;">Organic, farmer’s word</div>
         </div>
       </div>
 
@@ -213,7 +213,7 @@
           <div data-hi class="m" style="font-size: 13px; color: #605a53;">&#8377;52,000 asking</div>
         </div>
         <div data-inside class="p" style="font-size: 14px; margin-top: 10px;">
-          Inside her range, so she can accept it. She is not obliged to &mdash; she can refuse or wait
+          Inside her range, so she can accept it. She is not obliged to, she can refuse or wait
           for a better offer, and there is no auction clock pushing either of you.
         </div>
       </div>
@@ -244,14 +244,14 @@ class Component extends DCLogic {
   renderVals() {
     return {
       lots: [
-        { who: 'Alice Farmer', where: 'Kadapa · 118 km away', price: '₹44,000–₹52,000', qty: '40 quintal',
+        { who: 'Alice Farmer', where: 'Kadapa · 118 km away', price: '₹44,000-₹52,000', qty: '40 quintal',
           stamp: 'Filmed 18 Aug, date proved', sel: 'box-shadow: inset 3px 0 0 #016abe, inset 0 -1px 0 #e4e9ee;' },
-        { who: 'Ravi Kumar', where: 'Chittoor · 94 km away', price: '₹30,000–₹35,000', qty: '25 quintal',
+        { who: 'Ravi Kumar', where: 'Chittoor · 94 km away', price: '₹30,000-₹35,000', qty: '25 quintal',
           stamp: 'Filmed 16 Aug, date proved', sel: '' },
-        { who: 'Meena Sharma', where: 'Anantapur · 76 km away', price: '₹78,000–₹88,000', qty: '60 quintal',
+        { who: 'Meena Sharma', where: 'Anantapur · 76 km away', price: '₹78,000-₹88,000', qty: '60 quintal',
           stamp: 'Filmed 19 Aug, date proved', sel: '' },
-        { who: 'Suresh Naidu', where: 'Kurnool · 112 km away', price: '₹22,000–₹26,000', qty: '18 quintal',
-          stamp: 'No video — not listed as proved', sel: '' },
+        { who: 'Suresh Naidu', where: 'Kurnool · 112 km away', price: '₹22,000-₹26,000', qty: '18 quintal',
+          stamp: 'No video, not listed as proved', sel: '' },
       ],
     };
   }

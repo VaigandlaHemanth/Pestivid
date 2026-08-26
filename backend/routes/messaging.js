@@ -347,7 +347,10 @@ router.post('/conversations/:conversationId/messages', authenticateToken, async 
               const notification = new Notification({
                   recipient: receiverId, // Target the receiver user
                   type: 'message', // Custom notification type
-                  message: `New message from ${senderDisplayName}: "${savedMessage.text.substring(0, 50)}..."`,
+                  // Curly quotes, a real ellipsis, and the sender's name reading as a person
+                  // rather than a field. Straight quotes and three dots were both
+                  // showing on screen.
+                  message: `${senderDisplayName} wrote: “${savedMessage.text.slice(0, 60).trim()}${savedMessage.text.length > 60 ? '…' : ''}”`,
                    itemId: savedMessage._id, // Link to the message document
                    itemType: 'Message',
                    read: false, // Initially unread for the receiver

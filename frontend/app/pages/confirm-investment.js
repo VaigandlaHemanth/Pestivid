@@ -42,7 +42,7 @@ if (ctx) {
         // agreed. Two of the four figures on this screen were decoration.
         share: p.investorShare != null ? `${p.investorShare}%` : 'not stated',
         when: p.settlementMode === 'full_repayment'
-          ? 'Harvest reported — the whole amount comes back'
+          ? 'Harvest reported, the whole amount comes back'
           : (p.timeline
             ? `Harvest reported, about ${p.timeline} month${p.timeline === 1 ? '' : 's'}`
             : 'When the harvest is reported'),

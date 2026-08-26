@@ -159,3 +159,81 @@ body[data-role="public"] { background: var(--ground); }
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+/* ════ THE SHAPE RULE ═══════════════════════════════════════════════════════
+ *
+ * Measured before writing this: 57 filled controls at 0px radius, 18 at 16px,
+ * 2 at 17px, and nine different button heights with nothing connecting them.
+ * Hard-square buttons beside round avatars, and every button a different size,
+ * is what made the product read as unfinished.
+ *
+ * ONE documented rule, and it follows what the thing IS:
+ *
+ *   paper is square      a panel, a card, a table row, a band. These are sheets
+ *                        of evidence. Radius 0, and they stay 0.
+ *   objects are rounded  anything you press or type into. 8px, so it reads as a
+ *                        thing sitting on the paper rather than a hole cut in it.
+ *   portraits are round  an avatar and a count badge, and nothing else.
+ *
+ * Keyed on the locked palette, because a filled control in this product is one
+ * of four fills and nothing else paints itself those colours.
+ */
+:root {
+  --r-control: 8px;
+  --r-round: 999px;
+}
+
+[data-act][style*="background: #016abe"],
+[data-act][style*="background: #1d1a17"],
+[data-act][style*="background: #012169"],
+[data-act][style*="background: #e7e1db"],
+[data-go][style*="background: #016abe"],
+[data-go][style*="background: #1d1a17"],
+[data-go][style*="background: #e7e1db"],
+[data-fieldbox], .chip, .lang, .langOn, .tap, .btn {
+  border-radius: var(--r-control);
+}
+/* An icon tile and a video thumbnail are objects sitting on the paper too, so
+ * they follow the same rule. Hard-square tiles beside rounded buttons was the
+ * remaining half of the inconsistency. */
+.ic, .tile, .pthumb, .thumb, [data-tile], [data-viewfinder] {
+  border-radius: var(--r-control);
+  overflow: hidden;
+}
+/* A media surface that fills its own band is paper, not an object. */
+[data-viewfinder], [data-capture] { border-radius: var(--r-control); }
+
+/* the pill switch and the round chrome keep being round */
+[data-toggle], [data-chrome="you"], [data-readout].num,
+[style*="border-radius: 50%"] { border-radius: var(--r-round); }
+
+/* ════ HOVER ════════════════════════════════════════════════════════════════
+ *
+ * Every control had press feedback and no hover. On a laptop, where the pointer
+ * arrives before the click, that is the difference between a button and a
+ * coloured rectangle. Colour and shadow only: no travel, so nothing shifts
+ * under the cursor, and it costs no layout.
+ */
+@media (hover: hover) and (pointer: fine) {
+  [data-act]:hover, [data-go]:hover {
+    transition: box-shadow var(--t-press, 120ms) var(--e-smooth, ease),
+                opacity var(--t-press, 120ms) var(--e-smooth, ease);
+  }
+  /* a filled control deepens */
+  [data-act][style*="background: #016abe"]:hover,
+  [data-go][style*="background: #016abe"]:hover,
+  [data-act][style*="background: #1d1a17"]:hover,
+  [data-go][style*="background: #1d1a17"]:hover {
+    box-shadow: inset 0 0 0 999px rgba(0, 0, 0, .14);
+  }
+  /* a quiet control lifts off the paper instead */
+  [data-act][style*="background: #e7e1db"]:hover,
+  [data-go][style*="background: #e7e1db"]:hover,
+  .chip:hover, .lang:hover, .btn:hover {
+    box-shadow: inset 0 0 0 1px #b9b1a9;
+  }
+  /* a whole row that is a link says so along its leading edge */
+  .n:hover, .nu:hover, .row:hover, .row2:hover, .colr:hover {
+    box-shadow: inset 3px 0 0 #016abe;
+  }
+}
