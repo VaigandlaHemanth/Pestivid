@@ -26,7 +26,10 @@ export const PAGES = {
   'landing':            { title: 'Pestivid', role: 'public' },
   'signin':             { title: 'Sign in', role: 'public' },
   'signup':             { title: 'Create an account', role: 'public' },
-  setup:                { title: 'Set this up once, then film', role: 'public' },
+  // 'setup' was the farmer's own account page: a language picker, a phone
+  // number and a six-digit code standing in for a password. A phone login needs
+  // an OTP this product has no way to send, and one role having its own front
+  // door is exactly the split it was reported as. Everybody uses signup.
   'home':               { title: 'Home', role: 'farmer' },
   'record':             { title: 'Record a video', role: 'farmer' },
   'sent':               { title: 'That is saved', role: 'farmer' },

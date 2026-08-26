@@ -44,7 +44,9 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'Password is required'],
-        minlength: [6, 'Password must be at least 6 characters long'] // Minimum password length
+        // Eight, matching the create-account screen and the auth routes. Six was
+        // the farmer's six-digit code, and that page no longer exists.
+        minlength: [8, 'Password must be at least 8 characters long']
         // NOTE: In a real production app, password policies should be much stronger.
     },
     createdAt: {

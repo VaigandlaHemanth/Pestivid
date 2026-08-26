@@ -28,27 +28,37 @@ const call = async (p, b, t) => {
 const browser = await chromium.launch();
 const stamp = Date.now();
 const digits = String(9000000000 + (stamp % 999999999));
-const code = '246813';
+// Eight or more: the create-account screen, the auth route and the schema all
+// ask for eight. The old six-digit value was the retired phone page's code.
+const code = 'testcase246813';
 
-// ── 1. signing up by phone number ───────────────────────────────────────────
+// ── 1. a farmer signing up, through the one door everybody uses ─────────────
+//
+// This used to go through setup.html: a phone number and a six-digit code,
+// which is a login that needs an OTP nobody can send. That page is gone and the
+// farmer is a role on the shared create-account page, so the flow signs up the
+// way a farmer actually would.
 {
   const page = await browser.newPage();
   const errs = [];
   page.on('pageerror', e => errs.push(String(e).slice(0, 90)));
-  await page.goto(`${APP}/setup.html`, { waitUntil: 'load' });
-  await page.waitForTimeout(500);
+  await page.goto(`${APP}/signup.html`, { waitUntil: 'load' });
+  await page.waitForTimeout(700);
 
+  const mail = `testcase.farmer.${stamp}@pestivid.sim`;
+  await page.click('[data-role-pick="farmer"]');
   await page.fill('input[name="name"]', `Testcase Farmer ${stamp}`);
-  await page.fill('input[name="tel"]', digits);
+  await page.fill('input[name="email"]', mail);
   await page.fill('input[name="new-password"]', code);
-  await page.getByText('Continue', { exact: true }).click();
-  await page.waitForTimeout(2000);
+  await page.click('[data-ack]');
+  await page.getByText('Create the account', { exact: true }).click();
+  await page.waitForTimeout(2500);
 
-  ok('signing up by phone number lands on the empty home',
+  ok('a farmer signing up lands on the empty home',
      /home-empty|home\.html/.test(page.url()), page.url().split('/app/')[1]);
   ok('no script error while signing up', errs.length === 0, errs[0] || '');
 
-  const login = await call('/auth/login', { email: `${digits}@phone.pestivid.local`, password: code });
+  const login = await call('/auth/login', { email: mail, password: code });
   ok('the account really exists on the server', login.status === 200);
   var token = login.body?.token;
   var userId = login.body?.user?._id || login.body?.user?.id;

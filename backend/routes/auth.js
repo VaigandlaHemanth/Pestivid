@@ -115,8 +115,8 @@ router.post('/register', async (req, res) => {
     if (!name || !email || !role || !password) {
         return res.status(400).json({ message: 'Please enter all required fields (name, email, role, password).' });
     }
-    if (password.length < 6) { // Minimum password length validation (matches schema)
-         return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+    if (password.length < 8) { // matches the schema and the create-account screen
+         return res.status(400).json({ message: 'Password must be at least 8 characters long.' });
     }
      // Validate role against enum
      if (!['farmer', 'buyer', 'investor'].includes(role)) {
@@ -285,7 +285,7 @@ router.post('/change-password', authenticateToken, async (req, res) => {
     // asks for exactly six digits. Demanding 8 here meant a farmer could create
     // an account and then never change its code: the only value the product
     // lets them choose was refused by the route that changes it.
-    const MIN = 6;
+    const MIN = 8;
     if (typeof newPassword !== 'string' || newPassword.length < MIN) {
         return res.status(400).json({
             message: `The new password or code must be at least ${MIN} characters.`,

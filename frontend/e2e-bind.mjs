@@ -49,7 +49,6 @@ const CHECKS = [
   // the nine that were placeholders until now
   ['landing',        'farmer',   'A field you can see'],
   ['home-empty',     'farmer',   null],
-  ['setup',          'farmer',   'phone number is your account name'],
   ['ask-money',      'farmer',   'Film the field first'],
   // The capture prompt is the plate itself now, not a box above the app bar.
   ['leaf-check',    'farmer',   'One leaf, filling most of the frame'],

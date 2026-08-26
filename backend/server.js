@@ -101,7 +101,22 @@ app.get(['/', '/index.html'], (req, res, next) => {
     } catch (err) { next(err); }
 });
 
-app.use(express.static(path.join(__dirname, '../frontend')));
+/* In development nothing here may be cached.
+ *
+ * A rebuild changes the HTML, the CSS and the modules together, and a browser
+ * holding any one of them from before serves a page assembled from two
+ * different versions of the product. That was reported as "I cannot log in and
+ * the button has no text": the markup was new, the script was old. A dev server
+ * that lets a rebuild hide behind a cached file is lying about what it built.
+ */
+const DEV = process.env.NODE_ENV !== 'production';
+app.use(express.static(path.join(__dirname, '../frontend'), DEV ? {
+    etag: false,
+    lastModified: false,
+    setHeaders(res) {
+        res.setHeader('Cache-Control', 'no-store, must-revalidate');
+    },
+} : {}));
 
 
 // --- Database Connection ---

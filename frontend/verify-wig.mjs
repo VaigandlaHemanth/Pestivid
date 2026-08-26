@@ -35,7 +35,6 @@ const ROLE = {
   'record': 'farmer',
   'report-harvest': 'farmer',
   'sent': 'farmer',
-  'setup': null,
   'signin': null,
   'signup': null,
   'thread': 'farmer',
