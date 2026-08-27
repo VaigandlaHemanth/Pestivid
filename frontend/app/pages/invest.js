@@ -191,7 +191,10 @@ if (ctx) load(ctx.root, async () => {
       askRow.onclick = async () => {
         try {
           const conv = await api.messages.open({ targetUserId: p.farmerWallet });
-          location.href = `./thread.html?c=${conv._id || conv.id}`;
+          // messages.html, not thread.html: the two chat screens became one
+          // two-pane page and thread was retired. This line kept pointing at it,
+          // so the investor's one way to ask a farmer anything led to a 404.
+          location.href = `./messages.html?c=${conv._id || conv.id}`;
         } catch (err) {
           state(askRow, 'failed', 'Could not open the conversation', err.message);
         }

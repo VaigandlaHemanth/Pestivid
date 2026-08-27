@@ -65,7 +65,73 @@ for (const f of files) {
     }
   }
 }
+/* And the same question about DESTINATIONS: does every page a module sends you
+ * to still exist?
+ *
+ * The two chat screens were merged into one and thread.html was retired. Two
+ * modules went on pointing at it -- invest.js and market.js, both on the "ask
+ * the farmer a question" action that is the only way a buyer or an investor can
+ * reach a farmer -- so the primary secondary action on two pages led to a 404
+ * for as long as nobody clicked it. Nothing caught it: it is a string, it parses,
+ * the page renders, and the check that clicks everything cannot follow a
+ * location.href that only runs after a request succeeds.
+ *
+ * A page count going DOWN is the moment this matters, and this product has been
+ * cutting pages on purpose.
+ */
+const pages = new Set(readdirSync('frontend/app')
+  .filter((f) => f.endsWith('.html')).map((f) => f.replace('.html', '')));
+let gone = 0, links = 0;
+for (const f of readdirSync('frontend/app/pages').filter((n) => n.endsWith('.js'))
+  .map((n) => path.join('frontend/app/pages', n))
+  .concat(['frontend/app/chrome.js', 'frontend/app/bind.js', 'frontend/app/wire.js'])) {
+  let src;
+  try { src = readFileSync(f, 'utf8'); } catch { continue; }
+  src.split('\n').forEach((line, i) => {
+    const t = line.trim();
+    if (t.startsWith('//') || t.startsWith('*')) return;
+    // location.href = './slug.html'  and  location.replace('./slug.html')
+    for (const m of line.matchAll(/\.\/([a-z0-9-]+)\.html/g)) {
+      links++;
+      if (!pages.has(m[1])) {
+        gone++;
+        console.log(`  ${f}:${i + 1}  goes to ./${m[1]}.html, which is not a page any more`);
+      }
+    }
+    /* goes(el, 'slug', ...) — the helper that wires a destination.
+     *
+     * The second argument, found by balancing brackets rather than by a comma.
+     * `goes(slot(el, 'asked'), 'messages', ...)` is a real line in money.js, and
+     * a regex reading up to the first comma reported "asked" as a missing page
+     * on a call whose destination is perfectly good. A check that cries wolf on
+     * a correct line is how a harness gets ignored. */
+    for (const at of [...line.matchAll(/\bgoes\(/g)].map((m) => m.index + m[0].length)) {
+      let depth = 0, start = at, arg = 0, dest = null;
+      for (let c = at; c < line.length && dest === null; c++) {
+        const ch = line[c];
+        if (ch === '(' || ch === '[') depth++;
+        else if (ch === ')' && depth === 0) break;
+        else if (ch === ')' || ch === ']') depth--;
+        else if (ch === ',' && depth === 0) {
+          arg++;
+          if (arg === 1) dest = line.slice(start, c);
+          start = c + 1;
+        }
+      }
+      const q = dest && dest.trim().match(/^'([a-z0-9-]+)'$/);
+      if (!q) continue;                 // a variable destination; nothing to check
+      links++;
+      if (!pages.has(q[1])) {
+        gone++;
+        console.log(`  ${f}:${i + 1}  wires a link to "${q[1]}", which is not a page any more`);
+      }
+    }
+  });
+}
+
 console.log(`
   ${dead} selector(s) keyed on a colour instead of a mark,`
   + ` of ${checked} found`);
-process.exit(dead ? 1 : 0);
+console.log(`  ${gone} destination(s) that no longer exist, of ${links} named`
+  + ` across ${pages.size} pages`);
+process.exit(dead || gone ? 1 : 0);

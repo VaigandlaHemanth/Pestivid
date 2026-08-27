@@ -43,6 +43,26 @@ const NO_CLICK = {
   'report-harvest': 'Send these numbers reports a harvest, which is irreversible',
 };
 
+/* Some pages hold ONE control that writes and a dozen that do not, and skipping
+ * the whole page to avoid the one loses the twelve.
+ *
+ * This ran unrestricted over the market and the investment confirmation and did
+ * exactly what those screens are for: it bought things. All four seeded lots
+ * ended up sold, so the market page an owner opens now reads "No lots are for
+ * sale" -- the check that proves the page works is what emptied it. A harness
+ * that rewrites the demo it tests is not a passing check.
+ *
+ * Matched on the accessible label, which is the same string a person reads. Each
+ * one is still enumerated and still reported; it is only not pressed.
+ */
+const NO_PRESS = [
+  /^send this offer/i,           // market: buys the lot
+  /^send ₹|^send rs/i,           // confirm-investment: moves money
+  /^buy\b|^make an offer/i,
+  /^send these numbers/i,        // report-harvest, if it is ever un-skipped
+  /^ask for this money|^send the request/i,
+];
+
 // Five pages are ABOUT something and are blank without an id.
 const QUERY = await needs();
 const tokens = {};
@@ -115,10 +135,16 @@ for (const slug of slugs) {
     continue;
   }
 
-  const dead = [], moved = [], broke = [];
+  const dead = [], moved = [], broke = [], held = [];
   for (let i = 0; i < list.length; i++) {
     const c = list[i];
     if (c.kind === 'field') continue;                 // fields are exercised by e2e-bind
+    // c.name, not c.label: ENUMERATE emits `name`, so matching on `label` tested
+    // undefined against every pattern and held nothing back at all.
+    if (NO_PRESS.some((re) => re.test((c.name || '').trim()))) {
+      held.push(c.name);                              // enumerated, reported, not pressed
+      continue;
+    }
     const p = await open();
     const errs = [];
     p.on('pageerror', e => errs.push(String(e).slice(0, 70)));
@@ -181,7 +207,9 @@ for (const slug of slugs) {
     await p.close();
   }
 
-  const line = [`${dead.length} dead`, `${moved.length} navigate`, broke.length ? `${broke.length} ERROR` : null]
+  const line = [`${dead.length} dead`, `${moved.length} navigate`,
+    held.length ? `${held.length} held back: ${held.join(', ')}` : null,
+    broke.length ? `${broke.length} ERROR` : null]
     .filter(Boolean).join(', ');
   console.log(`  ${slug.padEnd(20)} ${String(list.length).padStart(2)} controls  ${line}`);
   for (const d of dead) findings.push([slug, 'does nothing', d]);

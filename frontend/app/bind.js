@@ -216,7 +216,36 @@ export function state(container, kind, headline, detail, action) {
       return;
     }
   }
-  container.replaceChildren(box);
+  /* AN EMPTY STATE REPLACES CONTENT. A FAILURE MUST NOT TAKE THE CONTROLS.
+   *
+   * replaceChildren() was unconditional, and half the call sites hand this the
+   * PARENT of a button, because the message belongs beside the thing that
+   * failed. So a failed send deleted the thing that failed: on
+   * confirm-investment, an investor whose payment did not go through went from
+   * three controls to one -- "Send Rs 25,000" and "Go back without sending"
+   * both replaced by "The money did not move". No retry, and no way off the
+   * screen. Same shape on the market's offer and message rows and on invest's
+   * ask row.
+   *
+   * The two intents were conflated under one verb, and they separate cleanly by
+   * kind:
+   *
+   *   'empty'   there is nothing to show, so the message stands INSTEAD of the
+   *             content -- the drawn specimen rows of a list have to go, which
+   *             is what replaceChildren was for.
+   *   anything  something went wrong with an action, so the message stands
+   *   else      BESIDE it and the action stays available.
+   *
+   * Repeated failures do not stack: each box carries a mark so the one before it
+   * is removed rather than pushed down the page.
+   */
+  box.setAttribute('data-statebox', '');
+  if (kind === 'empty') {
+    container.replaceChildren(box);
+    return;
+  }
+  for (const old of container.querySelectorAll(':scope > [data-statebox]')) old.remove();
+  container.append(box);
 }
 
 /** The message for a failure, in the words the screens use elsewhere. */

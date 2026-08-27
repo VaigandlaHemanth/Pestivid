@@ -213,7 +213,10 @@ if (ctx) {
           msgRow.onclick = async () => {
             try {
               const conv = await api.messages.open({ targetUserId: l.farmerWallet });
-              location.href = `./thread.html?c=${conv._id || conv.id}`;
+              // messages.html, not thread.html -- the two chat screens became
+              // one two-pane page and thread was retired. See invest.js, which
+              // had the same dangling link to the same removed page.
+              location.href = `./messages.html?c=${conv._id || conv.id}`;
             } catch (err) {
               state(msgRow, 'failed', 'Could not open the conversation', err.message);
             }

@@ -337,11 +337,19 @@ export function leaf(slug) {
         steps.retire();
         slot?.removeAttribute('data-loading');
       } catch (err) {
-        /* The panel stays on a failure -- it is the error now. bare() hands the
-         * host back its drawn positioning without the cream fill, so the red
-         * box is not framed inside a leftover progress panel; data-loading stays
-         * on, so the message sits beside the photo rather than over it. */
+        /* The panel's SLOT stays on a failure -- it is where the error goes.
+         * bare() hands the host back its drawn positioning without the cream
+         * fill, so the red box is not framed inside a leftover progress panel;
+         * data-loading stays on, so the message sits beside the photo rather
+         * than over it.
+         *
+         * The four step rows go explicitly. state() used to replace whatever was
+         * in its container and deliberately no longer does -- a failure must not
+         * delete the controls it lands beside -- so without this line the rows
+         * would sit above the error with their cream backing gone, which on this
+         * plate means #605a53 text on #37322d. */
         steps.bare();
+        holder.replaceChildren();
         state(holder, 'failed', 'The checker did not run',
           `${err.message} Nothing has been sent anywhere, the photo never left your phone.`);
       }
