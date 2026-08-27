@@ -269,3 +269,88 @@ body[data-role="public"] { background: var(--ground); }
  * is drawn on (4.77 on the ground, 6.81 on white).
  */
 ::placeholder { color: #605a53; opacity: 1; }
+
+/* ════ THE TORN EDGE ════════════════════════════════════════════════════════
+ *
+ * From "Button" by satyamchaudharydev, uiverse.io/satyamchaudharydev/hot-fox-63
+ * (MIT). The clip-path polygons are his, verbatim; the colours are ours.
+ *
+ * It earns its place here rather than being a trick: this product's whole
+ * language is sheets of evidence, and a torn paper edge rising out of a button
+ * on hover is that language moving. Nothing generic looks like it.
+ *
+ * Only the two primary fills get it -- the blue that sends and the ink that
+ * confirms. A quiet control keeps the plain ring, or every button shouts.
+ */
+@media (hover: hover) and (pointer: fine) {
+  [data-act][style*="background: #016abe"],
+  [data-go][style*="background: #016abe"],
+  [data-act][style*="background: #1d1a17"],
+  [data-go][style*="background: #1d1a17"] {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+  [data-act][style*="background: #016abe"]::after,
+  [data-go][style*="background: #016abe"]::after,
+  [data-act][style*="background: #1d1a17"]::after,
+  [data-go][style*="background: #1d1a17"]::after {
+    position: absolute;
+    content: "";
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 12%;
+    z-index: -1;
+    background: rgba(255, 255, 255, .17);
+    /* satyamchaudharydev's resting edge */
+    clip-path: polygon(
+      0% 74%, 4% 75%, 8% 76%, 11% 77%, 15% 78%, 20% 78%, 25% 77%, 32% 77%,
+      37% 75%, 40% 74%, 43% 74%, 46% 73%, 52% 72%, 57% 72%, 65% 74%, 66% 75%,
+      71% 78%, 75% 82%, 81% 86%, 83% 88%, 88% 91%, 90% 94%, 94% 96%, 98% 98%,
+      100% 100%, 82% 100%, 0 100%
+    );
+    /* the product's own press easing, not a number invented here */
+    transition: height var(--t-release, 260ms) var(--e-snappy, ease),
+                clip-path var(--t-release, 260ms) var(--e-snappy, ease);
+  }
+  [data-act][style*="background: #016abe"]:hover::after,
+  [data-go][style*="background: #016abe"]:hover::after,
+  [data-act][style*="background: #1d1a17"]:hover::after,
+  [data-go][style*="background: #1d1a17"]:hover::after {
+    height: 82%;
+    /* and his torn edge */
+    clip-path: polygon(
+      0 30%, 9% 34%, 7% 39%, 11% 43%, 13% 33%, 17% 30%, 24% 34%, 25% 35%,
+      30% 31%, 30% 38%, 39% 33%, 35% 43%, 43% 45%, 55% 46%, 65% 74%, 67% 66%,
+      81% 57%, 75% 82%, 81% 86%, 83% 88%, 88% 91%, 90% 94%, 94% 96%, 98% 98%,
+      100% 100%, 82% 100%, 0 100%
+    );
+  }
+  /* The plain darken was for every filled control. The two primaries have the
+     torn edge now, so it would double up. */
+  [data-act][style*="background: #016abe"]:hover,
+  [data-go][style*="background: #016abe"]:hover,
+  [data-act][style*="background: #1d1a17"]:hover,
+  [data-go][style*="background: #1d1a17"]:hover {
+    box-shadow: none;
+  }
+}
+
+/* ════ THE PRINTED OFFSET, and why it is not here ═══════════════════════════
+ *
+ * short-panther-37 (D3OXY, uiverse.io) uses a hard offset shadow with no blur,
+ * which reads as ink printed slightly off-register. It looked like a good match
+ * for a product whose panels are sheets of paper, so it was tried on the record
+ * of evidence -- the one surface that really is a printed record.
+ *
+ * It does not belong, and the reason is a rule this product already follows.
+ * A shadow here is tinted to the background hue (.lift1 is two layers of
+ * rgba(28,26,23,.05-.06) on the warm ground) precisely so that no pure-black
+ * drop lands on a light surface. A 5px solid --ink offset is that pure-black
+ * drop. Shipping both would be two shadow languages on one card; shipping only
+ * the offset would break the rule to borrow a look.
+ *
+ * The torn edge above is from the same family of ideas and DOES belong, because
+ * it is a hover on a control rather than a shadow on a sheet.
+ */
