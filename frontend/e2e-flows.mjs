@@ -12,6 +12,7 @@ import { readFileSync, statSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import ffmpeg from '../backend/node_modules/ffmpeg-static/index.js';
+import { sweep } from './_teardown.mjs';
 
 const API = 'http://127.0.0.1:3001/api';
 const APP = 'http://127.0.0.1:3001/app';
@@ -163,5 +164,19 @@ const code = 'testcase246813';
 }
 
 await browser.close();
+
+/* Hand the server back the way it was found.
+ *
+ * The signup above creates a REAL account, and the dev database persists across
+ * runs, so this test used to leave one behind every time. After a dozen runs the
+ * demo investor's chat list was nine test farmers against three real people, and
+ * most of the videos on the server belonged to a test. A test that quietly
+ * rewrites the demo it runs against is not a passing test.
+ *
+ * It sweeps every leftover, not only this run's, so one run repairs a database
+ * that earlier runs already polluted. */
+console.log('\n  putting the server back:');
+await sweep();
+
 console.log(`\n  ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

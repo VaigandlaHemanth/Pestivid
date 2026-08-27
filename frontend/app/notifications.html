@@ -147,16 +147,29 @@
         </div>
       </div>
     </div>
-    <div class="pagehold" style="padding: 26px 28px 0;">
-      <h1 data-title="" class="pageh">What has happened</h1>
-      <div data-bind="unreadLine" class="pagesub"></div>
+    <!-- ══ ONE COLUMN ══
+         The rail held "Mark all as read" and a note saying only your own plots
+         and your own money appear here, with no offers and nothing to
+         unsubscribe from. That note is the promise this page keeps by existing;
+         printing it on every visit is telling somebody the same thing every time
+         they open a drawer. It is gone, and with it the rail: a 372px column
+         holding one button is worse than the button being where a page-level
+         control belongs. The list took the 372px back. -->
+    <div class="pagehold" style="padding: 26px 28px 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 26px;">
+      <div>
+        <h1 data-title="" class="pageh">What has happened</h1>
+        <div data-bind="unreadLine" class="pagesub"></div>
+      </div>
+      <div data-markall="" style="background: #fff; min-height: 48px; padding: 0 22px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1.5px #016abe; border-radius: 8px; flex-shrink: 0;">
+        <div style="font-size: 15.5px; font-weight: 600; color: #016abe;">Mark all as read</div>
+      </div>
     </div>
 
 
   <div style="flex-grow: 1;">
 
     <!-- the message the whole product exists to send -->
-        <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
+        <div style="flex-grow: 1; padding: 22px 28px 30px;">
       <div class="main">
 
         <!-- The system talking: a date that landed, money that moved, a lot that
@@ -221,22 +234,6 @@
         <div class="m t">14 August</div>
       </div>
       <div class="go"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.2"><path d="M9 6l6 6-6 6"></path></svg></div>
-    </div>
-      </div>
-      <div class="rail">
-<div style="padding: 22px 20px;">
-      <!-- Eight unread rows and no way to clear them is what made this page
-           read as something happening TO you. One control, at the top of the
-           rail, where every other page keeps its action. -->
-      <div data-markall="" style="background: #fff; min-height: 48px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1.5px #016abe; border-radius: 8px; margin-bottom: 14px;">
-        <div style="font-size: 15.5px; font-weight: 600; color: #016abe;">Mark all as read</div>
-      </div>
-      <div style="background: #eae4de; padding: 15px 16px; box-shadow: inset 0 0 0 1px #c3bcb6;">
-        <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
-          Only your own plots and your own money appear here. We do not send offers or advertisements,
-          and there is nothing to unsubscribe from.
-        </div>
-      </div>
     </div>
       </div>
     </div>

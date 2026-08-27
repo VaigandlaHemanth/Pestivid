@@ -260,7 +260,7 @@ body > div[style*="width: 824px"] {
   [data-chatcol] { height: 68vh !important; min-height: 380px; }
 }
 
-/* ── the two conversations, on a SHORT laptop ────────────────────────────── */
+/* ── the two conversations, at whatever height the window is ─────────────── */
 
 /* The artboard is 1320x880 and the chat column is drawn at a fixed 656px inside
    it, which is correct for the drawing and wrong for a real machine. A
@@ -280,9 +280,18 @@ body > div[style*="width: 824px"] {
    safe here where a blanket min-height was not: this names one attribute, sets
    one property, and cannot land on anything that was drawn with a real
    dimension of its own. */
-@media (min-width: 901px) and (max-height: 830px) {
-  /* 230 is the bar, the heading block with its second line, and the grid's own
-     padding, measured -- not estimated.
+@media (min-width: 901px) {
+  /* 205 is the bar, the heading block, and the grid's own top and bottom padding,
+     measured -- not estimated. It was 230, which left 55px of ground under the
+     composer at every height it fired at.
+
+     And it fired only below 830px, so a taller window got the drawn height and
+     nothing else -- 144px of dead ground beneath the chat on a 1080p screen,
+     which is the "fit it to the screen" this answers. It applies at every height
+     above the phone breakpoint now, and each board's DRAWN height is set to
+     exactly what this formula gives at that board's own artboard height, so
+     verify-layout -- which renders each page at its artboard size -- still finds
+     the page identical to the drawing.
  
      Stretching the column into the grid row instead was tried and cannot work:
      the page root is min-height 100vh, not height, so the flex column grows
@@ -290,7 +299,7 @@ body > div[style*="width: 824px"] {
      container asked to fill that row reports its full transcript as its height.
      The row feeds off the column and the column off the row. A measured
      constant is the honest version of that. */
-  [data-chatcol] { height: calc(100dvh - 230px) !important; min-height: 300px; }
+  [data-chatcol] { height: calc(100dvh - 205px) !important; min-height: 300px; }
 }
 
 /* ── the crop mark needs no rule here ───────────────────────────────────── */

@@ -119,3 +119,10 @@ design/_*
 design/audit/_*
 design/audit/tmp/
 design/audit/*.png
+
+# Probe screenshots. Every harness takes SHOTDIR from the environment and
+# defaults it to the working directory, so a run from frontend/ drops its
+# stills there. They are regenerable output, never source.
+frontend/*.png
+!frontend/app/og.png
+design/audit/shots/

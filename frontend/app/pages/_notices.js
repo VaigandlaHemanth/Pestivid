@@ -43,7 +43,7 @@ function kindOf(r) {
   // on the notices page the same event arrives as a notice, and it was wearing
   // the document glyph -- so "Demo wrote: what price are you asking" was filed
   // as paperwork.
-  if (/wrote|asked you|wrote to you/.test(txt)) return 'person';
+  if (/\bwrote\b|asked you|wrote to you/.test(txt)) return 'person';
   if (/\bblock\b/.test(txt) || /date .*(landed|written)/.test(txt)) return 'proved';
   if (/bought|paid|funded|asking for money|investor/.test(txt)) return 'money';
   if (/listed|listing/.test(txt)) return 'listing';
@@ -223,16 +223,35 @@ export function notices(slug, kind = 'notices') {
      */
     const markAll = ctx.root.querySelector('[data-markall]');
     if (markAll && kind === 'notices') {
+      /* When there is nothing unread this control used to relabel itself to
+       * "Nothing unread" -- which put those two words on the page twice, once as
+       * the line under the heading and once as a grey button that did nothing
+       * when pressed. The line under the heading is the readout; a control with
+       * no work left is not a readout, so it leaves instead.
+       *
+       * It leaves on opacity alone, and only if it was already on screen -- a
+       * page that opens with nothing unread never draws it, so there is nothing
+       * to fade. */
       const paintAll = () => {
-        const left = unreadOf();
-        markAll.setAttribute('aria-disabled', String(left === 0));
-        const label = markAll.firstElementChild;
-        if (label) label.textContent = left ? 'Mark all as read' : 'Nothing unread';
-        markAll.style.boxShadow = left
-          ? 'inset 0 0 0 1.5px #016abe' : 'inset 0 0 0 1px #c3bcb6';
-        if (label) label.style.color = left ? '#016abe' : '#605a53';
+        if (unreadOf()) {
+          markAll.firstElementChild?.replaceChildren(
+            document.createTextNode('Mark all as read'));
+          markAll.style.boxShadow = 'inset 0 0 0 1.5px #016abe';
+          return;
+        }
+        if (!markAll.isConnected) return;
+        markAll.setAttribute('aria-hidden', 'true');
+        markAll.style.pointerEvents = 'none';
+        markAll.style.transition = 'opacity var(--t-snappy, 568ms) var(--e-snappy, ease)';
+        markAll.style.opacity = '0';
+        const gone = () => markAll.remove();
+        markAll.addEventListener('transitionend', gone, { once: true });
+        // transitionend never arrives under reduced motion, where the
+        // transition is suppressed outright.
+        setTimeout(gone, 900);
       };
-      paintAll();
+      // At load, nothing unread means the control was never wanted at all.
+      if (!unreadOf()) markAll.remove(); else paintAll();
       acts(markAll, 'Mark all as read', async () => {
         const rows = [...ctx.root.querySelectorAll('.nu')];
         if (!rows.length) return;

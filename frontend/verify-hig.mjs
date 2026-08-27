@@ -157,9 +157,39 @@ const AUDIT = (touch) => {
       if (min < floor - 0.5 && box.width > 4 && !(inline && inProse)) {
         out.targets.push({ label, size: `${Math.round(box.width)}x${Math.round(box.height)}`, floor });
       }
-      // "Avoid full-width buttons" -- a filled control running the whole measure
+      /* "Avoid full-width buttons" -- a filled control running the whole measure.
+       *
+       * A ROW IN A LIST IS NOT ONE. The guideline is about a button stretched
+       * edge to edge, which reads as a band rather than as something to press.
+       * A notification row, an inbox row, a row of search results: those span
+       * the width of their list by design, in every product that has them, and
+       * a row that stopped short of its own list would be the defect.
+       *
+       * The signal is structural rather than a list of class names: a control
+       * whose sibling above or below is also a control of the SAME width is one
+       * of several stacked rows. A CTA has no such sibling.
+       *
+       * This was found the honest way round. The notification rows were 71% of
+       * the measure while a 372px rail sat beside them, so they passed without
+       * anybody deciding they should; when the rail came off they were suddenly
+       * 5 findings. They had been full-width controls all along.
+       */
       const filled = (rgb(cs.backgroundColor)?.a || 0) > 0.5;
-      if (filled && r.width >= panelW * 0.9 && r.height >= 34 && !touch) {
+      // The walk needs to know which way it is going, or it never terminates.
+      const skipSpacers = (n, back) => {
+        for (let hops = 0; n && hops < 4 && n.getBoundingClientRect().height <= 2; hops++) {
+          n = back ? n.previousElementSibling : n.nextElementSibling;
+        }
+        return n;
+      };
+      const sameWidthControl = (n) => {
+        if (!n || !n.matches) return false;
+        if (!n.matches('[data-act], [data-go], [role="button"], a[href], button')) return false;
+        return Math.abs(n.getBoundingClientRect().width - r.width) < 2;
+      };
+      const isRowInAList = sameWidthControl(skipSpacers(el.previousElementSibling, true))
+        || sameWidthControl(skipSpacers(el.nextElementSibling, false));
+      if (filled && !isRowInAList && r.width >= panelW * 0.9 && r.height >= 34 && !touch) {
         out.fullWidth.push({ label, w: Math.round(r.width) });
       }
     }
