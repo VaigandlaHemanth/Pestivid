@@ -260,6 +260,39 @@ body > div[style*="width: 824px"] {
   [data-chatcol] { height: 68vh !important; min-height: 380px; }
 }
 
+/* ── the two conversations, on a SHORT laptop ────────────────────────────── */
+
+/* The artboard is 1320x880 and the chat column is drawn at a fixed 656px inside
+   it, which is correct for the drawing and wrong for a real machine. A
+   1366x768 laptop has about 660px of viewport, and Windows display scaling at
+   125% turns a 1080p screen into roughly 780. Both cut the composer off the
+   bottom of the screen -- the one control the page exists for.
+ 
+   So below the drawn height the column stops being a fixed 656 and becomes
+   what is actually left: viewport minus the bar, the heading and the page's own
+   padding. 830px is deliberately under both artboard heights (ask 860, thread
+   880), because verify-layout renders each page at its board's exact size and
+   this must not fire there -- the page has to match the drawing at the size it
+   was drawn.
+
+   The height is declared inline on the drawn element, so this needs
+   !important to reach it -- the same reason the phone rule above does. It is
+   safe here where a blanket min-height was not: this names one attribute, sets
+   one property, and cannot land on anything that was drawn with a real
+   dimension of its own. */
+@media (min-width: 901px) and (max-height: 830px) {
+  /* 230 is the bar, the heading block with its second line, and the grid's own
+     padding, measured -- not estimated.
+ 
+     Stretching the column into the grid row instead was tried and cannot work:
+     the page root is min-height 100vh, not height, so the flex column grows
+     with its content, the grid grows with it, and an auto-height scroll
+     container asked to fill that row reports its full transcript as its height.
+     The row feeds off the column and the column off the row. A measured
+     constant is the honest version of that. */
+  [data-chatcol] { height: calc(100dvh - 230px) !important; min-height: 300px; }
+}
+
 /* ── control size, by touch ──────────────────────────────────────────────── */
 
 /* The HIG recommends 44x44 pt for a touch target and 28x28 with a pointer

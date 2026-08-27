@@ -30,6 +30,16 @@ const composerRow = root.querySelector('[data-send]')?.closest('div[style*="alig
 if (thread) {
   const bubbles = [...thread.querySelectorAll('.them, .me')];
   bubbles.slice(1).forEach(b => b.remove());
+  /* Before the first question there is one bubble in a column drawn for a
+   * whole conversation, and it sat at the top with four hundred pixels of
+   * nothing under it. A spacer at each end centres it instead, so the empty
+   * state reads as a conversation about to start rather than a hole -- which is
+   * what every chat does before its first message. The second spacer is
+   * removed the moment anything is said. */
+  const tail = document.createElement('div');
+  tail.setAttribute('data-spacer-end', '');
+  tail.style.flexGrow = '1';
+  thread.append(tail);
 }
 // On the laptop board the panel is already in the rail, standing beside the
 // conversation instead of inside it, so there is nothing to lift.
@@ -60,7 +70,14 @@ function bubble(kind, text, source) {
   el.style.transform = 'translateY(8px)';
   el.style.transition = 'opacity var(--t-press, 120ms) var(--e-smooth, ease),'
     + ' transform var(--t-snappy, 568ms) var(--e-snappy, ease)';
-  thread?.insertBefore(el, thread.querySelector('div[style*="flex-grow: 1"]'));
+  // The spacer is the FIRST child now, not the last: it pushes a short
+  // conversation down onto the composer and collapses once the transcript
+  // overflows. So a new bubble is appended, and inserting before the spacer
+  // would put every answer above the greeting.
+  // The opening line was centred while nothing had been said. Once something
+  // has, the transcript is a transcript: it grows from the composer upward.
+  thread?.querySelector('[data-spacer-end]')?.remove();
+  thread?.append(el);
   requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'none'; });
   // The transcript scrolls now, so a new message can land below the fold. Keep
   // the newest one in view -- and jump rather than glide when travel is off.

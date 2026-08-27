@@ -17,8 +17,32 @@
        page it was quoted from along the bottom; a farmer's own words stay a
        dark bubble. Same classes ask.js already builds -- only the material
        changed. */
-    .them { background: #fff; padding: 15px 17px; max-width: 560px; }
-    .me   { background: #1d1a17; color: #f6f3ef; padding: 14px 17px; max-width: 440px; margin-left: auto; }
+    /* A BUBBLE, not a card. It was a 560px block whichever way, so four words
+       and four sentences drew the same rectangle -- and a column of equal
+       rectangles is not a conversation, which is what was wrong with this page.
+       So it hugs its own text (width: fit-content) and takes the shape every
+       messaging app has trained a reader to read: rounded, with the corner on
+       the side it came FROM squared off as a tail. The white fill and the
+       citation strip along the bottom are what still say "a document answered
+       you, not a person". */
+    .them { background: #fff; padding: 14px 17px; max-width: 62%; width: fit-content;
+            align-self: flex-start; border-radius: 16px 16px 16px 4px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 14px 17px; max-width: 62%;
+            width: fit-content; align-self: flex-end; border-radius: 16px 16px 4px 16px; }
+    /* A RUN of messages from the same side.
+     *
+     * Every bubble getting the same 12px of air and its own tail is the second
+     * tell that this was not a real conversation: three lines typed in a row
+     * read as three separate events instead of one person talking. So
+     * consecutive bubbles from the same side close up to 4px, and only the LAST
+     * of a run keeps its tail -- the ones above it are the middle of the same
+     * utterance. Pure sibling CSS, so nothing has to mark it and nothing can
+     * drift: a day label between two bubbles breaks the adjacency by itself,
+     * which is exactly right. */
+    .them + .them, .me + .me { margin-top: -8px; }
+    .them:has(+ .them) { border-bottom-left-radius: 16px; }
+    .me:has(+ .me)     { border-bottom-right-radius: 16px; }
+
     .p    { font-size: 15.5px; line-height: 1.5; }
     /* Suggestion CHIPS, not a rotating placeholder. See the note on the
        components board: a placeholder that cycles is moving text, and NN/g’s
@@ -84,11 +108,12 @@
        height and the composer never moves, which is what was asked for. The
        rail says who is answering -- because it is not a person, and a farmer is
        entitled to know that before acting on a sentence. -->
-  <div style="flex-grow: 1; display: grid; grid-template-columns: minmax(0, 880px) 340px; gap: 26px; padding: 22px 28px 30px; align-items: start; justify-content: space-between;">
+  <div data-chatgrid style="flex-grow: 1; display: grid; grid-template-columns: minmax(0, 880px) 340px; gap: 26px; padding: 22px 28px 30px; align-items: start; justify-content: space-between;">
 
     <div data-chatcol style="height: 656px; background: #ddd7d1; display: flex; flex-direction: column;">
 
       <div data-transcript style="flex-grow: 1; overflow-y: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;">
+        <div data-spacer style="flex-grow: 1;"></div>
 <div class="them">
       <div class="p">What do you want to ask? I answer from government farming documents, and I will tell you when they do not cover something.</div>
     </div>
@@ -127,7 +152,6 @@
       <div class="p" style="margin-top: 9px; color: #605a53;">The number for the Kisan Call Centre is beside this conversation.</div>
     </div>
 
-          <div style="flex-grow: 1;"></div>
       </div>
 
       <!-- Predefined questions, kept where they can always be reached. HIG:

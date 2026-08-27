@@ -305,6 +305,27 @@ function loaderSlot(container) {
   return { parent: (bar && bar.parentElement) || container, after: bar || null };
 }
 function placeLoader(container, box) {
+  /* A board can ask for it somewhere specific, and one does.
+   *
+   * The band-after-the-bar rule is right when the whole page is waiting: it is
+   * out of the layout and it cannot become anyone's grid child. It is wrong when
+   * the loader is ABOUT one thing on the page. On the sent screen the pencil
+   * means "this video's date is being written" and it belongs to the step that
+   * says so -- put at the top of the page it was reported as not being there at
+   * all, because the reader was looking at the timeline eight hundred pixels
+   * below it. So [data-loader-slot] names the element it goes inside. */
+  /* A board may name a slot per KIND, because the two loaders mean different
+   * things and belong in different places. On the send screen the pill reports
+   * an upload in flight and belongs beside the step it is about, inside the
+   * timeline; the pencil reports a date being written over the next several
+   * hours and belongs under the button, full width, in the space the warning
+   * about deleting vacates the moment the thing is sent. Naming the kind is
+   * what stops the tall one growing a card it has to fit inside. */
+  const kind = box.getAttribute('data-loader');
+  const slot = container.querySelector(`[data-loader-slot="${kind}"]`)
+    || container.querySelector('[data-loader-slot]:not([data-loader-slot=""])')
+    || container.querySelector('[data-loader-slot]');
+  if (slot) { slot.append(box); return; }
   const { parent, after } = loaderSlot(container);
   box.style.padding = '20px 28px';
   if (after && after.parentElement === parent) after.after(box);

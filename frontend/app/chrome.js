@@ -5,7 +5,7 @@
 // than repeat that in every page module, the boards now mark the three roles
 // (data-chrome="back" | "mail" | "you") and this wires whichever are present.
 import { goes, acts } from './wire.js';
-import { api } from './api.js';
+import { api, noticeForRole } from './api.js';
 
 /**
  * @param root  the page root from wire()/requireUser()
@@ -200,7 +200,11 @@ export function deskNav(root, user) {
     // something is waiting teaches people to ignore it.
     api.notifications.mine(id)
       .then((list) => {
-        const n = (list || []).filter(x => !x.read && !x.isRead).length;
+        // The same filter the notices page applies, or the badge counts
+        // broadcasts this reader will never be shown.
+        const n = (list || [])
+          .filter(x => noticeForRole(x, user?.role))
+          .filter(x => !x.read && !x.isRead).length;
         if (n > 0) badge.textContent = n > 9 ? '9+' : String(n);
         else badge.remove();
       })

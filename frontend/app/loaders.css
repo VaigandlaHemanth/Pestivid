@@ -170,6 +170,30 @@
   max-width: 46ch;
 }
 
+/* Inside a card the loader stands beside a step rather than filling a page, so
+   the pencil takes its small size and the padding closes up. */
+[data-loader-slot] [data-loader] { padding: 13px 0 0; gap: 14px; align-items: center;
+                                   margin-top: 13px; box-shadow: inset 0 1px 0 #ddd7d1; }
+/* The pencil's band is full width under the button, not inside a card, so it
+   needs no hairline of its own -- it IS the bottom of the page. */
+[data-loader-slot="writing"] [data-loader] { margin-top: 18px; padding: 0;
+                                             box-shadow: none; gap: 16px; }
+/* Room to actually be a pencil.
+ *
+ * Shrunk into the timeline's 22px dot column it was a blue fragment -- the
+ * drawing hand orbits a 200-unit viewBox, so below about 60px there is nothing
+ * legible left of it. It is the one animation in this product that says
+ * something no sentence can (a date, being written, right now), and the owner
+ * picked it. It gets the space to say it. */
+[data-loader-slot] .pencil { width: 4.4em; height: 4.4em; margin-left: -6px; }
+[data-loader-slot] .loader { transform: scale(.8); transform-origin: 0 50%; }
+/* The pill carries the word "working" travelling above it, which is right on its
+   own and wrong beside a real sentence: in a card the two texts compete and the
+   loose word reads as debug output. The pill stays, the sentence says what is
+   happening. */
+[data-loader-slot] .loader-text { display: none; }
+[data-loader-slot] .said { font-size: 14.5px; max-width: none; }
+
 /* ── reduced motion ───────────────────────────────────────────────────────── */
 
 /* A spinner is the one case where dropping the travel leaves nothing behind, so

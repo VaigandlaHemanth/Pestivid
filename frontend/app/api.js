@@ -198,6 +198,31 @@ export const api = {
 export const rupees = (n) => n == null ? 'not yet'
   : '₹' + Math.round(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
+/* Whose notice is this?
+ *
+ * A global notification is one document every user can see, and the notices
+ * page promises in its own rail that "only your own plots and your own money
+ * appear here". It was breaking that promise three times over on the farmer's
+ * screen: "a farmer is asking for money to grow Potato, 2 acres" is addressed
+ * to somebody with money to put in, and it was showing up on the screen of the
+ * farmer who is asking for it.
+ *
+ * So a broadcast reaches the role it was written for. Anything addressed to one
+ * person is that person's, whatever its type. This lives here because BOTH the
+ * notices page and the envelope badge in the app bar have to count the same
+ * set -- the page saying "4 you have not read" under a badge reading 7 is worse
+ * than either number being wrong on its own.
+ */
+const BROADCAST_FOR = {
+  funding: ['investor', 'admin'],   // somebody is asking for money
+  listing: ['buyer', 'admin'],      // a lot has come up for sale
+};
+export function noticeForRole(n, role) {
+  if (!n || !n.global) return true;
+  const who = BROADCAST_FOR[n.type];
+  return !who || who.includes(role);
+}
+
 export const dayMonth = (iso) => {
   if (!iso) return 'not yet';
   const d = new Date(iso);

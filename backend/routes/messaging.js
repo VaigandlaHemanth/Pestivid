@@ -330,7 +330,9 @@ router.post('/conversations/:conversationId/messages', authenticateToken, async 
 
 
         // Update the parent conversation's last message snippet and timestamp
-        conversation.lastMessageSnippet = savedMessage.text.substring(0, 50) + (savedMessage.text.length > 50 ? '...' : '');
+        // One character, not three: three dots is a typographic tell and the
+        // messages list prints this snippet straight onto the screen.
+        conversation.lastMessageSnippet = savedMessage.text.substring(0, 50) + (savedMessage.text.length > 50 ? '…' : '');
         conversation.lastMessageTimestamp = savedMessage.timestamp;
         // Save the updated conversation document
         await conversation.save();
@@ -341,7 +343,7 @@ router.post('/conversations/:conversationId/messages', authenticateToken, async 
          const senderUser = req.user; // Payload from token includes _id, role, name (if included during login)
          const senderDisplayName = (senderUser.name && senderUser.name.split(' ')[0]) ||
                                    senderUser.displayIdentifier ||
-                                   senderUser._id.toString().substring(0, 6) + '...';
+                                   senderUser._id.toString().substring(0, 6) + '…';
 
          try {
               const notification = new Notification({

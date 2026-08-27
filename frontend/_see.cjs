@@ -8,7 +8,12 @@ const MAIL = { farmer: 'demo.farmer@pestivid.sim', investor: 'demo.investor@pest
 
 (async () => {
   const b = await chromium.launch();
-  const p = await b.newPage({ viewport: { width: +width, height: +width < 700 ? 844 : 940 },
+  // SHOTH overrides the viewport height, because a page that fits a 940px
+  // window can still be cut off on a 1366x768 laptop -- which is the floor this
+  // product has to fit, not the ceiling. SHOTCLIP photographs the VIEWPORT
+  // rather than the full page, because a fullPage shot hides clipping.
+  const vh = +(process.env.SHOTH || (+width < 700 ? 844 : 940));
+  const p = await b.newPage({ viewport: { width: +width, height: vh },
                               deviceScaleFactor: 2 });
   const errs = [];
   p.on('console', m => { if (m.type() === 'error') errs.push(m.text().slice(0, 160)); });
@@ -27,8 +32,8 @@ const MAIL = { farmer: 'demo.farmer@pestivid.sim', investor: 'demo.investor@pest
     await p.waitForTimeout(1500);
     const w = await p.evaluate(() => Math.max(document.documentElement.scrollWidth,
                                               document.body.scrollWidth));
-    const file = `${OUT}/${name}-${width}.png`;
-    await p.screenshot({ path: file, fullPage: true });
+    const file = `${OUT}/${name}-${width}${process.env.SHOTH ? 'x' + vh : ''}.png`;
+    await p.screenshot({ path: file, fullPage: !process.env.SHOTCLIP });
     console.log(`${name.padEnd(16)} ${width}px  scrollWidth ${w}  -> ${file}`);
   }
   if (errs.length) console.log('CONSOLE ERRORS:\n  ' + [...new Set(errs)].join('\n  '));

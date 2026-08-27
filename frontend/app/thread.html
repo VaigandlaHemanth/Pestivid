@@ -26,10 +26,56 @@
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
     .ph { width: 360px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column;
           box-sizing: border-box; }
-    .them { background: #fff; padding: 14px 16px; max-width: 520px; }
-    .me   { background: #1d1a17; color: #f6f3ef; padding: 14px 16px; max-width: 440px; margin-left: auto; }
+    /* A BUBBLE, not a card.
+     *
+     * These were fixed-width blocks -- 520px received, 440px sent, whatever the
+     * message said -- so "Yes, I will" drew the same rectangle as a paragraph,
+     * and a column of equal rectangles is a table, not a conversation. That was
+     * the whole of what was wrong with this screen.
+     *
+     * So a bubble hugs its own text and takes the shape a reader already knows
+     * from every messaging app: rounded, with the corner on the side it came
+     * FROM squared off into a tail. Received sits left with the tail at the
+     * bottom-left, sent sits right with the tail at the bottom-right, so which
+     * side a line is on is legible before a word of it is read.
+     *
+     * This is the one deliberate exception to the shape rule (paper is square,
+     * controls are 8px, round is for avatars and badges): a chat bubble is
+     * neither paper nor a control, and here the shape IS the meaning. */
+    .them { background: #fff; padding: 13px 16px; max-width: 62%; width: fit-content;
+            align-self: flex-start; border-radius: 16px 16px 16px 4px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 16px; max-width: 62%;
+            width: fit-content; align-self: flex-end; border-radius: 16px 16px 4px 16px; }
     .t    { font-size: 15.5px; line-height: 1.5; }
     .when { font-size: 12.5px; color: #4a443d; margin-top: 5px; }
+    /* The day a run of messages belongs to. Without it a transcript is a list of
+       clock times with no idea whether two of them are a minute or a month
+       apart -- and every chat app has solved this the same way, with a small
+       still label centred in the column. Round because it is a badge. */
+    /* Plain text, not a pill.
+     *
+     * Drawn as a filled round chip with a hairline it looked exactly like the
+     * quick-reply chips two hundred pixels below it, and verify-pressable
+     * flagged it for what it was: a thing that looks pressable and does
+     * nothing. WhatsApp fills its day label because its transcript has a
+     * photograph behind it; this one has a flat ground, so the words carry
+     * themselves. */
+    .day  { align-self: center; font-size: 12.5px; font-weight: 600; color: #605a53;
+            padding: 3px 0; letter-spacing: 0.01em; }
+    /* A RUN of messages from the same side.
+     *
+     * Every bubble getting the same 12px of air and its own tail is the second
+     * tell that this was not a real conversation: three lines typed in a row
+     * read as three separate events instead of one person talking. So
+     * consecutive bubbles from the same side close up to 4px, and only the LAST
+     * of a run keeps its tail -- the ones above it are the middle of the same
+     * utterance. Pure sibling CSS, so nothing has to mark it and nothing can
+     * drift: a day label between two bubbles breaks the adjacency by itself,
+     * which is exactly right. */
+    .them + .them, .me + .me { margin-top: -8px; }
+    .them:has(+ .them) { border-bottom-left-radius: 16px; }
+    .me:has(+ .me)     { border-bottom-right-radius: 16px; }
+
     /* quick replies are chips, not a rotating prompt: still text, tappable, and
        they spare somebody typing a reply on a phone keyboard */
     .chip { background: #e7e1db; min-height: 46px; box-sizing: border-box; display: flex; align-items: center; padding: 10px 13px; font-size: 15px; }
@@ -88,10 +134,12 @@
     </div>
 
 
-            <div style="flex-grow: 1; display: grid; grid-template-columns: minmax(0, 880px) 340px; gap: 26px; padding: 22px 28px 30px; align-items: start; justify-content: space-between;">
+            <div data-chatgrid="" style="flex-grow: 1; display: grid; grid-template-columns: minmax(0, 880px) 340px; gap: 26px; padding: 22px 28px 30px; align-items: start; justify-content: space-between;">
       <div class="main">
 <div data-chatcol="" style="height: 628px; background: #ddd7d1; display: flex; flex-direction: column;">
           <div data-transcript="" style="flex-grow: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div data-spacer="" style="flex-grow: 1;"></div>
+          <div class="day">17 August</div>
           <div class="them">
             <div class="t">Namaste Alice. Is the canal water reaching the far end of the plot this year?</div>
             <div class="m when">17 August, 9:12 am</div>
@@ -108,8 +156,6 @@
             <div class="m when">17 August, 2:05 pm</div>
           </div>
 
-          <div style="flex-grow: 1;"></div>
-
           </div>
 
           <div style="flex-shrink: 0; padding: 2px 20px 12px;">
@@ -122,10 +168,10 @@
           </div>
         <div data-sendfail="" style="flex-shrink: 0; padding: 13px 20px 16px; box-shadow: inset 0 1px 0 #ddd7d1;">
           <div style="display: flex; gap: 9px; align-items: stretch;">
-            <div style="flex-grow: 1; background: #fff; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; padding: 0 14px; min-height: 56px;">
+            <div data-fieldbox="" style="flex-grow: 1; background: #fff; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; padding: 0 14px; min-height: 56px; border-radius: 8px;">
               <div data-reply="" style="font-size: 16px; color: #4a443d;">Write a message</div>
             </div>
-            <div data-send="" style="width: 56px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <div data-send="" style="width: 56px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 8px;">
               <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
             </div>
           </div>
