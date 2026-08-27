@@ -196,6 +196,19 @@ export function deskNav(root, user) {
   const name = (user?.name || '').trim();
   if (initial && name) initial.textContent = name[0].toUpperCase();
 
+  /* And the bell itself, not just the number on it.
+   *
+   * appChrome() wires the bell, and only seven pages call appChrome. Everywhere
+   * else it was an icon carrying a red unread count that did nothing when
+   * pressed -- home, invest, portfolio, market and orders, which is most of what
+   * an investor or a buyer ever looks at. The badge was already found here for
+   * exactly this element; the door belongs next to it. */
+  const bell = root.querySelector('[data-chrome="mail"]');
+  if (bell && here !== 'notifications' && !bell.hasAttribute('data-act')
+      && !bell.hasAttribute('data-go')) {
+    goes(bell, 'notifications', 'What has happened');
+  }
+
   const badge = root.querySelector('.appbar [data-readout], [data-chrome="mail"] [data-readout]');
   const id = user && (user._id || user.id);
   if (badge && id) {

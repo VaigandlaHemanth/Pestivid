@@ -106,6 +106,54 @@ export function fill(root, data) {
  * inherited the div's letter-spacing, so a password placeholder came out spaced
  * like a display heading. Both are fixed here rather than in five page modules.
  */
+/* ════ MONEY GROUPS ITSELF ══════════════════════════════════════════════════
+ *
+ * The harvest form drew "2,58,400" on the artboard and answered a bare "945000"
+ * the moment somebody typed -- two figures on one screen formatted two ways, and
+ * the one the farmer was responsible for was the unformatted one. The same trap
+ * was live on ask-money, whose "How much do you need?" specimen reads
+ * "5,00,000".
+ *
+ * So it is not a thing a page has to remember. If the SPECIMEN is grouped, the
+ * field groups: asField sees the comma in the placeholder and wires it. Any new
+ * money box gets it by being drawn with a grouped specimen, and verify-forms
+ * holds the same rule from the outside.
+ *
+ * en-IN is lakh grouping -- three digits then pairs -- which is what rupees()
+ * already uses for every printed figure in this product.
+ */
+export const digitsOnly = (v) => String(v).replace(/[^\d]/g, '');
+export const grouped = (v) => {
+  const d = digitsOnly(v).replace(/^0+(?=\d)/, '');
+  return d ? Number(d).toLocaleString('en-IN') : '';
+};
+
+/* Reformatting rewrites the whole value, which sends the caret to the end. Fine
+ * while typing at the end, wrong the moment somebody corrects a digit in the
+ * middle. So the position is kept in DIGITS -- the one unit the commas cannot
+ * move -- and mapped back afterwards.
+ */
+export function groupLive(input) {
+  if (!input || input.__grouped) return input;
+  input.__grouped = true;
+  input.addEventListener('input', () => {
+    const before = input.value;
+    const caret = input.selectionStart ?? before.length;
+    const digitsBefore = digitsOnly(before.slice(0, caret)).length;
+    const next = grouped(before);
+    if (next === before) return;
+    input.value = next;
+    let seen = 0, pos = next.length;
+    for (let i = 0; i < next.length; i++) {
+      if (/\d/.test(next[i])) seen++;
+      if (seen === digitsBefore) { pos = i + 1; break; }
+    }
+    if (digitsBefore === 0) pos = 0;
+    try { input.setSelectionRange(pos, pos); } catch { /* not a text input */ }
+  });
+  return input;
+}
+
 export function asField(el, opts = {}) {
   // Two guidelines, applied once here instead of at thirty call sites:
   // a field with no autocomplete makes the browser guess, and a placeholder
@@ -141,6 +189,10 @@ export function asField(el, opts = {}) {
     opts.multiline ? 'resize: vertical' : '',
   ].filter(Boolean).join('; ') + ';';
   el.replaceChildren(input);
+
+  // A grouped specimen is a promise about the value. Kept here so no page has to
+  // remember, and so a new money box gets it just by being drawn with commas.
+  if (/\d,\d\d/.test(input.placeholder || '')) groupLive(input);
 
   // The tap target is the BOX, not the text slot inside it.
   //

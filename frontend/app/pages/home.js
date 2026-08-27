@@ -122,7 +122,11 @@ if (ctx) {
           dur: v.durationSeconds
             ? `${Math.floor(v.durationSeconds / 60)}:${String(Math.round(v.durationSeconds % 60)).padStart(2, '0')}`
             : null,
-          state: s.text,
+          // The SHORT form. dateState() carries both for exactly this reason, and
+          // plots.js and plot.js already use it: the long sentence on every row
+          // of a list says the same eleven words four times over, and wraps to
+          // two lines doing it. The explanation belongs once, above the list.
+          state: s.short || s.text,
           _kind: s.kind, _name: v.crop || v.location || 'Plot',
         };
       }), (el, r) => {

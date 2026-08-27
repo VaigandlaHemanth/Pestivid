@@ -12,49 +12,8 @@
 // cannot take back.
 import { requireUser, api, load, state } from './_guard.js';
 import { bind, rows } from '../bind.js';
-import { asField, acts, press } from '../wire.js';
+import { asField, acts, press, digitsOnly } from '../wire.js';
 import { rupees } from '../api.js';
-
-/* Indian grouping, as you type.
- *
- * The cost field showed "2,58,400" because that string was DRAWN on the
- * artboard; the moment a farmer typed into the box beside it they got a bare
- * "945000". Two figures on one screen, formatted two different ways, one of
- * them the one they are responsible for.
- *
- * en-IN is lakh grouping -- three digits then pairs -- which is what every
- * printed figure in this product already uses via rupees().
- */
-const digitsOnly = (v) => String(v).replace(/[^\d]/g, '');
-const grouped = (v) => {
-  const d = digitsOnly(v).replace(/^0+(?=\d)/, '');
-  return d ? Number(d).toLocaleString('en-IN') : '';
-};
-
-/* Reformatting rewrites the whole value, which sends the caret to the end. That
- * is fine while typing at the end and wrong the moment somebody corrects a digit
- * in the middle. So the position is kept in DIGITS -- the one unit the commas
- * cannot move -- and mapped back afterwards.
- */
-function groupLive(input) {
-  const apply = () => {
-    const before = input.value;
-    const caret = input.selectionStart ?? before.length;
-    const digitsBefore = digitsOnly(before.slice(0, caret)).length;
-    const next = grouped(before);
-    if (next === before) return;
-    input.value = next;
-    let seen = 0, pos = next.length;
-    for (let i = 0; i < next.length; i++) {
-      if (/\d/.test(next[i])) seen++;
-      if (seen === digitsBefore) { pos = i + 1; break; }
-    }
-    if (digitsBefore === 0) pos = 0;
-    try { input.setSelectionRange(pos, pos); } catch { /* not a text input */ }
-  };
-  input.addEventListener('input', apply);
-  return apply;
-}
 
 const ctx = requireUser('report-harvest', ['farmer']);
 if (ctx) load(ctx.root, async () => {
@@ -80,7 +39,6 @@ if (ctx) load(ctx.root, async () => {
     placeholder: i === 0 ? '9,32,000' : '2,58,400',
     label: i === 0 ? 'What did you sell it for' : 'What did it cost you to grow',
   }));
-  inputs.forEach(i => { if (i) groupLive(i); });
 
   const read = () => inputs.map(i => Number(digitsOnly(i?.value || '')) || 0);
 
@@ -170,8 +128,8 @@ if (ctx) load(ctx.root, async () => {
     // again, and it must not imply the figures can still be changed.
     const when = new Date(project.harvestReportedAt)
       .toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-    if (inputs[0]) inputs[0].value = grouped(project.harvestRevenue || 0);
-    if (inputs[1]) inputs[1].value = grouped(project.inputCostBasis || 0);
+    if (inputs[0]) inputs[0].value = (project.harvestRevenue || 0).toLocaleString('en-IN');
+    if (inputs[1]) inputs[1].value = (project.inputCostBasis || 0).toLocaleString('en-IN');
     inputs.forEach(i => { if (i) i.disabled = true; });
     failRow?.remove();
     sendBtn?.remove();

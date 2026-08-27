@@ -18,10 +18,20 @@ function refuse(headline, detail) {
   // The picker is the rail's card, already wired. A refusal points at it
   // rather than building a second hidden one.
   const pick = ctx.root.querySelector('input[type="file"]');
-  // The panel is drawn 800px tall because it is a viewfinder. With no camera
-  // there is nothing to view, and the leftover was a thousand pixels of black
-  // under a red box. The page becomes as tall as what it actually has to say.
-  ctx.root.style.minHeight = 'auto';
+  /* The panel is drawn 800px tall because it is a viewfinder. With no camera
+   * there is nothing to view, and the leftover was a thousand pixels of black
+   * under a red box -- so this used to set minHeight to 'auto'.
+   *
+   * That overshot. This page's root is DARK, and dropping its minimum shrank it
+   * to 351px on a 768px screen: the box sat on a dark band that stopped
+   * two-thirds of the way down, with the body's warm ground showing below it. A
+   * page in two colours, split by a hard horizontal line, which reads as
+   * breakage rather than as an empty state.
+   *
+   * The viewfinder's own 800px is what had to go, and state() takes it with the
+   * rest of the children. The page keeps filling the window, the way every other
+   * empty state here does. */
+  ctx.root.style.minHeight = '100vh';
   return state(ctx.root, 'failed', headline, detail,
     { label: 'Pick a file instead', act: () => pick.click() });
 }

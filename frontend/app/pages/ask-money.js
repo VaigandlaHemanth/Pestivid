@@ -97,7 +97,9 @@ if (ctx) load(ctx.root, async () => {
       const usable = v.hashComputedBy === 'server' && v.fingerprinted;
       return {
         label: `${v.crop || v.location || 'Plot'} · ${whenShort(v.uploadTimestamp)}`,
-        status: usable ? s.text : 'We are still checking this one',
+        // The short form: five rows repeating the same eleven words is the
+        // explanation four times too often. See plots.js.
+        status: usable ? (s.short || s.text) : 'We are still checking this one',
         ready: usable, proved: s.kind === 'proved', v,
       };
     }), (el, r) => {

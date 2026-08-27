@@ -95,9 +95,15 @@ if (ctx) load(ctx.root, async () => {
     }
     const dated = tr.querySelector('[data-dated]');
     if (dated) {
+      /* The short form in the cell, the explanation once above the table.
+       * Four rows each carrying "On our server, its date has not landed in a
+       * block yet" is eleven words repeated four times, wrapping to two lines
+       * every time -- the same thing plots.js and plot.js already avoid by
+       * using dateState()'s short form. "Watch it, check the date" underneath
+       * is what the row is FOR, and it was competing with the sentence. */
       dated.textContent = p.blockHeight
-        ? `Block ${Number(p.blockHeight).toLocaleString('en-IN')} · you can check this yourself`
-        : 'On our server · its date has not landed in a block yet';
+        ? `Block ${Number(p.blockHeight).toLocaleString('en-IN')}`
+        : 'Date being written';
       dated.style.color = p.blockHeight ? '#006934' : '#4a443d';
     }
 
