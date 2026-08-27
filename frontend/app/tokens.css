@@ -270,75 +270,124 @@ body[data-role="public"] { background: var(--ground); }
  */
 ::placeholder { color: #605a53; opacity: 1; }
 
-/* ════ THE TORN EDGE ════════════════════════════════════════════════════════
+/* ════ THE TORN EDGE, and why it is gone ════════════════════════════════════
  *
- * From "Button" by satyamchaudharydev, uiverse.io/satyamchaudharydev/hot-fox-63
- * (MIT). The clip-path polygons are his, verbatim; the colours are ours.
+ * satyamchaudharydev's "Button" (uiverse.io/satyamchaudharydev/hot-fox-63, MIT)
+ * raises a torn paper edge out of the fill on hover. It was chosen because this
+ * product's whole language is sheets of evidence, and it was wrong twice.
  *
- * It earns its place here rather than being a trick: this product's whole
- * language is sheets of evidence, and a torn paper edge rising out of a button
- * on hover is that language moving. Nothing generic looks like it.
+ * First on the ink primary, where a 17% white wash over #1d1a17 composites to a
+ * flat hueless #464340 and read as a smudge. That was fixed by restricting it to
+ * the blue.
  *
- * ONLY THE BLUE. It was on the ink button too and it looked like a smudge: on
- * #1d1a17 a 17% white overlay composites to about #464340, a flat hueless grey
- * with no relationship to the palette. On #016abe the same overlay stays BLUE,
- * so it reads as the same material in a lighter tone -- which is what a torn
- * edge is. There is no hue on near-black to lighten, only grey to add.
+ * Then on the blue, where it read as CRACKED GLASS -- and this failure is
+ * structural, not a matter of tuning. The polygon vertices are PERCENTAGES, so
+ * the shape stretches with the button. On the original's small control the
+ * vertices are close together and the outline is a fine rip; on "Report the
+ * harvest" at 250px, and on the full-width primaries this product uses, the same
+ * percentages spread into long straight facets meeting at sharp angles. No torn
+ * paper makes that geometry. A shape that only holds at one aspect ratio cannot
+ * be a component treatment here, where a button is whatever width its column is.
  *
- * The ink button gets a top highlight instead: a printed edge catching light,
- * which is legible on a dark fill in a way a translucent wash is not.
+ * So both primaries take the one hover every other filled control takes: the
+ * deepen above. One treatment per component, and the harvest imagery the effect
+ * was reaching for now lives where imagery belongs -- see THE CROP MARK below.
+ */
+
+/* ════ THE CROP MARK ════════════════════════════════════════════════════════
+ *
+ * A row of grain ears growing out of the bottom edge of the harvest button, in
+ * the button's own blue. The owner's idea, replacing the torn edge in the place
+ * the torn edge occupied.
+ *
+ * WHY IT WORKS WHERE THE TORN EDGE DID NOT. The torn edge was one polygon whose
+ * vertices are percentages, so it stretched with the button and its fine rip
+ * became long flat facets -- cracked glass. This is a TILE that repeats along
+ * the x axis, so its ears are the same size on a 250px button and a 900px one.
+ * Width-independence is structural here rather than something to tune.
+ *
+ * ONLY THIS BUTTON, and that is the point. It is scoped to the harvest card, not
+ * to "any blue button": wheat on "Keep it and send" would be decoration, and
+ * decoration on every primary is what the one-treatment-per-component rule
+ * exists to stop. The card is about a harvest, so the button in it may say so.
+ * The card appears on home and on money, and both get it, so it is consistent by
+ * construction rather than by discipline.
+ *
+ * THE DRAWING is the ear already drawn for this product, filled rather than
+ * stroked because a 1.3px outline scaled into a 22px band disappears while a
+ * solid lobe does not. Three other drawings were tried and thrown away: paired
+ * ellipses up a stem (read as a lattice pylon), and a tapered spike with fanned
+ * awns (read as a dandelion). Both failed for the same reason -- at this size
+ * only solid mass reads, never fine detail.
+ *
+ * THE MASK is not decoration either, and neither is the 13%. The tile repeats
+ * from the left edge, so which ear lands under the label depends on the button's
+ * width; on the 226px harvest button an ear sat against the R of "Report". Two
+ * things stop that mattering. The mask clears the middle 40%, so the label sits
+ * on plain blue. And the fill is low enough that even where an ear does reach
+ * the text, white on the lightened blue still clears 4.5:1 -- at 22% it did not,
+ * and 16.5px bold is NOT large text by WCAG (that starts at 18.66px bold), so
+ * 3:1 would not have been enough. Measured, not calculated: see _card.cjs.
+ *
+ * White at 13% over #016abe stays BLUE -- the same material, lighter -- which is
+ * why this works on the blue and is not attempted on the ink primary, where the
+ * same wash goes to a hueless grey.
  */
 @media (hover: hover) and (pointer: fine) {
-  [data-act][style*="background: #016abe"],
-  [data-go][style*="background: #016abe"] {
+  [data-todoband] [data-act], [data-todoband] [data-go] {
     position: relative;
-    z-index: 1;
+    /* the clip that makes the parked band invisible */
     overflow: hidden;
   }
-  [data-act][style*="background: #016abe"]::after,
-  [data-go][style*="background: #016abe"]::after {
-    position: absolute;
+  [data-todoband] [data-act]::after,
+  [data-todoband] [data-go]::after {
     content: "";
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 12%;
-    z-index: -1;
-    background: rgba(255, 255, 255, .17);
-    /* satyamchaudharydev's resting edge */
-    clip-path: polygon(
-      0% 74%, 4% 75%, 8% 76%, 11% 77%, 15% 78%, 20% 78%, 25% 77%, 32% 77%,
-      37% 75%, 40% 74%, 43% 74%, 46% 73%, 52% 72%, 57% 72%, 65% 74%, 66% 75%,
-      71% 78%, 75% 82%, 81% 86%, 83% 88%, 88% 91%, 90% 94%, 94% 96%, 98% 98%,
-      100% 100%, 82% 100%, 0 100%
-    );
-    /* the product's own press easing, not a number invented here */
-    transition: height var(--t-release, 260ms) var(--e-snappy, ease),
-                clip-path var(--t-release, 260ms) var(--e-snappy, ease);
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    background-repeat: repeat-x;
+    background-position: bottom left;
+    /* It RISES, and it does it with transform.
+     *
+     * The first version animated `height` from 0. That works and it is against
+     * the rule in this repo -- height is a layout property, and the fact that
+     * this is an out-of-flow pseudo-element only limits the damage rather than
+     * removing it. It is also the same mistake loaders.css already documents
+     * about animating width instead of scaleX.
+     *
+     * So the band is drawn at full height and parked one full band BELOW the
+     * button's bottom edge, where the button's own overflow: hidden clips it to
+     * nothing. Hover brings it to translateY(0). Nothing at rest, wheat rising
+     * on hover, no layout on any frame -- and it is a genuine reveal rather than
+     * a stretch, which scaleY would have been. */
+    height: 62%;
+    transform: translateY(100%);
+    background-size: 130px 38px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='38' viewBox='0 0 130 38'><g transform='translate(0 6) scale(1.15) rotate(-5 12 23)'><path d='M12 23V7' fill='none' stroke='%23fff' stroke-opacity='0.13' stroke-width='1.1' stroke-linecap='round'/><g fill='%23fff' fill-opacity='0.13'><path d='M12 11C9.4 11 8.3 9.5 8.3 7.7 10.6 7.7 12 9.2 12 11z'/><path d='M12 11c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 15c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 15c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 19c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 19c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 7.2c-1.3-.9-1.4-2.6-.7-4.2 1.3.9 1.4 2.6.7 4.2z'/><path d='M12 7.2c1.3-.9 1.4-2.6.7-4.2-1.3.9-1.4 2.6-.7 4.2z'/></g></g><g transform='translate(32 11) scale(1.0) rotate(4 12 23)'><path d='M12 23V7' fill='none' stroke='%23fff' stroke-opacity='0.13' stroke-width='1.1' stroke-linecap='round'/><g fill='%23fff' fill-opacity='0.13'><path d='M12 11C9.4 11 8.3 9.5 8.3 7.7 10.6 7.7 12 9.2 12 11z'/><path d='M12 11c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 15c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 15c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 19c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 19c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 7.2c-1.3-.9-1.4-2.6-.7-4.2 1.3.9 1.4 2.6.7 4.2z'/><path d='M12 7.2c1.3-.9 1.4-2.6.7-4.2-1.3.9-1.4 2.6-.7 4.2z'/></g></g><g transform='translate(58 3) scale(1.25) rotate(-2 12 23)'><path d='M12 23V7' fill='none' stroke='%23fff' stroke-opacity='0.13' stroke-width='1.1' stroke-linecap='round'/><g fill='%23fff' fill-opacity='0.13'><path d='M12 11C9.4 11 8.3 9.5 8.3 7.7 10.6 7.7 12 9.2 12 11z'/><path d='M12 11c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 15c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 15c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 19c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 19c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 7.2c-1.3-.9-1.4-2.6-.7-4.2 1.3.9 1.4 2.6.7 4.2z'/><path d='M12 7.2c1.3-.9 1.4-2.6.7-4.2-1.3.9-1.4 2.6-.7 4.2z'/></g></g><g transform='translate(90 9) scale(1.1) rotate(6 12 23)'><path d='M12 23V7' fill='none' stroke='%23fff' stroke-opacity='0.13' stroke-width='1.1' stroke-linecap='round'/><g fill='%23fff' fill-opacity='0.13'><path d='M12 11C9.4 11 8.3 9.5 8.3 7.7 10.6 7.7 12 9.2 12 11z'/><path d='M12 11c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 15c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 15c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 19c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 19c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 7.2c-1.3-.9-1.4-2.6-.7-4.2 1.3.9 1.4 2.6.7 4.2z'/><path d='M12 7.2c1.3-.9 1.4-2.6.7-4.2-1.3.9-1.4 2.6-.7 4.2z'/></g></g></svg>");
+    /* the label sits on plain blue, whatever the button's width */
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 14%, transparent 30%,
+                                        transparent 70%, #000 86%, #000 100%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 14%, transparent 30%,
+                                transparent 70%, #000 86%, #000 100%);
+    /* the product's own release easing, not a number invented here */
+    transition: transform var(--t-release, 260ms) var(--e-snappy, ease);
   }
-  [data-act][style*="background: #016abe"]:hover::after,
-  [data-go][style*="background: #016abe"]:hover::after {
-    height: 82%;
-    /* and his torn edge */
-    clip-path: polygon(
-      0 30%, 9% 34%, 7% 39%, 11% 43%, 13% 33%, 17% 30%, 24% 34%, 25% 35%,
-      30% 31%, 30% 38%, 39% 33%, 35% 43%, 43% 45%, 55% 46%, 65% 74%, 67% 66%,
-      81% 57%, 75% 82%, 81% 86%, 83% 88%, 88% 91%, 90% 94%, 94% 96%, 98% 98%,
-      100% 100%, 82% 100%, 0 100%
-    );
+  /* it comes up on hover and stays up while the pointer is there */
+  [data-todoband] [data-act]:hover::after,
+  [data-todoband] [data-go]:hover::after { transform: translateY(0); }
+  /* the label and the arrow are always above it */
+  [data-todoband] [data-act] > *, [data-todoband] [data-go] > * {
+    position: relative;
+    z-index: 1;
   }
-  /* The plain darken was for every filled control. The two primaries have the
-     torn edge now, so it would double up. */
-  [data-act][style*="background: #016abe"]:hover,
-  [data-go][style*="background: #016abe"]:hover {
-    box-shadow: none;
-  }
-  /* the ink primary: a printed edge catching light, legible on a dark fill */
-  [data-act][style*="background: #1d1a17"]:hover,
-  [data-go][style*="background: #1d1a17"]:hover {
-    box-shadow: inset 0 2px 0 rgba(246, 243, 239, .30),
-                inset 0 0 0 1px rgba(246, 243, 239, .14);
-  }
+}
+
+/* Travel is what goes, not the state. The wheat still appears on hover -- that
+   is the information -- it just appears rather than growing. The hover rule
+   above already says 62%, so this only has to stop the animation. */
+@media (prefers-reduced-motion: reduce) {
+  [data-todoband] [data-act]::after,
+  [data-todoband] [data-go]::after { transition: none; }
 }
 
 /* ════ THE PRINTED OFFSET, and why it is not here ═══════════════════════════

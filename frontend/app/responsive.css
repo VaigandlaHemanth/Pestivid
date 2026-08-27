@@ -293,6 +293,12 @@ body > div[style*="width: 824px"] {
   [data-chatcol] { height: calc(100dvh - 230px) !important; min-height: 300px; }
 }
 
+/* ── the crop mark needs no rule here ───────────────────────────────────── */
+
+/* The wheat on the harvest button lives inside a hover media query, so it never
+   renders on a touch device at all -- there is no hover to reveal it and a
+   permanent version would be decoration on a 320px control. Nothing to hide. */
+
 /* ── control size, by touch ──────────────────────────────────────────────── */
 
 /* The HIG recommends 44x44 pt for a touch target and 28x28 with a pointer

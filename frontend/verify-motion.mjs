@@ -5,6 +5,14 @@
 //   2. nothing loops
 //   3. no duration or easing outside the tokens in tokens.css
 //   4. reduced motion keeps opacity and colour and drops travel
+//
+// PSEUDO-ELEMENTS COUNT. This scanned document.querySelectorAll('*') and nothing
+// else, so a transition declared on ::before or ::after was invisible to it --
+// and that is exactly how the two most elaborate effects in this product are
+// built. Both got through: the torn edge animated `height` and `clip-path` on an
+// ::after for weeks, and the wheat that replaced it animated `height` too, while
+// this check reported "transform and opacity only" on the same page. A rule that
+// cannot see the code most likely to break it is not a rule.
 import { chromium } from 'playwright';
 import { readdirSync } from 'node:fs';
 import { needs } from './_needs.mjs';
@@ -45,8 +53,20 @@ for (const slug of pages) {
 
   const found = await p.evaluate((LAYOUT) => {
     const out = { animated: 0, layout: [], loops: [], props: new Set() };
+    /* Every element AND both of its pseudo-elements. getComputedStyle takes a
+     * second argument for exactly this, and a ::after that transitions height is
+     * every bit as much a layout animation as a div that does. */
+    const targets = [];
     for (const el of document.querySelectorAll('*')) {
-      const s = getComputedStyle(el);
+      targets.push([el, null]);
+      for (const which of ['::before', '::after']) {
+        // only if it actually renders: an unset `content` means no box exists
+        const c = getComputedStyle(el, which).content;
+        if (c && c !== 'none' && c !== 'normal') targets.push([el, which]);
+      }
+    }
+    for (const [el, pseudo] of targets) {
+      const s = getComputedStyle(el, pseudo);
       const tp = s.transitionProperty, an = s.animationName;
       const has = (tp && tp !== 'none' && tp !== 'all' && s.transitionDuration !== '0s')
         || (an && an !== 'none');
@@ -62,9 +82,10 @@ for (const slug of pages) {
         const d = durs[i % durs.length] || '0s';
         if (parseFloat(d) === 0) return;
         out.props.add(raw);
-        if (raw === 'all') out.layout.push(`${el.tagName.toLowerCase()} transitions all`);
+        const who = el.tagName.toLowerCase() + (pseudo || '');
+        if (raw === 'all') out.layout.push(`${who} transitions all`);
         else if (LAYOUT.some(k => raw.startsWith(k))) {
-          out.layout.push(`${el.tagName.toLowerCase()} transitions ${raw}`);
+          out.layout.push(`${who} transitions ${raw}`);
         }
       });
       if (an && an !== 'none' && s.animationIterationCount === 'infinite') {
@@ -78,7 +99,7 @@ for (const slug of pages) {
          * exists to stop. Anything looping OUTSIDE a loader is still a finding.
          */
         if (el.closest('[data-loader]')) out.loaderLoops = (out.loaderLoops || 0) + 1;
-        else out.loops.push(`${el.tagName.toLowerCase()} runs ${an} forever`);
+        else out.loops.push(`${el.tagName.toLowerCase()}${pseudo || ''} runs ${an} forever`);
       }
     }
     out.props = [...out.props];
