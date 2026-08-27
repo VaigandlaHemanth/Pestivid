@@ -39,6 +39,11 @@ function glyphSet(root) {
 function kindOf(r) {
   if (r.go) return 'person';
   const txt = `${r.head} ${r.body}`.toLowerCase();
+  // Somebody wrote to you. r.go marks a conversation ROW on the messages page;
+  // on the notices page the same event arrives as a notice, and it was wearing
+  // the document glyph -- so "Demo wrote: what price are you asking" was filed
+  // as paperwork.
+  if (/wrote|asked you|wrote to you/.test(txt)) return 'person';
   if (/\bblock\b/.test(txt) || /date .*(landed|written)/.test(txt)) return 'proved';
   if (/bought|paid|funded|asking for money|investor/.test(txt)) return 'money';
   if (/listed|listing/.test(txt)) return 'listing';
