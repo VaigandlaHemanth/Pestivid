@@ -150,7 +150,12 @@ export function state(container, kind, headline, detail, action) {
   // A sentence set across 1400px is not a sentence anybody reads. These boxes
   // were drawn for a 360px panel and inherited the whole laptop width when the
   // farmer pages widened.
+  // The hairline is part of the box, not a stylesheet rule: cssText serialises
+  // the background to rgb(), so nothing keyed on the hex could reach it, and the
+  // amber attention band sat at 1.154:1 against the page it was warning about.
+  const edge = kind === 'failed' ? '#e0b4ac' : kind === 'waiting' ? '#d9c69b' : '#c3bcb6';
   box.style.cssText = `background: ${tone[0]}; padding: 18px 20px; margin: 16px ${side}px;`
+    + ` box-shadow: inset 0 0 0 1px ${edge};`
     + ' max-width: 720px; box-sizing: border-box;'
     + ' opacity: 0; transform: translateY(6px);'
     + ' transition: opacity var(--t-press, 120ms) var(--e-smooth, ease),'

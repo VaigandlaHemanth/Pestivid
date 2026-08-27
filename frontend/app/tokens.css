@@ -279,22 +279,24 @@ body[data-role="public"] { background: var(--ground); }
  * language is sheets of evidence, and a torn paper edge rising out of a button
  * on hover is that language moving. Nothing generic looks like it.
  *
- * Only the two primary fills get it -- the blue that sends and the ink that
- * confirms. A quiet control keeps the plain ring, or every button shouts.
+ * ONLY THE BLUE. It was on the ink button too and it looked like a smudge: on
+ * #1d1a17 a 17% white overlay composites to about #464340, a flat hueless grey
+ * with no relationship to the palette. On #016abe the same overlay stays BLUE,
+ * so it reads as the same material in a lighter tone -- which is what a torn
+ * edge is. There is no hue on near-black to lighten, only grey to add.
+ *
+ * The ink button gets a top highlight instead: a printed edge catching light,
+ * which is legible on a dark fill in a way a translucent wash is not.
  */
 @media (hover: hover) and (pointer: fine) {
   [data-act][style*="background: #016abe"],
-  [data-go][style*="background: #016abe"],
-  [data-act][style*="background: #1d1a17"],
-  [data-go][style*="background: #1d1a17"] {
+  [data-go][style*="background: #016abe"] {
     position: relative;
     z-index: 1;
     overflow: hidden;
   }
   [data-act][style*="background: #016abe"]::after,
-  [data-go][style*="background: #016abe"]::after,
-  [data-act][style*="background: #1d1a17"]::after,
-  [data-go][style*="background: #1d1a17"]::after {
+  [data-go][style*="background: #016abe"]::after {
     position: absolute;
     content: "";
     left: 0;
@@ -315,9 +317,7 @@ body[data-role="public"] { background: var(--ground); }
                 clip-path var(--t-release, 260ms) var(--e-snappy, ease);
   }
   [data-act][style*="background: #016abe"]:hover::after,
-  [data-go][style*="background: #016abe"]:hover::after,
-  [data-act][style*="background: #1d1a17"]:hover::after,
-  [data-go][style*="background: #1d1a17"]:hover::after {
+  [data-go][style*="background: #016abe"]:hover::after {
     height: 82%;
     /* and his torn edge */
     clip-path: polygon(
@@ -330,10 +330,14 @@ body[data-role="public"] { background: var(--ground); }
   /* The plain darken was for every filled control. The two primaries have the
      torn edge now, so it would double up. */
   [data-act][style*="background: #016abe"]:hover,
-  [data-go][style*="background: #016abe"]:hover,
+  [data-go][style*="background: #016abe"]:hover {
+    box-shadow: none;
+  }
+  /* the ink primary: a printed edge catching light, legible on a dark fill */
   [data-act][style*="background: #1d1a17"]:hover,
   [data-go][style*="background: #1d1a17"]:hover {
-    box-shadow: none;
+    box-shadow: inset 0 2px 0 rgba(246, 243, 239, .30),
+                inset 0 0 0 1px rgba(246, 243, 239, .14);
   }
 }
 
@@ -354,3 +358,43 @@ body[data-role="public"] { background: var(--ground); }
  * The torn edge above is from the same family of ideas and DOES belong, because
  * it is a hover on a control rather than a shadow on a sheet.
  */
+
+/* ════ EVERY EDGE VISIBLE ═══════════════════════════════════════════════════
+ *
+ * The warm palette has eight steps inside a 1.4:1 total range, so a fill can sit
+ * on another fill at 1.06:1 and be, to the eye, the same colour. verify-hig
+ * reported clean the whole time, because it measures TEXT on a background and
+ * the text was always fine. What was not fine was finding the card.
+ *
+ * Measured on the real pages, 28 pairings under 1.20:1 with nothing drawing the
+ * boundary. The worst was #f2e6cd on #ddd7d1 at 1.154 -- the amber attention
+ * band, which is how this product says "you can only do this once". A warning
+ * you cannot find is not a warning.
+ *
+ * The palette is the owner's and it is not repainted here. Instead the boundary
+ * is drawn: a 1px hairline in #c3bcb6, which is 1.53:1 against the surface and
+ * 1.32:1 against the ground, so it reads on both. inset, so it costs no layout.
+ */
+[style*="background: #f2e6cd"],
+[style*="background: #eae4de"],
+[style*="background: #e7e1db"],
+.chip, .lang, .langOn {
+  box-shadow: inset 0 0 0 1px #c3bcb6;
+}
+
+/* A control that is switched off is SUPPOSED to recede, so #c9ced4 on the ground
+   at 1.11:1 is the disabled button doing its job. It keeps no hairline. */
+[aria-disabled="true"][style*="background: #c9ced4"],
+.tap[style*="background: #c9ced4"] { box-shadow: none; }
+
+/* The cool family is deliberate -- --page-cool is the investor/buyer/admin
+ * ground -- but a cool tint on white is 1.03-1.18:1, so the edge still has to be
+ * drawn. --rule-cool exists for exactly this and is used here rather than the
+ * warm hairline, which would read as a warm line on a cool sheet. */
+[style*="background: #f3f6f9"], [style*="background: #f7f8f9"],
+[style*="background: #eef1f3"], [style*="background: #e8edf2"],
+[style*="background: #eef0f4"], [style*="background: #f7e9e6"] {
+  box-shadow: inset 0 0 0 1px var(--rule-cool, #e4e9ee);
+}
+/* the alarm tint is warm, so it takes a warm line */
+[style*="background: #f7e9e6"] { box-shadow: inset 0 0 0 1px #e0b4ac; }

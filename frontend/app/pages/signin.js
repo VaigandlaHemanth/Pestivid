@@ -13,7 +13,7 @@ const who = asField(oneByText('98765 43210', root), {
 });
 const pass = asField(oneByText('••••••••', root), {
   type: 'password', name: 'password', autocomplete: 'current-password',
-  placeholder: 'Your password or code', label: 'Your password or six number code',
+  placeholder: 'Your password', label: 'Your password',
 });
 
 // The label is a leaf div inside the filled box, and the box is what looks like
