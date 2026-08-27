@@ -68,7 +68,17 @@ for (const slug of pages) {
         }
       });
       if (an && an !== 'none' && s.animationIterationCount === 'infinite') {
-        out.loops.push(`${el.tagName.toLowerCase()} runs ${an} forever`);
+        /* An indeterminate loader is the one thing that has to loop, because
+         * looping IS its message: work is in flight and we cannot say how much
+         * is left. It starts with a fetch and is removed when the fetch
+         * resolves, so it never runs over a settled page.
+         *
+         * Scoped to [data-loader] on purpose. Without the scope this exception
+         * becomes a licence for any decorative loop, which is what the rule
+         * exists to stop. Anything looping OUTSIDE a loader is still a finding.
+         */
+        if (el.closest('[data-loader]')) out.loaderLoops = (out.loaderLoops || 0) + 1;
+        else out.loops.push(`${el.tagName.toLowerCase()} runs ${an} forever`);
       }
     }
     out.props = [...out.props];

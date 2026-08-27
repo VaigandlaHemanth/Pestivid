@@ -245,6 +245,7 @@ ${seoHead(slug)}
   <link rel="stylesheet" href="./tokens.css">
   <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
        at a design's own width. -->
+  <link rel="stylesheet" href="./loaders.css">
   <link rel="stylesheet" href="./responsive.css">
   <style>
 ${f.css.trimEnd()}

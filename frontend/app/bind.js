@@ -224,10 +224,113 @@ export function reason(err) {
 }
 
 /** Wraps a page load so a thrown error always lands somewhere visible. */
+/* A LOADER, while a fetch is in flight -------------------------------------
+ *
+ * load() handled the failure and showed nothing at all while waiting, so every
+ * page sat with the artboard's drawn example on screen until real data replaced
+ * it -- which reads as "these are your figures" for as long as the fetch takes.
+ *
+ * Two shapes, and which one is not a style choice:
+ *   working()  the pill. Work in flight with no figure to report.
+ *   writing()  the pencil. A date being WRITTEN: a video waiting for the day's
+ *              hashes to land in a Bitcoin block. The product already says
+ *              "date being written, usually by tomorrow" in words.
+ *
+ * Both are in app/loaders.css with the attribution and the reason they loop.
+ */
+const PENCIL = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="pencil pencil--sm" aria-hidden="true" focusable="false">
+  <defs><clipPath id="pv-eraser"><rect height="30" width="30" ry="5" rx="5"></rect></clipPath></defs>
+  <circle transform="rotate(-113,100,100)" stroke-linecap="round" stroke-dashoffset="439.82" stroke-dasharray="439.82 439.82" stroke-width="4" stroke="currentColor" fill="none" r="70" class="pencil__stroke"></circle>
+  <g transform="translate(100,100)" class="pencil__rotate">
+    <g fill="none">
+      <circle transform="rotate(-90)" stroke-dashoffset="402" stroke-dasharray="402.12 402.12" stroke-width="30" stroke="#016abe" r="64" class="pencil__body1"></circle>
+      <circle transform="rotate(-90)" stroke-dashoffset="465" stroke-dasharray="464.96 464.96" stroke-width="10" stroke="#0a86e0" r="74" class="pencil__body2"></circle>
+      <circle transform="rotate(-90)" stroke-dashoffset="339" stroke-dasharray="339.29 339.29" stroke-width="10" stroke="#01579b" r="54" class="pencil__body3"></circle>
+    </g>
+    <g transform="rotate(-90) translate(49,0)" class="pencil__eraser">
+      <g class="pencil__eraser-skew">
+        <rect height="30" width="30" ry="5" rx="5" fill="#a71930"></rect>
+        <rect clip-path="url(#pv-eraser)" height="30" width="5" fill="#8a1428"></rect>
+        <rect height="20" width="30" fill="#e3ddd6"></rect>
+        <rect height="20" width="15" fill="#c3bcb6"></rect>
+        <rect height="20" width="5" fill="#d3ccc5"></rect>
+      </g>
+    </g>
+    <g transform="rotate(-90) translate(49,-30)" class="pencil__point">
+      <polygon points="15 0,30 30,0 30" fill="#e8cfa6"></polygon>
+      <polygon points="15 0,6 30,0 30" fill="#c9a262"></polygon>
+      <polygon points="15 0,20 10,10 10" fill="#1d1a17"></polygon>
+    </g>
+  </g>
+</svg>`;
+
+const PILL = `<div class="loader" aria-hidden="true">
+  <span class="loader-text">working</span>
+  <span class="load"></span>
+</div>`;
+
+function loaderBox(kind, said) {
+  const box = document.createElement('div');
+  box.setAttribute('data-loader', kind);
+  // status, not alert: it is progress, and it must not interrupt a reader.
+  box.setAttribute('role', 'status');
+  box.setAttribute('aria-live', 'polite');
+  box.innerHTML = (kind === 'writing' ? PENCIL : PILL)
+    + `<div class="said">${said}</div>`;
+  return box;
+}
+
+/* Where a loader goes, without disturbing anything.
+ *
+ * Two attempts, both wrong, and the second is the instructive one:
+ *   append to the container -> it landed at the very bottom-left of the page,
+ *     past every rail card, unpadded. A message about the list you are waiting
+ *     for, a thousand pixels below the list.
+ *   prepend to the content column -> the "column" resolved to the two-column
+ *     GRID on pages whose board has no .main, so the loader became a grid item
+ *     and pushed the table into the rail's track. A loading state must never
+ *     move the layout it is loading.
+ *
+ * So it does not enter the layout at all. It is a band directly after the app
+ * bar, full width with the page's own side padding, and it cannot be anyone's
+ * grid or flex child because the bar's parent is the page's column stack.
+ */
+function loaderSlot(container) {
+  const bar = container.querySelector('.appbar, .bar, header');
+  return { parent: (bar && bar.parentElement) || container, after: bar || null };
+}
+function placeLoader(container, box) {
+  const { parent, after } = loaderSlot(container);
+  box.style.padding = '20px 28px';
+  if (after && after.parentElement === parent) after.after(box);
+  else parent.prepend(box);
+}
+
+/** The pill, while something is in flight. Returns a function that removes it. */
+export function working(container, said = 'Fetching this from the server.') {
+  if (!container) return () => {};
+  const box = loaderBox('working', said);
+  placeLoader(container, box);
+  return () => box.remove();
+}
+
+/** The pencil, for a date being written into a block. */
+export function writing(container, said = 'The date is being written. Usually by tomorrow.') {
+  if (!container) return () => {};
+  const box = loaderBox('writing', said);
+  placeLoader(container, box);
+  return () => box.remove();
+}
+
 export async function load(container, fn) {
+  // A loader only appears if the work outlasts a beat. Showing one for a fetch
+  // that resolves in 80ms is a flash of noise, so it waits 220ms first.
+  let stop = () => {};
+  const timer = setTimeout(() => { stop = working(container); }, 220);
   try {
     await fn();
   } catch (err) {
+    clearTimeout(timer); stop();
     console.error(err);
     const [h, d] = reason(err);
 
@@ -256,6 +359,10 @@ export async function load(container, fn) {
     state(box, err?.rateLimited ? 'waiting' : 'failed', h, d);
     // Put the reader at the message rather than wherever they happened to be.
     box.scrollIntoView({ block: 'center' });
+  } finally {
+    // Both paths: a loader that outlives its fetch is a page that looks stuck.
+    clearTimeout(timer);
+    stop();
   }
 }
 

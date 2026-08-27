@@ -22,7 +22,7 @@
 //
 // 4. The first step's tick was --proved green. See the board comment.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind } from '../bind.js';
+import { bind, writing } from '../bind.js';
 import { sendVideo } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { acts, press } from '../wire.js';
@@ -169,6 +169,12 @@ if (ctx) {
         bind(root, { clip: { line: hashed
           ? 'Stored, and we hashed it ourselves'
           : 'Stored, but the hash is unverified' } });
+        // The third step has not happened and will not for hours: the day's
+        // hashes go into one Bitcoin block. This is the one place in the product
+        // where the wait IS the subject, so the pencil says so rather than a
+        // sentence sitting still. It stays until the farmer leaves the screen.
+        writing(root, 'Sent. The date is being written into a Bitcoin block '
+          + 'with the rest of today’s, usually by tomorrow. You can close this.');
       } catch (err) {
         send.textContent = label;
         state(warn || root, err.offline ? 'waiting' : 'failed',

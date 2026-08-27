@@ -1,0 +1,186 @@
+/* ════ TWO LOADERS ══════════════════════════════════════════════════════════
+ *
+ * Chosen by the owner from uiverse.io. Both MIT; the CSS is verbatim apart from
+ * colour, which is ours, and two changes noted at the point they are made.
+ *
+ *   .pencil  "Loader" by gustavofusco  — uiverse.io/gustavofusco/rare-pug-90
+ *   .load    "Loader" by alexruix      — uiverse.io/alexruix/big-octopus-60
+ *
+ * WHY THESE LOOP, when nothing else in this product does.
+ * ------------------------------------------------------
+ * The motion rule here is "nothing loops", and it was written against
+ * decorative infinite micro-animation: a card that breathes, a dot that pulses
+ * forever, motion that says nothing and costs a compositor pass to say it.
+ *
+ * An indeterminate loader is the one thing that has to loop, because looping IS
+ * its message: work is still in flight and we cannot say how much is left. It
+ * starts when a fetch starts and it is removed when the fetch resolves, so it
+ * never runs over a settled page. verify-motion allows a loop only inside
+ * [data-loader] for exactly this reason.
+ *
+ * WHICH ONE, WHERE
+ * ----------------
+ *   the pencil  a date being WRITTEN. This product's own words are "date being
+ *               written, usually by tomorrow" -- a video waiting for the day's
+ *               hashes to land in a Bitcoin block. A pencil drawing a circle is
+ *               that sentence, so it belongs to that state and to no other.
+ *   the pill    work in flight with no figure to report: a page fetching, the
+ *               chatbot reading, a file going to storage. It says "still going"
+ *               and claims no progress it cannot measure.
+ */
+
+/* ── the pencil: a date being written ─────────────────────────────────────── */
+
+.pencil { display: block; width: 10em; height: 10em; color: var(--ink, #1d1a17); }
+.pencil--sm { width: 3.2em; height: 3.2em; }
+.pencil--xs { width: 2.2em; height: 2.2em; }
+
+.pencil__body1, .pencil__body2, .pencil__body3,
+.pencil__eraser, .pencil__eraser-skew, .pencil__point,
+.pencil__rotate, .pencil__stroke {
+  animation-duration: 3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.pencil__body1, .pencil__body2, .pencil__body3 { transform: rotate(-90deg); }
+.pencil__body1 { animation-name: pencilBody1; }
+.pencil__body2 { animation-name: pencilBody2; }
+.pencil__body3 { animation-name: pencilBody3; }
+.pencil__eraser { animation-name: pencilEraser; transform: rotate(-90deg) translate(49px, 0); }
+.pencil__eraser-skew { animation-name: pencilEraserSkew; animation-timing-function: ease-in-out; }
+.pencil__point { animation-name: pencilPoint; transform: rotate(-90deg) translate(49px, -30px); }
+.pencil__rotate { animation-name: pencilRotate; }
+.pencil__stroke { animation-name: pencilStroke; transform: translate(100px, 100px) rotate(-113deg); }
+
+@keyframes pencilBody1 {
+  from, to { stroke-dashoffset: 351.86; transform: rotate(-90deg); }
+  50% { stroke-dashoffset: 150.8; transform: rotate(-225deg); }
+}
+@keyframes pencilBody2 {
+  from, to { stroke-dashoffset: 406.84; transform: rotate(-90deg); }
+  50% { stroke-dashoffset: 174.36; transform: rotate(-225deg); }
+}
+@keyframes pencilBody3 {
+  from, to { stroke-dashoffset: 296.88; transform: rotate(-90deg); }
+  50% { stroke-dashoffset: 127.23; transform: rotate(-225deg); }
+}
+@keyframes pencilEraser {
+  from, to { transform: rotate(-45deg) translate(49px, 0); }
+  50% { transform: rotate(0deg) translate(49px, 0); }
+}
+@keyframes pencilEraserSkew {
+  from, 32.5%, 67.5%, to { transform: skewX(0); }
+  35%, 65% { transform: skewX(-4deg); }
+  37.5%, 62.5% { transform: skewX(8deg); }
+  40%, 45%, 50%, 55%, 60% { transform: skewX(-15deg); }
+  42.5%, 47.5%, 52.5%, 57.5% { transform: skewX(15deg); }
+}
+@keyframes pencilPoint {
+  from, to { transform: rotate(-90deg) translate(49px, -30px); }
+  50% { transform: rotate(-225deg) translate(49px, -30px); }
+}
+@keyframes pencilRotate {
+  from { transform: translate(100px, 100px) rotate(0); }
+  to { transform: translate(100px, 100px) rotate(720deg); }
+}
+@keyframes pencilStroke {
+  from { stroke-dashoffset: 439.82; transform: translate(100px, 100px) rotate(-113deg); }
+  50% { stroke-dashoffset: 164.93; transform: translate(100px, 100px) rotate(-113deg); }
+  75%, to { stroke-dashoffset: 439.82; transform: translate(100px, 100px) rotate(112deg); }
+}
+
+/* ── the pill: work in flight, no figure to report ────────────────────────── */
+
+.loader { width: 80px; height: 42px; position: relative; }
+
+.loader-text {
+  position: absolute;
+  top: 0;
+  padding: 0;
+  margin: 0;
+  color: var(--ink-2, #4a443d);
+  animation: loadText 3.5s ease both infinite;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+/* CHANGED FROM THE ORIGINAL, and this is the reason.
+ *
+ * The original animates `width` from 16px to 100%. Animating width runs layout
+ * on every frame, which is the one thing the performance rule in this repo
+ * forbids -- and it is avoidable here, because a stretching pill is exactly what
+ * scaleX describes. The pill is drawn at full width and squeezed down instead,
+ * with the transform origin on the left so it grows the way the original did.
+ * Same motion, no layout. */
+.load {
+  background-color: var(--action, #016abe);
+  border-radius: 50px;
+  display: block;
+  height: 14px;
+  width: 80px;
+  bottom: 0;
+  position: absolute;
+  transform-origin: 0 50%;
+  animation: loadPill 3.5s ease both infinite;
+}
+.load::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  background-color: var(--link, #01579b);
+  border-radius: inherit;
+  transform-origin: 0 50%;
+  animation: loadPillInner 3.5s ease both infinite;
+}
+
+@keyframes loadText {
+  0%   { letter-spacing: 0.02em; transform: translateX(0); }
+  40%  { letter-spacing: 0.06em; transform: translateX(26px); }
+  80%  { letter-spacing: 0.02em; transform: translateX(32px); }
+  90%  { letter-spacing: 0.06em; transform: translateX(0); }
+  100% { letter-spacing: 0.02em; transform: translateX(0); }
+}
+@keyframes loadPill {
+  0%   { transform: scaleX(0.2) translateX(0); }
+  40%  { transform: scaleX(1) translateX(0); }
+  80%  { transform: scaleX(0.2) translateX(320px); }
+  90%  { transform: scaleX(1) translateX(0); }
+  100% { transform: scaleX(0.2) translateX(0); }
+}
+@keyframes loadPillInner {
+  0%   { transform: scaleX(1) translateX(0); }
+  40%  { transform: scaleX(0.8) translateX(0); }
+  80%  { transform: scaleX(1) translateX(0); }
+  90%  { transform: scaleX(0.8) translateX(15px); }
+  100% { transform: scaleX(1) translateX(0); }
+}
+
+/* ── where a loader sits ──────────────────────────────────────────────────── */
+
+[data-loader] {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 26px 0;
+}
+[data-loader] .said {
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--ink-2, #4a443d);
+  max-width: 46ch;
+}
+
+/* ── reduced motion ───────────────────────────────────────────────────────── */
+
+/* A spinner is the one case where dropping the travel leaves nothing behind, so
+ * the animation stops and the WORDS carry the message instead. The pencil is
+ * hidden rather than frozen: a still pencil next to "still going" reads as a
+ * picture of a pencil, not as a state. */
+@media (prefers-reduced-motion: reduce) {
+  .pencil { display: none; }
+  .pencil__body1, .pencil__body2, .pencil__body3, .pencil__eraser,
+  .pencil__eraser-skew, .pencil__point, .pencil__rotate, .pencil__stroke,
+  .loader-text, .load, .load::before { animation: none !important; }
+  .load { transform: scaleX(1); }
+  [data-loader] .said::after { content: " Still going."; }
+}
