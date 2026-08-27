@@ -58,6 +58,141 @@
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* ── FILING A RECORD ──────────────────────────────────────────────
+ *
+ * "Button" by Nawsome, uiverse.io/Nawsome/unlucky-mayfly-5 (MIT). His geometry
+ * and his staging, verbatim; the colours are ours and the class names are
+ * prefixed so they cannot collide with a board's own.
+ *
+ * On ONE control: "Send these numbers" on report-harvest. That is the only
+ * irreversible action in the product -- it decides what every investor in a
+ * season is paid, and it cannot be taken back -- and what it does is FILE A
+ * RECORD. So the folder opens, a pencil comes across, and a sheet lifts.
+ *
+ * It is a staged sequence rather than a fade because that is what the owner
+ * asked for and it is what the moment deserves: four elements, each with its own
+ * delay, driven by custom properties on hover. Transform only, no loop, and it
+ * runs once per hover on a control somebody reaches maybe twice a season.
+ */
+.filing {
+  --f-well: #01579b;
+  --f-folder: #e8cfa6;
+  --f-folder-in: #c9a262;
+  --f-paper: #f6f3ef;
+  --f-paper-lines: #b9b1a9;
+  --f-paper-behind: #e3ddd6;
+  --f-pencil-cap: #f6f3ef;
+  --f-pencil-top: #1d1a17;
+  --f-pencil-mid: #f6f3ef;
+  --f-pencil-bot: #605a53;
+  --f-shadow: rgba(29, 26, 23, .22);
+  position: relative;
+  padding-left: 69px;
+  padding-right: 29px;
+}
+
+.filing__well {
+  top: 0; left: 0; bottom: 0;
+  width: 53px;
+  position: absolute;
+  overflow: hidden;
+  border-radius: var(--r-control, 8px) 0 0 var(--r-control, 8px);
+  background: var(--f-well);
+}
+.filing__folder { width: 23px; height: 27px; position: absolute; left: 15px; top: 50%; margin-top: -13px; }
+.filing__top {
+  left: 0; top: 0; z-index: 2; position: absolute;
+  transform: translateX(var(--fx, 0));
+  transition: transform .4s ease var(--fd, .3s);
+}
+.filing__top svg {
+  width: 24px; height: 27px; display: block;
+  fill: var(--f-folder);
+  transform-origin: 0 50%;
+  transition: transform .3s ease var(--fds, .45s);
+  transform: perspective(120px) rotateY(var(--fr, 0deg));
+}
+.filing__folder::before, .filing__folder::after, .filing__paper {
+  content: "";
+  position: absolute;
+  left: var(--l, 0); top: var(--t, 0);
+  width: var(--w, 100%); height: var(--h, 100%);
+  border-radius: 1px;
+  background: var(--b, var(--f-folder-in));
+}
+.filing__folder::before {
+  box-shadow: 0 1.5px 3px var(--f-shadow), 0 2.5px 5px var(--f-shadow), 0 3.5px 7px var(--f-shadow);
+  transform: translateX(var(--fx, 0));
+  transition: transform .4s ease var(--fd, .3s);
+}
+.filing__folder::after, .filing__paper {
+  --l: 1px; --t: 1px; --w: 21px; --h: 25px; --b: var(--f-paper-behind);
+}
+.filing__folder::after {
+  transform: translate(var(--pbx, 0), var(--pby, 0));
+  transition: transform .4s ease var(--pbd, 0s);
+}
+.filing__paper { z-index: 1; --b: var(--f-paper); }
+.filing__paper::before, .filing__paper::after {
+  content: "";
+  width: var(--wp, 14px); height: 2px;
+  border-radius: 1px;
+  transform: scaleY(.5);
+  left: 3px; top: var(--tp, 3px);
+  position: absolute;
+  background: var(--f-paper-lines);
+  box-shadow: 0 12px 0 0 var(--f-paper-lines), 0 24px 0 0 var(--f-paper-lines);
+}
+.filing__paper::after { --tp: 6px; --wp: 10px; }
+.filing__pencil {
+  height: 2px; width: 3px;
+  border-radius: 1px 1px 0 0;
+  top: 50%; margin-top: -18px;
+  left: 105%;
+  position: absolute;
+  z-index: 3;
+  transform-origin: 50% 19px;
+  background: var(--f-pencil-cap);
+  transform: translateX(var(--pex, 0)) rotate(35deg);
+  transition: transform .4s ease var(--pbd, 0s);
+}
+.filing__pencil::before, .filing__pencil::after {
+  content: "";
+  position: absolute;
+  display: block;
+  background: var(--b, linear-gradient(var(--f-pencil-top) 55%, var(--f-pencil-mid) 55.1%,
+              var(--f-pencil-mid) 60%, var(--f-pencil-bot) 60.1%));
+  width: var(--w, 5px); height: var(--h, 20px);
+  border-radius: var(--br, 2px 2px 0 0);
+  top: var(--t, 2px); left: var(--l, -1px);
+}
+.filing__pencil::before { clip-path: polygon(0 5%, 5px 5%, 5px 17px, 50% 20px, 0 17px); }
+.filing__pencil::after {
+  --b: none; --w: 3px; --h: 6px; --br: 0 2px 1px 0; --t: 3px; --l: 3px;
+  border-top: 1px solid var(--f-pencil-top);
+  border-right: 1px solid var(--f-pencil-top);
+}
+
+/* The staging. Each delay is Nawsome's; they are what make it a sequence rather
+   than four things moving at once. Keyboard focus gets it too, or the animation
+   only exists for people using a mouse. */
+@media (hover: hover) and (pointer: fine) {
+  .filing:hover { --fx: -40px; --fr: -60deg; --fd: .15s; --fds: 0s;
+                  --pbx: 3px; --pby: -3px; --pbd: .15s; --pex: -24px; }
+}
+.filing:focus-visible { --fx: -40px; --fr: -60deg; --fd: .15s; --fds: 0s;
+                        --pbx: 3px; --pby: -3px; --pbd: .15s; --pex: -24px; }
+
+/* The torn edge is for a plain primary. This one has its own choreography, and
+   both at once is two ideas fighting over one button. */
+.filing::after { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .filing__top, .filing__top svg, .filing__folder::before,
+  .filing__folder::after, .filing__pencil { transition: none !important; }
+}
+
   </style>
 </helmet>
 
@@ -246,7 +381,20 @@
       </div>
       <div class="rail">
 <div style="background: #f6f3ef; padding: 14px 20px 18px;">
-        <div style="background: #016abe; height: 60px; display: flex; align-items: center; justify-content: center;">
+        <!-- The one irreversible action in the product, so it gets the one
+             piece of choreography: a folder opens, a pencil comes across, a
+             sheet lifts. You are filing a record. Markup and CSS from
+             uiverse.io/Nawsome/unlucky-mayfly-5 (MIT); see tokens.css. -->
+        <div data-file-it class="filing" style="background: #016abe; min-height: 60px; display: flex; align-items: center; justify-content: center;">
+          <div class="filing__well" aria-hidden="true">
+            <div class="filing__pencil"></div>
+            <div class="filing__folder">
+              <div class="filing__top">
+                <svg viewBox="0 0 24 27"><path d="M1,0 L23,0 C23.5522847,-1.01453063e-16 24,0.44771525 24,1 L24,8.17157288 C24,8.70200585 23.7892863,9.21071368 23.4142136,9.58578644 L20.5857864,12.4142136 C20.2107137,12.7892863 20,13.2979941 20,13.8284271 L20,26 C20,26.5522847 19.5522847,27 19,27 L1,27 C0.44771525,27 6.76353751e-17,26.5522847 0,26 L0,1 C-6.76353751e-17,0.44771525 0.44771525,1.01453063e-16 1,0 Z"></path></svg>
+              </div>
+              <div class="filing__paper"></div>
+            </div>
+          </div>
           <div style="font-size: 18px; font-weight: 700; color: #fff;">Send these numbers</div>
         </div>
         <div style="font-size: 13.5px; line-height: 1.45; margin-top: 9px; color: #605a53;">
