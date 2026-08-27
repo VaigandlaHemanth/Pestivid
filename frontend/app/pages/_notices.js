@@ -92,7 +92,9 @@ export function notices(slug, kind) {
         body: t.lastMessageSnippet || '',
         when: whenShort(t.lastMessageTimestamp),
         unread: Boolean(t.unread || t.unreadCount),
-        go: `thread.html?c=${t._id}`,
+        // The slug, not the filename: wire.js turns `thread?c=1` into
+        // `./thread.html?c=1`. Passing `thread.html?c=1` made it thread.html.html.
+        go: `thread?c=${t._id}`,
       }));
     } else {
       items = (notes || []).map(n => ({

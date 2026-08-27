@@ -58,6 +58,13 @@ if (ctx) load(ctx.root, async () => {
     if (failBox) {
       failBox.style.background = failed ? '#1d1a17' : 'transparent';
       failBox.style.boxShadow = failed ? 'inset 0 0 0 2px #1d1a17' : 'inset 0 0 0 2px #78716a';
+      // A filled square with nothing in it does not read as "ticked" -- the same
+      // thing the create-account box was fixed for, and this one still had it.
+      failBox.innerHTML = failed
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff"'
+          + ' stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"'
+          + ' style="display: block; margin: 3px" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>'
+        : '';
     }
     failRow?.setAttribute('aria-checked', String(failed));
     // With nothing sold there is nothing to type, so the boxes stop asking.
