@@ -11,7 +11,7 @@
 // an investor can check without trusting the farmer. The settlement choice is
 // last and alone: it is the one question on which a farmer can lose their land.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, repeat } from '../bind.js';
+import { bind, repeat, showPoster } from '../bind.js';
 import { rupees, whenShort, dateState } from '../api.js';
 import { asField, press } from '../wire.js';
 
@@ -103,6 +103,8 @@ if (ctx) load(ctx.root, async () => {
         ready: usable, proved: s.kind === 'proved', v,
       };
     }), (el, r) => {
+      // One real frame in the thumbnail, when the server could cut one.
+      showPoster(el.querySelector('[data-thumb]'), r.v);
       // repeat() clones the FIRST drawn row as its template, and that row was
       // drawn selected -- so every video arrived wearing the 2px ring and all
       // four looked chosen before anything was tapped.

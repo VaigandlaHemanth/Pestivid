@@ -415,6 +415,78 @@ export const oneByText = (text, root = document) => byText(text, root)[0] || nul
  * This takes the first match as the template, removes the rest of the matches,
  * and inserts the clones where the first one stood.
  */
+/* ════ ONE FRAME IN A THUMBNAIL ════════════════════════════════════════════
+ *
+ * Every list of videos drew a dark rectangle with a play glyph in it. That is an
+ * honest placeholder and it is not a thumbnail: five identical grey boxes tell a
+ * farmer nothing about which clip is which.
+ *
+ * The frame comes from the server, cut from the bytes the server itself fetched
+ * back and hashed -- see backend/services/videoPoster.js for why the browser is
+ * not allowed to supply it. Here it is only painted.
+ *
+ * The placeholder STAYS underneath rather than being replaced, so a video with
+ * no poster -- anything uploaded before this existed, or a seeded row whose CID
+ * points at nothing -- looks exactly as it did, and a slow image cannot leave an
+ * empty white box behind it.
+ */
+export function showPoster(el, video) {
+  if (!el || !video?.poster || el.querySelector('[data-poster]')) return null;
+  const cs = getComputedStyle(el);
+  if (cs.position === 'static') el.style.position = 'relative';
+  if (cs.overflow === 'visible') el.style.overflow = 'hidden';
+  const img = document.createElement('img');
+  img.setAttribute('data-poster', '');
+  // Decorative: the row already names the crop and the date in text, so a
+  // screen reader repeating it as alt text would say everything twice.
+  img.alt = '';
+  img.setAttribute('aria-hidden', 'true');
+  img.decoding = 'async';
+  img.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%;'
+    + ' object-fit: cover; display: block; opacity: 0;'
+    + ' transition: opacity var(--t-press, 120ms) var(--e-smooth, ease);';
+  // It fades in over the placeholder rather than snapping, and if it fails to
+  // decode it removes itself and the placeholder is simply still there.
+  img.addEventListener('load', () => { img.style.opacity = '1'; });
+  img.addEventListener('error', () => img.remove());
+  img.src = video.poster;
+  // FIRST child: the duration, the play glyph and the inner rule are drawn after
+  // it in the board and have to stay on top.
+  el.prepend(img);
+  el.dataset.hasposter = '';
+
+  /* Everything drawn on top was designed for a FLAT #37322d and has to survive a
+   * photograph instead. Uncorrected, the duration sat as #ddd7d1 on whatever the
+   * frame happened to be and vanished over anything pale.
+   */
+  for (const kid of el.children) {
+    // The placeholder's inset rule: it gave an empty box some shape, and over a
+    // real frame it is a rectangle drawn on a picture.
+    if (kid !== img && /border:\s*1px solid/.test(kid.getAttribute('style') || '')) {
+      kid.style.display = 'none';
+    }
+  }
+  const dur = el.querySelector('[data-dur], .dur');
+  if (dur) {
+    // A scrim, the way every video player does it, rather than hoping the frame
+    // is dark where the number is.
+    dur.style.background = 'rgba(29, 26, 23, .74)';
+    dur.style.color = '#f6f3ef';
+    dur.style.padding = '1px 5px';
+    dur.style.borderRadius = '3px';
+  }
+  // The play mark says "this is a video and it plays". Over a frame it needs its
+  // own edge, not a mid-grey stroke.
+  for (const svg of el.querySelectorAll('svg')) {
+    svg.setAttribute('stroke', '#f6f3ef');
+    svg.style.filter = 'drop-shadow(0 1px 2px rgba(29, 26, 23, .7))';
+    for (const path of svg.querySelectorAll('[fill]:not([fill="none"])')) {
+      path.setAttribute('fill', '#f6f3ef');
+    }
+  }
+  return img;
+}
+
 export function repeatRows(root, selector, rows, decorate) {
   const found = [...root.querySelectorAll(selector)];
   if (!found.length) return null;

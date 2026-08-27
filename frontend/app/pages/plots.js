@@ -5,7 +5,7 @@
 // also repeated one long status sentence on every row, which turns a list of
 // four videos into a wall of the same blue paragraph four times.
 import { requireUser, api, load, state } from './_guard.js';
-import { repeatRows, bind } from '../bind.js';
+import { repeatRows, bind, showPoster } from '../bind.js';
 import { whenShort, dateState } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { goes, press } from '../wire.js';
@@ -71,6 +71,8 @@ if (ctx) {
       // every row went on showing the artboard's 0:41.
       const dur = el.querySelector('[data-dur]');
       if (dur) { if (row.dur) dur.textContent = row.dur; else dur.remove(); }
+      // One real frame in the tile, when the server could cut one.
+      showPoster(el.querySelector('[data-tile]'), row.v);
       const len = el.querySelector('[data-len]');
       if (len) {
         if (row.v.durationSeconds) len.textContent = `${Math.round(row.v.durationSeconds)} sec`;

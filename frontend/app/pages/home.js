@@ -5,7 +5,7 @@
 // icons, the harvest button, the speak button -- and not one of them was wired.
 // Binding data is not the same as building a page.
 import { requireUser, api, load, state as stateBox } from './_guard.js';
-import { bind, oneByText, rows as fillRows, slot } from '../bind.js';
+import { bind, oneByText, rows as fillRows, slot, showPoster } from '../bind.js';
 import { press, goes } from '../wire.js';
 import { rupees, whenShort, dateState } from '../api.js';
 
@@ -127,13 +127,14 @@ if (ctx) {
           // of a list says the same eleven words four times over, and wraps to
           // two lines doing it. The explanation belongs once, above the list.
           state: s.short || s.text,
-          _kind: s.kind, _name: v.crop || v.location || 'Plot',
+          _kind: s.kind, _name: v.crop || v.location || 'Plot', _v: v,
         };
       }), (el, r) => {
         // green is a fact anybody can check without us, and only a landed
         // block is one
         const st = slot(el, 'state');
         if (st) st.style.color = r._kind === 'proved' ? '#006934' : '#4a443d';
+        showPoster(el.querySelector('.thumb'), r._v);
         goes(el, `plot?name=${encodeURIComponent(r._name)}`, `${r._name}, filed ${r.filed}`);
       });
     }

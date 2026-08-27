@@ -16,6 +16,7 @@ const FundingRequest = mongoose.model('FundingRequest'); // Get FundingRequest m
 const { authenticateToken } = require('./auth'); // Import the authentication middleware
 const ipfs = require('../services/ipfsUpload'); // Server-side pinning + hashing
 const provenanceSvc = require('../services/provenance'); // Recycle/theft detection
+const posterSvc = require('../services/videoPoster'); // one frame, for the lists
 const anchorSvc = require('../services/anchor'); // Merkle log + Bitcoin timestamping
 const limits = require('../middleware/rateLimits'); // upload + public-read ceilings
 
@@ -93,6 +94,11 @@ router.get('/', authenticateToken, async (req, res) => {
         // Find video documents based on the filter
         // Populate the farmerWallet field to get the farmer's name (and other public profile info if selected)
         const videos = await Video.find(filter)
+                                  // poster is select:false on the model so it can
+                                  // never be dragged into a query that did not
+                                  // want 8-40 KB per row. These lists draw
+                                  // thumbnails, so these lists ask for it.
+                                  .select('+poster')
                                   .populate('farmerWallet', 'name role displayIdentifier') // Populate farmer's _id, name, role, displayIdentifier
                                   .sort({ uploadTimestamp: -1 }); // Sort by newest upload first
 
@@ -113,6 +119,10 @@ router.get('/', authenticateToken, async (req, res) => {
                  pesticideCompany: video.pesticideCompany,
                  purpose: video.purpose,
                  uploadTimestamp: video.uploadTimestamp ? video.uploadTimestamp.toISOString() : null,
+                 // One frame, so a list of videos looks like a list of videos
+                 // rather than five identical grey rectangles. Null until the
+                 // clip was uploaded through a server that could cut one.
+                 poster: video.poster || null,
              };
              if (!ownScope) return base;
 
@@ -160,6 +170,7 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
         // Find video documents for the specified farmer
         // Populate farmerWallet to get farmer details if needed (though we just verified the ID matches req.user._id)
         const videos = await Video.find({ farmerWallet: farmerId })
+                                  .select('+poster')
                                   .populate('farmerWallet', 'name role displayIdentifier') // Populate farmer's _id, name, role
                                   .sort({ uploadTimestamp: -1 }); // Sort by newest upload first
 
@@ -182,6 +193,7 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
              pesticideCompany: video.pesticideCompany,
              purpose: video.purpose,
              uploadTimestamp: video.uploadTimestamp ? video.uploadTimestamp.toISOString() : null, // Send timestamp as ISO string
+             poster: video.poster || null,
 
              // A farmer's own list has to carry the two facts that decide
              // whether a video can back a funding request, or the app cannot
@@ -794,10 +806,26 @@ router.post('/confirm-upload', authenticateToken, limits.uploadLimiter, async (r
             analysis.provenance.flags = ['analysis_error'];
         }
 
+        /* One frame, from the same temp file the hash came from.
+         *
+         * Deliberately after the hash and the provenance analysis, and
+         * deliberately unable to fail the request: the bytes are already in
+         * storage by this point, so a missing thumbnail must never turn a
+         * completed upload into an error. posterDataUri returns null rather
+         * than throwing, and null is just the grey placeholder the lists have
+         * always drawn. */
+        let poster = null;
+        try {
+            poster = await posterSvc.posterDataUri(tmp);
+        } catch (e) {
+            console.warn('Poster extraction failed, continuing:', e.message);
+        }
+
         const savedVideo = await new Video({
             cid,
             storageType: 'ipfs',
             videoFileHash,
+            poster: poster || undefined,
             hashComputedBy: 'server',
             fingerprint: analysis.fingerprint,
             provenance: analysis.provenance,

@@ -7,7 +7,7 @@
 // nothing behind it and "Ready to harvest" was a static claim printed on every
 // plot -- on the same screen that ends "Nobody has visited this field."
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, repeatRows } from '../bind.js';
+import { bind, repeatRows, showPoster } from '../bind.js';
 import { whenShort, dateState, rupees } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { goes, press } from '../wire.js';
@@ -69,6 +69,8 @@ if (ctx) {
       return { v, when: whenShort(v.uploadTimestamp), short: s.short || s.text, kind: s.kind };
     }), (el, r) => {
       const m = el.querySelector('.m'); if (m) m.textContent = r.when;
+      // One real frame in the thumbnail, when the server could cut one.
+      showPoster(el.querySelector('.pthumb'), r.v);
       const dur = el.querySelector('.dur');
       // The chip shows a real duration or none. The artboard's 0:41 repeated on
       // every row is one invented number printed three times.
