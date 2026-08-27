@@ -17,10 +17,41 @@ const TICK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke
  * @returns { at(i, pct, note), fail(i, why), done() }
  */
 export function multiStep(into, steps) {
-  if (!into) return { at() {}, fail() {}, done() {} };
+  if (!into) return { at() {}, fail() {}, done() {}, retire() {}, bare() {} };
+
+  // What the host was DRAWN as, kept so it can be handed back untouched.
+  const drawn = into.getAttribute('style') || '';
 
   into.replaceChildren();
-  into.style.cssText = 'background: #f6f3ef; padding: 16px 17px; margin: 16px 20px;';
+  /* Paint, and only paint.
+   *
+   * This line was `into.style.cssText = 'background: ...; padding: ...; margin:
+   * ...'`, and cssText is a REPLACEMENT: it wiped the host's own drawn style. On
+   * the leaf checker that host is drawn
+   *
+   *     position: absolute; left: 20px; right: 20px; bottom: 44px
+   *
+   * pinned inside the viewfinder. Losing it turned the panel into a static block
+   * at the top of the plate, where the photograph -- absolutely positioned, and
+   * so painted above anything that is not -- covered it. Every line of the
+   * panel's own text ran behind the image: "173 MB, once. It never downloads on
+   * its o…" was the last a farmer could read of it, on the screen that exists to
+   * explain a 173 MB download.
+   *
+   * Three properties are three properties. */
+  into.style.background = '#f6f3ef';
+  into.style.padding = '16px 17px';
+  /* The side margin is for a host with no geometry of its own -- it lines the
+   * panel up with padded content around it. A host its own drawing positioned
+   * has an inset already, and must not be shoved off it by a second one.
+   *
+   * The test is what the DRAWING says, not what getComputedStyle reports. On a
+   * phone a stylesheet lays this panel out in the flow under the photo, so the
+   * computed position is `static` there -- and asking the computed value wrote an
+   * inline `margin: 16px 20px` which then outranked the stylesheet's own margin
+   * and put the panel back on top of the photo. The question being asked is "did
+   * its drawing give it geometry", and only the drawing can answer that. */
+  if (!/position:\s*(absolute|fixed|relative)/.test(drawn)) into.style.margin = '16px 20px';
   const rows = steps.map((s, i) => {
     const row = document.createElement('div');
     row.style.cssText = 'display: flex; gap: 12px; align-items: flex-start;'
@@ -98,6 +129,26 @@ export function multiStep(into, steps) {
     },
     done() {
       for (let n = 0; n < rows.length; n++) settle(n, 'done');
+    },
+    /** Hand the host back exactly as it was drawn, keeping what is in it now. */
+    bare() {
+      into.setAttribute('style', drawn);
+    },
+    /* The download is history the moment there is an answer on screen.
+     *
+     * Nothing retired this, so a finished checklist -- four ticks and "173 MB,
+     * once" -- stayed sitting on the verdict screen for as long as the farmer
+     * read their diagnosis, and collided with the filename plate that arrives
+     * with it. Opacity only, then the host goes back to being the empty drawn
+     * div it started as. */
+    retire() {
+      into.style.transition = 'opacity var(--t-snappy, 568ms) var(--e-snappy, ease)';
+      into.style.opacity = '0';
+      const gone = () => { into.replaceChildren(); into.setAttribute('style', drawn); };
+      into.addEventListener('transitionend', gone, { once: true });
+      // transitionend never arrives under reduced motion, which suppresses the
+      // transition outright.
+      setTimeout(gone, 900);
     },
   };
 }

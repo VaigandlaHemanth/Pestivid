@@ -208,3 +208,115 @@
   .load { transform: scaleX(1); }
   [data-loader] .said::after { content: " Still going."; }
 }
+
+/* ════ THE LEAF CHECKER'S PLATE, WHILE THE CHECKER IS COMING ════════════════
+ *
+ * Two things have to be legible at once for the minutes this takes: the photo
+ * the farmer just picked, and the four named steps of a 173 MB download.
+ *
+ * They were stacked. The photo is positioned across the whole plate, so it
+ * painted over the progress panel and left it unreadable -- and even with the
+ * panel back on top (see steps.js) it would have covered the leaf, which is the
+ * one thing a farmer wants confirmed before waiting minutes on a prepaid pack.
+ *
+ * There is no shortage of room. A portrait photograph contained in a landscape
+ * plate leaves two wide dark bars doing nothing, so the panel goes in one of
+ * them: photo left, steps right, neither on top of the other.
+ *
+ * BOTH STAY OUT OF FLOW. The first version of this made the plate a flex row --
+ * and an <img> flex item with height:auto takes its INTRINSIC size, so a
+ * 1080x1440 phone photo dragged the plate from 430px to 1476px and pushed the
+ * page 781px past the fold. Absolute children cannot resize their container, so
+ * the plate is exactly as tall while it works as it was before, and there is no
+ * jump at the moment a photo is picked.
+ *
+ * Only the runtime matches any of this: [data-shotimg] is created by _leaf.js
+ * when a photo is picked and [data-loading] is set on the plate for as long as
+ * the checker is working, so the drawn page never sees it and verify-layout
+ * still compares the board against a page that matches it.
+ */
+[data-shotimg] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* contain, not cover: the whole leaf is what is being judged, and a portrait
+     photo in a landscape plate loses its ends to a crop. */
+  object-fit: contain;
+}
+
+/* Sized, not inset.
+ *
+ * `inset: 18px 394px 18px 18px; width: auto` looks like it should work and does
+ * not: for an absolutely positioned REPLACED element, `width: auto` resolves to
+ * the INTRINSIC width (CSS 2.1 10.3.8) and `right` is then over-constrained and
+ * dropped. The photo sat at the right offset in its top-left corner and kept its
+ * full 1080x1440, spilling across the panel exactly as before. An <img> has to
+ * be given a width.
+ *
+ * 412px = the 18px left inset, the 356px panel, its 20px right inset, and 18px
+ * of air between the two. 36px = the 18px top and bottom insets. */
+[data-plate][data-loading] > [data-shotimg] {
+  top: 18px;
+  left: 18px;
+  right: auto;
+  bottom: auto;
+  width: calc(100% - 412px);
+  height: calc(100% - 36px);
+}
+/* The panel is drawn `left: 20px; right: 20px; bottom: 44px`, inline. Only the
+   left edge has to move, and !important is load-bearing: an inline declaration
+   outranks any stylesheet, which is the collision that has cost a fix four
+   times in this codebase already. */
+[data-plate][data-loading] > [data-loadhold] {
+  left: auto !important;
+  width: 356px;
+  /* border-box, or the 356 is a CONTENT width and the panel's own 17px padding
+     sits outside it -- 390px on screen against a photo sized for 356, which put
+     the photo's edge one pixel from the first letter of the panel's text. */
+  box-sizing: border-box;
+  /* Level with the photo it stands beside. The drawn `bottom: 44px` pins it to
+     the viewfinder's lower edge, which is right when it is lying OVER a capture
+     surface and wrong when it is one of two columns: on a plate that fills the
+     window it sat two thirds of the way down, against a photo centred in the
+     other half. */
+  top: 50%;
+  bottom: auto !important;
+  transform: translateY(-50%);
+}
+
+/* A narrow plate has no second column to give away, so the two stack: photo
+   above, steps below. The panel goes back INTO the flow here, with a top margin
+   that clears the photo, because a plate with `overflow: hidden` would otherwise
+   crop a panel taller than its 430px -- and on a phone the same four steps wrap
+   to well over that. In the flow, the plate grows to hold them instead.
+
+   759, not the app's usual 900: this boundary is not about phones, it is about
+   whether the plate is wide enough to hold two columns. The panel wants 356px and
+   a photo wants a few hundred, so the answer is a plate over roughly 630px --
+   and a single-column page gives the plate the window less 56px. At 820px the
+   plate is 764px wide and the stacked rule set those four short steps across
+   732px of line, which is nobody's idea of a column. 760px is a width this
+   stylesheet already turns at. */
+@media (max-width: 759px) {
+  [data-plate][data-loading] > [data-shotimg] {
+    top: 16px;
+    left: 16px;
+    right: auto;
+    bottom: auto;
+    width: calc(100% - 32px);
+    height: 220px;
+  }
+  [data-plate][data-loading] > [data-loadhold] {
+    position: static !important;
+    width: auto;
+    /* 252 = the photo's 16px top inset and its 220px height, then 16px of air. */
+    margin: 252px 16px 16px;
+    /* The vertical centring above belongs to the side-by-side layout only.
+       Left on, it dragged this panel half its own height upward -- 138px, clean
+       out of the top of the plate and back over the photo, which is the exact
+       overlap this whole layout exists to end. */
+    transform: none;
+    top: auto;
+  }
+}

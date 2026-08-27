@@ -50,7 +50,22 @@ function phase(root, which) {
       el.style.display = on ? el.dataset.disp : 'none';
     }
   };
+  /* Name the phase on the root so a stylesheet can see it.
+   *
+   * Which phase this is decides how much of the window the plate should take.
+   * Before there is a verdict the plate IS the page -- and it was sitting at its
+   * drawn 430px with 295px of bare ground under it on a 900px window -- while
+   * after there is one, the verdict, the treatment and the questions all need
+   * that room and the plate must go back to being a picture at the top.
+   *
+   * A dataset attribute, not a class: JS sets it, so the drawn page never
+   * carries it and verify-layout goes on comparing the board against a page that
+   * matches it. */
+  root.dataset.phase = which;
   show('[data-capture]',    which === 'ask');
+  // How much of the window the plate should take depends on which phase this is,
+  // and on what else is on screen -- both of which just changed.
+  requestAnimationFrame(() => fitPlate(root));
   show('[data-framing]',    which !== 'verdict');
   show('[data-verdictcard]', which !== 'ask');
   show('[data-treatment]',  which === 'verdict');
@@ -67,6 +82,69 @@ function phase(root, which) {
       box.style.display = which === 'ask' ? 'none' : box.dataset.disp;
     }
   }
+}
+
+/* THE VIEWFINDER TAKES THE ROOM THAT IS THERE.
+ *
+ * Before there is a verdict the plate IS the page, and it sat at its drawn 430px
+ * whatever the window was: 295px of bare ground under it on a 1440x900 laptop,
+ * and 101px PAST the fold on a 1024x768 one, where the framing card stops being
+ * beside the plate and goes under it. Same fixed height, opposite failures.
+ *
+ * Measured, not tabulated. The first version of this was two media queries with
+ * `calc(100dvh - 205px)` and `calc(100dvh - 439px)` in them, and those constants
+ * were only true in the two ranges they had been measured in -- a 900px-wide
+ * window fell between them and still ran 89px past the fold. There is no table
+ * of numbers here because the page can be asked directly:
+ *
+ *     slack  = the window, less where the page's content actually ends
+ *     target = the plate's drawn height, plus that slack
+ *
+ * and growing the plate by X moves the content end down by exactly X, whether
+ * the framing card is beside the plate or below it. That identity is what makes
+ * one measurement cover every width.
+ *
+ * It is NOT circular: nothing below the plate changes height when the plate
+ * does, only its position. The measurement is taken with the plate back at its
+ * drawn height, so it never reads its own last answer.
+ */
+const MIN_PLATE = 260;
+
+function fitPlate(root) {
+  const plate = root.querySelector('[data-plate]');
+  const grid = plate?.closest('.main')?.parentElement;
+  if (!plate || !grid) return;
+  // What the drawing asked for, kept so this can always start from it again.
+  if (plate.dataset.drawnmin == null) plate.dataset.drawnmin = plate.style.minHeight || '';
+
+  plate.style.height = '';
+  plate.style.minHeight = plate.dataset.drawnmin;
+  // Only the capture phase. Once there is a verdict the diagnosis, the treatment
+  // and the questions want that room, and the plate is a picture above them.
+  if (root.dataset.phase !== 'ask') return;
+
+  const drawn = plate.getBoundingClientRect().height;
+  /* Where the CONTENT ends, which is not where its container ends.
+   *
+   * Asking the grid for its own bottom edge reported no slack at all on a
+   * 1440x900 window and the plate never grew: the grid is `flex-grow: 1`, so it
+   * is already as tall as the page and the 295px of bare ground was INSIDE it,
+   * under the last card. The grid holds its items at `align-items: start`, so
+   * their own bottoms are the honest end of the page -- whichever is lowest,
+   * whether that is the plate's column or the framing card beside or below it. */
+  const items = [...grid.children].filter((e) => e.offsetParent);
+  if (!items.length) return;
+  const contentBottom = Math.max(...items.map((e) => e.getBoundingClientRect().bottom))
+    + (parseFloat(getComputedStyle(grid).paddingBottom) || 0);
+  const slack = window.innerHeight - contentBottom;
+  const target = Math.round(drawn + slack);
+  /* Below this the plate has stopped being a viewfinder. On a phone the framing
+   * card and the guidance under it are taller than the window on their own, so
+   * the honest answer there is the drawn height and a page that scrolls -- not a
+   * 180px letterbox and a page that still scrolls. */
+  if (target < MIN_PLATE) return;
+  plate.style.height = `${target}px`;
+  plate.style.minHeight = `${target}px`;
 }
 
 const KEY = 'pv.leaf';
@@ -202,10 +280,16 @@ export function leaf(slug) {
         const img = document.createElement('img');
         img.src = preview;
         img.alt = 'The leaf you photographed';
-        // contain, not cover: the whole leaf is the thing being judged, and a
-        // portrait photo in a landscape plate loses its ends to a crop.
-        img.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;';
+        /* The geometry is in loaders.css, under [data-shotimg], not inline here.
+         *
+         * It was inline, and inline beat the stylesheet that then had to share
+         * the plate with the progress panel. A mark the stylesheet can reach is
+         * the difference between "photo left, steps right" being a rule and
+         * being a fight. */
+        img.setAttribute('data-shotimg', '');
         slot.prepend(img);
+        // For as long as the checker is working, the plate holds two things.
+        slot.setAttribute('data-loading', '');
       }
       // The Multi Step Loader from design/Components.dc.html. One line of text
       // with a percentage on the end was the indeterminate-spinner argument in
@@ -246,11 +330,32 @@ export function leaf(slug) {
         }
         const isRefusal = verdict.status !== 'ok';
         revealRetake(isRefusal);
+        /* The download panel has nothing left to say, so it goes and the photo
+         * takes the whole plate back. Nothing did this, and the result was four
+         * ticks and "173 MB, once" still sitting on the plate underneath the
+         * filename that arrives with the verdict. */
+        steps.retire();
+        slot?.removeAttribute('data-loading');
       } catch (err) {
+        /* The panel stays on a failure -- it is the error now. bare() hands the
+         * host back its drawn positioning without the cream fill, so the red
+         * box is not framed inside a leftover progress panel; data-loading stays
+         * on, so the message sits beside the photo rather than over it. */
+        steps.bare();
         state(holder, 'failed', 'The checker did not run',
           `${err.message} Nothing has been sent anywhere, the photo never left your phone.`);
       }
     });
+  });
+
+  /* A window that changes size is a different window. The measurement starts
+   * from the drawn height every time, so this is safe to run as often as it
+   * fires, and rAF keeps it to one per frame. */
+  let queued = false;
+  window.addEventListener('resize', () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; fitPlate(ctx.root); });
   });
 
   function render(v) {
