@@ -27,7 +27,6 @@ const ROLE = {
   'messages': 'farmer',
   'money': 'farmer',
   'orders': 'buyer',
-  'payout': 'farmer',
   'plot': 'farmer',
   'plots': 'farmer',
   'portfolio': 'investor',
@@ -37,8 +36,7 @@ const ROLE = {
   'sent': 'farmer',
   'signin': null,
   'signup': null,
-  'thread': 'farmer',
-};
+  };
 
 const b = await chromium.launch();
 // Five pages are ABOUT something and are blank without an id.

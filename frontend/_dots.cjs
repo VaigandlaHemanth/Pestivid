@@ -9,7 +9,7 @@ const { readdirSync } = require('fs');
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ email: `demo.${r}@pestivid.sim`, password: 'password123' }) })).json();
   const ROLE = { landing: null, signin: null, signup: null, invest: 'investor',
-    portfolio: 'investor', 'confirm-investment': 'investor', thread: 'farmer',
+    portfolio: 'investor', 'confirm-investment': 'investor',
     market: 'buyer', orders: 'buyer', admin: 'admin' };
   const slugs = readdirSync('app').filter(f => f.endsWith('.html')).map(f => f.replace('.html', '')).sort();
   let bad = 0;

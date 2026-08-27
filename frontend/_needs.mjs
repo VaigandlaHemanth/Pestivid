@@ -51,7 +51,9 @@ export async function needs() {
 
     const threads = (await get(`/messaging/conversations/${fid}`, farmer.token)) || [];
     const tl = Array.isArray(threads) ? threads : (threads.conversations || []);
-    if (tl[0]?._id) out.thread = `?c=${tl[0]._id}`;
+    // The chat is one page with the conversation in its right pane, so the
+    // query selects which conversation rather than which page.
+    if (tl[0]?._id) out.messages = `?c=${tl[0]._id}`;
 
     const investor = await login('investor');
     const openToFund = (await get('/funding-requests', investor.token)) || [];

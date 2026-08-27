@@ -13,12 +13,12 @@ const { chromium } = require('playwright');
     record: ['plots','farmer'], ask: ['home','farmer'], 'leaf-check': ['plots','farmer'],
     'ask-money': ['money','farmer'], sent: ['record','farmer'], profile: ['home','farmer'],
     plot: ['plots','farmer'], money: ['home','farmer'], messages: ['home','farmer'],
-    plots: ['home','farmer'], payout: ['money','farmer'], setup: ['home','farmer'],
+    plots: ['home','farmer'], setup: ['home','farmer'],
     'report-harvest': ['money','farmer'],
     invest: ['portfolio','investor'], portfolio: ['invest','investor'],
     'confirm-investment': ['invest','investor'],
     market: ['orders','buyer'], orders: ['market','buyer'],
-    admin: ['admin','admin'], thread: ['messages','farmer'],
+    admin: ['admin','admin'],
   };
   let dead = 0, wrong = 0;
   const need = await (await import('./_needs.mjs')).needs();

@@ -20,12 +20,12 @@ const BOARD = {
   landing: 'Main', signin: 'Login', signup: 'Login', home: 'Home', plots: 'Plots',
   plot: 'Plot', record: 'Record', sent: 'Sent', money: 'Money',
   'report-harvest': 'Confirm', 'ask-money': 'AskMoney', 'leaf-check': 'LeafCheck',
-  ask: 'Ask', messages: 'Messages', notifications: 'Messages', thread: 'Thread',
+  ask: 'Ask', messages: 'Messages', notifications: 'Messages',
   profile: 'Profile', invest: 'Invest', portfolio: 'Portfolio', market: 'Market',
   orders: 'Orders', admin: 'Admin', 'confirm-investment': 'Invest',
 };
 // Shared modules, and which pages they run on.
-const SHARED = { _leaf: ['leaf-check'], _thread: ['thread'], _notices: ['messages', 'notifications'] };
+const SHARED = { _leaf: ['leaf-check'], _notices: ['notifications'] };
 
 const board = (name) => readFileSync(path.join('design', name + '.dc.html'), 'utf8');
 const files = readdirSync('frontend/app/pages').filter(f => f.endsWith('.js'));

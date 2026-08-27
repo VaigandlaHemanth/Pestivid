@@ -309,6 +309,16 @@ body > div[style*="width: 824px"] {
   .appnav, .appnavOn, .nav, .navOn, .appbrand, .brand {
     min-height: 44px !important; display: flex !important; align-items: center;
   }
+  /* Width too, not just height. "Messages" was 78px and cleared 44 by accident;
+     renaming it "Chat" made it 31px wide and verify-hig failed on all fifteen
+     pages that draw the bar. A nav word's LENGTH is not a touch target, so the
+     slot carries the minimum instead of the text. */
+  /* [data-navword] is for the two boards that draw their bar without the
+     .appnav class -- invest and market -- where the same 31px word sat under
+     the same minimum and no class-based rule could reach it. */
+  .appnav, .appnavOn, .nav, .navOn, [data-navword] {
+    min-width: 44px !important; justify-content: center;
+  }
   [data-chrome="back"], [data-chrome="mail"], [data-chrome="you"] {
     min-width: 44px !important; min-height: 44px !important;
   }

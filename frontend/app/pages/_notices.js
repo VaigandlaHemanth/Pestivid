@@ -79,10 +79,10 @@ function destination(n, role) {
 }
 
 /**
- * @param slug   'messages' or 'notifications'
- * @param kind   'people' for conversations, 'notices' for what the system said
+ * @param slug  the page this runs on. Only 'notifications' now: the
+ *              conversations list moved into the two-pane chat page.
  */
-export function notices(slug, kind) {
+export function notices(slug, kind = 'notices') {
   const ctx = requireUser(slug);
   if (!ctx) return;
   appChrome(ctx.root, { back: 'history', user: ctx.user });
@@ -116,45 +116,22 @@ export function notices(slug, kind) {
       }
     };
 
-    let items;
-    if (kind === 'people') {
-      const threads = await api.messages.threads(id).catch(() => []);
-      items = (threads || []).map(t => ({
-        head: t.otherName || 'A message',
-        // The server truncates a long message for this preview. It used to end
-        // it in three dots; it ends it in one ellipsis now, but records written
-        // before that are still in the database and this line is what a person
-        // reads, so the shape is fixed here as well as at the source.
-        body: (t.lastMessageSnippet || '').replace(/\.{3,}$/, '…'),
-        when: whenShort(t.lastMessageTimestamp),
-        unread: Boolean(t.unread || t.unreadCount),
-        // The slug, not the filename: wire.js turns `thread?c=1` into
-        // `./thread.html?c=1`. Passing `thread.html?c=1` made it thread.html.html.
-        go: `thread?c=${t._id}`,
-      }));
-      if (sub) {
-        sub.textContent = items.length === 1
-          ? 'One conversation' : `${items.length} conversations`;
-      }
-      say(unreadOf());
-    } else {
-      items = notes.map(n => ({
-        id: n._id,
-        head: n.title || n.message,
-        body: n.title ? (n.message || '') : '',
-        when: whenShort(n.timestamp || n.createdAt),
-        unread: !n.read,
-        opens: destination(n, role),
-      }));
-      say(unreadOf());
-    }
+    /* One kind of row now. This module used to serve the conversations list as
+     * well ('people'), until the chat became a two-pane page of its own -- so
+     * that branch described a page that no longer exists and has gone with it. */
+    const items = notes.map(n => ({
+      id: n._id,
+      head: n.title || n.message,
+      body: n.title ? (n.message || '') : '',
+      when: whenShort(n.timestamp || n.createdAt),
+      unread: !n.read,
+      opens: destination(n, role),
+    }));
+    say(unreadOf());
 
     if (!items.length) {
-      return kind === 'people'
-        ? state(ctx.root, 'empty', 'No conversations yet',
-            'People with money in one of your seasons can write to you here. Nobody else can start one.')
-        : state(ctx.root, 'empty', 'Nothing has happened yet',
-            'Dates landing in a block, money moving, a lot selling. Only your own, and never an advertisement.');
+      return state(ctx.root, 'empty', 'Nothing has happened yet',
+        'Dates landing in a block, money moving, a lot selling. Only your own, and never an advertisement.');
     }
 
     /* ---- marking one read ---------------------------------------------

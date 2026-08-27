@@ -81,6 +81,10 @@ const DEST = {
   Money: 'money',
   Browse: 'invest',
   Portfolio: 'portfolio',
+  // "Messages" was the word until the list and the conversation became one
+  // two-pane page. The bar says Chat, and the old word still resolves because
+  // three boards may not have caught up.
+  Chat: 'messages',
   Messages: 'messages',
   'Buy produce': 'market',
   'Lots for sale': 'market',
@@ -90,27 +94,27 @@ const DEST = {
 
 /* THE NAV BELONGS TO WHOEVER IS SIGNED IN -------------------------------------
  *
- * messages, thread and profile are shared by all four roles, but their boards
+ * messages and profile are shared by all four roles, but their boards
  * draw ONE bar and it is the farmer's. deskNav only wired the labels it found,
- * so a buyer who clicked Messages arrived on a page headed "My plots · Money ·
- * Messages" -- someone else's app, with their own avatar in the corner. The bar
+ * so a buyer who clicked Chat arrived on a page headed "My plots · Money ·
+ * Chat" -- someone else's app, with their own avatar in the corner. The bar
  * is relabelled for the signed-in role before anything is wired.
  *
- * Three slots, because the boards draw three. Messages is last for everybody:
- * it is the one destination all four roles share.
+ * Three slots, because the boards draw three. Chat is last for everybody: it is
+ * the one destination all four roles share.
  */
 const NAV = {
-  farmer:   ['My plots', 'Money', 'Messages'],
-  investor: ['Browse', 'Portfolio', 'Messages'],
-  buyer:    ['Buy produce', 'My orders', 'Messages'],
-  admin:    ['Browse', 'Buy produce', 'Messages'],
+  farmer:   ['My plots', 'Money', 'Chat'],
+  investor: ['Browse', 'Portfolio', 'Chat'],
+  buyer:    ['Buy produce', 'My orders', 'Chat'],
+  admin:    ['Browse', 'Buy produce', 'Chat'],
 };
 
 function relabel(root, user, inHeader) {
   const want = NAV[user?.role];
   if (!want) return;
-  /* The BAR, not "the top 110px". The page heading on Messages is the word
-   * "Messages", it sits just under the bar, and it is a known destination -- so
+  /* The BAR, not "the top 110px". The page heading on the chat page is the word
+   * "Chat", it sits just under the bar, and it is a known destination -- so
    * the geometric filter found four nav slots where there are three, the count
    * check bailed, and a buyer went on seeing the farmer's bar. */
   const bar = root.querySelector('.appbar, .bar, header') || root;
@@ -132,8 +136,8 @@ function relabel(root, user, inHeader) {
 // whose answer is not simply the role's home need an entry.
 const BACK = {
   record: 'plots', 'leaf-check': 'plots', sent: 'record', plot: 'plots',
-  payout: 'money', 'report-harvest': 'money', 'ask-money': 'money',
-  thread: 'messages', setup: 'signin', profile: 'home', ask: 'home',
+  'report-harvest': 'money', 'ask-money': 'money',
+  setup: 'signin', profile: 'home', ask: 'home',
   notifications: 'home',
 };
 

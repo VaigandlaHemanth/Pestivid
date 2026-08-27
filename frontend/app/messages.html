@@ -62,6 +62,43 @@
            padding: 0 0 9px; margin-top: 22px; }
     .grp:first-child { margin-top: 0; }
 
+    /* ── the conversation, in the right pane ─────────────────────────────
+     * A BUBBLE, not a card. These were fixed-width blocks -- 520px received,
+     * 440px sent, whatever the message said -- so "Yes, I will" drew the same
+     * rectangle as a paragraph, and a column of equal rectangles is a table.
+     * A bubble hugs its own text and takes the shape a reader knows from every
+     * messaging app: rounded, with the corner on the side it came FROM squared
+     * into a tail. This is the one deliberate exception to the shape rule
+     * (paper square, controls 8px, round for badges): here the shape IS the
+     * meaning. */
+    .them { background: #fff; padding: 13px 16px; max-width: 62%; width: fit-content;
+            align-self: flex-start; border-radius: 16px 16px 16px 4px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 16px; max-width: 62%;
+            width: fit-content; align-self: flex-end; border-radius: 16px 16px 4px 16px; }
+    /* .bt, not .t. This board already used .t for a notice's timestamp --
+       12.5px #605a53 -- and the transcript arriving from the thread board
+       brought its own .t for the message text. Both applied: the size came from
+       the new rule and the COLOUR from the old one, so every bubble's words
+       rendered #605a53 while the bubble's own colour sat unused. On the sent
+       bubble that is 1.9:1 on near-black. The bubble text gets its own name. */
+    .bt   { font-size: 15.5px; line-height: 1.5; }
+    .when { font-size: 12.5px; color: #4a443d; margin-top: 5px; }
+    /* A RUN from the same side closes up to 4px and only the last of it keeps a
+       tail -- three lines typed in a row are one person talking, not three
+       events. Pure sibling CSS, so a day label between two bubbles breaks the
+       run by itself, which is right. */
+    .them + .them, .me + .me { margin-top: -8px; }
+    .them:has(+ .them) { border-bottom-left-radius: 16px; }
+    .me:has(+ .me)     { border-bottom-right-radius: 16px; }
+    /* The day a run belongs to. Plain text, not a pill: drawn as a round chip it
+       looked exactly like the quick-reply chips below it. */
+    .day  { align-self: center; font-size: 12.5px; font-weight: 600; color: #605a53;
+            padding: 3px 0; letter-spacing: 0.01em; }
+    /* quick replies: still text, tappable, and they spare somebody typing a
+       reply on a phone keyboard */
+    .chip { background: #e7e1db; min-height: 46px; box-sizing: border-box; display: flex;
+            align-items: center; padding: 10px 13px; font-size: 15px; }
+
     /* -- the shell, identical on every farmer board -----------------------
        The same 60px white bar invest, market, orders, portfolio and admin
        already carry. The farmer used to get a phone header on a 360px panel,
@@ -89,20 +126,19 @@
 </head>
 <body data-page="messages" data-role="any" data-design-width="1320" data-design-height="900">
 <div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
-
-  <div class="appbar">
+      <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
         <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
         <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
           <div class="appnav">My plots</div>
           <div class="appnav">Money</div>
-          <div class="appnavOn">Messages</div>
+          <div class="appnavOn">Chat</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
         <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
           <div data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
         </div>
         <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
@@ -111,99 +147,113 @@
       </div>
     </div>
     <div class="pagehold" style="padding: 26px 28px 0;">
-      <h1 data-title="" class="pageh">Messages</h1>
-      <div data-bind="unreadLine" class="pagesub"></div>
+      <h1 data-title="" class="pageh">Chat</h1>
     </div>
 
+  <!-- ══ ONE SCREEN, TWO PANES ══
+       This was two pages: a list of people, and a conversation you navigated to.
+       Every chat anybody has used puts the people on the left and the talking on
+       the right, and switching conversations is a click rather than a page load.
+       So they are one page now, which also takes the count down by one.
 
-  <div style="flex-grow: 1;">
+       What went, and why:
+         "16 messages" under the name -- a count of a thing you are looking at.
+         "These are kept on our server and are not scrambled" -- a standing
+           disclosure that belonged in the privacy copy, not above the keyboard
+           on every single reply.
+         "Words only" -- the absence of a paperclip already says it.
+       The one fact worth keeping, that only people who funded you can write
+       here, explains why this list is short, so it sits at the top of the list. -->
+  <div style="flex-grow: 1; padding: 22px 28px 30px;">
+    <div data-chatcol="" style="height: 656px; display: grid; grid-template-columns: 340px 1fr; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6;">
 
-    <!-- the message the whole product exists to send -->
-        <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
-      <div class="main">
-
-        <!-- Conversations, and nothing else. This page carried the system's
-             notices too, so a buyer with one chat and eighteen notices found the
-             chat at row nineteen and reported the product had no chat at all.
-             The notices moved behind the envelope in the bar, which is where
-             their unread count was being displayed all along. -->
-
-<div class="nu">
-      <div class="ic">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4a443d" stroke-width="2.2"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
-      </div>
-      <div style="flex-grow: 1;">
-        <div class="h">Your Canal plot video now has a date nobody can change</div>
-        <div class="b">The one you filmed on 18 August. Its date is written into Bitcoin block 881,204. Investors can check it themselves.</div>
-        <div class="m t">Today, 11:40 am</div>
-      </div>
-      <div class="go"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.2"><path d="M9 6l6 6-6 6"></path></svg></div>
-    </div>
-<div style="height: 1px; background: #ddd7d1;"></div>
-<div class="nu">
-      <div class="ic">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M7 4h9"></path><path d="M7 8.5h9"></path><path d="M7 13h4.5c2.5 0 4.5-1.9 4.5-4.3S14 4 11.5 4"></path><path d="M7 13l8 7"></path></svg>
-      </div>
-      <div style="flex-grow: 1;">
-        <div class="h">Meena Rao put ₹50,000 into your North plot</div>
-        <div class="b">North plot has now raised ₹1,80,000 of the ₹5,00,000 you asked for.</div>
-        <div class="m t">Yesterday, 4:18 pm</div>
-      </div>
-      <div class="go"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.2"><path d="M9 6l6 6-6 6"></path></svg></div>
-    </div>
-<div style="height: 1px; background: #ddd7d1;"></div>
-<div class="n">
-      <div class="ic">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M5 3h11l3 3v15H5z"></path><path d="M16 3v3h3"></path><path d="M8.5 12.5h7M8.5 16h4"></path></svg>
-      </div>
-      <div style="flex-grow: 1;">
-        <div class="h">Your North plot is open to investors</div>
-        <div class="b">We checked you have three date stamped videos on it, which is what we ask for before a plot can raise money.</div>
-        <div class="m t">19 August</div>
-      </div>
-      <div class="go"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.2"><path d="M9 6l6 6-6 6"></path></svg></div>
-    </div>
-<div style="height: 1px; background: #ddd7d1;"></div>
-<div class="n">
-      <div class="ic">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M21 12a8.5 8.5 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l1.9-5.1A8.5 8.5 0 0 1 12 3.5a8.5 8.5 0 0 1 9 8.5z"></path></svg>
-      </div>
-      <div style="flex-grow: 1;">
-        <div class="h">Ravi Kumar asked you a question</div>
-        <div class="b">“Is the canal water reaching the far end of the plot this year?”</div>
-        <div class="m t">17 August</div>
-      </div>
-      <div class="go"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.2"><path d="M9 6l6 6-6 6"></path></svg></div>
-    </div>
-<div style="height: 1px; background: #ddd7d1;"></div>
-<div class="n">
-      <div class="ic" style="background: #f7e9e6;">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#a71930" stroke-width="2.1"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9.5v5M12 17.5v.01"></path></svg>
-      </div>
-      <div style="flex-grow: 1;">
-        <div class="h">A video did not finish sending</div>
-        <div class="b">The Back field one from 14 August stopped at 60%. It is still on your phone. It will try again on wi-fi.</div>
-        <div class="m t">14 August</div>
-      </div>
-      <div class="go"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.2"><path d="M9 6l6 6-6 6"></path></svg></div>
-    </div>
-      </div>
-      <div class="rail">
-<div style="padding: 22px 20px;">
-      <div style="background: #eae4de; padding: 15px 16px;">
-        <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
-          Only people with money in one of your seasons can write to you. Nobody else can start a
-          conversation, and neither can we.
+      <!-- ── the people ─────────────────────────────────────────────────── -->
+      <div style="display: flex; flex-direction: column; min-height: 0; box-shadow: inset -1px 0 0 #ddd7d1;">
+        <div style="flex-shrink: 0; padding: 14px 17px 13px; box-shadow: inset 0 -1px 0 #ddd7d1;">
+          <div style="font-size: 13.5px; line-height: 1.45; color: #605a53;">
+            Only people with money in one of your seasons can write to you. Nobody else can start a
+            conversation, and neither can we.
+          </div>
+        </div>
+        <div data-people="" style="flex-grow: 1; overflow-y: auto; min-height: 0;">
+          <div data-row="person" data-on="" style="padding: 13px 17px; display: flex; gap: 12px; align-items: flex-start; background: #eae4de; box-shadow: inset 3px 0 0 #016abe, inset 0 -1px 0 #ddd7d1;">
+            <div style="width: 40px; height: 40px; background: #e1e6ec; border-radius: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 0 1px #c3bcb6;">
+              <div data-slot="initial" style="font-size: 16px; font-weight: 600;">R</div>
+            </div>
+            <div style="flex-grow: 1; min-width: 0;">
+              <div data-slot="name" style="font-size: 15.5px; font-weight: 600;">Ravi Kumar</div>
+              <div data-slot="snippet" style="font-size: 13.5px; line-height: 1.4; color: #605a53; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Can you walk to the far end in the next video?</div>
+            </div>
+            <div data-slot="when" class="m" style="font-size: 12.5px; color: #605a53; flex-shrink: 0;">2:05 pm</div>
+          </div>
+          <div data-row="person" style="padding: 13px 17px; display: flex; gap: 12px; align-items: flex-start; box-shadow: inset 3px 0 0 transparent, inset 0 -1px 0 #ddd7d1;">
+            <div style="width: 40px; height: 40px; background: #e1e6ec; border-radius: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 0 1px #c3bcb6;">
+              <div data-slot="initial" style="font-size: 16px; font-weight: 600;">M</div>
+            </div>
+            <div style="flex-grow: 1; min-width: 0;">
+              <div data-slot="name" style="font-size: 15.5px; font-weight: 600;">Meena Rao</div>
+              <div data-slot="snippet" style="font-size: 13.5px; line-height: 1.4; color: #605a53; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Thanks for the update!</div>
+            </div>
+            <div data-slot="when" class="m" style="font-size: 12.5px; color: #605a53; flex-shrink: 0;">Yesterday</div>
+          </div>
         </div>
       </div>
-    </div>
+
+      <!-- ── the conversation ───────────────────────────────────────────── -->
+      <div data-pane="" style="display: flex; flex-direction: column; min-height: 0; background: #ddd7d1;">
+        <div style="flex-shrink: 0; background: #f6f3ef; padding: 11px 20px; display: flex; align-items: center; gap: 12px; box-shadow: inset 0 -1px 0 #ddd7d1;">
+          <div style="width: 38px; height: 38px; background: #e1e6ec; border-radius: 19px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 0 1px #c3bcb6;">
+            <div data-avatar="" style="font-size: 16px; font-weight: 600;">R</div>
+          </div>
+          <div style="flex-grow: 1; min-width: 0;">
+            <div data-bind="other.name" style="font-size: 17px; font-weight: 700;">Ravi Kumar</div>
+            <div data-bind="other.context" style="font-size: 13px; color: #605a53; margin-top: 1px;">Put money into one of your seasons</div>
+          </div>
+        </div>
+
+        <div data-transcript="" style="flex-grow: 1; overflow-y: auto; min-height: 0; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div data-spacer="" style="flex-grow: 1;"></div>
+          <div class="day">17 August</div>
+          <div class="them">
+            <div class="bt">Namaste Alice. Is the canal water reaching the far end of the plot this year?</div>
+            <div class="m when">9:12 am</div>
+          </div>
+          <div class="me">
+            <div class="bt">Yes. These two weeks it came every third day.</div>
+            <div style="display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 5px;">
+              <div class="m" style="font-size: 12.5px; color: #c4bdb6;">1:40 pm</div>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c4bdb6" stroke-width="2.4"><path d="M2 13l4 4 8-9"></path><path d="M10 15l2 2 9-10"></path></svg>
+            </div>
+          </div>
+          <div class="them">
+            <div class="bt">Good. Can you walk to the far end in the next video? I have only seen the near side.</div>
+            <div class="m when">2:05 pm</div>
+          </div>
+        </div>
+
+        <div data-chips="" style="flex-shrink: 0; padding: 2px 20px 12px;">
+          <div style="font-size: 13.5px; color: #605a53; margin-bottom: 7px;">Tap one to answer</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+            <div class="chip">Yes, I will</div>
+            <div class="chip">Give me two days</div>
+            <div class="chip">The far end is dry</div>
+          </div>
+        </div>
+
+        <div data-sendfail="" style="flex-shrink: 0; padding: 0 20px 16px;">
+          <div style="display: flex; gap: 9px; align-items: stretch;">
+            <div data-fieldbox="" style="flex-grow: 1; background: #fff; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; padding: 0 14px; min-height: 52px; border-radius: 8px;">
+              <div data-reply="" style="font-size: 16px; color: #4a443d;">Write a message</div>
+            </div>
+            <div data-send="" style="width: 52px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 8px;">
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
-
   </div>
-
-
-  
 </div>
 <script type="module" src="./pages/messages.js"></script>
 </body>

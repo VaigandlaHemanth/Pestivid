@@ -25,7 +25,7 @@ const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', 
 const ROLE = {
   landing: null, signin: null, signup: null, setup: null,
   invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor',
-  thread: 'farmer', market: 'buyer', orders: 'buyer', admin: 'admin',
+  market: 'buyer', orders: 'buyer', admin: 'admin',
 };
 const roleFor = (s) => (s in ROLE ? ROLE[s] : 'farmer');
 

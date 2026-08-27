@@ -37,7 +37,6 @@ const CHECKS = [
   ['messages',       'farmer',   'conversation'],
   ['notifications',  'farmer',   'you have not read'],
   ['report-harvest', 'farmer',   'No season chosen'],
-  ['thread',  'farmer',   'No conversation chosen'],
   ['plot',           'farmer',   'No plot chosen'],
   ['sent',           'farmer',   'no clip to send'],
   ['portfolio',      'investor', people.investor.name],

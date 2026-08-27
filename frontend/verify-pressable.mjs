@@ -24,7 +24,7 @@ const ROLE = {
   // _needs.mjs resolves the FARMER's conversation, and an investor who is not
   // a participant sees an empty thread -- which is why this page reported zero
   // controls while its chips, its composer and its send arrow all worked.
-  'thread': 'farmer', market: 'buyer', orders: 'buyer', admin: 'admin',
+  market: 'buyer', orders: 'buyer', admin: 'admin',
 };
 const roleFor = (s) => (s in ROLE ? ROLE[s] : 'farmer');
 

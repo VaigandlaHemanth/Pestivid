@@ -27,7 +27,7 @@ const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', 
 const ROLE = {
   landing: null, signin: null, signup: null,
   invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor',
-  thread: 'farmer', market: 'buyer', orders: 'buyer', admin: 'admin',
+  market: 'buyer', orders: 'buyer', admin: 'admin',
 };
 
 /* Pages whose content is a LIST and is meant to run past the fold. Scrolling is

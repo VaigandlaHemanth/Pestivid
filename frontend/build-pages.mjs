@@ -42,7 +42,6 @@ export const PAGES = {
   // app -- which they were.
   'messages':           { title: 'Messages', role: 'any' },
   'notifications':      { title: 'What has happened', role: 'any' },
-  'thread':             { title: 'Message', role: 'any' },
   'ask':                { title: 'Ask a question', role: 'farmer' },
   'profile':            { title: 'You and your settings', role: 'any' },
   'leaf-check':        { title: 'Check a leaf', role: 'farmer' },

@@ -62,6 +62,43 @@
            padding: 0 0 9px; margin-top: 22px; }
     .grp:first-child { margin-top: 0; }
 
+    /* ── the conversation, in the right pane ─────────────────────────────
+     * A BUBBLE, not a card. These were fixed-width blocks -- 520px received,
+     * 440px sent, whatever the message said -- so "Yes, I will" drew the same
+     * rectangle as a paragraph, and a column of equal rectangles is a table.
+     * A bubble hugs its own text and takes the shape a reader knows from every
+     * messaging app: rounded, with the corner on the side it came FROM squared
+     * into a tail. This is the one deliberate exception to the shape rule
+     * (paper square, controls 8px, round for badges): here the shape IS the
+     * meaning. */
+    .them { background: #fff; padding: 13px 16px; max-width: 62%; width: fit-content;
+            align-self: flex-start; border-radius: 16px 16px 16px 4px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 16px; max-width: 62%;
+            width: fit-content; align-self: flex-end; border-radius: 16px 16px 4px 16px; }
+    /* .bt, not .t. This board already used .t for a notice's timestamp --
+       12.5px #605a53 -- and the transcript arriving from the thread board
+       brought its own .t for the message text. Both applied: the size came from
+       the new rule and the COLOUR from the old one, so every bubble's words
+       rendered #605a53 while the bubble's own colour sat unused. On the sent
+       bubble that is 1.9:1 on near-black. The bubble text gets its own name. */
+    .bt   { font-size: 15.5px; line-height: 1.5; }
+    .when { font-size: 12.5px; color: #4a443d; margin-top: 5px; }
+    /* A RUN from the same side closes up to 4px and only the last of it keeps a
+       tail -- three lines typed in a row are one person talking, not three
+       events. Pure sibling CSS, so a day label between two bubbles breaks the
+       run by itself, which is right. */
+    .them + .them, .me + .me { margin-top: -8px; }
+    .them:has(+ .them) { border-bottom-left-radius: 16px; }
+    .me:has(+ .me)     { border-bottom-right-radius: 16px; }
+    /* The day a run belongs to. Plain text, not a pill: drawn as a round chip it
+       looked exactly like the quick-reply chips below it. */
+    .day  { align-self: center; font-size: 12.5px; font-weight: 600; color: #605a53;
+            padding: 3px 0; letter-spacing: 0.01em; }
+    /* quick replies: still text, tappable, and they spare somebody typing a
+       reply on a phone keyboard */
+    .chip { background: #e7e1db; min-height: 46px; box-sizing: border-box; display: flex;
+            align-items: center; padding: 10px 13px; font-size: 15px; }
+
     /* -- the shell, identical on every farmer board -----------------------
        The same 60px white bar invest, market, orders, portfolio and admin
        already carry. The farmer used to get a phone header on a 360px panel,
@@ -97,12 +134,12 @@
         <div style="display: flex; gap: 24px; align-items: baseline;">
           <div class="appnav">My plots</div>
           <div class="appnav">Money</div>
-          <div class="appnav">Messages</div>
+          <div class="appnav">Chat</div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
         <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
           <div data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
         </div>
         <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">

@@ -26,7 +26,6 @@ const ROLE_OF = {
   invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor', // _needs.mjs resolves the FARMER's conversation, and an investor who is not
   // a participant sees an empty thread -- which is why this page reported zero
   // controls while its chips, its composer and its send arrow all worked.
-  'thread': 'farmer',
   market: 'buyer', orders: 'buyer',
   admin: 'admin',
 };
@@ -40,8 +39,8 @@ const NO_CLICK = {
   signup: 'creates an account on every run',
   setup: 'creates an account on every run',
   'leaf-check': 'downloads 173 MB of model',
-  payout: 'Send it reports a harvest, which is irreversible',
-  'report-harvest': 'walks into the payout confirmation',
+  // payout was merged into report-harvest, so the irreversible send is here now
+  'report-harvest': 'Send these numbers reports a harvest, which is irreversible',
 };
 
 // Five pages are ABOUT something and are blank without an id.
