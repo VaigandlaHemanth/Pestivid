@@ -89,7 +89,7 @@ function sayRisk() {
 sayRisk();
 
 const ack = root.querySelector('[data-ack]');
-const ackBox = ack?.querySelector('div[style*="inset 0 0 0 2px #a71930"]');
+const ackBox = ack?.querySelector('[data-ackbox]');
 const label = oneByText('Create the account', root);
 const button = label?.parentElement;
 let agreed = false;

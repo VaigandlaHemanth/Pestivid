@@ -145,10 +145,10 @@ if (ctx) {
     const nothingYet = !videos.length;
     if (!due) {
       const btn = oneByText('Report the harvest', root);
-      btn?.closest('div[style*="background: #016abe"]')?.remove();
+      (btn?.closest('[data-harvestcta]') || btn?.parentElement)?.remove();
     }
     if (nothingYet) {
-      const band = root.querySelector('div[style*="background: #1d1a17"]');
+      const band = root.querySelector('[data-todoband]');
       const head = root.querySelector('[data-bind="todo.headline"]');
       const kicker = head?.previousElementSibling;
       if (kicker) kicker.textContent = 'Start here';

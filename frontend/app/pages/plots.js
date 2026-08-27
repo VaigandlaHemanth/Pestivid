@@ -21,7 +21,7 @@ const clock = (sec) => {
 
 if (ctx) {
   appChrome(ctx.root, { back: 'home', user: ctx.user });
-  goes(ctx.root.querySelector('div[style*="background: #1d1a17"]'), 'record', 'Record a video');
+  goes(ctx.root.querySelector('[data-recordcta]'), 'record', 'Record a video');
   press(ctx.root);
 
   load(ctx.root, async () => {

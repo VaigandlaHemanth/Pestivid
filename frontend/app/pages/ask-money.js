@@ -80,7 +80,10 @@ if (ctx) load(ctx.root, async () => {
   bind(root, { step1: { hint: vids.length
     ? 'Pick a video of it. You cannot ask for money without one.'
     : 'You have no videos yet, and money cannot be asked for without one.' } });
-  const rows = [...s1.querySelectorAll('div[style*="background: #f6f3ef"][style*="display: flex"]')];
+  // Marked, not keyed on a fill. A selector that names a colour breaks the day
+  // the colour moves, silently, which is how the harvest button on the money
+  // screen stopped being wired at all.
+  const rows = [...s1.querySelectorAll('[data-vidrow]')];
   const container = rows[0]?.parentElement;
   if (!vids.length) {
     state(container || s1, 'empty', 'Film the field first',
@@ -242,7 +245,7 @@ if (ctx) load(ctx.root, async () => {
 
   // profit share or full repayment. The server treats them as equivalent;
   // they are not, and each card already says what happens if the crop fails.
-  const cards = [...s3.querySelectorAll('div[style*="background: #f6f3ef"][style*="padding: 15px 16px"]')];
+  const cards = [...s3.querySelectorAll('[data-methodcard]')];
   let mode = 'profit_share';
   cards.forEach((card, i) => {
     card.setAttribute('data-act', '');

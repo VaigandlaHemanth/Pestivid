@@ -31,7 +31,7 @@ if (ctx) load(ctx.root, async () => {
     goal: `of ${rupees(p.amount)}`,
     pct: Math.min(100, Math.round(100 * (p.fundedAmount || 0) / (p.amount || 1))) + '%',
   })), (el, row) => {
-    const bar = el.querySelector('div[style*="background: #01579b"]');
+    const bar = el.querySelector('[data-bar]');
     if (bar) bar.style.width = row.pct;
   });
 
@@ -142,9 +142,12 @@ if (ctx) load(ctx.root, async () => {
       // already says there is nothing to check.
       chain.remove();
     } else if (chain) {
+      // toLocaleString already gives "26 Aug 13:05". The .toUpperCase() only
+      // shouted it, and it was the one capitalised date in a product that writes
+      // "24 August, 10:40 pm" everywhere else.
       const when = (iso) => (iso ? new Date(iso).toLocaleString('en-IN', {
         day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false,
-      }).toUpperCase().replace(',', '') : null);
+      }).replace(',', '') : null);
       const set = (kind, time, note, head) => {
         const w = chain.querySelector(`[data-chain-when="${kind}"]`);
         const n = chain.querySelector(`[data-chain-note="${kind}"]`);

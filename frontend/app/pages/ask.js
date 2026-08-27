@@ -22,7 +22,7 @@ const send = root.querySelector('[data-send]');
 // farmer who cannot read a bottle label had nothing to tap. It is not an
 // example, it is the standing fallback for every time this chat cannot answer,
 // so it is lifted out and kept above the composer where it is always reachable.
-const callPanel = root.querySelector('[data-call]')?.closest('div[style*="background: #e7e1db"]');
+const callPanel = root.querySelector('[data-call]')?.closest('[data-callpanel]');
 // the flex ROW that holds the field and the button, so the panel goes above it
 // as a sibling -- inserting into the row put it beside the input and squashed it
 const composerRow = root.querySelector('[data-send]')?.closest('div[style*="align-items: stretch"]');
@@ -115,7 +115,7 @@ async function ask(text) {
       // The board's own refusal panel already has this number as a tel: link.
       // Restating it as prose in a bubble made it dead in a second place, so
       // this scrolls to the live one instead of printing a copy.
-      const panel = root.querySelector('[data-call]')?.closest('div[style*="background: #e7e1db"]');
+      const panel = root.querySelector('[data-call]')?.closest('[data-callpanel]');
       if (panel) {
         bubble('them', 'The Kisan Call Centre answers when we cannot. Their number is on this screen, tap it to call.');
         panel.scrollIntoView({ block: 'center', behavior: 'smooth' });

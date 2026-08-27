@@ -237,3 +237,35 @@ body[data-role="public"] { background: var(--ground); }
     box-shadow: inset 3px 0 0 #016abe;
   }
 }
+
+/* ════ FOCUS ════════════════════════════════════════════════════════════════
+ *
+ * Eleven inputs across five pages showed nothing at all when focused. On a
+ * laptop-first product that means Tab does not work: a keyboard user cannot see
+ * where they are. WCAG 2.4.7, and the HIG's keyboard guidance says the same.
+ *
+ * outline, not border or padding, because outline is drawn outside the box and
+ * changes no geometry. 3px so it reads on the dark surfaces too (the camera
+ * deck, the dark bands), and offset so it does not sit on the fill.
+ */
+:focus-visible {
+  outline: 3px solid #016abe;
+  outline-offset: 2px;
+}
+/* An input is a transparent 21px sliver inside the drawn box. Ringing the
+ * sliver points at the text rather than at the field, so the BOX takes the ring
+ * and the sliver gives its own up. */
+[data-fieldbox]:has(:focus-visible) {
+  outline: 3px solid #016abe;
+  outline-offset: 2px;
+}
+[data-fieldbox] :focus-visible { outline: none; }
+
+/* ════ PLACEHOLDER ══════════════════════════════════════════════════════════
+ *
+ * This was Chrome's default #757575, which nobody chose: 3.23:1 on the ground
+ * and 4.17:1 on the surface, both under the 4.5:1 a placeholder needs. #605a53
+ * is the product's own secondary grey and clears 4.5 on all four fills a field
+ * is drawn on (4.77 on the ground, 6.81 on white).
+ */
+::placeholder { color: #605a53; opacity: 1; }

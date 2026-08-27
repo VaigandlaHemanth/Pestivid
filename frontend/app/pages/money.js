@@ -45,8 +45,13 @@ if (ctx) {
           : 'Nobody is waiting on you.',
       },
     });
-    const report = [...root.querySelectorAll('div')]
-      .find(d => d.textContent.trim() === 'Report the harvest')?.closest('div[style*="background: #fff"]');
+    // Found by its mark. This searched for a div whose inline style contained
+    // `background: #fff`, and the button stopped being white the moment the two
+    // "Report the harvest" buttons were made one button -- so it silently found
+    // nothing, and neither the wiring nor the removal happened.
+    const report = root.querySelector('[data-report]')
+      || [...root.querySelectorAll('div')]
+        .find(d => d.textContent.trim() === 'Report the harvest')?.parentElement;
     if (due) goes(report, `report-harvest?project=${due._id}`, 'Report the harvest');
     else report?.remove();
 

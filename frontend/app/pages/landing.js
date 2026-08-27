@@ -17,7 +17,7 @@ if (root) {
       // lakhs, because that is how the figure is spoken about here
       const lakh = (n) => n >= 100000 ? `₹${(n / 100000).toFixed(1)}L` : rupees(n);
       bind(root, { funded: lakh(raised) });
-      const bar = root.querySelector('div[style*="background: #01579b"][style*="height: 100%"]')
+      const bar = root.querySelector('[data-bar]')
         || root.querySelector('div[style*="height: 8px"] > div');
       if (bar) {
         bar.style.transformOrigin = 'left';

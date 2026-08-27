@@ -128,7 +128,7 @@ export function leaf(slug) {
     });
 
     // No verdict yet: this page is where a photograph is taken.
-    const slot = ctx.root.querySelector('div[style*="#37322d"]');
+    const slot = ctx.root.querySelector('[data-plate]') || ctx.root.querySelector('[data-capture]')?.parentElement;
     // ---- asking about the result -------------------------------------
   // Three suggested questions, a field and a send button, all drawn and none of
   // them wired. They hand the question to the chatbot with the verdict already
