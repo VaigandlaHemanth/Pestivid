@@ -8,7 +8,11 @@ export function requireUser(slug, roles) {
   if (!session.token) { location.href = './signin.html'; return null; }
   const user = session.user;
   if (roles && user && !roles.includes(user.role)) {
-    state(root, 'failed', 'Not your screen', `This page is for a ${roles.join(' or ')}. You are signed in as a ${user.role}.`);
+    // "a admin", "a investor". The article depends on the word that follows it,
+    // and three of the four roles here begin with a vowel.
+    const an = (w) => (/^[aeiou]/i.test(w) ? 'an ' : 'a ') + w;
+    state(root, 'failed', 'Not your screen',
+      `This page is for ${roles.map(an).join(' or ')}. You are signed in as ${an(user.role)}.`);
     return null;
   }
   return { root, user };
