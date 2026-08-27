@@ -1,4 +1,7 @@
-// The two numbers that decide what the people who funded this season are paid.
+// The two numbers that decide what the people who funded this season are paid,
+// and — since payout.html was merged into this screen — who gets what, and the
+// send itself.
+//
 // The arithmetic shown here is the same arithmetic the server will do; it is
 // shown first so a typo is caught before it is irreversible.
 //
@@ -8,9 +11,50 @@
 // raised, all three were wrong -- on the one screen in the product a farmer
 // cannot take back.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind } from '../bind.js';
+import { bind, rows } from '../bind.js';
 import { asField, acts, press } from '../wire.js';
 import { rupees } from '../api.js';
+
+/* Indian grouping, as you type.
+ *
+ * The cost field showed "2,58,400" because that string was DRAWN on the
+ * artboard; the moment a farmer typed into the box beside it they got a bare
+ * "945000". Two figures on one screen, formatted two different ways, one of
+ * them the one they are responsible for.
+ *
+ * en-IN is lakh grouping -- three digits then pairs -- which is what every
+ * printed figure in this product already uses via rupees().
+ */
+const digitsOnly = (v) => String(v).replace(/[^\d]/g, '');
+const grouped = (v) => {
+  const d = digitsOnly(v).replace(/^0+(?=\d)/, '');
+  return d ? Number(d).toLocaleString('en-IN') : '';
+};
+
+/* Reformatting rewrites the whole value, which sends the caret to the end. That
+ * is fine while typing at the end and wrong the moment somebody corrects a digit
+ * in the middle. So the position is kept in DIGITS -- the one unit the commas
+ * cannot move -- and mapped back afterwards.
+ */
+function groupLive(input) {
+  const apply = () => {
+    const before = input.value;
+    const caret = input.selectionStart ?? before.length;
+    const digitsBefore = digitsOnly(before.slice(0, caret)).length;
+    const next = grouped(before);
+    if (next === before) return;
+    input.value = next;
+    let seen = 0, pos = next.length;
+    for (let i = 0; i < next.length; i++) {
+      if (/\d/.test(next[i])) seen++;
+      if (seen === digitsBefore) { pos = i + 1; break; }
+    }
+    if (digitsBefore === 0) pos = 0;
+    try { input.setSelectionRange(pos, pos); } catch { /* not a text input */ }
+  };
+  input.addEventListener('input', apply);
+  return apply;
+}
 
 const ctx = requireUser('report-harvest', ['farmer']);
 if (ctx) load(ctx.root, async () => {
@@ -22,11 +66,9 @@ if (ctx) load(ctx.root, async () => {
     api.investments.onProject(id).catch(() => []),
   ]);
   const share = project.investorShare || 0;
-  const n = investors.length;
+  const done = Boolean(project.harvestReportedAt);
+  const pool = investors.reduce((a, i) => a + (i.amount || 0), 0);
   bind(ctx.root, {
-    whoIsPaid: n
-      ? `These two numbers decide what your ${n === 1 ? 'one investor is' : n + ' investors are'} paid.`
-      : 'These two numbers decide what anyone who funded this season is paid.',
     shareLine: `Your investors get ${share}%`,
     principal: rupees(project.fundedAmount || project.amount || 0),
   });
@@ -38,15 +80,38 @@ if (ctx) load(ctx.root, async () => {
     placeholder: i === 0 ? '9,32,000' : '2,58,400',
     label: i === 0 ? 'What did you sell it for' : 'What did it cost you to grow',
   }));
+  inputs.forEach(i => { if (i) groupLive(i); });
+
+  const read = () => inputs.map(i => Number(digitsOnly(i?.value || '')) || 0);
+
+  /* Who gets what. This was the entire content of the second screen: each
+   * person's slice of the POOL, not an equal split.
+   *
+   * Built ONCE. rows() clones a template, fills it and removes the template,
+   * and it ends in arrive() -- so calling it on every keystroke would re-run the
+   * staged entrance while somebody is still typing. Only the amount changes as
+   * the numbers change, so only the amount is rewritten.
+   */
+  const payeeRows = rows(ctx.root, 'payee', investors.map(inv => ({
+    pct: (pool ? Math.round(100 * (inv.amount || 0) / pool) : 0) + '%',
+    name: inv.investorName || inv.investor?.name || 'An investor',
+    put: `Put in ${rupees(inv.amount || 0)}`,
+    amount: rupees(0),
+  })));
+  if (!investors.length) ctx.root.querySelector('[data-sec="payees"]')?.remove();
 
   const recompute = () => {
-    const [rev, cost] = inputs.map(i => Number(String(i.value).replace(/[^\d]/g, '')) || 0);
-    const profit = Math.max(0, rev - cost);
+    const [rev, cost] = read();
+    // A failed crop sold for nothing, whatever is still typed in the box.
+    const profit = Math.max(0, (failed ? 0 : rev) - cost);
     const toInv = Math.round(profit * share / 100);
     bind(ctx.root, { profit: rupees(profit), toInvestors: rupees(toInv), youKeep: rupees(profit - toInv) });
+    payeeRows.forEach((el, i) => {
+      const put = investors[i]?.amount || 0;
+      const cell = el.querySelector('[data-slot="amount"]');
+      if (cell) cell.textContent = rupees(pool ? Math.round(toInv * put / pool) : 0);
+    });
   };
-  inputs.forEach(i => i.addEventListener('input', recompute));
-  recompute();
 
   // Crop failure. The route has always accepted total_loss; this screen had no
   // way to say it, and its own gate refused to move without a sale figure -- so
@@ -67,12 +132,15 @@ if (ctx) load(ctx.root, async () => {
         : '';
     }
     failRow?.setAttribute('aria-checked', String(failed));
-    // With nothing sold there is nothing to type, so the boxes stop asking.
-    inputs.forEach((i) => {
-      if (!i) return;
-      i.disabled = failed && i === inputs[0];
-      if (failed && i === inputs[0]) i.value = '';
-    });
+    /* The box stops asking, and REMEMBERS.
+     *
+     * It used to do `i.value = ''` on tick, so ticking the line threw away the
+     * figure that had just been typed and unticking gave back an empty box. A
+     * farmer who ticked it to read the explanation lost their work. Disabled is
+     * enough to say "not being asked for"; the arithmetic already treats a
+     * failed crop as nothing sold, so the value does not need to be destroyed
+     * to be ignored. */
+    if (inputs[0]) inputs[0].disabled = failed;
     recompute();
   };
   if (failRow) {
@@ -81,24 +149,74 @@ if (ctx) load(ctx.root, async () => {
       failed = !failed;
       paintFail();
     });
-    paintFail();
   }
+  // Typing changes every figure below, so typing recomputes them. groupLive
+  // adds its own listener for the commas; this is the arithmetic.
+  inputs.forEach(i => i?.addEventListener('input', recompute));
+  if (failRow) paintFail(); else recompute();
 
-  const send = [...ctx.root.querySelectorAll('div')].find(d => d.textContent.trim() === 'Send these numbers');
-  send?.setAttribute('data-act', '');
-  send?.addEventListener('click', () => {
-    const [rev, cost] = inputs.map(i => Number(String(i.value).replace(/[^\d]/g, '')) || 0);
-    if (failed) {
-      location.href = `./payout.html?project=${id}&revenue=0&costs=${cost}&failed=1`;
-      return;
-    }
-    if (!rev) {
-      return state(ctx.root, 'waiting', 'Tell us what you sold it for',
-        'Without that figure nobody can be paid. If the crop failed and there was nothing to sell, '
-        + 'tick the line above instead.');
-    }
-    location.href = `./payout.html?project=${id}&revenue=${rev}&costs=${cost}`;
-  });
+  /* ---- sending, which used to be a second screen ---------------------
+   * report-harvest handed its two numbers to payout.html in the query string
+   * and payout did the POST. payout showed those same two numbers again plus
+   * the per-investor split; the split is on this screen now, so the second
+   * screen had nothing left to add and a click on a page that repeats the
+   * previous one is not a safeguard.
+   */
+  const sendBtn = ctx.root.querySelector('[data-send]');
+  const label = sendBtn?.firstElementChild;
+
+  if (done) {
+    // Already reported. The form is a record now: it must not offer to do it
+    // again, and it must not imply the figures can still be changed.
+    const when = new Date(project.harvestReportedAt)
+      .toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+    if (inputs[0]) inputs[0].value = grouped(project.harvestRevenue || 0);
+    if (inputs[1]) inputs[1].value = grouped(project.inputCostBasis || 0);
+    inputs.forEach(i => { if (i) i.disabled = true; });
+    failRow?.remove();
+    sendBtn?.remove();
+    recompute();
+    bind(ctx.root, { warning: `This was sent on ${when}. Each person has been told their `
+      + 'amount and the figures cannot be changed here.' });
+    const t = ctx.root.querySelector('[data-title]');
+    if (t) t.textContent = 'What you reported';
+  } else if (sendBtn) {
+    acts(sendBtn, 'Send these numbers', async () => {
+      const [rev, cost] = read();
+      if (!failed && !rev) {
+        return state(ctx.root, 'waiting', 'Tell us what you sold it for',
+          'Without that figure nobody can be paid. If the crop failed and there was nothing to sell, '
+          + 'tick the line above instead.');
+      }
+      const revenue = failed ? 0 : rev;
+      const was = label ? label.textContent : '';
+      if (label) label.textContent = 'Sending…';
+      sendBtn.setAttribute('aria-disabled', 'true');
+      try {
+        await api.projects.reportHarvest(id, {
+          harvestRevenue: revenue,
+          inputCostBasis: cost,
+          // FundingRequest.outcome is one of harvested | partial_loss |
+          // total_loss. 'profit' and 'loss' are not values it accepts, and the
+          // route answered 400 -- written from the enum this time, not guessed.
+          outcome: revenue === 0 ? 'total_loss'
+            : (revenue > cost ? 'harvested' : 'partial_loss'),
+        });
+        location.href = './money.html?settled=' + id;
+      } catch (err) {
+        if (label) label.textContent = was;
+        sendBtn.removeAttribute('aria-disabled');
+        // Beside the button, which is where the reader is looking.
+        let holder = ctx.root.querySelector('[data-sendfail]');
+        if (!holder) {
+          holder = document.createElement('div');
+          holder.setAttribute('data-sendfail', '');
+          sendBtn.after(holder);
+        }
+        state(holder, 'failed', 'That was not accepted', err.message);
+      }
+    });
+  }
 
   press(ctx.root);
 });

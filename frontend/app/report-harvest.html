@@ -233,15 +233,12 @@
 
           <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 340px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
       <div class="main">
-<div style="padding: 18px 20px; flex-grow: 1;">
-        <div style="background: #f2e6cd; padding: 14px 15px;">
-          <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">You can only do this once</div>
-          <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
-            <span data-bind="whoIsPaid">These two numbers decide what your four investors are paid.</span> Check them before you send.
-          </div>
-        </div>
-
-        <div style="margin-top: 18px;">
+<!-- 14px top, the same as the rail card beside it, so the first thing in each
+     column sits on the same line. The amber panel that used to open this column
+     pushed everything here 100px below the button it was talking about, which is
+     the uneven top edge that was reported. -->
+<div style="padding: 14px 20px 18px; flex-grow: 1;">
+        <div>
           <div style="font-size: 16px; font-weight: 600;">What did you sell it for?</div>
           <div style="background: #f6f3ef; height: 60px; max-width: 320px; margin-top: 7px; display: flex; align-items: center; padding: 0 16px; box-shadow: inset 0 0 0 2px #1d1a17;">
             <div data-bind="revenue" class="m" style="font-size: 21px; font-weight: 700;">₹9,32,000</div>
@@ -284,6 +281,33 @@
             <div data-bind="toInvestors" class="m" style="font-size: 17px; font-weight: 700;">₹4,04,160</div>
           </div>
           <div style="height: 1px; background: #ddd7d1; margin: 12px 0;"></div>
+
+          <!-- ══ who gets what ══
+               This was a second screen. It showed these two numbers again and
+               added this list, so the list is what it was FOR -- and a
+               confirmation page whose only new information can be shown here
+               is a page. Every figure and every name is now on the one screen
+               the send button is on, which is a better guarantee than a second
+               click on a screen that repeats the first. -->
+          <div data-sec="payees" style="font-size: 14.5px; font-weight: 700; color: #605a53;">Who gets what</div>
+          <div data-row="payee" style="display: flex; align-items: center; gap: 13px; margin-top: 9px;">
+            <div data-slot="pct" class="m" style="min-width: 42px; font-size: 14.5px; font-weight: 700; color: #605a53;">100%</div>
+            <div style="flex-grow: 1;">
+              <div data-slot="name" style="font-size: 15.5px; font-weight: 600;">Meena Rao</div>
+              <div data-slot="put" class="m" style="font-size: 13.5px; color: #605a53; margin-top: 1px;">Put in ₹3,00,000</div>
+            </div>
+            <div data-slot="amount" class="m" style="font-size: 17px; font-weight: 700;">₹4,04,160</div>
+          </div>
+          <div data-row="payee" style="display: flex; align-items: center; gap: 13px; margin-top: 9px;">
+            <div data-slot="pct" class="m" style="min-width: 42px; font-size: 14.5px; font-weight: 700; color: #605a53;">40%</div>
+            <div style="flex-grow: 1;">
+              <div data-slot="name" style="font-size: 15.5px; font-weight: 600;">Ravi Kumar</div>
+              <div data-slot="put" class="m" style="font-size: 13.5px; color: #605a53; margin-top: 1px;">Put in ₹2,00,000</div>
+            </div>
+            <div data-slot="amount" class="m" style="font-size: 17px; font-weight: 700;">₹1,61,664</div>
+          </div>
+
+          <div style="height: 1px; background: #ddd7d1; margin: 13px 0;"></div>
           <div style="display: flex; justify-content: space-between; align-items: baseline;">
             <div style="font-size: 17px; font-weight: 700;">You keep</div>
             <div data-bind="youKeep" class="m" style="font-size: 22px; font-weight: 700;">₹2,69,440</div>
@@ -296,24 +320,24 @@
       </div>
       <div class="rail">
 <div style="background: #f6f3ef; padding: 14px 20px 18px;">
-        <!-- The one irreversible action in the product, so it gets the one
-             piece of choreography: a folder opens, a pencil comes across, a
-             sheet lifts. You are filing a record. Markup and CSS from
-             uiverse.io/Nawsome/unlucky-mayfly-5 (MIT); see tokens.css. -->
-        <div data-file-it="" class="filing" style="background: #016abe; min-height: 60px; display: flex; align-items: center; justify-content: center;">
-          <div class="filing__well" aria-hidden="true">
-            <div class="filing__pencil"></div>
-            <div class="filing__folder">
-              <div class="filing__top">
-                <svg viewBox="0 0 24 27"><path d="M1,0 L23,0 C23.5522847,-1.01453063e-16 24,0.44771525 24,1 L24,8.17157288 C24,8.70200585 23.7892863,9.21071368 23.4142136,9.58578644 L20.5857864,12.4142136 C20.2107137,12.7892863 20,13.2979941 20,13.8284271 L20,26 C20,26.5522847 19.5522847,27 19,27 L1,27 C0.44771525,27 6.76353751e-17,26.5522847 0,26 L0,1 C-6.76353751e-17,0.44771525 0.44771525,1.01453063e-16 1,0 Z"></path></svg>
-              </div>
-              <div class="filing__paper"></div>
-            </div>
-          </div>
+        <!-- A label and an arrow, on the right, like every other button in this
+             product.
+             It used to carry a filing choreography from
+             uiverse.io/Nawsome/unlucky-mayfly-5: a 53px slot on the LEFT of the
+             label holding a folder that opened on hover. At rest that slot read
+             as a cream artifact stuck to the side of the button, and no site
+             puts a submit affordance to the left of its label. The idea was
+             right for this action -- you are filing a record -- but a button is
+             not the place for furniture, and this product already has one
+             bespoke button flourish in the wheat. -->
+        <div data-send="" style="background: #016abe; min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 8px;">
           <div style="font-size: 18px; font-weight: 700; color: #fff;">Send these numbers</div>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
         </div>
-        <div style="font-size: 13.5px; line-height: 1.45; margin-top: 9px; color: #605a53;">
-          One more screen shows each investor and what they get, before anything is final.
+        <!-- The one thing worth saying beside this button, in place of a
+             promise of another screen that no longer exists. -->
+        <div data-bind="warning" style="font-size: 13.5px; line-height: 1.5; margin-top: 11px; color: #7c4a12;">
+          This cannot be undone. Once you send it, each person is told their amount and the season is closed.
         </div>
       </div>
       </div>

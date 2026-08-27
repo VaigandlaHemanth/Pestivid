@@ -36,7 +36,6 @@ const CHECKS = [
   // the unread count moved with them.
   ['messages',       'farmer',   'conversation'],
   ['notifications',  'farmer',   'you have not read'],
-  ['payout',         'farmer',   'No season chosen'],
   ['report-harvest', 'farmer',   'No season chosen'],
   ['thread',  'farmer',   'No conversation chosen'],
   ['plot',           'farmer',   'No plot chosen'],

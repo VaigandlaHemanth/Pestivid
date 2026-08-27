@@ -37,7 +37,6 @@ export const PAGES = {
   'plot':               { title: 'Plot', role: 'farmer' },
   'ask-money':          { title: 'Ask for money', role: 'farmer' },
   'money':              { title: 'Money', role: 'farmer' },
-  'payout':             { title: 'Check who gets what', role: 'farmer' },
   // Shared by all four roles, so not the farmer's. A buyer reaching a page
   // marked 'farmer' got the farmer's nav bar and thought they were in the wrong
   // app -- which they were.

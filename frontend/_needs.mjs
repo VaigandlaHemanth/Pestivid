@@ -39,11 +39,10 @@ export async function needs() {
     const fid = farmer.user?._id || farmer.user?.id;
     const projects = (await get(`/funding-requests/farmer/${fid}`, farmer.token)) || [];
     const list = Array.isArray(projects) ? projects : (projects.projects || []);
-    // report-harvest wants one that has NOT been reported; payout is happy
+    // report-harvest wants one that has NOT been reported: it is the form
     // either way and is more useful showing the reported record.
     const open = list.find(p => !p.harvestReportedAt) || list[0];
     const reported = list.find(p => p.harvestReportedAt) || list[0];
-    if (reported) out.payout = `?project=${reported._id}`;
     if (open) out['report-harvest'] = `?project=${open._id}`;
 
     const videos = (await get(`/videos/farmer/${fid}`, farmer.token)) || [];

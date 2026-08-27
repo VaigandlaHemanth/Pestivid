@@ -18,7 +18,7 @@ import path from 'node:path';
 // the drawing it actually runs on.
 const BOARD = {
   landing: 'Main', signin: 'Login', signup: 'Login', home: 'Home', plots: 'Plots',
-  plot: 'Plot', record: 'Record', sent: 'Sent', money: 'Money', payout: 'Payout',
+  plot: 'Plot', record: 'Record', sent: 'Sent', money: 'Money',
   'report-harvest': 'Confirm', 'ask-money': 'AskMoney', 'leaf-check': 'LeafCheck',
   ask: 'Ask', messages: 'Messages', notifications: 'Messages', thread: 'Thread',
   profile: 'Profile', invest: 'Invest', portfolio: 'Portfolio', market: 'Market',
