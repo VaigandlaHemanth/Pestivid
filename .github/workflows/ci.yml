@@ -115,7 +115,12 @@ jobs:
       # the OOD score that flipped verdicts to "not a potato leaf" in production.
       - name: Feature parity, browser code vs server (headless)
         working-directory: backend
-        run: npm i --no-save @huggingface/transformers@3.7.5 && node test_feature_parity.mjs
+        #
+        # No `npm i --no-save @huggingface/transformers` here any more. It is a
+        # devDependency, so `npm ci` above has already installed it -- and an
+        # ad-hoc install is the one thing that could re-resolve the tree and
+        # undo the `sharp` override that package.json exists to pin.
+        run: node test_feature_parity.mjs
 
       # NOT `npm audit --audit-level=moderate`. That exits 1 on this project and
       # always will: every advisory lives under `opentimestamps`, which has no
