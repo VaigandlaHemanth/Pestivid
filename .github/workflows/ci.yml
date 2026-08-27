@@ -10,7 +10,10 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    # frontend is where the work happens. Without it here, every push to that
+    # branch ran no checks at all and the two parity failures below sat unseen
+    # on main for days.
+    branches: [main, frontend]
   pull_request:
   workflow_dispatch:
 
