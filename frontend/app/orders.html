@@ -38,14 +38,24 @@
     .act:hover { color: #013f70; }
   </style>
 </head>
-<body data-page="orders" data-role="buyer" data-design-width="1320" data-design-height="1224">
+<body data-page="orders" data-role="buyer" data-design-width="1320" data-design-height="1213">
 <div data-surface="desk" data-w="1320" class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #f3f6f9; color: #1d1a17; box-sizing: border-box;">
 
   <div style="background: #fff; padding: 15px 44px; display: flex; align-items: center; gap: 34px; box-shadow: inset 0 -1px 0 #e0e6ec;">
     <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.022em; min-height: 44px; display: flex; align-items: center;">Pestivid</div>
     <div style="display: flex; gap: 26px; align-items: center; flex-grow: 1;">
       <div class="nav">Lots for sale</div>
-      <h1 data-title="" class="navOn">What you bought</h1>
+      <!-- A plain nav slot. This was
+           `<h1 data-title class="navOn">What you bought</h1>` -- the bar's nav
+           item and the page's declared heading and an h1, one element doing all
+           three, and it cost three things at once. relabel() scans div/span/a, so
+           it found two slots where a buyer wants three, bailed, and left this bar
+           saying "Lots for sale" and "What you bought" while market.html beside it
+           said "Buy produce" and "My orders" for those very same two destinations.
+           wire.js takes [data-title] as the page's heading, so the heading was a
+           nav word. And the real h1 below says the same four words again, which
+           put two h1s on one screen. -->
+      <div class="nav">What you bought</div>
       <div class="nav">Chat</div>
     </div>
     <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
@@ -58,7 +68,7 @@
   <div style="padding: 32px 44px 44px;">
 
     <div data-bind="buyer.line" class="lbl">Deccan Cold Storage · buyer since March 2026</div>
-    <h1 style="margin: 4px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.03em;">What you bought</h1>
+    <h1 data-title="" style="margin: 4px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.03em;">What you bought</h1>
 
     <div style="display: grid; grid-template-columns: minmax(168px, max-content) minmax(248px, max-content) 1fr; margin-top: 26px; align-items: start; box-shadow: inset 0 1px 0 #1d1a17, inset 0 -1px 0 #e4e9ee;">
       <div style="padding: 18px 26px 18px 0;">

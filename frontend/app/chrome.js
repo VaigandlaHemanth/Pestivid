@@ -203,6 +203,22 @@ const BACK = {
   notifications: 'home',
 };
 
+/* Which nav word a page BELONGS to, where that is not the page itself.
+ *
+ * A plot's detail screen is one of My plots; the send confirmation is about a
+ * video that lives there; asking for money and reporting the harvest are both
+ * Money. Underlining the parent is how a bar says "you are inside this", and
+ * dropping it left those five screens with a bar that pointed nowhere.
+ *
+ * Deliberately absent: the leaf check, the assistant, notifications and the
+ * profile. Each is reached from a card, the bell or the avatar rather than from
+ * the bar, so no word is theirs and none should claim to be. */
+const SECTION = {
+  plot: 'plots', record: 'plots', sent: 'plots',
+  'ask-money': 'money', 'report-harvest': 'money',
+  'confirm-investment': 'invest',
+};
+
 export function deskNav(root, user) {
   const here = (document.body.dataset.page || '').trim();
 
@@ -233,7 +249,26 @@ export function deskNav(root, user) {
     const t = el.textContent.trim();
     const dest = t === 'Pestivid' ? (HOME[user?.role] || 'home') : DEST[t];
     if (!dest) continue;
-    if (dest === here) { el.setAttribute('aria-current', 'page'); continue; }
+    /* WHICH WORD IS UNDERLINED IS A FACT ABOUT WHERE YOU ARE --------------------
+     *
+     * .appnavOn -- bold, with a 2px rule under it -- was drawn into each board by
+     * hand, and four boards drew it on "My plots". Two of them are not that page.
+     * Standing on home the farmer read a bar with "My plots" underlined as the
+     * screen they were on, directly above a link in the content that also said
+     * "My plots" and was the one that actually went there: the same three words
+     * twice, one of them claiming to be here. leaf-check did the same. The
+     * aria-current below was already right, so a screen reader was told the truth
+     * while the eye was told otherwise.
+     *
+     * The underline follows `here` now. A page with no word of its own -- home is
+     * reached by the wordmark, the leaf check by a card -- underlines nothing,
+     * which is what is true. */
+    const on = dest === here || dest === SECTION[here];
+    if (el.classList.contains('appnav') || el.classList.contains('appnavOn')) {
+      el.classList.toggle('appnavOn', on);
+      el.classList.toggle('appnav', !on);
+    }
+    if (on) { el.setAttribute('aria-current', 'page'); continue; }
     /* Never the back link.
      *
      * This scanner claims anything in the top 110px whose text is a known
