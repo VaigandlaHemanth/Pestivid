@@ -196,6 +196,13 @@ export function state(container, kind, headline, detail, action) {
     });
     box.append(a);
   }
+  /* Marked before ANY of the paths below return.
+   *
+   * It started life just above the last one, so a box placed by the page-root
+   * branch never carried it -- and record.js, which reaches for the mark to
+   * centre its camera refusal, found nothing at all. A mark that only some of
+   * the exits apply is worse than none: it reads as absence. */
+  box.setAttribute('data-statebox', '');
   // An empty state must not replace the PAGE. Nine call sites handed this the
   // page root, and replaceChildren() then took the header, the heading and the
   // back arrow with it -- so "No season chosen" arrived on a screen with no
@@ -251,7 +258,6 @@ export function state(container, kind, headline, detail, action) {
    * Repeated failures do not stack: each box carries a mark so the one before it
    * is removed rather than pushed down the page.
    */
-  box.setAttribute('data-statebox', '');
   if (kind === 'empty') {
     container.replaceChildren(box);
     return;

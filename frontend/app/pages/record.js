@@ -32,8 +32,23 @@ function refuse(headline, detail) {
    * rest of the children. The page keeps filling the window, the way every other
    * empty state here does. */
   ctx.root.style.minHeight = '100vh';
-  return state(ctx.root, 'failed', headline, detail,
+  const shown = state(ctx.root, 'failed', headline, detail,
     { label: 'Pick a file instead', act: () => pick.click() });
+  /* And it sits IN that height rather than on top of it.
+   *
+   * Filling the window stopped the page splitting into two colours, but left the
+   * message clinging to the top-left of six hundred pixels of black. A refusal
+   * is the only thing on this screen; standing it in the middle of the dark
+   * says "the viewfinder is dead, here is why", where the same words pinned to
+   * the top edge just look unfinished.
+   *
+   * `margin: auto` on a flex item absorbs the free space above and below it. The
+   * header stays where it is -- it is the first item and takes its own height. */
+  ctx.root.style.display = 'flex';
+  ctx.root.style.flexDirection = 'column';
+  const box = ctx.root.querySelector('[data-statebox]');
+  if (box) box.style.margin = 'auto 20px';
+  return shown;
 }
 
 /**
