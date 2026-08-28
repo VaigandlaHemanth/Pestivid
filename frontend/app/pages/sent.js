@@ -40,8 +40,11 @@ if (ctx) {
     // off `window`, which the navigation from record.html had already thrown
     // away -- so this screen always said there was no clip.
     const clip = await takeClip();
+    // A one-second clip is a second, not "1 seconds". Held in a name so the
+    // rounding is not repeated inside its own sentence.
+    const secs = clip ? Math.round(clip.duration || 0) : 0;
     bind(root, { clip: { line: clip
-      ? `${Math.round(clip.duration || 0)} seconds · ${(clip.size / 1e6).toFixed(1)} MB · on your phone`
+      ? `${secs} second${secs === 1 ? '' : 's'} · ${(clip.size / 1e6).toFixed(1)} MB · on your phone`
       : 'Nothing filmed yet' } });
 
     if (!clip) {

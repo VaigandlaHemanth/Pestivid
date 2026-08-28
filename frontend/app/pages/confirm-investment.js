@@ -34,7 +34,7 @@ if (ctx) {
     bind(root, {
       lot: {
         title: p.title,
-        meta: [p.farmerName, p.acres && `${p.acres} acres`, p.crop].filter(Boolean).join(' · '),
+        meta: [p.farmerName, p.acres && `${p.acres} acre${p.acres === 1 ? '' : 's'}`, p.crop].filter(Boolean).join(' · '),
         needed: rupees(Math.max(0, (p.amount || 0) - (p.fundedAmount || 0))),
         // These two were not bound at all -- the artboard's "60%" and
         // "Harvest reported, about 7 weeks" were shown to an investor about to

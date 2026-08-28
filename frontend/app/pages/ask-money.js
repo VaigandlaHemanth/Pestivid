@@ -317,7 +317,7 @@ if (ctx) load(ctx.root, async () => {
     nextLabel.textContent = 'Sending…';
     try {
       const created = await api.projects.create({
-        title: `${f.crop || 'Crop'}, ${f.acres || 1} acres`,
+        title: `${f.crop || 'Crop'}, ${f.acres || 1} acre${(f.acres || 1) === 1 ? '' : 's'}`,
         crop: f.crop || 'Crop',
         acres: f.acres || 1,
         amount: f.amount,

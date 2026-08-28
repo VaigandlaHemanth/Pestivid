@@ -118,7 +118,7 @@ if (ctx) {
         title: picked.size ? [...picked].join(', ') : 'Everything for sale',
         sub: shown.length === active.length
           ? `${active.length} lot${active.length === 1 ? '' : 's'} listed`
-          : `${shown.length} of ${active.length} lots`,
+          : `${shown.length} of ${active.length} lot${active.length === 1 ? '' : 's'}`,
       } });
       if (!shown.length) {
         state(list, 'empty', 'Nothing matches that',

@@ -54,7 +54,7 @@ if (ctx) {
       // "Organic Wheat Expansion" appeared twice, at ₹55,000 and ₹1,00,000, under
       // a heading that called them three seasons. It counts what it lists.
       heading: mine.length === 1 ? 'Your one investment'
-             : `Your ${WORDS[mine.length] || mine.length} investments`,
+             : `Your ${WORDS[mine.length] || mine.length} investment${mine.length === 1 ? '' : 's'}`,
       investor: { name: ctx.user.name },
       labels: { putIn: 'You have put in, all together' },
       // The note described the artboard's mix -- "two have not finished and one

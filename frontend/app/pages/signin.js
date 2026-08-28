@@ -5,11 +5,27 @@ import { state, oneByText } from '../bind.js';
 
 const root = wire('signin');
 
-// One field, either credential. A separate page for farmers was a second door
-// into the same room, on a product whose primary user is a farmer.
-const who = asField(oneByText('98765 43210', root), {
-  type: 'text', name: 'who', autocomplete: 'username',
-  placeholder: '98765 43210', label: 'Your phone number or email address',
+/* One field, one credential: the address the account was made with.
+ *
+ * It used to show `98765 43210` and tell a screen reader "your phone number or
+ * email address", under a label reading "Email address" and a sentence saying
+ * "sign in with the email address you made the account with". Three of those
+ * four said email and the example said phone.
+ *
+ * The phone was not merely inconsistent, it was impossible. Nothing in this
+ * codebase can create a phone account any more -- setup-identity, which did,
+ * is gone -- and the database holds none. A farmer following the example was
+ * being invited to type a credential that could only ever come back "no
+ * account". `ravi@example.com` is the same example the create-account panel
+ * below already uses.
+ */
+const who = asField(oneByText('ravi@example.com', root), {
+  type: 'email', name: 'who', autocomplete: 'username',
+  // you@, not ravi@: the board's specimen is a filled-in example, but a
+  // placeholder speaks to the person about to type. The create-account panel on
+  // this same page already says you@example.com, and two panels of one page
+  // holding up two different examples is one of them being wrong.
+  placeholder: 'you@example.com', label: 'Your email address',
 });
 const pass = asField(oneByText('••••••••', root), {
   type: 'password', name: 'password', autocomplete: 'current-password',
@@ -67,13 +83,13 @@ async function submit() {
   const was = label.textContent;
   label.textContent = 'Signing in…';
   try {
-    // Ten digits is a phone number, and a phone account's address is derived
-    // from it exactly as setup-identity registers one. Anything else is already
-    // an address, so nobody has to choose a door.
-    const typed = who.value.trim();
-    const digits = typed.replace(/[^\d]/g, '');
-    const asPhone = digits.length === 10 && !typed.includes('@');
-    const r = await api.auth.login(asPhone ? `${digits}@phone.pestivid.local` : typed, pass.value);
+    /* Ten digits used to be turned into `<digits>@phone.pestivid.local`, the
+     * address setup-identity gave a phone account. That page is retired, nothing
+     * else can register one, and the database holds zero of them -- so the
+     * branch could only ever build an address that does not exist and hand back
+     * "no account". Dead code that fabricates a credential is worse than none:
+     * it made a phone number look like a thing you could sign in with. */
+    const r = await api.auth.login(who.value.trim(), pass.value);
     session.set(r.token, r.user);
     const home = { farmer: 'home', investor: 'invest', buyer: 'market', admin: 'admin' }[r.user.role] || 'home';
     location.href = `./${home}.html`;

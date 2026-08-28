@@ -129,9 +129,53 @@ for (const f of readdirSync('frontend/app/pages').filter((n) => n.endsWith('.js'
   });
 }
 
+/* And a third: does a counted noun agree with the number in front of it?
+ *
+ * The invest page read "1 acres, hydroponic · 4 months" on a one-acre season.
+ * Eight places in this codebase already get this right with the same small
+ * idiom -- `${n} season${n === 1 ? '' : 's'}` -- and ten did not, so the
+ * convention existed and was simply missed: five acres, two months, a "1 of 1
+ * lots", "1 seconds" on the send screen and "Your one investments" on the
+ * portfolio.
+ *
+ * It is a heuristic, deliberately: a number in a template followed by a plural
+ * noun this product counts, on a line with no pluralising ternary. That is
+ * exactly the shape of every one of the ten, and it cannot see a count assembled
+ * across two lines. Being narrow is the point -- a check that cries wolf is a
+ * check that gets ignored.
+ */
+const COUNTED = ['acres', 'months', 'videos', 'seasons', 'lots', 'dates', 'days',
+  'weeks', 'seconds', 'minutes', 'investments', 'buyers', 'investors', 'people',
+  'plots', 'rows', 'files', 'orders'];
+let mismatched = 0, counts = 0;
+for (const f of readdirSync('frontend/app/pages').filter((n) => n.endsWith('.js'))
+  .map((n) => path.join('frontend/app/pages', n))) {
+  readFileSync(f, 'utf8').split('\n').forEach((line, i) => {
+    const t = line.trim();
+    if (t.startsWith('//') || t.startsWith('*')) return;
+    // already pluralised on this line, by the idiom the rest of the code uses
+    if (/\?\s*''\s*:\s*'s'/.test(line)) return;
+    for (const m of line.matchAll(/\$\{([^}]+)\}\s+([a-z]+)\b/g)) {
+      if (!COUNTED.includes(m[2])) continue;
+      /* The expression has to look like a NUMBER.
+       *
+       * market.js labels a crop filter `${row.name} lots` -- "Tomatoes lots" --
+       * where the noun is generic and the expression is a crop. Reading that as
+       * "1 lots" is the check being wrong about a line that is right, which is
+       * how a check earns being ignored. */
+      if (!/length|count|acres|timeline|total|size|\bn\b|\bsecs?\b|\d/.test(m[1])) continue;
+      counts++;
+      mismatched++;
+      console.log(`  ${f}:${i + 1}  "\${${m[1].trim()}} ${m[2]}" with nothing to make it singular`
+        + `  — one of these reads "1 ${m[2]}"`);
+    }
+  });
+}
+
 console.log(`
   ${dead} selector(s) keyed on a colour instead of a mark,`
   + ` of ${checked} found`);
 console.log(`  ${gone} destination(s) that no longer exist, of ${links} named`
   + ` across ${pages.size} pages`);
-process.exit(dead || gone ? 1 : 0);
+console.log(`  ${mismatched} counted noun(s) that cannot go singular`);
+process.exit(dead || gone || mismatched ? 1 : 0);

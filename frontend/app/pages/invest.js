@@ -25,8 +25,8 @@ if (ctx) load(ctx.root, async () => {
     title: p.title,
     // One dot, not two: the size and the method are one fact about the land,
     // the length is a separate one.
-    meta: [[p.acres && `${p.acres} acres`, p.method].filter(Boolean).join(', '),
-           p.timeline && `${p.timeline} months`].filter(Boolean).join(' · '),
+    meta: [[p.acres && `${p.acres} acre${p.acres === 1 ? '' : 's'}`, p.method].filter(Boolean).join(', '),
+           p.timeline && `${p.timeline} month${p.timeline === 1 ? '' : 's'}`].filter(Boolean).join(' · '),
     raised: rupees(p.fundedAmount || 0),
     goal: `of ${rupees(p.amount)}`,
     pct: Math.min(100, Math.round(100 * (p.fundedAmount || 0) / (p.amount || 1))) + '%',
@@ -96,10 +96,10 @@ if (ctx) load(ctx.root, async () => {
 
     bind(ctx.root, {
       lot: {
-        season: [p.crop, p.timeline && `${p.timeline} months`].filter(Boolean).join(' · '),
+        season: [p.crop, p.timeline && `${p.timeline} month${p.timeline === 1 ? '' : 's'}`].filter(Boolean).join(' · '),
         title: p.title,
         farmer,
-        since: p.acres ? `· ${p.acres} acres` : '',
+        since: p.acres ? `· ${p.acres} acre${p.acres === 1 ? '' : 's'}` : '',
         needed: rupees(needed),
         goal: `of ${rupees(p.amount)}`,
       },
@@ -117,7 +117,7 @@ if (ctx) load(ctx.root, async () => {
         title: `${farmer} told us, nobody has checked`,
         body: [
           'That this is their land',
-          p.acres ? `that it is ${p.acres} acres` : null,
+          p.acres ? `that it is ${p.acres} acre${p.acres === 1 ? '' : 's'}` : null,
           p.crop ? `that it is ${p.crop.toLowerCase()}` : null,
           'and the sowing date.',
         ].filter(Boolean).join(', ') + ' A phone\u2019s reported location can be faked.',
