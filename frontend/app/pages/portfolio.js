@@ -89,6 +89,7 @@ if (ctx) {
 
     const header = body.children[0];
     const tpl = body.children[1]?.cloneNode(true);
+    tpl?.removeAttribute('data-specimen');      // the clones carry real stakes
     if (!tpl) return;
     body.replaceChildren(header);
 

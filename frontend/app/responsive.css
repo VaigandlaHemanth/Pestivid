@@ -50,6 +50,32 @@ body > div[style*="width: 824px"] {
   }
 }
 
+/* A DIALOG KEEPS ITS MEASURE ------------------------------------------------
+ *
+ * confirm-investment is drawn at 824px because it is a dialog: four rows of
+ * label-and-figure, a warning, a tickbox and one button. build-pages writes
+ * `max-width: none` on every wrapper, so on a laptop that dialog became a
+ * 1,366px white card edge to edge -- "You are sending" at the far left and
+ * "₹50,000" seventeen hundred pixels away at the far right, with the eye asked
+ * to carry one to the other across an empty page. It is the only screen in this
+ * product where money leaves somebody's account, and it read as a phone panel
+ * someone had stretched.
+ *
+ * It stays at its own width and sits on the ground, which is what the 824 in
+ * sizes.json meant. 880 rather than 824 for the breakpoint, so the card has air
+ * on both sides before it stops growing. */
+@media (min-width: 880px) {
+  [data-w="824"] {
+    max-width: 824px !important;
+    margin-top: 30px !important;
+    margin-bottom: 30px !important;
+    /* The wrapper carries min-height: 100vh so a full-bleed page fills the
+       window. A card is not a page: it left 250px of blank white under the last
+       line, inside the card, which reads as content that failed to load. */
+    min-height: 0 !important;
+  }
+}
+
 /* ── multi-column layouts, below the desktop breakpoint ─────────────────── */
 
 /* A breakpoint has to be below the design's OWN width or the page reflows while
@@ -391,3 +417,30 @@ body > div[style*="width: 824px"] {
   [data-phase="verdict"] .rail,
   [data-phase="refused"] .rail { align-self: stretch; }
 }
+
+/* ── a drawn specimen is not somebody's data ─────────────────────────────────
+ *
+ * Every bound list in this product is drawn with example rows in it, because an
+ * artboard has to show what a list looks like. The page then replaces them with
+ * the server's rows -- and measured on the notifications screen, those examples
+ * were on screen at full opacity for 126ms first: five invented notices about a
+ * "Canal plot" and a "Meena Rao" putting ₹50,000 into a "North plot", shown as
+ * if they had happened, on a product whose entire claim is that its records are
+ * real. That is the flicker on the bell, and the flash is the smaller half of
+ * the problem.
+ *
+ * The hiding has to happen before the first paint, so it is CSS and not script:
+ * the page module cannot run until its fetch resolves, which is exactly the
+ * 126ms in question.
+ *
+ * visibility, not display. The row keeps its box, so the list does not jump when
+ * the real rows land -- and, just as importantly, the geometry the board drew is
+ * the geometry the page reports, so verify-layout still compares the two
+ * meaningfully. This file is not loaded when a board is rendered, so the drawing
+ * still shows its examples, which is what a drawing is for.
+ *
+ * repeatRows() strips the mark from its template, so the real rows are visible.
+ * A list whose fetch fails shows nothing rather than fiction, which is the right
+ * way round.
+ */
+[data-specimen] { visibility: hidden; }

@@ -54,6 +54,9 @@ if (ctx) {
     const tape = root.querySelector('[data-transcript]');
     const bubbleTpl = root.querySelector('.them')?.cloneNode(true) || null;
     const dayTpl = root.querySelector('.day')?.cloneNode(true) || null;
+    // the clones carry real messages, so they are examples no longer
+    bubbleTpl?.removeAttribute('data-specimen');
+    dayTpl?.removeAttribute('data-specimen');
     const chipGroup = root.querySelector('[data-chips]');
     const spacer = root.querySelector('[data-spacer]');
     [...root.querySelectorAll('.them, .me, .day')].forEach(el => el.remove());

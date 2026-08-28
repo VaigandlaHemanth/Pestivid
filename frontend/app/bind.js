@@ -11,6 +11,16 @@
 const dig = (obj, path) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
 
 /** Fill one subtree from one object. */
+/* A drawn example stops being one the moment real data lands in it.
+ *
+ * responsive.css hides [data-specimen] before the first paint, which is how an
+ * artboard keeps its example rows without any page ever showing them as records.
+ * But a marked panel the server FILLS rather than replaces would stay invisible
+ * for good, so filling it clears the mark, and every cloner below clears it on
+ * its clones. Between them a mark can only ever hide something the page has not
+ * yet put real content into -- which is the whole point of it. */
+const unmark = (el) => el?.closest?.('[data-specimen]')?.removeAttribute('data-specimen');
+
 export function bind(root, data) {
   // Two calls over the same root must not wipe each other. A path whose FIRST
   // segment is absent from this call's data was not addressed by it, so it is
@@ -23,10 +33,11 @@ export function bind(root, data) {
     const v = dig(data, el.dataset.bind);
     el.textContent = v == null || v === '' ? 'not yet' : String(v);
     el.setAttribute('data-filled', '');
+    unmark(el);
   }
   for (const el of root.querySelectorAll('[data-bind-html]')) {
     const v = dig(data, el.dataset.bindHtml);
-    if (v != null) { el.textContent = String(v); el.setAttribute('data-filled', ''); }
+    if (v != null) { el.textContent = String(v); el.setAttribute('data-filled', ''); unmark(el); }
   }
   for (const el of root.querySelectorAll('[data-when]')) {
     let key = el.dataset.when, want = true;
@@ -95,6 +106,7 @@ export function repeat(container, rows, decorate) {
     const first = container.firstElementChild;
     if (!first) return;
     container.__tpl = first.cloneNode(true);
+    container.__tpl.removeAttribute('data-specimen');   // the clones are real rows
   }
   container.replaceChildren();
   const made = rows.map((row, i) => {
@@ -478,7 +490,14 @@ export const oneByText = (text, root = document) => byText(text, root)[0] || nul
  * empty white box behind it.
  */
 export function showPoster(el, video) {
-  if (!el || !video?.poster || el.querySelector('[data-poster]')) return null;
+  if (!el) return null;
+  /* "Nothing to show" and "nobody asked" look identical on screen and are not
+   * the same defect. A slot the page never wires needs code; a slot whose record
+   * carries no frame needs a poster cutting for that video. The mark says which,
+   * so verify-media can tell them apart instead of reporting both as empty. */
+  if (!video?.poster) { el.setAttribute('data-noposter', ''); return null; }
+  el.removeAttribute('data-noposter');
+  if (el.querySelector('[data-poster]')) return null;
   const cs = getComputedStyle(el);
   if (cs.position === 'static') el.style.position = 'relative';
   if (cs.overflow === 'visible') el.style.overflow = 'hidden';
@@ -636,6 +655,13 @@ export function repeatRows(root, selector, rows, decorate) {
   const anchor = document.createComment('rows');
   found[0].before(anchor);
   const tpl = found[0].cloneNode(true);
+  /* The template is a drawn SPECIMEN, and the rows made from it are not.
+   *
+   * responsive.css hides [data-specimen] before the first paint, so a board's
+   * example rows cannot be mistaken for somebody's data during the 126ms before
+   * the fetch resolves. The mark has to come off the template or every real row
+   * would inherit it and the list would render invisible. */
+  tpl.removeAttribute('data-specimen');
   found.forEach(el => el.remove());
   const made = rows.map((row, i) => {
     const el = tpl.cloneNode(true);
@@ -684,6 +710,7 @@ export function rows(root, name, items, decorate) {
   const made = [];
   for (const item of items) {
     const el = tpl.cloneNode(true);
+    el.removeAttribute('data-specimen');              // the clones are real rows
     for (const slot of el.querySelectorAll('[data-slot]')) {
       const v = item[slot.dataset.slot];
       if (v === undefined) continue;

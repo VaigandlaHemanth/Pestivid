@@ -65,6 +65,7 @@ if (ctx) load(ctx.root, async () => {
   }
   const body = ctx.root.querySelector('table tr')?.parentElement;
   const header = body.children[0], tpl = body.children[1]?.cloneNode(true);
+  tpl?.removeAttribute('data-specimen');        // the clones carry real orders
   if (!tpl) return;
   body.replaceChildren(header);
   // The table replaces a blank, so the rows arrive rather than appear.
