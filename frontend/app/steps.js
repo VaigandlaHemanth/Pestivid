@@ -52,15 +52,47 @@ export function multiStep(into, steps) {
    * and put the panel back on top of the photo. The question being asked is "did
    * its drawing give it geometry", and only the drawing can answer that. */
   if (!/position:\s*(absolute|fixed|relative)/.test(drawn)) into.style.margin = '16px 20px';
+  /* A connector between the steps, and it FILLS as each one lands.
+   *
+   * The send screen's pipeline has had this from the start -- the line travels
+   * from one marker to the next as the step above it completes -- and these four
+   * steps, which are the ones a farmer actually waits minutes in front of, had
+   * four markers floating with nothing joining them. Same design, same motion:
+   * a 2px track in the marker column, an inner bar scaled from the top.
+   *
+   * 9px of left margin, not 10: the marker here is 20px wide so its centre is at
+   * 10, and a 2px line centres on that at 9. The send screen's marker is 22px and
+   * its line sits at 10 for the same reason. Getting this wrong by one pixel is
+   * exactly the kind of drift that gets reported as "the alignment is off".
+   */
+  const lines = [];
+  const connector = () => {
+    const line = document.createElement('div');
+    line.setAttribute('data-stepline', '');
+    line.style.cssText = 'width: 2px; height: 18px; margin: 3px 0 3px 9px;'
+      + ' background: #d3ccc5; position: relative; overflow: hidden;';
+    const fill = document.createElement('div');
+    fill.style.cssText = 'position: absolute; inset: 0; background: #1d1a17;'
+      + ' transform-origin: top; transform: scaleY(0);'
+      + ' transition: transform var(--t-smooth, 746ms) var(--e-smooth, ease);';
+    line.append(fill);
+    lines.push({ line, fill });
+    return line;
+  };
+
   const rows = steps.map((s, i) => {
+    // The connector supplies the gap between rows, so the row no longer carries
+    // its own 13px top margin -- two spacings stacked would double it.
+    if (i) into.append(connector());
+
     const row = document.createElement('div');
-    row.style.cssText = 'display: flex; gap: 12px; align-items: flex-start;'
-      + (i ? ' margin-top: 13px;' : '');
+    row.style.cssText = 'display: flex; gap: 12px; align-items: flex-start;';
 
     // The dot is ink when a step is finished, not green: green in this product
     // means a fact anybody can check without trusting us, and "we downloaded a
     // file onto your phone" is our word for it.
     const dot = document.createElement('div');
+    dot.setAttribute('data-stepdot', '');
     dot.style.cssText = 'width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px;'
       + ' box-shadow: inset 0 0 0 2px #78716a; display: flex; align-items: center;'
       + ' justify-content: center; transition: background-color var(--t-release, 260ms) var(--e-press, ease);';
@@ -91,6 +123,16 @@ export function multiStep(into, steps) {
   const settle = (i, state) => {
     const r = rows[i];
     if (!r) return;
+    /* The connector BELOW a step fills when that step lands, so the line travels
+     * from the marker that just finished down to the one now working -- which is
+     * the direction a reader's eye is already going. lines[i] is the connector
+     * after row i, because the first row has none above it. */
+    const below = lines[i];
+    if (below) {
+      below.fill.style.transform = state === 'done' ? 'scaleY(1)' : 'scaleY(0)';
+      // A failed step's line stops being a promise that the next one is coming.
+      below.line.style.background = state === 'failed' ? '#e0b4ac' : '#d3ccc5';
+    }
     if (state === 'done') {
       r.dot.style.background = '#1d1a17';
       r.dot.style.boxShadow = 'none';

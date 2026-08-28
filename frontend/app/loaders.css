@@ -192,6 +192,22 @@
    loose word reads as debug output. The pill stays, the sentence says what is
    happening. */
 [data-loader-slot] .loader-text { display: none; }
+/* ...and with the word gone, the box it needed goes too.
+ *
+ * .loader is 80x42 with the pill pinned to its BOTTOM, because at page level the
+ * word "working" travels across the top 28px. In a card that word is hidden by
+ * the rule above, so those 28px were empty and the pill hung below its own
+ * caption: measured at 14px of offset, the pill's centre at 135 against the
+ * caption's 121. It read as a stray blue mark rather than as this sentence's
+ * progress.
+ *
+ * The box becomes the pill's own height, and the pill joins the flow so the
+ * row's align-items: center can do its job. position: relative rather than
+ * static because .load::before is inset: 0 against it -- static would hand that
+ * to .loader and stretch the darker inner bar over the whole 80x42. The pill's
+ * animation is transform only, so nothing here moves it. */
+[data-loader-slot] .loader { height: 14px; }
+[data-loader-slot] .load { position: relative; bottom: auto; }
 [data-loader-slot] .said { font-size: 14.5px; max-width: none; }
 
 /* ── reduced motion ───────────────────────────────────────────────────────── */
