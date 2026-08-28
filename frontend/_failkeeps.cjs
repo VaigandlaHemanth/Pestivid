@@ -37,6 +37,25 @@ const CASES = [
     press: '[data-act][aria-label*="question" i], [data-act][aria-label*="ask" i]',
     mustSurvive: [/question|ask/i],
   },
+  {
+    name: 'harvest sent with a box empty',
+    role: 'farmer',
+    // The nudge never reaches the network -- the empty-field check returns
+    // first -- but the route is refused anyway so a mistake here cannot report
+    // a harvest, which is irreversible.
+    needsQuery: 'report-harvest',
+    url: (ids) => `/app/report-harvest.html${ids.harvest}`,
+    block: ['**/harvest**'],
+    // type into the SECOND box (the cost) and leave the first (the revenue)
+    // empty, which is what the check is about
+    prime: async (p) => {
+      const inputs = await p.$$('input');
+      if (inputs[1]) { await inputs[1].click(); await inputs[1].type('120000'); }
+    },
+    press: '[data-act][aria-label="Send these numbers"]',
+    mustSurvive: [/^Send these numbers/],
+    keepsForm: true,
+  },
 ];
 
 const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', {
@@ -46,7 +65,9 @@ const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', 
 (async () => {
   const fr = await (await fetch('http://127.0.0.1:3001/api/funding-requests')).json();
   const list = Array.isArray(fr) ? fr : (fr.projects || fr.requests || []);
-  const ids = { project: list[0]?._id || list[0]?.id };
+  const { needs } = await import('./_needs.mjs');
+  const Q = await needs();
+  const ids = { project: list[0]?._id || list[0]?.id, harvest: Q['report-harvest'] };
   if (!ids.project) { console.log('  no open funding request to aim at — cannot run'); process.exit(2); }
 
   const b = await chromium.launch();
@@ -64,6 +85,15 @@ const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', 
     await p.goto('http://127.0.0.1:3001' + c.url(ids), { waitUntil: 'load' });
     await p.waitForTimeout(1700);
 
+    /* A message about a field must not take the field away, nor empty what
+     * somebody already typed into it. report-harvest handed its "tell us what
+     * you sold it for" nudge the PAGE root, so pressing Send with the revenue
+     * box empty replaced the form with the message asking about it -- both
+     * number boxes, all four payee rows, and the cost already entered. */
+    const form = () => p.evaluate(() => ({
+      boxes: document.querySelectorAll('input, textarea').length,
+      typed: [...document.querySelectorAll('input, textarea')].map((i) => i.value).filter(Boolean).join('|'),
+    }));
     const labels = () => p.evaluate(() => [...document.querySelectorAll('[data-act], [data-go]')]
       .filter((e) => e.offsetParent)
       .map((e) => (e.getAttribute('aria-label') || e.textContent || '').replace(/\s+/g, ' ').trim()));
@@ -77,12 +107,27 @@ const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', 
     }
     ran++;
     if (c.prime) { try { await c.prime(p); await p.waitForTimeout(400); } catch { /* not on this page */ } }
+    // AFTER priming: prime() is what types into the form, so a snapshot taken
+    // before it reads the typing itself as a loss.
+    const formBefore = c.keepsForm ? await form() : null;
     await target.click();
     await p.waitForTimeout(1800);
     const after = await labels();
     const alert = await p.evaluate(() =>
-      document.querySelector('[role="alert"]')?.innerText.replace(/\n/g, ' / ').slice(0, 54) || null);
+      document.querySelector('[role="alert"], [role="status"]')?.innerText
+        .replace(/\n/g, ' / ').slice(0, 54) || null);
 
+    if (c.keepsForm) {
+      const formAfter = await form();
+      if (formAfter.boxes !== formBefore.boxes) {
+        console.log(`  FAIL  the boxes went ${formBefore.boxes} -> ${formAfter.boxes}`);
+        bad++;
+      }
+      if (formAfter.typed !== formBefore.typed) {
+        console.log(`  FAIL  what was typed was lost: "${formBefore.typed}" -> "${formAfter.typed}"`);
+        bad++;
+      }
+    }
     const missing = c.mustSurvive.filter((re) => !after.some((l) => re.test(l)));
     const said = alert ? `said "${alert}"` : 'said NOTHING about the failure';
     console.log(`  ${c.name.padEnd(30)} ${before.length} controls -> ${after.length}, ${said}`);

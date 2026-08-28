@@ -201,7 +201,19 @@ export function state(container, kind, headline, detail, action) {
   // back arrow with it -- so "No season chosen" arrived on a screen with no
   // title and no way off it. Handed a page root, it keeps the header and
   // replaces what is below.
-  if (container.matches?.('body > div') && container.children.length > 1) {
+  /* ...and a NUDGE never replaces the page, whatever it is handed.
+   *
+   * 'waiting' is always "you still have to do something" -- a field left blank,
+   * a figure not named. It is never a page-level refusal, so it has no business
+   * clearing the page even when a call site hands it the root. report-harvest
+   * did exactly that: pressing Send with the revenue box empty replaced the form
+   * with the message asking for the revenue, taking both number boxes, all four
+   * payee rows, and the cost already typed. The call site is fixed; this is so
+   * the next one cannot repeat it.
+   *
+   * 'empty' and 'failed' still may: "No season chosen" and "Not your screen" are
+   * refusals of the whole page and there is nothing behind them worth keeping. */
+  if (kind !== 'waiting' && container.matches?.('body > div') && container.children.length > 1) {
     const keep = [];
     for (const child of container.children) {
       // the header is whatever holds the title or the chrome

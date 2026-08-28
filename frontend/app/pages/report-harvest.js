@@ -139,10 +139,28 @@ if (ctx) load(ctx.root, async () => {
     const t = ctx.root.querySelector('[data-title]');
     if (t) t.textContent = 'What you reported';
   } else if (sendBtn) {
+    /* Where a message about this button goes: a div of its own, directly after
+     * it. Both the nudge and the failure use it.
+     *
+     * The nudge below used to be handed ctx.root, which is the PAGE. state()
+     * keeps the header and replaces everything under it, so pressing Send with
+     * the revenue box empty destroyed the form: both number boxes, all four
+     * payee rows, and the cost the farmer had already typed. A message telling
+     * someone to fill in a field must not take the field away.
+     */
+    const notice = () => {
+      let h = ctx.root.querySelector('[data-sendfail]');
+      if (!h) {
+        h = document.createElement('div');
+        h.setAttribute('data-sendfail', '');
+        sendBtn.after(h);
+      }
+      return h;
+    };
     acts(sendBtn, 'Send these numbers', async () => {
       const [rev, cost] = read();
       if (!failed && !rev) {
-        return state(ctx.root, 'waiting', 'Tell us what you sold it for',
+        return state(notice(), 'waiting', 'Tell us what you sold it for',
           'Without that figure nobody can be paid. If the crop failed and there was nothing to sell, '
           + 'tick the line above instead.');
       }
@@ -165,13 +183,7 @@ if (ctx) load(ctx.root, async () => {
         if (label) label.textContent = was;
         sendBtn.removeAttribute('aria-disabled');
         // Beside the button, which is where the reader is looking.
-        let holder = ctx.root.querySelector('[data-sendfail]');
-        if (!holder) {
-          holder = document.createElement('div');
-          holder.setAttribute('data-sendfail', '');
-          sendBtn.after(holder);
-        }
-        state(holder, 'failed', 'That was not accepted', err.message);
+        state(notice(), 'failed', 'That was not accepted', err.message);
       }
     });
   }
