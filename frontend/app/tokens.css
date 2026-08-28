@@ -447,3 +447,28 @@ body[data-role="public"] { background: var(--ground); }
 }
 /* the alarm tint is warm, so it takes a warm line */
 [style*="background: #f7e9e6"] { box-shadow: inset 0 0 0 1px #e0b4ac; }
+
+/* ── a field that is switched off has to LOOK switched off ─────────────────
+ *
+ * report-harvest disables the revenue box when the farmer ticks "the crop
+ * failed, there was nothing to sell" -- the figure is kept rather than wiped,
+ * because losing what you typed for ticking a box is its own bug -- and the box
+ * went on rendering that figure in full-strength ink at opacity 1. So the screen
+ * read "I sold it for 4,50,000" directly above "there was nothing to sell", with
+ * nothing to say which one counted. Typing was refused and the refusal was
+ * invisible: state in the DOM and not on the screen.
+ *
+ * !important is load-bearing. wire.js builds every field with `all: unset` and
+ * then writes an explicit colour into the element's own style attribute, so an
+ * inline declaration outranks any rule here. Same collision as the drawn panel
+ * in loaders.css.
+ *
+ * #605a53 on #f6f3ef is 6.36:1 -- comfortably past AA for body text, and clearly
+ * weaker than the #1d1a17 a live field uses, which is the whole point.
+ *
+ * The fields are built by wire.js at runtime, so no drawn page carries an input
+ * at all and verify-layout never sees this rule.
+ */
+input:disabled, textarea:disabled {
+  color: var(--ink-3, #605a53) !important;
+}

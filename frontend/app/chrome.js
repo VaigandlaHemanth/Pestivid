@@ -90,6 +90,9 @@ const DEST = {
   'Lots for sale': 'market',
   'My orders': 'orders',
   'What you bought': 'orders',
+  // The reviewer's own screen. It had no word at all, which is why the admin's
+  // bar was borrowing other people's.
+  Flagged: 'admin',
 };
 
 /* THE NAV BELONGS TO WHOEVER IS SIGNED IN -------------------------------------
@@ -107,7 +110,19 @@ const NAV = {
   farmer:   ['My plots', 'Money', 'Chat'],
   investor: ['Browse', 'Portfolio', 'Chat'],
   buyer:    ['Buy produce', 'My orders', 'Chat'],
-  admin:    ['Browse', 'Buy produce', 'Chat'],
+  /* The reviewer has TWO destinations, not three, and both of the three it used
+   * to be were refused.
+   *
+   * 'Browse' is the investor's word and 'Buy produce' is the buyer's; invest.html
+   * and market.html are gated to those roles, so an admin pressing either landed
+   * on "Not your screen". Two thirds of this bar was a dead end into a refusal,
+   * and the combination -- half investor, half buyer -- belonged to nobody.
+   *
+   * A reviewer's screens are the flagged queue and chat. The bell already
+   * carries notifications and the avatar carries the profile, so those are not
+   * slots. relabel() removes the third drawn slot rather than leaving a word on
+   * it that goes somewhere this person is not allowed. */
+  admin:    ['Flagged', 'Chat'],
 };
 
 function relabel(root, user, inHeader) {
@@ -117,7 +132,8 @@ function relabel(root, user, inHeader) {
    * "Chat", it sits just under the bar, and it is a known destination -- so
    * the geometric filter found four nav slots where there are three, the count
    * check bailed, and a buyer went on seeing the farmer's bar. */
-  const bar = root.querySelector('.appbar, .bar, header') || root;
+  const realBar = root.querySelector('.appbar, .bar, header');
+  const bar = realBar || root;
   const slots = [...bar.querySelectorAll('div, span, a')]
     .filter(el => inHeader(el))
     .filter(el => {
@@ -126,8 +142,24 @@ function relabel(root, user, inHeader) {
       const kid = el.querySelector('div, span');
       return !(kid && kid.textContent.trim() === t);
     });
-  if (slots.length !== want.length) return;   // an unfamiliar bar is left alone
+  /* A role may want FEWER slots than the boards drew.
+   *
+   * The reviewer wants two where every board draws three, and the old
+   * `slots.length !== want.length` bail left all three carrying the words they
+   * were drawn with -- which is exactly how an admin ended up with the
+   * investor's "Browse" and the buyer's "Buy produce", both of which refuse
+   * them. Surplus slots are removed rather than left pointing somewhere this
+   * person is not allowed to go.
+   *
+   * Only ever inside a REAL bar. Without one this falls back to the whole page
+   * root, and the note above records what that costs: the chat page's own
+   * heading is the word "Chat", it sits inside the geometric filter, and it
+   * would be removed as a surplus nav slot. More slots than a role wants is a
+   * bar this code does not understand, so it is left alone. */
+  if (slots.length < want.length) return;     // an unfamiliar bar is left alone
+  if (slots.length > want.length && !realBar) return;
   slots.forEach((el, i) => {
+    if (i >= want.length) { el.remove(); return; }
     if (el.textContent.trim() !== want[i]) el.textContent = want[i];
   });
 }
