@@ -534,6 +534,102 @@ export function showPoster(el, video) {
   return img;
 }
 
+/* WATCHING THE VIDEO.
+ *
+ * Every screen in this product could NAME a video and not one could play one.
+ * The plot page's rows carried no click handler at all, and the buyer's "Watch
+ * it, check the date" link -- the thing that row exists for -- led to that same
+ * page, so the chain ended on a list you could only look at. On a product whose
+ * whole claim is "a field you can see", that is the claim not being kept.
+ *
+ * The player opens UNDER the row that was pressed, and the row toggles it. No
+ * new page: the list is the context, and a video that replaced the page would
+ * lose the date sitting next to it, which is the pair a person is checking.
+ *
+ * No `crossorigin` attribute, deliberately. A media element loads cross-origin
+ * without CORS; adding it would demand headers the gateway does not send and
+ * break every playback.
+ *
+ * NOT EVERY RECORD HAS A FILE. Seven of this demo's ten CIDs are seeded
+ * placeholders that resolve to something that is not a video, and a real one can
+ * always go missing from a gateway. Either way the element fires `error`, and the
+ * honest answer is a sentence about the record rather than a dead black
+ * rectangle with a crossed-out play button in it.
+ */
+export function playsInline(row, video, opts = {}) {
+  if (!row || !video?.gateway) return null;
+  let panel = null;
+  const close = () => {
+    panel?.remove();
+    panel = null;
+    row.setAttribute('aria-expanded', 'false');
+  };
+  const open = () => {
+    panel = document.createElement('div');
+    panel.setAttribute('data-player', '');
+    panel.style.cssText = 'background: #37322d; overflow: hidden;';
+    const el = document.createElement('video');
+    el.controls = true;
+    el.preload = 'metadata';
+    el.setAttribute('playsinline', '');
+    if (video.poster) el.poster = video.poster;
+    el.src = video.gateway;
+    el.style.cssText = 'display: block; width: 100%; max-height: 62vh; background: #37322d;';
+    el.addEventListener('error', () => {
+      // Replaced, not annotated: a broken player next to an explanation of why
+      // it is broken is two things saying one thing.
+      panel.replaceChildren();
+      state(panel, 'failed', 'This one will not play',
+        'The record and its date are real, but there is no video file behind this '
+        + 'entry any more. Nothing about the date changes: it was fixed when the '
+        + 'file arrived, and that is what the block holds.');
+    }, { once: true });
+
+    /* Something to read while it arrives.
+     *
+     * The file comes from an IPFS gateway, and measured from here the first frame
+     * took about twenty seconds -- a black rectangle for twenty seconds after a
+     * deliberate press reads as broken, not as loading. Seven of this demo's ten
+     * clips have no poster either, so there is not even a frame to hold the
+     * space. It says where the file is coming from and goes the moment the
+     * browser has the video's own dimensions. */
+    const waiting = document.createElement('div');
+    waiting.setAttribute('data-playerwait', '');
+    waiting.style.cssText = 'position: absolute; left: 0; right: 0; bottom: 0; padding: 9px 14px;'
+      + ' background: rgba(29, 26, 23, .74); color: #f6f3ef; font-size: 13.5px;';
+    waiting.textContent = 'Fetching the file from storage. It is not held on this machine.';
+    panel.style.position = 'relative';
+    el.addEventListener('loadedmetadata', () => waiting.remove(), { once: true });
+    el.addEventListener('error', () => waiting.remove(), { once: true });
+
+    panel.append(el, waiting);
+    /* Two shapes, because two surfaces.
+     *
+     * A LIST row has no room of its own, so the player opens beneath it and the
+     * row keeps its place above -- the date and the picture side by side, which
+     * is the pair being checked.
+     *
+     * A media PLATE is already the space for a video: the investor's evidence
+     * panel is 300px of dark with a play mark drawn on it. There the player fills
+     * the plate, covering the mark and the drawn playback strip, and closing
+     * gives them back. Anything else would stack a second video box under a box
+     * that looks like a video. */
+    if (opts.into) {
+      panel.style.cssText += 'position: absolute; inset: 0;';
+      if (getComputedStyle(opts.into).position === 'static') opts.into.style.position = 'relative';
+      el.style.cssText = 'display: block; width: 100%; height: 100%;'
+        + ' object-fit: contain; background: #37322d;';
+      opts.into.append(panel);
+    } else {
+      row.after(panel);
+    }
+    row.setAttribute('aria-expanded', 'true');
+    if (opts.autoplay !== false) el.play().catch(() => { /* a browser may refuse */ });
+  };
+  row.setAttribute('aria-expanded', 'false');
+  return { open, close, toggle: () => (panel ? close() : open()) };
+}
+
 export function repeatRows(root, selector, rows, decorate) {
   const found = [...root.querySelectorAll(selector)];
   if (!found.length) return null;

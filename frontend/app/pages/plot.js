@@ -7,10 +7,10 @@
 // nothing behind it and "Ready to harvest" was a static claim printed on every
 // plot -- on the same screen that ends "Nobody has visited this field."
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, repeatRows, showPoster } from '../bind.js';
+import { bind, repeatRows, showPoster, playsInline } from '../bind.js';
 import { whenShort, dateState, rupees } from '../api.js';
 import { appChrome } from '../chrome.js';
-import { goes, press } from '../wire.js';
+import { goes, press, acts } from '../wire.js';
 
 const ctx = requireUser('plot', ['farmer']);
 
@@ -97,6 +97,19 @@ if (ctx) {
       // really is in a block.
       const tick = el.querySelector('svg[stroke="#006934"]');
       if (tick && r.kind !== 'proved') tick.remove();
+
+      /* The row plays the video, under itself.
+       *
+       * This list was the end of the road: no handler on the rows, and the
+       * buyer's "Watch it, check the date" link arrives HERE, so a person
+       * following it reached a list of dates and no way to see a field. The
+       * date and the picture belong on screen together -- that pair is the
+       * thing being checked -- so the player opens beneath the row rather
+       * than taking over the page. */
+      const player = playsInline(el, r.v);
+      if (player) {
+        acts(el, `Watch the video filed ${r.when}`, () => player.toggle());
+      }
     });
 
     // ---- the money on this plot --------------------------------------

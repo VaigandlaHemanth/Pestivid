@@ -123,6 +123,19 @@ router.get('/', authenticateToken, async (req, res) => {
                  // rather than five identical grey rectangles. Null until the
                  // clip was uploaded through a server that could cut one.
                  poster: video.poster || null,
+                 /* Where the file itself can be watched.
+                  *
+                  * Every screen could NAME a video and none could play one: the
+                  * plot page's rows carried no handler at all, and the buyer's
+                  * "Watch it, check the date" link led to that same page, so the
+                  * chain ended nowhere. A <video> loads cross-origin without
+                  * CORS, so the browser reads the gateway directly and no bytes
+                  * pass through us.
+                  *
+                  * The base comes from here and not from the frontend because
+                  * PINATA_GATEWAY is server configuration: a dedicated gateway
+                  * changes this string and nothing else. */
+                 gateway: video.cid ? ipfs.gatewayUrl(video.cid) : null,
              };
              if (!ownScope) return base;
 
@@ -194,6 +207,7 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
              purpose: video.purpose,
              uploadTimestamp: video.uploadTimestamp ? video.uploadTimestamp.toISOString() : null, // Send timestamp as ISO string
              poster: video.poster || null,
+             gateway: video.cid ? ipfs.gatewayUrl(video.cid) : null,
 
              // A farmer's own list has to carry the two facts that decide
              // whether a video can back a funding request, or the app cannot
@@ -270,6 +284,18 @@ router.get('/:cid/provenance', limits.publicReadLimiter, async (req, res) => {
 
         return res.json({
             cid: video.cid,
+            /* Where the file can be watched, on the one public record route.
+             *
+             * The investor's page has a 300px media plate with a play mark on it
+             * and nothing behind it, on the screen whose own words are "the video
+             * is the only thing here you can verify without trusting the farmer".
+             * A play button that does nothing is worse than no play button: it
+             * says the check is available and then refuses it.
+             *
+             * This route is already public, which is right -- anybody should be
+             * able to check a claim -- so the address of the file belongs in the
+             * same answer as its fingerprint. */
+            gateway: video.cid ? ipfs.gatewayUrl(video.cid) : null,
             uploadedAt: video.uploadTimestamp,
             crop: video.crop,
             farmer: video.farmerWallet && video.farmerWallet.name,

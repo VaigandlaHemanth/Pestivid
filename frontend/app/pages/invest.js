@@ -1,5 +1,5 @@
 import { requireUser, api, load, state } from './_guard.js';
-import { repeat, bind } from '../bind.js';
+import { repeat, bind, playsInline } from '../bind.js';
 import { rupees } from '../api.js';
 import { promote, goes, press } from '../wire.js';
 
@@ -90,6 +90,31 @@ if (ctx) load(ctx.root, async () => {
         api.videos.anchor(p.cid).catch(() => null),
       ]);
     }
+    /* The plate plays the file it is a plate for.
+     *
+     * 300px of dark with a play triangle drawn on it, a duration and a scrub bar
+     * -- and nothing behind any of it. On the page whose own words are "the video
+     * is the only thing here an investor can verify without trusting you", a play
+     * button that does nothing is worse than no play button: it offers the check
+     * and then refuses it. The gateway address comes from the provenance route,
+     * which is the same public answer that carries the fingerprint. */
+    const plate = ctx.root.querySelector('[data-lotplate]');
+    if (plate) {
+      // show() runs again on every row click, so the handler is assigned rather
+      // than added -- addEventListener would stack one per click.
+      plate.onclick = null;
+      if (video?.gateway) {
+        const player = playsInline(plate, { gateway: video.gateway }, { into: plate });
+        // promote() for the name and the role, onclick for the handler. acts()
+        // would do both -- and its addEventListener would stack a handler per
+        // row click, so one press would toggle the player open and shut again.
+        promote(plate, 'Play this video and check its date');
+        plate.onclick = () => player.toggle();
+      } else {
+        plate.removeAttribute('data-act');
+      }
+    }
+
     const sha = video?.integrity?.sha256 || null;
     const shortSha = sha ? `sha256 ${sha.slice(0, 8)}…${sha.slice(-4)}` : null;
     const anchored = Boolean(anchor?.anchored && anchor?.blockHeight);
