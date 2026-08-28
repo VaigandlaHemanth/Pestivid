@@ -27,19 +27,49 @@ import { api, noticeForRole } from './api.js';
  * deskNav calls this for every page; a page with a better fallback than its
  * role's home can still say so, and the later call just updates the fallback.
  */
+/* What each destination is CALLED, so the link can say where it goes.
+ *
+ * The words are the ones those screens use about themselves, not invented
+ * synonyms: "My plots" is the nav word for plots, "Film your field" is the
+ * record page's own heading.
+ */
+const BACKWORD = {
+  plots: 'My plots', money: 'Money', home: 'Home', record: 'Film your field',
+  messages: 'Chat', invest: 'Browse', market: 'Buy produce', orders: 'My orders',
+  portfolio: 'Portfolio', admin: 'Flagged', signin: 'Sign in', profile: 'You',
+};
+
 export function wireBack(root, fallback) {
   const back = root?.querySelector('[data-chrome="back"]');
   if (!back) return;
   if (fallback) back.dataset.backto = fallback;
+  const to = back.dataset.backto || 'home';
+
+  /* IT GOES WHERE IT SAYS IT GOES.
+   *
+   * This used to prefer history.back() and fall back to the slug, which was the
+   * right call for a bare chevron: a chevron promises nothing in particular, so
+   * "wherever you came from" is the most useful thing it can mean.
+   *
+   * The control is a labelled link now -- it reads "My plots" -- and a link that
+   * says My plots and lands you on the profile screen because that is where you
+   * happened to come from is simply lying. The browser's own back button already
+   * does "where I came from", on every page, for everyone. This does the thing
+   * it is named after.
+   */
+  const word = BACKWORD[to] || 'Home';
+  const slot = back.querySelector('[data-backword]');
+  if (slot) slot.textContent = word;
+  if (back.tagName === 'A') back.setAttribute('href', `./${to}.html`);
+  back.setAttribute('aria-label', `Back to ${word}`);
   if (back.dataset.backWired) return;
   back.dataset.backWired = '1';
-  acts(back, 'Back', () => {
-    const cameFromUs = document.referrer
-      && new URL(document.referrer, location.href).host === location.host
-      && !/\/(signin|signup)\.html/.test(document.referrer);
-    if (history.length > 1 && cameFromUs) history.back();
-    else location.href = `./${back.dataset.backto || 'home'}.html`;
-  });
+  // A drawn <div> on a board not yet moved over still needs a handler; a real
+  // link does not, and must not have one -- it would break middle-click and
+  // open-in-new-tab, which is the whole reason it is an anchor.
+  if (back.tagName !== 'A') {
+    acts(back, `Back to ${word}`, () => { location.href = `./${to}.html`; });
+  }
 }
 
 export function appChrome(root, opts = {}) {
@@ -204,7 +234,17 @@ export function deskNav(root, user) {
     const dest = t === 'Pestivid' ? (HOME[user?.role] || 'home') : DEST[t];
     if (!dest) continue;
     if (dest === here) { el.setAttribute('aria-current', 'page'); continue; }
-    if (el.hasAttribute('data-go') || el.closest('[data-act]')) continue;
+    /* Never the back link.
+     *
+     * This scanner claims anything in the top 110px whose text is a known
+     * destination. The back control now sits in the content, just under the bar,
+     * and says where it goes -- so on ask-money its word was "Money", DEST has
+     * "Money", and it was wired as a nav destination on top of its own handler.
+     * Pressing it on step three then stepped back to step two AND navigated to
+     * money.html, because preventDefault stops the anchor, not another listener.
+     * The back link is chrome with wiring of its own; this owns the nav words. */
+    if (el.hasAttribute('data-go') || el.closest('[data-act]')
+      || el.closest('[data-chrome]')) continue;
     goes(el, dest, t === 'Pestivid' ? 'Pestivid, home' : t);
   }
 

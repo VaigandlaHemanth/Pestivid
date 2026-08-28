@@ -59,8 +59,11 @@ if (ctx) load(ctx.root, async () => {
   });
 
   let at = 1;
+  // Set once the back link exists, so moving between steps can rename it.
+  let onStep = null;
   const show = (n) => {
     at = n;
+    onStep?.(n);
     steps.forEach((s, i) => { if (s) s.style.display = i + 1 === n ? '' : 'none'; });
     segs.forEach((s, i) => { if (s) s.style.background = i + 1 <= n ? '#1d1a17' : '#d3ccc5'; });
     if (nextLabel) nextLabel.textContent = LABEL[n - 1];
@@ -358,17 +361,36 @@ if (ctx) load(ctx.root, async () => {
     return submit();
   });
 
-  // The chevron steps back through the form before it leaves it, which is what
-  // it did when each step was its own URL and the browser's own back worked.
+  /* The back link steps back through the form before it leaves it, which is what
+   * it did when each step was its own URL and the browser's own back worked.
+   *
+   * It NAMES the step it returns to. The control used to be a bare chevron, so
+   * "back" could mean whatever the page decided; it is a labelled link now, and
+   * a link reading "Money" that actually returns you to step one is the same lie
+   * as a link reading "My plots" that returns you wherever you came from. There
+   * is no other step-back control on this form -- only Next -- so the affordance
+   * has to stay; it just has to tell the truth about itself.
+   */
+  const STEPWORD = { 1: 'Money', 2: 'Which field', 3: 'How much' };
   const back = root.querySelector('[data-chrome="back"]');
   if (back) {
     const chrome = back.cloneNode(true);
     back.replaceWith(chrome);
-    chrome.setAttribute('data-act', '');
-    chrome.setAttribute('aria-label', 'Back');
-    chrome.addEventListener('click', () => {
-      if (at > 1) return show(at - 1);
-      location.href = './money.html';
+    const word = chrome.querySelector('[data-backword]');
+    const nameStep = (n) => {
+      const w = STEPWORD[n] || 'Money';
+      if (word) word.textContent = w;
+      chrome.setAttribute('aria-label', `Back to ${w}`);
+      // Step one is the only one that leaves the page, so it is the only one
+      // that keeps a real href to follow.
+      if (n > 1) chrome.removeAttribute('href');
+      else chrome.setAttribute('href', './money.html');
+    };
+    onStep = nameStep;
+    nameStep(at);
+    chrome.addEventListener('click', (e) => {
+      if (at > 1) { e.preventDefault(); return show(at - 1); }
+      // step one: let the anchor do its own navigation
     });
   }
 

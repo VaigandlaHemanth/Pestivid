@@ -298,8 +298,15 @@ body > div[style*="width: 824px"] {
      with its content, the grid grows with it, and an auto-height scroll
      container asked to fill that row reports its full transcript as its height.
      The row feeds off the column and the column off the row. A measured
-     constant is the honest version of that. */
-  [data-chatcol] { height: calc(100dvh - 205px) !important; min-height: 300px; }
+     constant is the honest version of that.
+
+     205 became 241 when the back control moved out of the app bar and became a
+     labelled link above the heading: +44px for the link, less the 8px of top
+     padding the heading block gave back. The number is chrome above the column,
+     so anything added there has to be added here -- and verify-layout catches it
+     if it is not, which is how this one was found, one page reporting its column
+     36px taller than the drawing on both chat screens. */
+  [data-chatcol] { height: calc(100dvh - 241px) !important; min-height: 300px; }
 }
 
 /* ── the crop mark needs no rule here ───────────────────────────────────── */

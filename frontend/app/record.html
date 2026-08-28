@@ -61,15 +61,23 @@
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    /* The back link: in the content above the heading, naming its destination.
+       44px of tap height for a phone, taken as padding so the text still sits
+       tight to the heading it belongs to. */
+    .backlink { display: inline-flex; align-items: center; align-self: flex-start;
+                gap: 6px; min-height: 44px; margin-left: -2px; font-size: 14.5px;
+                /* #8ab4e8, not the app’s #01579b: this board’s ground is the
+                   viewfinder, near-black, where the darker blue measures 2.63:1.
+                   This is 9.04:1 on it, and still unmistakably a link. */
+                font-weight: 600; color: #8ab4e8; text-decoration: none; }
   </style>
 </head>
-<body data-page="record" data-role="farmer" data-design-width="1320" data-design-height="958">
+<body data-page="record" data-role="farmer" data-design-width="1320" data-design-height="994">
 <div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #0e0d0b; color: #ddd7d1; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
   <!-- top bar: what plot, and where it is being saved -->
   <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
-        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
         <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
           <div class="appnav">My plots</div>
@@ -87,7 +95,14 @@
         </div>
       </div>
     </div>
-    <div class="pagehold" style="padding: 26px 28px 0;">
+    <div class="pagehold" style="padding: 18px 28px 0;">
+      <!-- Back, where the web puts it: in the content, above the heading,
+           saying WHERE it goes. It was a bare chevron in the app bar to the
+           LEFT of the wordmark -- the native-mobile idiom -- which took the
+           brand’s own slot, moved the wordmark between four different left
+           edges depending on whether a page had one, and named no
+           destination. An <a href> so it can be middle-clicked. -->
+      <a data-chrome="back" href="./plots.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8ab4e8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword="">My plots</span></a>
       <h1 data-title="" class="pageh">Film your field</h1>
     </div>    <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
       <div class="main" style="background: #141210;">

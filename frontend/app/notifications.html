@@ -122,6 +122,12 @@
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    /* The back link: in the content above the heading, naming its destination.
+       44px of tap height for a phone. align-self keeps it from stretching when
+       its parent is a flex column. */
+    .backlink { display: inline-flex; align-items: center; align-self: flex-start;
+                gap: 6px; min-height: 44px; margin-left: -2px; font-size: 14.5px;
+                font-weight: 600; color: #01579b; text-decoration: none; }
   </style>
 </head>
 <body data-page="notifications" data-role="any" data-design-width="1320" data-design-height="900">
@@ -129,7 +135,6 @@
 
   <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
-        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
         <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
           <div class="appnav">My plots</div>
@@ -155,8 +160,9 @@
          they open a drawer. It is gone, and with it the rail: a 372px column
          holding one button is worse than the button being where a page-level
          control belongs. The list took the 372px back. -->
-    <div class="pagehold" style="padding: 26px 28px 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 26px;">
+    <div class="pagehold" style="padding: 18px 28px 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 26px;">
       <div>
+        <a data-chrome="back" href="./home.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword="">Home</span></a>
         <h1 data-title="" class="pageh">What has happened</h1>
         <div data-bind="unreadLine" class="pagesub"></div>
       </div>
