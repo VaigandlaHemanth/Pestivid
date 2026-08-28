@@ -5,11 +5,30 @@ const router = express.Router();            // Create a new router instance
 const mongoose = require('mongoose');       // Import Mongoose (needed for ObjectId validation)
 const Listing = mongoose.model('Listing');  // Get the Listing Mongoose model
 const Video = mongoose.model('Video');      // Get Video model to link to
+const ipfs = require('../services/ipfsUpload');   // for the public gateway address
 const { authenticateToken } = require('./auth');
 const { requireFundableVideo } = require('../services/videoEligibility'); // Import the authentication middleware
 const Purchase = mongoose.model('Purchase'); // To verify a caller actually bought this listing
 const Notification = mongoose.model('Notification'); // Get Notification model for buyer notifications
 
+
+/* A LOT'S VIDEO FRAME, AND WHERE TO PLAY IT.
+ *
+ * A listing stores a cid and nothing else about the file, so the market page had
+ * a cid it could not show and no address it could play. Its own board says so:
+ * the 92x68 row thumbnail and the 176px panel behind the selected lot were "a
+ * flat #37322d fill, permanently" -- a play triangle drawn over nothing, on the
+ * one screen where a buyer is deciding whether to trust a stranger's crop.
+ *
+ * One query for the whole page rather than one per lot. `poster` is select:false
+ * on the model so it never rides along by accident; it has to be asked for.
+ */
+const frames = async (listings) => {
+    const cids = [...new Set(listings.map(l => l.cid).filter(Boolean))];
+    if (!cids.length) return {};
+    const vids = await Video.find({ cid: { $in: cids } }).select('+poster cid').lean();
+    return Object.fromEntries(vids.map(v => [v.cid, v.poster || null]));
+};
 
 // Helper function to generate a simulated blockchain transaction hash
 const generateSimulatedTxHash = (prefix = 'sim_tx') => {
@@ -54,6 +73,7 @@ router.get('/', async (req, res) => {   // public marketplace browse -- intentio
 
 
         // Map to format for frontend (e.g., ensure _id is string, format dates)
+         const poster = await frames(listings);
          const formattedListings = listings.map(listing => ({
              _id: listing._id.toString(),
              farmerWallet: listing.farmerWallet ? listing.farmerWallet._id.toString() : null,
@@ -63,6 +83,8 @@ router.get('/', async (req, res) => {   // public marketplace browse -- intentio
              pesticide: listing.pesticide,
              pesticideCompany: listing.pesticideCompany,
              cid: listing.cid,                       // public marketing video
+             poster: poster[listing.cid] || null,    // one frame, for the thumbnail
+             gateway: listing.cid ? ipfs.gatewayUrl(listing.cid) : null,
              storageType: listing.storageType,
              videoFileHash: listing.videoFileHash,   // shown in the purchase modal
              minPrice: listing.minPrice,
@@ -111,6 +133,7 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
                                      .sort({ createdAt: -1 }); // Sort by newest first
 
         // Map to format for frontend
+        const poster = await frames(listings);
         const formattedListings = listings.map(listing => ({
             _id: listing._id.toString(),
             farmerWallet: listing.farmerWallet ? listing.farmerWallet._id.toString() : null,
@@ -120,6 +143,8 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
             pesticide: listing.pesticide,
             pesticideCompany: listing.pesticideCompany,
             cid: listing.cid,
+            poster: poster[listing.cid] || null,
+            gateway: listing.cid ? ipfs.gatewayUrl(listing.cid) : null,
             storageType: listing.storageType,
             videoFileHash: listing.videoFileHash,
             minPrice: listing.minPrice,

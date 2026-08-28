@@ -273,6 +273,10 @@ router.get('/:cid/provenance', limits.publicReadLimiter, async (req, res) => {
         const video = await Video.findOne({ cid: String(req.params.cid).trim() })
             .select('cid videoFileHash hashComputedBy uploadTimestamp crop location ' +
                     'provenance fingerprint.nFrames fingerprint.algorithm farmerWallet')
+            // +poster: select:false on the model, so it has to be asked for. One
+            // frame, cut server-side from the same object the hash was computed
+            // from, which is why it belongs in the same public answer.
+            .select('+poster')
             .populate('farmerWallet', 'name')
             .lean();
 
@@ -296,6 +300,7 @@ router.get('/:cid/provenance', limits.publicReadLimiter, async (req, res) => {
              * able to check a claim -- so the address of the file belongs in the
              * same answer as its fingerprint. */
             gateway: video.cid ? ipfs.gatewayUrl(video.cid) : null,
+            poster: video.poster || null,
             uploadedAt: video.uploadTimestamp,
             crop: video.crop,
             farmer: video.farmerWallet && video.farmerWallet.name,

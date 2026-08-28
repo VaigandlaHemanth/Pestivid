@@ -9,7 +9,7 @@
 // single flow: the button that leads here is ink on Invest, and this one turned
 // blue.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind } from '../bind.js';
+import { showPoster, bind } from '../bind.js';
 import { rupees } from '../api.js';
 import { acts, goes, press } from '../wire.js';
 
@@ -49,6 +49,21 @@ if (ctx) {
       },
       amount: rupees(amount),
     });
+
+    /* THE SEASON'S FRAME, ON THE SCREEN WHERE THE MONEY LEAVES.
+     *
+     * A 132x96 dark rectangle sat beside the season's name here, drawn to hold a
+     * frame and holding nothing, on the one page in this product where somebody
+     * commits money. The frame comes from the public record route -- the same
+     * answer that carries the file's fingerprint -- so it is a frame of the file
+     * that was hashed, not a picture anybody sent us. If the record has no frame
+     * the drawn placeholder simply stays, which is honest; nothing is invented
+     * to fill it. */
+    const shot = root.querySelector('[data-seasonshot]');
+    if (shot && p.cid) {
+      const v = await api.videos.provenance(p.cid).catch(() => null);
+      showPoster(shot, v);
+    }
 
     // The acknowledgement. The whole row is the control, so the sentence is part
     // of the target rather than decoration beside it.

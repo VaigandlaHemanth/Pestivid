@@ -145,7 +145,7 @@
       <div class="lift1" style="background: #fff; margin-top: 18px;">
         <sc-for data-list="lots" list="{{lots}}" as="l" hint-placeholder-count="4">
           <div data-lot style="padding: 18px 20px; display: grid; grid-template-columns: 92px 1fr 168px; gap: 16px; align-items: center; box-shadow: inset 0 -1px 0 #e4e9ee; {{l.sel}}">
-            <div style="width: 92px; min-height: 68px; background: #37322d; position: relative; overflow: hidden;">
+            <div data-thumb style="width: 92px; min-height: 68px; background: #37322d; position: relative; overflow: hidden;">
               <div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div>
               <div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div>
             </div>
@@ -172,10 +172,20 @@
       <div style="font-size: 15px; color: #605a53;">Selected lot</div>
       <div data-bind="lot.who" style="font-size: 21px; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
 
-      <div style="min-height: 176px; background: #37322d; margin-top: 14px; position: relative; overflow: hidden;">
+      <div data-lotshot style="min-height: 176px; background: #37322d; margin-top: 14px; position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 10px; border: 1px solid #605a53;"></div>
         <div data-bind="lot.file" data-readout class="mono gplate" style="position: absolute; left: 20px; top: 18px; padding: 8px 11px; font-size: 11px; line-height: 1.75; color: #f6f3ef;">
           VID_20260818_064410_IST.mp4 <br>0:41 &middot; 1080&times;1920 <br>block 881,204
+        </div>
+        <!-- A PRESSABLE THING HAS TO LOOK PRESSABLE.
+             This plate plays the lot's video now, and it was carrying the file
+             chip and an inset rule and no cue at all -- a buyer had no reason to
+             press the one control on the page that answers "is this crop real".
+             The same mark the investor's evidence plate uses, at the smaller
+             plate's scale. playsInline() fills this box with inset: 0, so the
+             player covers this and closing gives it back. -->
+        <div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,.22); border: 1px solid rgba(255,255,255,.4); display: flex; align-items: center; justify-content: center;">
+          <div style="width: 0; height: 0; border-left: 17px solid #fff; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 6px;"></div>
         </div>
       </div>
 

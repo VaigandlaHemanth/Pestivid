@@ -12,7 +12,7 @@
 // Every block now renders from data or is removed, and the board names its own
 // parts so the code addresses them by name rather than by position.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, rows, slot, dropSection } from '../bind.js';
+import { showPoster, bind, rows, slot, dropSection } from '../bind.js';
 import { rupees, whenShort } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { goes, press } from '../wire.js';
@@ -115,8 +115,12 @@ if (ctx) {
         asked: l.enquiryCount > 0
           ? `${l.enquiryCount} buyer${l.enquiryCount === 1 ? ' has' : 's have'} asked about this`
           : null,
-      })), (el, row) => {
+      })), (el, row, i) => {
         if (row.asked) goes(slot(el, 'asked'), 'messages', 'Buyers who asked about this lot');
+        // The 62px square beside each lot was drawn to hold a frame of the video
+        // the lot was listed with, and held a flat fill instead. The listings
+        // route carries the frame now, cut server-side from the stored object.
+        showPoster(el.querySelector('[data-lotthumb]'), lots[i]);
       });
     }
 

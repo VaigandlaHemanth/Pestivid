@@ -1,5 +1,5 @@
 import { requireUser, api, load, state } from './_guard.js';
-import { repeat, bind, playsInline } from '../bind.js';
+import { repeat, bind, playsInline, showPoster } from '../bind.js';
 import { rupees } from '../api.js';
 import { promote, goes, press } from '../wire.js';
 
@@ -103,6 +103,14 @@ if (ctx) load(ctx.root, async () => {
       // show() runs again on every row click, so the handler is assigned rather
       // than added -- addEventListener would stack one per click.
       plate.onclick = null;
+      /* The frame, before anything is pressed.
+       *
+       * The plate had a play mark and a scrub strip drawn over 300px of flat
+       * dark, and pressing it fetched the file -- but an investor scanning the
+       * page saw an empty rectangle where the evidence is. The poster is one
+       * frame cut server-side from the object the hash was computed from, so it
+       * is the same file, not a picture somebody sent us. */
+      showPoster(plate, video);
       if (video?.gateway) {
         const player = playsInline(plate, { gateway: video.gateway }, { into: plate });
         // promote() for the name and the role, onclick for the handler. acts()

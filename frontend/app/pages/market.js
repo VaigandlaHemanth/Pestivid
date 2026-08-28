@@ -5,7 +5,7 @@
 // detail column showed the artboard's lot whichever row you were looking at,
 // because nothing ever swapped it.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, repeat, rows as rows2, slot as slot2 } from '../bind.js';
+import { bind, repeat, rows as rows2, slot as slot2, showPoster, playsInline } from '../bind.js';
 import { rupees, whenShort, dateState } from '../api.js';
 import { promote, goes, acts, asField, press } from '../wire.js';
 
@@ -137,7 +137,11 @@ if (ctx) {
       price: `${rupees(l.minPrice)}, ${rupees(l.maxPrice)}`,
       qty: l.crop || '',
       stamp: l.cid ? 'Dated video attached' : 'No video, not listed as proved',
-    })));
+    })), (el, row, i) => {
+      // One real frame per row. The board draws a 92x68 dark rectangle with a
+      // play triangle over it, and until now that was all it ever was.
+      showPoster(el.querySelector('[data-thumb]'), shown[i]);
+    });
 
     const rows = [...(list?.children || [])];
     const select = (i) => rows.forEach((el, n) => {
@@ -203,6 +207,31 @@ if (ctx) {
     }
 
       open = l;
+
+      /* THE PANEL PLAYS THE LOT IT IS A PANEL FOR.
+       *
+       * 176px of dark with a play triangle on it and nothing behind any of it.
+       * This is the screen where a buyer decides whether to send money to a
+       * stranger for a crop they have not seen, and the one thing that could
+       * settle it -- the dated video -- was drawn as an offer and then refused.
+       * The frame and the gateway address both come from the listings route,
+       * which is the same public answer that carries the file's hash. */
+      const shot = root.querySelector('[data-lotshot]');
+      if (shot) {
+        showPoster(shot, l);
+        // show() runs again on every row click, so the handler is ASSIGNED.
+        // addEventListener would stack one per click and the player would toggle
+        // open and shut on a single press.
+        shot.onclick = null;
+        if (l.gateway) {
+          const player = playsInline(shot, { gateway: l.gateway }, { into: shot });
+          promote(shot, `Play the ${(l.crop || 'lot').toLowerCase()} video and check its date`);
+          shot.onclick = () => player.toggle();
+        } else {
+          shot.removeAttribute('data-act');
+        }
+      }
+
       // Reaching the farmer. An investor has had this on their screen all
       // along; a buyer could only bid, with no way to ask anything first.
       const msgRow = root.querySelector('[data-message]');
