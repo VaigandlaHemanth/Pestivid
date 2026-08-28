@@ -120,7 +120,23 @@ jobs:
         # devDependency, so `npm ci` above has already installed it -- and an
         # ad-hoc install is the one thing that could re-resolve the tree and
         # undo the `sharp` override that package.json exists to pin.
-        run: node test_feature_parity.mjs
+        #
+        # RETRIED, because this step reaches OUT. It pulls model_fp16.onnx from
+        # huggingface.co, and a push to `frontend` while a pull request is open
+        # starts two runs of this workflow on the same commit at the same second
+        # -- both fetching the same file. One of them got a 429 and the pull
+        # request went red on a commit whose own push had just gone green.
+        #
+        # Rate limiting is not a defect in this repo and must not read like one.
+        # Three attempts, a minute apart. A real parity failure still fails all
+        # three and still fails the job, which is the only outcome worth having.
+        run: |
+          for attempt in 1 2 3; do
+            if node test_feature_parity.mjs; then exit 0; fi
+            echo "parity attempt $attempt failed"
+            [ "$attempt" = 3 ] && exit 1
+            sleep 60
+          done
 
       # NOT `npm audit --audit-level=moderate`. That exits 1 on this project and
       # always will: every advisory lives under `opentimestamps`, which has no
