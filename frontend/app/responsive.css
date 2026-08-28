@@ -358,3 +358,36 @@ body > div[style*="width: 824px"] {
      real touch height here costs nothing. */
   .act[data-act], .act[data-go] { min-height: 44px; }
 }
+
+/* ── the photo, once there is an answer ─────────────────────────────────────
+ *
+ * In the capture phase the plate IS the page and takes the whole window (see
+ * fitPlate in pages/_leaf.js). Once a verdict exists it stops being the subject
+ * and becomes the evidence for one: what a farmer needs on screen is the name of
+ * the disease and what to do about it.
+ *
+ * At its capture height the answer started 641px down, below the fold on a 768px
+ * laptop -- so the page opened on a photograph the farmer had just taken and
+ * hid the thing they were waiting for. This lifts "Most likely / Fungi" to
+ * roughly 470, on screen without scrolling, and the photo is still large enough
+ * to see the leaf it is about.
+ *
+ * [data-phase] is set by _leaf.js at runtime, so the drawn page carries none of
+ * this and verify-layout goes on comparing the board with a page that matches.
+ */
+@media (min-width: 901px) {
+  [data-phase="verdict"] [data-plate],
+  [data-phase="refused"] [data-plate] {
+    height: 260px !important;
+    min-height: 260px !important;
+  }
+  /* And the rail gets the column's full height, so the one card left in it can
+     stay beside the reader.
+     The grid holds its items at `align-items: start`, so the rail was exactly as
+     tall as that single card -- and a sticky element can only travel inside its
+     own parent's box, so it stuck to nothing and scrolled away with the page
+     (measured at -509px off the top of the window at the end of the scroll).
+     Stretching the rail gives it somewhere to stick. */
+  [data-phase="verdict"] .rail,
+  [data-phase="refused"] .rail { align-self: stretch; }
+}

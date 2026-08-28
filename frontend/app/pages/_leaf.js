@@ -395,7 +395,15 @@ export function leaf(slug) {
     // "Most likely" is a claim about a diagnosis. There is not one.
     const kicker = ctx.root.querySelector('[data-bind="verdict.name"]')?.previousElementSibling;
     if (kicker && !ok) kicker.textContent = 'The checker refused';
+    /* The way out, and it stays with you.
+     *
+     * Moving "Ask about this result" into the reading column -- where a question
+     * actually arises, rather than at the top of a rail 727px above the answer --
+     * left this as the only card in that rail. Sticky, so it sits beside whatever
+     * part of the diagnosis is on screen instead of being abandoned at the top of
+     * an otherwise empty column. */
     const again = document.createElement('div');
+    again.style.cssText = 'position: sticky; top: 20px;';
     (ctx.root.querySelector('.rail') || ctx.root).append(again);
     state(again, 'empty', 'Check another leaf', 'This clears the result and opens the camera.');
     const box = again.firstElementChild;
