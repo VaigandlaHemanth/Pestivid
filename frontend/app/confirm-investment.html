@@ -85,6 +85,12 @@
  * delay, driven by custom properties on hover. Transform only, no loop, and it
  * runs once per hover on a control somebody reaches maybe twice a season.
  */
+/* The well sits on the RIGHT of the label.
+   It was on the left, in a 53px slot before the words, and at rest that read as
+   an artifact stuck to the side of the button -- no site puts a submit
+   affordance left of its label. That was a reason to MOVE it, and it got
+   deleted instead. Mirrored: the padding and the well swap sides, and the
+   rounded corners follow. */
 .filing {
   --f-well: #01579b;
   --f-folder: #e8cfa6;
@@ -98,16 +104,16 @@
   --f-pencil-bot: #605a53;
   --f-shadow: rgba(29, 26, 23, .22);
   position: relative;
-  padding-left: 69px;
-  padding-right: 29px;
+  padding-left: 29px;
+  padding-right: 69px;
 }
 
 .filing__well {
-  top: 0; left: 0; bottom: 0;
+  top: 0; right: 0; bottom: 0;
   width: 53px;
   position: absolute;
   overflow: hidden;
-  border-radius: var(--r-control, 8px) 0 0 var(--r-control, 8px);
+  border-radius: 0 var(--r-control, 8px) var(--r-control, 8px) 0;
   background: var(--f-well);
 }
 .filing__folder { width: 23px; height: 27px; position: absolute; left: 15px; top: 50%; margin-top: -13px; }
