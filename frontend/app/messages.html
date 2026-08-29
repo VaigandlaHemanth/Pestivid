@@ -87,9 +87,28 @@
        tail -- three lines typed in a row are one person talking, not three
        events. Pure sibling CSS, so a day label between two bubbles breaks the
        run by itself, which is right. */
-    .them + .them, .me + .me { margin-top: -8px; }
-    .them:has(+ .them) { border-bottom-left-radius: 16px; }
-    .me:has(+ .me)     { border-bottom-right-radius: 16px; }
+    /* 12px of transcript gap, pulled back to 3 inside a run, so the space
+       BETWEEN turns is four times the space within one. */
+    .them + .them, .me + .me { margin-top: -9px; }
+
+    /* ONE CLOCK PER TURN.
+       Five messages sent in a row are one turn in a conversation, and this
+       printed the time and "read" under every single one of them -- so a run of
+       five read as five receipts stacked up rather than somebody talking. Every
+       chat groups consecutive messages from the same sender and prints the clock
+       once, on the last of the run, which is also the only one whose time you
+       would look for. The bubbles were already grouped; only the clock was not. */
+    .them:has(+ .them) [data-when],
+    .me:has(+ .me)     [data-when] { display: none; }
+    /* A RUN READS AS ONE COLUMN, not a stack of separate pills.
+       Two things do it, and this had only the first: the tail comes off any
+       bubble that is not the last of its run, AND the corners where two bubbles
+       MEET are squared to 6. Leave every corner at 16 and five messages look
+       like five things; square the join and they look like one person talking. */
+    .them:has(+ .them) { border-bottom-left-radius: 6px; }
+    .them + .them      { border-top-left-radius: 6px; }
+    .me:has(+ .me)     { border-bottom-right-radius: 6px; }
+    .me + .me          { border-top-right-radius: 6px; }
     /* The day a run belongs to. Plain text, not a pill: drawn as a round chip it
        looked exactly like the quick-reply chips below it. */
     .day  { align-self: center; font-size: 12.5px; font-weight: 600; color: #605a53;
@@ -173,8 +192,11 @@
          to the eye and kept for the document, so this row holds only the way
          out -- which is the one question of the four ("where am I, where can I
          go, what is here, how do I get out") that the bar does not answer. -->
-    <div class="pagehold" style="padding: 12px 28px 0;">
-      <a data-chrome="back" href="./home.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword="">Home</span></a>
+    <!-- No padding and no height: all this holds now is the hidden heading. The
+         way out moved into the rail, where a desktop chat keeps it, so the chat
+         surface starts directly under the bar instead of after a bare 56px band
+         carrying one word. -->
+    <div class="pagehold" style="padding: 0;">
       <!-- HIDDEN, NOT DELETED. The nav word "Chat" is underlined two lines
            above this, so as a visible heading it repeated the answer to "where
            am I" and charged 129px of the window for it. The h1 stays for the
@@ -197,11 +219,20 @@
        The one fact worth keeping, that only people who funded you can write
        here, explains why this list is short, so it sits at the top of the list. -->
   <!-- flex, so the column below can actually take what flex-grow gives this. -->
-  <div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; padding: 22px 28px 30px;">
+  <!-- EDGE TO EDGE. This held the chat in 28px of side padding and 30px at the
+       bottom, so a two-pane chat sat as a panel with ground showing all round
+       it -- the framing is what read as wasted space, not the panes. No
+       desktop chat does that: the surface goes to the window edge and the two
+       panes divide it. -->
+  <div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column;">
     <div data-chatcol="" style="flex: 1; min-height: 0;   /* NOT a fixed height, and not a counted one either: responsive.css carried three constants for this -- 68vh, 100dvh-241, 100dvh-211 -- each the chrome above it measured by hand at one breakpoint, and each one went stale the moment anything above it moved. Filling what is left needs no number at all. */ display: grid; grid-template-columns: 340px 1fr; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6;">
 
       <!-- ── the people ─────────────────────────────────────────────────── -->
       <div style="display: flex; flex-direction: column; min-height: 0; box-shadow: inset -1px 0 0 #ddd7d1;">
+        <!-- The way out, at the top of the list, above the conversations. -->
+        <div style="flex-shrink: 0; padding: 11px 17px 10px; box-shadow: inset 0 -1px 0 #ddd7d1;">
+        <a data-chrome="back" href="./home.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword="">Home</span></a>
+        </div>
         <div data-people="" style="flex-grow: 1; overflow-y: auto; min-height: 0;">
           <div data-specimen="" data-row="person" data-on="" style="padding: 13px 17px; display: flex; gap: 12px; align-items: flex-start; background: #eae4de; box-shadow: inset 3px 0 0 #016abe, inset 0 -1px 0 #ddd7d1;">
             <div style="width: 40px; height: 40px; background: #e1e6ec; border-radius: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 0 1px #c3bcb6;">
@@ -249,18 +280,18 @@
           <div data-specimen="" class="day">17 August</div>
           <div data-specimen="" class="them">
             <div class="bt">Namaste Alice. Is the canal water reaching the far end of the plot this year?</div>
-            <div class="m when">9:12 am</div>
+            <div data-when="" class="m when">9:12 am</div>
           </div>
           <div data-specimen="" class="me">
             <div class="bt">Yes. These two weeks it came every third day.</div>
-            <div style="display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 5px;">
+            <div data-when="" style="display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 5px;">
               <div class="m" style="font-size: 12.5px; color: #c4bdb6;">1:40 pm</div>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c4bdb6" stroke-width="2.4"><path d="M2 13l4 4 8-9"></path><path d="M10 15l2 2 9-10"></path></svg>
             </div>
           </div>
           <div data-specimen="" class="them">
             <div class="bt">Good. Can you walk to the far end in the next video? I have only seen the near side.</div>
-            <div class="m when">2:05 pm</div>
+            <div data-when="" class="m when">2:05 pm</div>
           </div>
         </div>
 

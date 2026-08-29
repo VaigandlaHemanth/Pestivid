@@ -87,9 +87,28 @@
        tail -- three lines typed in a row are one person talking, not three
        events. Pure sibling CSS, so a day label between two bubbles breaks the
        run by itself, which is right. */
-    .them + .them, .me + .me { margin-top: -8px; }
-    .them:has(+ .them) { border-bottom-left-radius: 16px; }
-    .me:has(+ .me)     { border-bottom-right-radius: 16px; }
+    /* 12px of transcript gap, pulled back to 3 inside a run, so the space
+       BETWEEN turns is four times the space within one. */
+    .them + .them, .me + .me { margin-top: -9px; }
+
+    /* ONE CLOCK PER TURN.
+       Five messages sent in a row are one turn in a conversation, and this
+       printed the time and "read" under every single one of them -- so a run of
+       five read as five receipts stacked up rather than somebody talking. Every
+       chat groups consecutive messages from the same sender and prints the clock
+       once, on the last of the run, which is also the only one whose time you
+       would look for. The bubbles were already grouped; only the clock was not. */
+    .them:has(+ .them) [data-when],
+    .me:has(+ .me)     [data-when] { display: none; }
+    /* A RUN READS AS ONE COLUMN, not a stack of separate pills.
+       Two things do it, and this had only the first: the tail comes off any
+       bubble that is not the last of its run, AND the corners where two bubbles
+       MEET are squared to 6. Leave every corner at 16 and five messages look
+       like five things; square the join and they look like one person talking. */
+    .them:has(+ .them) { border-bottom-left-radius: 6px; }
+    .them + .them      { border-top-left-radius: 6px; }
+    .me:has(+ .me)     { border-bottom-right-radius: 6px; }
+    .me + .me          { border-top-right-radius: 6px; }
     /* The day a run belongs to. Plain text, not a pill: drawn as a round chip it
        looked exactly like the quick-reply chips below it. */
     .day  { align-self: center; font-size: 12.5px; font-weight: 600; color: #605a53;
