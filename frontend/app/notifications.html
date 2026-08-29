@@ -120,6 +120,16 @@
     .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
     .rail  { display: flex; flex-direction: column; gap: 16px; }
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+
+    /* A DEFINITE HEIGHT, so the column below can be given what is left.
+       build-pages writes `min-height: 100vh` on every wrapper, and a MINIMUM is
+       not something flex-grow can divide: with the transcript taller than the
+       window the wrapper simply grew and the chat ran off the bottom of the page.
+       A definite height bounds it, the panes carry min-height: 0 so they may
+       shrink, and the transcript scrolls inside instead of the document doing it.
+       In the helmet rather than responsive.css because the drawing has to compute
+       the same thing the page does -- verify-layout renders both and compares. */
+    [data-fullheight] { height: 100dvh; }
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     /* The back link: in the content above the heading, naming its destination.

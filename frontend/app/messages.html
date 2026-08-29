@@ -120,6 +120,16 @@
     .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
     .rail  { display: flex; flex-direction: column; gap: 16px; }
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+
+    /* A DEFINITE HEIGHT, so the column below can be given what is left.
+       build-pages writes `min-height: 100vh` on every wrapper, and a MINIMUM is
+       not something flex-grow can divide: with the transcript taller than the
+       window the wrapper simply grew and the chat ran off the bottom of the page.
+       A definite height bounds it, the panes carry min-height: 0 so they may
+       shrink, and the transcript scrolls inside instead of the document doing it.
+       In the helmet rather than responsive.css because the drawing has to compute
+       the same thing the page does -- verify-layout renders both and compares. */
+    [data-fullheight] { height: 100dvh; }
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     /* The back link: in the content above the heading, naming its destination.
@@ -130,8 +140,8 @@
                 font-weight: 600; color: #01579b; text-decoration: none; }
   </style>
 </head>
-<body data-page="messages" data-role="any" data-design-width="1320" data-design-height="936">
-<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+<body data-page="messages" data-role="any" data-design-width="1320" data-design-height="1200">
+<div data-surface="desk" data-w="1320" data-fullheight="" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
       <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
         <div class="appbrand">Pestivid</div>
@@ -151,9 +161,17 @@
         </div>
       </div>
     </div>
-    <div class="pagehold" style="padding: 18px 28px 0;">
+    <!-- Tight, because there is one thing in it. The heading below is hidden
+         to the eye and kept for the document, so this row holds only the way
+         out -- which is the one question of the four ("where am I, where can I
+         go, what is here, how do I get out") that the bar does not answer. -->
+    <div class="pagehold" style="padding: 12px 28px 0;">
       <a data-chrome="back" href="./home.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword="">Home</span></a>
-      <h1 data-title="" class="pageh">Chat</h1>
+      <!-- HIDDEN, NOT DELETED. The nav word "Chat" is underlined two lines
+           above this, so as a visible heading it repeated the answer to "where
+           am I" and charged 129px of the window for it. The h1 stays for the
+           document outline and for [data-title], which wire.js reads. -->
+      <h1 data-title="" class="pageh" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;">Chat</h1>
     </div>
 
   <!-- ══ ONE SCREEN, TWO PANES ══
@@ -170,8 +188,9 @@
          "Words only" -- the absence of a paperclip already says it.
        The one fact worth keeping, that only people who funded you can write
        here, explains why this list is short, so it sits at the top of the list. -->
-  <div style="flex-grow: 1; padding: 22px 28px 30px;">
-    <div data-chatcol="" style="height: 695px; display: grid; grid-template-columns: 340px 1fr; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6;">
+  <!-- flex, so the column below can actually take what flex-grow gives this. -->
+  <div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; padding: 22px 28px 30px;">
+    <div data-chatcol="" style="flex: 1; min-height: 0;   /* NOT a fixed height, and not a counted one either: responsive.css carried three constants for this -- 68vh, 100dvh-241, 100dvh-211 -- each the chrome above it measured by hand at one breakpoint, and each one went stale the moment anything above it moved. Filling what is left needs no number at all. */ display: grid; grid-template-columns: 340px 1fr; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6;">
 
       <!-- ── the people ─────────────────────────────────────────────────── -->
       <div style="display: flex; flex-direction: column; min-height: 0; box-shadow: inset -1px 0 0 #ddd7d1;">

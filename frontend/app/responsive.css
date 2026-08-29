@@ -283,7 +283,12 @@ body > div[style*="width: 824px"] {
    scrolling inside it. A 656px column on an 844px phone left the composer
    halfway up the screen with a void above it. */
 @media (max-width: 900px) {
-  [data-chatcol] { height: 68vh !important; min-height: 380px; }
+  /* The chat column used to be pinned here to `calc(100dvh - <chrome>)`, and the
+     chrome was counted by hand, differently at each breakpoint: 68vh, 241, 211.
+     Every one of them went stale the moment anything above the column changed
+     height -- the 241 was caught by verify-layout reporting a page 36px taller
+     than its drawing after a back link moved. The column fills what is left now,
+     with flex, which needs no number and cannot go out of date. */
 }
 
 /* ── the two conversations, at whatever height the window is ─────────────── */
@@ -332,7 +337,6 @@ body > div[style*="width: 824px"] {
      so anything added there has to be added here -- and verify-layout catches it
      if it is not, which is how this one was found, one page reporting its column
      36px taller than the drawing on both chat screens. */
-  [data-chatcol] { height: calc(100dvh - 241px) !important; min-height: 300px; }
 }
 
 /* ── THE CHAT FILLS THE WINDOW ───────────────────────────────────────────── */
@@ -352,7 +356,6 @@ body > div[style*="width: 824px"] {
  * the column, verify-layout catches the constant going stale, which is how the
  * last one was found. */
 @media (min-width: 1400px) {
-  [data-chatcol] { height: calc(100dvh - 211px) !important; }
 }
 
 /* ── the crop mark needs no rule here ───────────────────────────────────── */

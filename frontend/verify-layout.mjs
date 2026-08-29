@@ -91,6 +91,39 @@ for (const slug of slugs) {
   await a.goto(pathToFileURL(path.join(DESIGN, board)).href, { waitUntil: 'load' });
   await a.addScriptTag({ content: shim });
   await a.evaluate(() => document.querySelectorAll('[data-fold]').forEach(n => n.remove()));
+  /* THE TWO RENDERS HAVE TO BE PINNED THE SAME WAY, or the root's height is not a
+   * fact about the design at all.
+   *
+   * build-pages writes `min-height: 100vh` on every page wrapper, so a page whose
+   * content is shorter than the window still paints its background to the bottom.
+   * The board panel has no such rule: it settles at its content height. Compare
+   * them and the root differs by exactly the slack -- but only where the content
+   * happens to be shorter than the viewport, which depends on where the text
+   * wraps, which depends on the font metrics of the machine doing the rendering.
+   *
+   * So it passed on Windows and failed on Linux in CI, on three pages: profile by
+   * 37.8px, the leaf check by 19.9, record by 1.6. Nothing was wrong with any of
+   * them. sizes.json is itself baked from a render, so the viewport this runs at
+   * is one machine's answer to a question the other machine answers differently.
+   *
+   * Pinning the board the same way the page is pinned makes the roots comparable
+   * again, and leaves every child's geometry -- which is what this is actually
+   * for -- measured exactly as before. */
+  await a.evaluate((sel) => {
+    const root = document.querySelector(sel);
+    if (!root) return;
+    /* In BORDER-box terms, because that is what the page's rule means. The page
+     * wrapper is border-box (build-pages sets it) so `min-height: 100vh` bounds
+     * its outer edge. A board panel is content-box, so the same declaration
+     * bounds the content and then adds the padding on top -- which on the
+     * confirmation dialog turned a 907.5px panel into 964, its 56px of padding
+     * appearing out of nowhere and reading as a real 56px difference. */
+    const cs = getComputedStyle(root);
+    const outside = cs.boxSizing === 'border-box' ? 0
+      : parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+        + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+    root.style.minHeight = (window.innerHeight - outside) + 'px';
+  }, `[data-page="${slug}"]`);
   await settle(a);
   const A = await a.evaluate(WALK, `[data-page="${slug}"]`);
   await a.close();

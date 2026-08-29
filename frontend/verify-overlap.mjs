@@ -103,6 +103,17 @@ const AUDIT = () => {
 
   for (const el of document.querySelectorAll('body *')) {
     if (!el.offsetParent && getComputedStyle(el).position !== 'fixed') continue;
+    /* Text hidden ON PURPOSE is not text painted over -- it is not painted.
+     *
+     * A screen-reader-only heading is a 1x1 box with clip-path: inset(50%), which
+     * keeps it in the document and out of the picture. Measuring the TEXT NODE
+     * still returns the words at their natural size, so the chat page's hidden
+     * h1 was reported as "Chat covered by div" at all three widths. The element's
+     * own box, and its clip, are what say whether anybody can see it. */
+    const own = el.getBoundingClientRect();
+    const ecs = getComputedStyle(el);
+    if (own.width < 6 || own.height < 6) continue;
+    if (ecs.clipPath && ecs.clipPath !== 'none') continue;
     for (const node of el.childNodes) {
       if (node.nodeType !== Node.TEXT_NODE) continue;
       const text = node.textContent.replace(/\s+/g, ' ').trim();

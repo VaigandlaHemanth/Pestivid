@@ -83,6 +83,13 @@
     .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
     .rail  { display: flex; flex-direction: column; gap: 16px; }
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+
+    /* A DEFINITE HEIGHT. build-pages writes `min-height: 100vh`, and a minimum is
+       not something flex-grow can divide -- with the column's own height removed
+       it fell back to its content and left 381px of dead ground under it. Same
+       treatment as the chat page, and in the helmet for the same reason: the
+       drawing has to compute what the page computes. */
+    [data-fullheight] { height: 100dvh; }
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     /* The back link: in the content above the heading, naming its destination.
@@ -93,8 +100,8 @@
                 font-weight: 600; color: #01579b; text-decoration: none; }
   </style>
 </head>
-<body data-page="ask" data-role="farmer" data-design-width="1320" data-design-height="897">
-<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+<body data-page="ask" data-role="farmer" data-design-width="1320" data-design-height="1200">
+<div data-surface="desk" data-w="1320" data-fullheight="" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
   <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
@@ -133,7 +140,7 @@
        entitled to know that before acting on a sentence. -->
   <div data-chatgrid="" style="flex-grow: 1; display: grid; grid-template-columns: minmax(0, 880px) 340px; gap: 26px; padding: 22px 28px 30px; align-items: start; justify-content: space-between;">
 
-    <div data-chatcol="" style="height: 656px; background: #ddd7d1; display: flex; flex-direction: column;">
+    <div data-chatcol="" style="height: 100%; min-height: 0;   /* height, not stretch: the grid row is sized to its tallest item, so the column sat at its content height and left 381px of dead ground under it. The grid itself already fills, so 100% of it is what is left. */ background: #ddd7d1; display: flex; flex-direction: column;">
 
       <div data-transcript="" style="flex-grow: 1; overflow-y: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;">
         <div data-spacer="" style="flex-grow: 1;"></div>
