@@ -92,7 +92,7 @@ const AUDIT = (touch) => {
     return { r: 255, g: 255, b: 255, a: 1 };
   };
 
-  const out = { contrast: [], targets: [], fullWidth: [], caps: [], unmeasured: 0 };
+  const out = { contrast: [], targets: [], fullWidth: [], caps: [], unmeasured: 0, unknown: [] };
   const panelW = document.body.getBoundingClientRect().width;
 
   for (const el of document.querySelectorAll('body *')) {
@@ -119,7 +119,18 @@ const AUDIT = (touch) => {
       // does the same; the ratio that matters is the one it has once enabled.
       const off = el.closest('[aria-disabled="true"], [disabled], .tap[data-off]');
       if (off) { /* exempt while inactive */ }
-      else if (bg === 'image' || !fg) { out.unmeasured++; }
+      /* A COUNT IS NOT A RESULT.
+       *
+       * This bucket said "22 text nodes over imagery, unmeasured" and named none
+       * of them, so twenty-two pieces of text had unknown contrast and no way to
+       * find which. It is the one bucket where a real failure can sit forever:
+       * text over a photograph is exactly where contrast goes wrong. They are
+       * named now, so each can be judged rather than counted. */
+      else if (bg === 'image' || !fg) {
+        out.unmeasured++;
+        out.unknown.push({ text: own.slice(0, 40), fg: cs.color, size: Math.round(px(cs.fontSize)),
+                           why: bg === 'image' ? 'over imagery' : 'colour not resolvable' });
+      }
       else {
         const got = ratio(fg, bg);
         if (got < need - 0.02) {
@@ -214,6 +225,7 @@ const slugs = process.argv.slice(2).length
 const b = await chromium.launch();
 const tok = {};
 const tally = { contrast: 0, targets: 0, fullWidth: 0, caps: 0, unmeasured: 0 };
+const UNKNOWN = [];
 
 for (const slug of slugs) {
   const role = roleFor(slug);
@@ -228,6 +240,7 @@ for (const slug of slugs) {
     await p.waitForTimeout(1300);
     const f = await p.evaluate(AUDIT, touch);
     await p.close();
+    for (const u of f.unknown || []) UNKNOWN.push({ ...u, slug });
     for (const k of Object.keys(tally)) {
       tally[k] += Array.isArray(f[k]) ? f[k].length : f[k];
     }
@@ -244,6 +257,18 @@ for (const slug of slugs) {
   if (lines.length) console.log(`\n## ${slug}\n${[...new Set(lines)].join('\n')}`);
 }
 await b.close();
+if (UNKNOWN.length) {
+  console.log('');
+  console.log('## contrast that could not be computed');
+  console.log('   over imagery, or a colour that does not resolve. These are the');
+  console.log('   ones a real failure can hide in, so they are named not counted.');
+  const seen = new Set();
+  for (const u of UNKNOWN) {
+    const key = u.slug + u.text + u.fg;
+    if (seen.has(key)) continue; seen.add(key);
+    console.log(`  ${u.slug.padEnd(14)} ${String(u.size).padStart(3)}px  ${u.fg.padEnd(20)} "${u.text}"`);
+  }
+}
 console.log(`\n  ${tally.contrast} contrast, ${tally.targets} small targets,`
   + ` ${tally.fullWidth} full-bleed buttons, ${tally.caps} ALLCAPS`
   + `, across ${slugs.length} pages (${tally.unmeasured} text nodes over imagery, unmeasured)`);

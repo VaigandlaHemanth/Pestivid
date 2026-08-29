@@ -62,6 +62,24 @@ if (ctx) {
       noReturn: (() => {
         const open = mine.filter(i => !done(i)).length;
         const failed = mine.filter(i => i.status === 'cancelled').length;
+        /* THE CARD EXPLAINED A STATE THAT WAS NOT ON THE PAGE.
+         *
+         * "Why a failed season stays on this page" is drawn once, in the present
+         * tense, as though one were sitting in the table above it -- and with
+         * three healthy rows an investor reads it, looks for the failure, and
+         * finds none. It is worth saying either way, because it is a promise
+         * about what this page will not hide; it just has to say which one it is.
+         */
+        bind(ctx.root, { fail: failed ? {
+          head: failed === 1 ? 'Why a failed season stays on this page'
+                             : 'Why failed seasons stay on this page',
+          lead: failed === 1
+            ? 'It stays here permanently, in the same table and the same type size as the one that paid.'
+            : 'They stay here permanently, in the same table and the same type size as the ones that paid.',
+        } : {
+          head: 'A failed season would stay on this page',
+          lead: 'None of yours has failed. If one does it stays here permanently, in the same table and the same type size as the one that paid.',
+        } });
         const parts = [];
         // word numbers, to match the heading -- "2 of these seasons" next to
         // "Your three seasons" reads like two different pages

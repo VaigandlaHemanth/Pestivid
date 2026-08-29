@@ -5,7 +5,7 @@
 // icons, the harvest button, the speak button -- and not one of them was wired.
 // Binding data is not the same as building a page.
 import { requireUser, api, load, state as stateBox } from './_guard.js';
-import { bind, oneByText, rows as fillRows, slot, showPoster } from '../bind.js';
+import { bind, oneByText, byText, rows as fillRows, slot, showPoster } from '../bind.js';
 import { press, goes } from '../wire.js';
 import { rupees, whenShort, dateState } from '../api.js';
 
@@ -40,8 +40,18 @@ if (ctx) {
     ['Check a leaf',   'leaf-check'],
     ['Ask a question', 'ask'],
   ];
+  /* byText and not oneByText, because two of these words are ALSO in the bar.
+   *
+   * "My plots" and "Money" are nav slots at the top of this page, they come
+   * first in the DOM, and oneByText returned those -- so .closest('.row') found
+   * nothing above them and the card in the content was never wired. Two of the
+   * five destinations on the farmer's first screen went nowhere. The section
+   * link even wore the link colour while doing it: blue, underlined by nothing,
+   * cursor: auto, and a press that did not move.
+   *
+   * The first match that actually sits in a row is the one in the content. */
   for (const [label, dest] of destinations) {
-    const el = oneByText(label, root)?.closest('.row');
+    const el = byText(label, root).map(e => e.closest('.row')).find(Boolean);
     if (el) goes(el, dest, label);
   }
 

@@ -242,9 +242,18 @@
           </div>
         </div>
         <div style="display: flex; gap: 13px; align-items: flex-start;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c4a12" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
           <div>
-            <div style="font-size: 16.5px; font-weight: 700; color: #01579b;">The farmer’s word, labelled as such</div>
+<!-- THE LIMIT TIER IS NOT A CONTROL.
+           #01579b is --link, the one colour in this palette that means "press
+           this". Four places were using it for the OPPOSITE of --proved -- the
+           farmer's unchecked word, and the "this does not" half of every
+           proves/does-not pair -- because the palette had a colour for a fact
+           anybody can check and the boards had never named one for a limit.
+           There is one: --attention-ink on --attention-fill, which this product
+           already uses for "take care". A caveat in the colour of a button reads
+           as something to click, and none of these can be clicked. -->
+      <div style="font-size: 16.5px; font-weight: 700; color: #7c4a12;">The farmer’s word, labelled as such</div>
             <div style="font-size: 15.5px; line-height: 1.5; color: #4a443d; margin-top: 2px;">Acreage, crop, sowing date, and the location their phone reported.</div>
           </div>
         </div>
@@ -295,12 +304,16 @@
       </div>
 
       <!-- the stamp: the one animated moment on the page -->
-      <div class="stamp" style="position: absolute; right: -22px; top: 96px; width: 132px; height: 132px; border-radius: 50%; border: 3px solid #01579b; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,253,249,.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); transform: rotate(-5.5deg);">
-        <div style="font-size: 12px; font-weight: 700; color: #01579b;">DATE PROVED</div>
-        <div class="num" style="font-size: 19px; font-weight: 800; color: #01579b; letter-spacing: -0.01em; margin-top: 2px;">18 AUG</div>
-        <div class="num" style="font-size: 12px; font-weight: 600; color: #01579b;">2026</div>
-        <div style="width: 62px; height: 2px; background: #01579b; margin-top: 6px;"></div>
-        <div style="font-size: 11px; font-weight: 600; color: #01579b; margin-top: 4px;">Not whose field</div>
+      <!-- The stamp says DATE PROVED, so it wears --proved. It was in the link
+           colour, which meant the one graphic on the page making a checkable
+           claim was painted the colour of a button. "Not whose field" under it
+           is the caveat that keeps the claim honest. -->
+      <div class="stamp" style="position: absolute; right: -22px; top: 96px; width: 132px; height: 132px; border-radius: 50%; border: 3px solid #006934; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,253,249,.9); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); transform: rotate(-5.5deg);">
+        <div style="font-size: 12px; font-weight: 700; color: #006934;">DATE PROVED</div>
+        <div class="num" style="font-size: 19px; font-weight: 800; color: #006934; letter-spacing: -0.01em; margin-top: 2px;">18 AUG</div>
+        <div class="num" style="font-size: 12px; font-weight: 600; color: #006934;">2026</div>
+        <div style="width: 62px; height: 2px; background: #006934; margin-top: 6px;"></div>
+        <div style="font-size: 11px; font-weight: 600; color: #006934; margin-top: 4px;">Not whose field</div>
       </div>
     </div>
   </div>
@@ -341,7 +354,7 @@
                 <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">{{s.proves}}</div>
               </div>
               <div style="margin-top: 10px; background: #f6f3ef; padding: 16px 18px;">
-                <div style="font-size: 14.5px; font-weight: 700; color: #01579b;">This does not</div>
+                <div style="font-size: 14.5px; font-weight: 700; color: #7c4a12;">This does not</div>
                 <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">{{s.notproves}}</div>
               </div>
             </div>

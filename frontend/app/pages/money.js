@@ -72,7 +72,11 @@ if (ctx) {
           // A share is a real term of the request. Shown when the request
           // states one, removed when it does not -- the artboard's "they keep
           // 60%" was sitting on a row that also said nothing was being raised.
-          share: p.investorShare != null ? `they keep ${p.investorShare}%` : null,
+          // "they keep 20%" on the farmer's OWN money page: the row is a season
+          // title, an amount and a share, and there is no "they" anywhere in it
+          // to point at. On the one screen about who gets paid what, the pronoun
+          // has to name somebody.
+          share: p.investorShare != null ? `investors keep ${p.investorShare}%` : null,
           // The 2% floor exists so a tiny amount is still visible. It must not
           // apply to nothing: a blue nub on a season with zero raised claims
           // money arrived. Zero is drawn as zero.
@@ -99,6 +103,18 @@ if (ctx) {
     if (!lots.length) {
       dropSection(root, 'sell', 'sell');
     } else {
+      /* THE HEADING HAS TO SURVIVE THE DATA UNDER IT.
+       *
+       * "Produce you are selling" is drawn once and was never rebound, so a
+       * farmer with four lots of which three had already sold read a heading
+       * saying all four were on sale. Each row does say "Sold", which makes the
+       * heading the only untrue line in the section -- and it is the line in the
+       * largest type. */
+      const onSale = lots.filter(l => String(l.status || '') !== 'sold').length;
+      bind(root, { sell: { title:
+        onSale === lots.length ? 'Produce you are selling'
+          : onSale === 0 ? 'Produce you have sold'
+          : `Produce you listed · ${onSale} still for sale` } });
       rows(root, 'sell', lots.map(l => ({
         crop: l.crop || l.title || 'Lot',
         // A Listing carries minPrice and maxPrice for the whole lot. It has no

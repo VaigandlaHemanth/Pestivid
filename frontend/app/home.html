@@ -135,7 +135,14 @@
 
         <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 26px;">
           <div style="font-size: 17px; font-weight: 700;">Your plots</div>
-          <div class="row" style="background: transparent; padding: 0; display: block;">
+          <!-- 44px, without moving. This is a real destination -- it is the way to
+               the full list -- and it measured 85x42 on a phone, two pixels under
+               the floor. It was not caught before because it was not wired at all:
+               oneByText("My plots") matched the nav word in the bar above, so
+               .closest(".row") found nothing and this went nowhere. Padding buys
+               the height and an equal negative margin gives back the space, so the
+               target grows and the baseline it is aligned on does not move. -->
+          <div class="row" style="background: transparent; padding: 3px 0; margin: -3px 0; display: block;">
             <div class="lab" style="font-size: 14.5px; font-weight: 600; color: #01579b;">My plots</div>
             <div data-bind="plots.waiting" class="nat m" style="text-align: right; margin-top: 1px;">2 videos</div>
           </div>
