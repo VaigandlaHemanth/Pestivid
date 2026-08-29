@@ -338,10 +338,15 @@
          they open a drawer. It is gone, and with it the rail: a 372px column
          holding one button is worse than the button being where a page-level
          control belongs. The list took the 372px back. -->
-    <div class="pagehold" style="background: #f6f3ef; box-shadow: inset 0 -1px 0 #ddd7d1; padding: 10px 28px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 26px;">
-      <div>
-        <a data-chrome="back" href="./home.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword>Home</span></a>
-        <h1 data-title class="pageh">What has happened</h1>
+    <div class="pagehold" style="background: #f6f3ef; padding: 11px 28px; display: flex; align-items: center; gap: 17px;">
+      <!-- Back BESIDE the heading, hairline between, the same row on every
+           screen. See the note on any other board for why: this is the chat
+           rail's geometry, and the rail is the one back link here that never
+           read as dropped on the page. -->
+      <a data-chrome="back" href="./home.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword>Home</span></a>
+      <div style="width: 1px; align-self: stretch; background: #c3bcb6;"></div>
+      <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0;">
+        <h1 data-title class="pageh" style="margin: 0;">What has happened</h1>
         <div data-bind="unreadLine" class="pagesub"></div>
       </div>
       <!-- SPECIMEN until the count is known. Whether there is anything to mark as

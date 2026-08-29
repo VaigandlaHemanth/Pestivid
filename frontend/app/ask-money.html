@@ -94,15 +94,19 @@
         </div>
       </div>
     </div>
-    <div class="pagehold" style="padding: 18px 28px 0;">
-      <!-- Back, where the web puts it: in the content, above the heading,
-           saying WHERE it goes. It was a bare chevron in the app bar to the
-           LEFT of the wordmark -- the native-mobile idiom -- which took the
-           brand’s own slot, moved the wordmark between four different left
-           edges depending on whether a page had one, and named no
-           destination. An <a href> so it can be middle-clicked. -->
+    <div class="pagehold" style="padding: 11px 28px; display: flex; align-items: center; gap: 17px;">
+      <!-- BACK AND THE HEADING ON ONE ROW, divided by a hairline. This is the
+           chat rail's geometry, and the rail is the one place in this product
+           where the way out never read as detached: it sits BESIDE the header,
+           not above it, with the rail's own right edge (inset -1px 0 0 #ddd7d1)
+           drawn between the two. Everywhere else the back link had a whole row
+           to itself over the title, which is why it read as something dropped
+           on the page rather than part of its header. Same row, same place, on
+           every screen, so "how do I get out" has one answer. An <a href> so it
+           can still be middle-clicked; chrome.js writes the real word. -->
       <a data-chrome="back" href="./money.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword="">Money</span></a>
-      <h1 data-title="" class="pageh">Ask for money</h1>
+      <div style="width: 1px; align-self: stretch; background: #c3bcb6;"></div>
+      <h1 data-title="" class="pageh" style="margin: 0;">Ask for money</h1>
     </div>
 
 
