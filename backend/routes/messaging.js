@@ -426,21 +426,25 @@ router.put('/conversations/:conversationId/messages/read', authenticateToken, as
         // including 'nModified' (number of documents modified).
         console.log(`Marked ${result.nModified} messages in conversation ${conversationId} as read for user ${userId}.`);
 
-        // Optional: Mark related 'message' notifications for this user/conversation as read?
-        // This depends on your notification logic granularity.
-        // You could find and update Notification documents where recipient is userId,
-        // type is 'message', and itemId is one of the message IDs modified above.
-        // Or simpler: just update notifications where recipient is userId and itemType is 'Message'.
-         // await Notification.updateMany(
-         //     { recipient: userId, itemType: 'Message', read: false, itemId: { $in: modifiedMessageIds } }, // Need to get modified message IDs first
-         //     { $set: { read: true } }
-         // );
-         // Or simplest for demo: just mark notifications related to this user AND message type as read.
-         await Notification.updateMany(
-             { recipient: userId, type: 'message', read: false },
-             { $set: { read: true } }
-         );
-         console.log(`SIMULATING: Marked related 'message' notifications for user ${userId} as read.`);
+        // The notices for the messages just read, and ONLY those.
+        //
+        // This used to be `{ recipient, type: 'message', read: false }` with no
+        // conversation in it -- every unread message notice the user had, wiped
+        // by opening any one thread. Reading Bob's thread about the lettuce also
+        // silenced "Alice replied about the bell peppers", which nobody had
+        // opened. A notice that clears itself when you were not looking at it is
+        // worse than no notice: you never learn the message is there.
+        //
+        // A notice with no itemId is not about a particular message and is left
+        // alone; "Mark all as read" is what clears those.
+        const inThread = await Message.find({ conversationId }, '_id').lean();
+        await Notification.updateMany(
+            {
+                recipient: userId, type: 'message', read: false,
+                itemId: { $in: inThread.map((m) => m._id) }
+            },
+            { $set: { read: true } }
+        );
 
 
         // Send a success response, indicating how many messages were updated

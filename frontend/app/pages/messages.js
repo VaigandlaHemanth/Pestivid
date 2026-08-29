@@ -13,13 +13,24 @@
 //    them."  -- a standing disclosure, printed above the keyboard on every
 //    single reply. It belongs in the privacy copy, once.
 //   "Words only"  -- the absence of a paperclip already says it.
-// The one fact worth keeping is that only people who funded you can write here,
-// because it explains why the list is short. It sits at the top of the list.
+// A fourth line went later and does not come back: "Only people with money in
+// one of your seasons can write to you." The server has never enforced that and
+// the product does not want it -- anyone signed in may write to anyone. Do not
+// reintroduce it in any wording.
 import { requireUser, api, load, state } from './_guard.js';
 import { bind, rows, arrive } from '../bind.js';
 import { whenShort, dayMonth } from '../api.js';
 import { acts, asField, press } from '../wire.js';
 import { appChrome } from '../chrome.js';
+
+// Under the name at the top of a thread. What they do here, not what they are
+// permitted to do to you.
+const DOES = {
+  farmer: 'Grows and sells',
+  buyer: 'Buys produce',
+  investor: 'Funds seasons',
+  admin: 'Pestivid team',
+};
 
 const clock = (ts) => ts
   ? new Date(ts).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }).toLowerCase()
@@ -163,9 +174,13 @@ if (ctx) {
       history.replaceState(null, '', `./messages.html?c=${t._id}`);
       bind(root, { other: {
         name: t.otherName || 'Them',
-        // Not a message count. WHY this person can write to you, which is the
-        // one thing about them the screen can usefully say.
-        context: 'Put money into one of your seasons',
+        // What this person DOES, which the server has been sending all along as
+        // otherRole and nobody read. It used to be the same hardcoded sentence
+        // on every thread -- "Put money into one of your seasons" -- which sat
+        // under a buyer's name saying something about them that was not true,
+        // and which described a permission this chat does not have. Anyone may
+        // write to anyone here.
+        context: DOES[t.otherRole] || '',
       } });
       const av = root.querySelector('[data-avatar]');
       if (av) av.textContent = (String(t.otherName || '?').trim()[0] || '?').toUpperCase();
