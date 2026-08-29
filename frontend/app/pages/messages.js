@@ -43,8 +43,11 @@ if (ctx) {
 
     if (!threads.length) {
       root.querySelector('[data-chatcol]')?.remove();
+      // The line about who is allowed to write to you was removed from the rail
+      // and survived here, which is the same claim in a quieter place: the chat
+      // is plain user-to-user and the server enforces nothing of the kind.
       return state(root, 'empty', 'No conversations yet',
-        'People with money in one of your seasons can write to you here. Nobody else can start one.');
+        'Nothing has been said. When you write to somebody, or they write to you, it shows up here.');
     }
 
     /* The templates, taken BEFORE anything is rendered. The right pane is

@@ -130,6 +130,14 @@
        In the helmet rather than responsive.css because the drawing has to compute
        the same thing the page does -- verify-layout renders both and compares. */
     [data-fullheight] { height: 100dvh; }
+
+    /* THE CORNER RULE ON THIS PAGE, written down because a mixed radius scale is
+       only allowed when there is a rule and the rule is followed:
+         controls   8px   the message field and the send button
+         bubbles   16px   with the corner nearest its own side cut to 4, which is
+                          what makes a bubble read as coming FROM somebody
+         avatars   round
+       Nothing here should introduce a fourth value. */
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     /* The back link: in the content above the heading, naming its destination.
@@ -220,7 +228,13 @@
 
       <!-- ── the conversation ───────────────────────────────────────────── -->
       <div data-pane="" style="display: flex; flex-direction: column; min-height: 0; background: #ddd7d1;">
-        <div data-threadhead="" style="flex-shrink: 0; background: #f6f3ef; padding: 11px 20px; display: flex; align-items: center; gap: 12px; box-shadow: inset 0 -1px 0 #ddd7d1;">
+        <!-- SPECIMEN until the conversation is known. This header carries a name and a
+     line about who that person is, and it is drawn with "Ravi Kumar" and "Put
+     money into one of your seasons" -- so while the fetch was in flight the
+     screen named a person nobody was talking to. bind() fills other.name here
+     and clears the mark as it does; with no conversation at all the page is
+     replaced by its empty state and this never appears. -->
+      <div data-specimen="" data-threadhead="" style="flex-shrink: 0; background: #f6f3ef; padding: 11px 20px; display: flex; align-items: center; gap: 12px; box-shadow: inset 0 -1px 0 #ddd7d1;">
           <div style="width: 38px; height: 38px; background: #e1e6ec; border-radius: 19px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 0 1px #c3bcb6;">
             <div data-avatar="" style="font-size: 16px; font-weight: 600;">R</div>
           </div>

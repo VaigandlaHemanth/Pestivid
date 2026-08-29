@@ -130,6 +130,14 @@
        In the helmet rather than responsive.css because the drawing has to compute
        the same thing the page does -- verify-layout renders both and compares. */
     [data-fullheight] { height: 100dvh; }
+
+    /* THE CORNER RULE ON THIS PAGE, written down because a mixed radius scale is
+       only allowed when there is a rule and the rule is followed:
+         controls   8px   the message field and the send button
+         bubbles   16px   with the corner nearest its own side cut to 4, which is
+                          what makes a bubble read as coming FROM somebody
+         avatars   round
+       Nothing here should introduce a fourth value. */
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     /* The back link: in the content above the heading, naming its destination.
