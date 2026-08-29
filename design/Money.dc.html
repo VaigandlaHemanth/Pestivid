@@ -111,17 +111,24 @@
     </div>
 
     <div data-specimen data-row="raise" style="background: #fff; padding: 18px 20px;">
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <div data-slot="name" style="font-size: 18px; font-weight: 600;">Canal plot</div>
-        <div data-slot="amount" class="num" style="font-size: 19px; font-weight: 700;">&#8377;5,00,000</div>
-      </div>
-      <div style="height: 8px; background: #c3bcb6; margin-top: 11px; overflow: hidden;">
-        <div data-slot="bar" style="width: 100%; height: 100%; background: #1d1a17;"></div>
-      </div>
-      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 7px;">
-        <div data-slot="state" class="sub">All of it raised &middot; 4 investors</div>
-        <div data-slot="share" class="num" style="font-size: 14px; color: #605a53;">investors keep 60%</div>
-      </div>
+        <!-- The FIGURE belongs with the season, not at the far edge. Name and
+             amount were the two ends of a space-between, so on a wide window a
+             season sat about fourteen hundred pixels from its own number and the
+             pair stopped reading as a pair. Two tight groups instead, with the
+             gap between them rather than inside them -- which is the rule this
+             row was breaking: spacing between groups has to beat spacing within.
+             The bar still spans, so the width is used by the thing that measures
+             something. Every data-slot is unchanged; only the order moved. -->
+        <div style="display: flex; align-items: baseline; gap: 14px;">
+          <div data-slot="name" style="font-size: 18px; font-weight: 600;">Canal plot</div>
+          <div data-slot="amount" class="num" style="font-size: 19px; font-weight: 700;">&#8377;5,00,000</div>
+          <div style="flex-grow: 1;"></div>
+          <div data-slot="state" class="sub">All of it raised &middot; 4 investors</div>
+          <div data-slot="share" class="num" style="font-size: 14px; color: #605a53;">investors keep 60%</div>
+        </div>
+        <div style="height: 8px; background: #c3bcb6; margin-top: 11px; overflow: hidden;">
+          <div data-slot="bar" style="width: 100%; height: 100%; background: #1d1a17;"></div>
+        </div>
     </div>
 
     <div data-specimen data-row="raise-alt" style="background: #f6f3ef; padding: 16px 20px;">

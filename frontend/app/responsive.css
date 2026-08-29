@@ -335,73 +335,24 @@ body > div[style*="width: 824px"] {
   [data-chatcol] { height: calc(100dvh - 241px) !important; min-height: 300px; }
 }
 
-/* ── MONEY KEEPS A READING MEASURE ──────────────────────────────────────── */
+/* ── THE CHAT FILLS THE WINDOW ───────────────────────────────────────────── */
 
-/* Its rows are pairs -- a season and its figure, a crop and its price -- and a
- * pair stops reading as a pair when the halves are a thousand pixels apart with
- * nothing between them. Every other list here fills its width because it has
- * four or five columns to fill it with; this one has two. 900 is the width at
- * which the eye still carries the left of a row to the right of it.
+/* I capped this transcript at a 780px reading measure, which was the wrong
+ * answer to "it is not filling the page": on a 1900px window the pane is 1,507
+ * and the cap left 727 of it unused, with the composer floating in the middle.
  *
- * This used to be a cap on EVERY page's wrapper, at its 1320 artboard width.
- * That was the wrong shape of fix: it put grey gutters down both sides of twenty
- * pages to solve something one page had, and it capped the app bar too, so a
- * white bar floated with ground either side of it and each page read as a card
- * rather than a page. The measure belongs to the content that needs one.
+ * The empty ground to the left of the bubbles is not a layout fault and cannot
+ * be fixed by narrowing anything -- it is where the other person's messages go.
+ * This thread has them; they are simply above the fold, because a chat opens at
+ * the bottom.
  *
- * 1360, not 1320: verify-layout renders each page at its artboard width and
- * nothing here may fire at exactly 1320. */
-@media (min-width: 1360px) {
-  body[data-page="money"] .main {
-    /* A cap, NOT a centring. Auto margins pushed this column into the middle of
-       its grid track and left a gutter down each side -- the same marooned-card
-       look the page-wide cap had, and worse, because the empty 372px rail beside
-       it made the whole thing sit off to the left of true centre. It stays where
-       every other page's content starts, at the page's own padding edge, and
-       simply stops growing. */
-    max-width: 900px;
-  }
-}
-
-/* ── A CHAT IS NOT WIDER THAN A CHAT NEEDS TO BE ─────────────────────────── */
-
-/* The board is drawn at 1320 and the thread fills whatever is left beside the
- * 340px conversation list. On a 1920 window that leaves 1,500px of thread, and
- * the page used every pixel of it: a "Write a message" field 1,450px wide, and
- * bubbles pinned to the far right with a thousand pixels of empty ground to
- * their left. Nothing was broken and nothing overflowed -- it just was not a
- * layout for that width, it was a 1320 layout stretched.
- *
- * Every chat that works at this size does the same thing: the list stays put,
- * and the conversation keeps a reading measure and centres in what is left.
- * Claude, ChatGPT and Perplexity all cap that column around 720-768px; 780 here,
- * because these bubbles carry a timestamp line under them.
- *
- * The header and the transcript keep their full width and grow their PADDING, so
- * the cream bar still spans and the transcript's scrollbar stays at the pane's
- * edge where a scrollbar belongs. The chips and the composer, which have no
- * background of their own, are simply capped and centred.
- *
- * 1400px, not lower: verify-layout renders every page at its artboard width and
- * the page has to match the drawing at the size it was drawn. 1320 is that size,
- * so nothing here may fire at or below it. */
+ * So the pane is used, and the only thing left to fix is the height: the column
+ * stopped 30px short of the bottom, which is 241 of assumed chrome against 211
+ * of real chrome. Measured, not guessed -- and if anything is ever added above
+ * the column, verify-layout catches the constant going stale, which is how the
+ * last one was found. */
 @media (min-width: 1400px) {
-  [data-threadhead], [data-transcript] {
-    padding-left: max(20px, calc((100% - 780px) / 2)) !important;
-    padding-right: max(20px, calc((100% - 780px) / 2)) !important;
-  }
-  [data-chips], [data-sendfail] {
-    /* width: 100% matters. These are children of a flex COLUMN, where the
-       default align-self: stretch is what makes them full width; auto margins
-       override that and collapse them to their content, which shrank the message
-       field to 210px. With an explicit width they fill up to the cap and the
-       margins only centre what is left. */
-    width: 100%;
-    max-width: 780px;          /* the CONTENT box: their own 20px padding sits outside it,
-                                  so the words line up with the transcript's 780 exactly */
-    margin-left: auto;
-    margin-right: auto;
-  }
+  [data-chatcol] { height: calc(100dvh - 211px) !important; }
 }
 
 /* ── the crop mark needs no rule here ───────────────────────────────────── */
