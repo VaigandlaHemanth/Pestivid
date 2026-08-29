@@ -96,6 +96,18 @@ body { margin: 0; background: var(--ground); }
 body[data-role="investor"], body[data-role="buyer"], body[data-role="admin"] { background: var(--page-cool); }
 body[data-role="public"] { background: var(--ground); }
 
+/* THE GROUND HAS TO MATCH THE PAGE STANDING ON IT.
+ *
+ * Pages stop at their drawn width and centre above 1360px, which means the body
+ * is visible either side of them for the first time. Everywhere the two already
+ * agreed -- ddd7d1 on the farmer's pages, f3f6f9 on the cool ones -- and on two
+ * pages they did not. The record screen's wrapper is #0e0d0b, so a near-black
+ * page sat letterboxed in a light grey frame; the reviewer's queue is #f6f3ef
+ * against a body of #f3f6f9, which is a seam you can find once you look for it.
+ * Each is given the ground its own page is drawn on. */
+body[data-page="record"] { background: #0e0d0b; }
+body[data-page="admin"]  { background: #f6f3ef; }
+
 /* Never remove a focus ring without replacing it. Two rings so it survives on
    both the pale ground and the near-black surfaces. */
 :focus-visible {

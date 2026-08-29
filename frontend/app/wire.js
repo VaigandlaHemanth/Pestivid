@@ -164,8 +164,16 @@ export function asField(el, opts = {}) {
   // to type, which is worse than no ellipsis at all.
   const specimen = /^[\d\s+•·.,₹-]+$/.test(opts.placeholder || '');
   if (opts.placeholder && !specimen && !/[…:]$/.test(opts.placeholder)) opts.placeholder += '…';
-  // A code, an address or a phone number is not prose; do not underline it red.
-  if (/code|otp|phone|tel|email|offer|amount|reply|question/.test(String(opts.name || opts.type || ''))) {
+  /* A code, an address, a name or an amount is not prose; do not underline it red.
+   *
+   * This read `opts.name || opts.type`, so the NAME won and the type was never
+   * looked at. The sign-in field is `{ type: 'email', name: 'who' }` -- "who"
+   * matches nothing in this list, so the one email box in the product kept its
+   * spellchecker and the address you typed got a red underline. Both are
+   * considered now, and so is the autocomplete hint, which is the third place a
+   * field says what it holds. */
+  const kind = `${opts.name || ''} ${opts.type || ''} ${opts.autocomplete || ''}`;
+  if (/code|otp|phone|tel|email|username|offer|amount|reply|question|price|acres/.test(kind)) {
     opts.spellcheck = false;
   }
   if (!el) return null;
