@@ -42,11 +42,27 @@ hammer **8px** as their most-used unit.
   `rgba(0,0,0,0)` -- transparent. Separation on all four comes from hairlines
   and space, not elevation. That matches our own paper-square rule, so nothing
   changed. It does confirm the direction: cards were the wrong instrument.
-- **Motion.** Their transitions run 0.1s-0.3s (linear 0.1/0.16, notion 0.15/0.2,
-  vercel 0.15/0.3, stripe 0.24). Ours are `--t-smooth 746ms` and
-  `--t-snappy 568ms` -- two to five times slower than all four. Left alone for
-  now because the motion tokens are pre-solved springs and changing them is a
-  product-wide decision, but it is the next number worth arguing about.
+- **Motion. THE LINE THAT USED TO BE HERE WAS WRONG.** It said ours run "two to
+  five times slower than all four", comparing `--t-smooth: 746ms` against their
+  `transition: 0.24s`. Those measure different things and the comparison was
+  meaningless. Our curves are springs solved from response and damping the way
+  iOS states them and emitted as `linear()`, so the ms figure is the FULL SETTLE
+  time, not the response -- and Apple is explicit that "response is not
+  duration; a spring has no fixed duration". Measured properly, by walking the
+  linear() stops to find where each curve has actually covered its travel:
+
+  | curve | total | 50% | 90% | 99% |
+  |---|---|---|---|---|
+  | smooth | 746ms | 149ms | **317ms** | 541ms |
+  | snappy | 568ms | 99ms | **213ms** | 298ms |
+  | bouncy | 830ms | 124ms | **228ms** | 270ms |
+  | press | 120ms | 24ms | **51ms** | 87ms |
+
+  Apple's default UI spring is response **0.3-0.4s**. Ours reaches 90% of travel
+  at 317ms -- the middle of that band. Snappy's 213ms sits between Notion's
+  200ms and Stripe's 240ms. The motion was already right; nothing to change.
+  The lesson is the one this whole file is about: measure the comparable
+  quantity, or the number lies to you.
 
 Also measured: none of the four caps its body width (`containerMaxWidth: none`
 on all four at a 1440px container). That is evidence for the full-bleed layout
