@@ -173,9 +173,15 @@ for (const f of [name, email, pass]) f?.addEventListener('input', clearError);
 const back = oneByText('Sign in', root);
 if (back) { back.setAttribute('data-act', ''); back.dataset.go = 'signin'; }
 
-name?.focus()// The farmer route. It was a sentence telling a farmer to sign in, on the one
-// page a farmer without an account cannot use.
-// The link to the farmer's own account page is gone with the page. A farmer is
-// a role on the card above, like the other two.
+name?.focus();
 
-;
+// No farmer route on this page. It used to be a sentence telling a farmer to
+// sign in, on the one page a farmer without an account cannot use, and the
+// account page it linked to is gone along with it. A farmer is a role on the
+// card above now, like the other two.
+//
+// This note used to sit BETWEEN `name?.focus()` and its semicolon -- four
+// comment lines inside one statement, with a bare `;` on its own line after
+// them. Automatic semicolon insertion made it run, which is the worst case: it
+// works, so nothing complains, and the next edit near it breaks the statement.
+

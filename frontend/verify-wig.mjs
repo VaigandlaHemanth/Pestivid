@@ -26,6 +26,7 @@ const ROLE = {
   'market': 'buyer',
   'messages': 'farmer',
   'money': 'farmer',
+  'notifications': 'farmer',
   'orders': 'buyer',
   'plot': 'farmer',
   'plots': 'farmer',
@@ -44,6 +45,27 @@ const QUERY = await needs();
 const tokens = {};
 let total = 0;
 for (const slug of PAGES) {
+  /* AN UNKNOWN SLUG IS NOT A PUBLIC PAGE.
+   *
+   * ROLE[slug] gave undefined for anything missing from the map, and undefined is
+   * as falsy as the deliberate null that marks landing, signin and signup -- so a
+   * page nobody had listed was loaded with no token, redirected to the sign-in
+   * screen, and every finding on it was filed under the slug it was not. That is
+   * what happened to notifications: twenty-one entries for twenty-two pages, and
+   * the audit reported the sign-in page's DOM as the notifications page.
+   *
+   * The map is checked against, not defaulted from. A slug that is not in it
+   * stops the run and says so, which is the only way a harness that discovers
+   * its own page list can stay honest as pages are added. Every other verifier
+   * here already guards this with `slug in ROLE`. */
+  if (!Object.prototype.hasOwnProperty.call(ROLE, slug)) {
+    console.error(`
+  ${slug}.html has no entry in ROLE, so it cannot be signed in.`
+      + `
+  Add it (or null if the page is public) rather than letting it audit`
+      + ` the sign-in screen under this slug.`);
+    process.exit(2);
+  }
   const role = ROLE[slug];
   if (role && !tokens[role]) tokens[role] = await login(role);
   const p = await b.newPage({ viewport: { width: 1440, height: 1000 } });

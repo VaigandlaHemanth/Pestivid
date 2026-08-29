@@ -280,11 +280,18 @@ router.post('/change-password', authenticateToken, async (req, res) => {
             message: 'Both currentPassword and newPassword are required.',
         });
     }
-    // Six, not eight. The User schema's minimum is 6 and registration enforces
-    // 6, because a farmer's credential IS a six-number code -- the setup screen
-    // asks for exactly six digits. Demanding 8 here meant a farmer could create
-    // an account and then never change its code: the only value the product
-    // lets them choose was refused by the route that changes it.
+    /* Eight, and eight in all three places.
+     *
+     * This comment used to argue for six: a farmer's credential WAS a six-number
+     * code, the setup-identity screen asked for exactly six digits, and a route
+     * demanding eight meant a farmer could create an account and then never
+     * change its code. That screen is retired and nothing else issues a
+     * six-digit code, so the schema (User.js, minlength 8) and registration
+     * (password.length < 8, above) both moved to eight and this route matches
+     * them. The comment did not move with them, which left the only explanation
+     * of this number arguing against the number itself.
+     *
+     * If a shorter farmer code ever comes back, all three change together. */
     const MIN = 8;
     if (typeof newPassword !== 'string' || newPassword.length < MIN) {
         return res.status(400).json({
