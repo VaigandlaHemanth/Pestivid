@@ -268,7 +268,18 @@ body[data-role="public"] { background: var(--ground); }
  * is the product's own secondary grey and clears 4.5 on all four fills a field
  * is drawn on (4.77 on the ground, 6.81 on white).
  */
-::placeholder { color: #605a53; opacity: 1; }
+/* A PLACEHOLDER IS A HINT, NEVER AN ENTRY.
+ *
+ * The money fields inherit their input's weight, so every one of them drew its
+ * placeholder at 700: "9,32,000" and "2,58,400" on the harvest report, "48,000"
+ * on an offer to a farmer, "5,00,000" on a request for funding. Bold, 21px, and
+ * a plausible amount -- indistinguishable at a glance from a figure somebody had
+ * typed, on the one form whose own rail says "This cannot be undone. Once you
+ * send it, each person is told their amount and the season is closed."
+ *
+ * The colour was already right and it was not enough; weight is what made them
+ * read as answers. The VALUE stays bold, because a value should be. */
+::placeholder { color: #605a53; opacity: 1; font-weight: 400; }
 
 /* ════ THE TORN EDGE, and why it is gone ════════════════════════════════════
  *

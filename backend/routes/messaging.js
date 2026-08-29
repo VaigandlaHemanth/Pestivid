@@ -44,8 +44,12 @@ router.get('/conversations/:userId', authenticateToken, async (req, res) => {
         return res.status(400).json({ message: 'Invalid User ID format.' }); // 400 Bad Request
     }
 
-    // Authorization: Ensure the authenticated user is the user whose conversations are being requested.
-    // Or allow an admin user to view any user's conversations.
+    // Authorization: the authenticated user must BE the user whose conversations
+    // are being requested. Not "or an admin", which is what this comment used to
+    // say and what the code below has never done -- there is no branch for it,
+    // and the chat screen tells farmers in as many words that we cannot read
+    // these. A comment promising a back door that does not exist is the kind
+    // that gets one built.
     if (authenticatedUserId.toString() !== userId.toString()) {
          console.warn(`Authorization failed: User ${authenticatedUserId} attempted to view conversations for user ${userId}`);
         return res.status(403).json({ message: "Forbidden: You can only view your own conversations." }); // 403 Forbidden
