@@ -37,7 +37,12 @@ const ROLE = {
  */
 const SCROLLS = new Set(['landing', 'market', 'orders', 'admin', 'invest', 'money',
                          'home', 'profile', 'signup', 'signin', 'ask-money',
-                         'portfolio', 'plot', 'leaf-check', 'report-harvest']);
+                         'portfolio', 'plot', 'leaf-check', 'report-harvest',
+                         // Everything that has happened to you, oldest last. It
+                         // is a list like orders and admin and was only missing
+                         // here because the demo database never held enough
+                         // notices to reach the fold.
+                         'notifications']);
 
 /* Pages that fix their own height so the page itself never scrolls -- the chat
  * and the chatbot, whose transcript scrolls INSIDE a column of a computed
