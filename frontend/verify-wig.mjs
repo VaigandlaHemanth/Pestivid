@@ -29,7 +29,6 @@ const ROLE = {
   'notifications': 'farmer',
   'orders': 'buyer',
   'plot': 'farmer',
-  'plots': 'farmer',
   'portfolio': 'investor',
   'profile': 'farmer',
   'record': 'farmer',

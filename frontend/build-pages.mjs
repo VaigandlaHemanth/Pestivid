@@ -33,7 +33,13 @@ export const PAGES = {
   'home':               { title: 'Home', role: 'farmer' },
   'record':             { title: 'Record a video', role: 'farmer' },
   'sent':               { title: 'That is saved', role: 'farmer' },
-  'plots':              { title: 'My plots', role: 'farmer' },
+  // 'plots' was a second list of the same eight videos home already shows, in the
+  // same order, every row going to the same plot page. It printed each video's
+  // length twice -- on the thumbnail and again in a "Length" column -- and left
+  // out which plot the video was of, on a page called My plots. Home's table has
+  // the plot name. Two pages cannot both be the list, so the nav word "My plots"
+  // points at home and this one is gone. Plots.dc.html stays where it is, the way
+  // Setup.dc.html did.
   'plot':               { title: 'Plot', role: 'farmer' },
   'ask-money':          { title: 'Ask for money', role: 'farmer' },
   'money':              { title: 'Money', role: 'farmer' },

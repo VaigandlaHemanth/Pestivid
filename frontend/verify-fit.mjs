@@ -36,7 +36,7 @@ const ROLE = {
  * accident still gets reported.
  */
 const SCROLLS = new Set(['landing', 'market', 'orders', 'admin', 'invest', 'money',
-                         'plots', 'home', 'profile', 'signup', 'signin', 'ask-money',
+                         'home', 'profile', 'signup', 'signin', 'ask-money',
                          'portfolio', 'plot', 'leaf-check', 'report-harvest']);
 
 /* Pages that fix their own height so the page itself never scrolls -- the chat

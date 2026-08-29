@@ -16,7 +16,7 @@ const ctx = requireUser('plot', ['farmer']);
 
 if (ctx) {
   const root = ctx.root;
-  appChrome(root, { back: 'plots', user: ctx.user });
+  appChrome(root, { back: 'home', user: ctx.user });
   press(root);
 
   load(root, async () => {
@@ -37,7 +37,7 @@ if (ctx) {
         stage: '', dates: '', videosLabel: '' } });
       return state(root, 'empty', 'No plot chosen',
         'This screen shows one plot at a time. Pick the one you want from your plots.',
-        { label: 'See my plots', go: 'plots' });
+        { label: 'See my plots', go: 'home' });
     }
     const mine = all.filter(v => (v.crop || v.location) === key);
 

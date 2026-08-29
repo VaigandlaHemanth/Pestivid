@@ -33,7 +33,8 @@ const ROLE = {
 // Which nav word owns each page. A page absent here owns no word, and its bar
 // must not present one as current.
 const OWNS = {
-  plots: 'My plots', plot: 'My plots', record: 'My plots', sent: 'My plots',
+  // home is the list of plots now, so home owns the word.
+  home: 'My plots', plot: 'My plots', record: 'My plots', sent: 'My plots',
   money: 'Money', 'ask-money': 'Money', 'report-harvest': 'Money',
   messages: 'Chat',
   invest: 'Browse', 'confirm-investment': 'Browse', portfolio: 'Portfolio',

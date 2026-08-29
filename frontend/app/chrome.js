@@ -107,7 +107,8 @@ export function appChrome(root, opts = {}) {
  */
 const DEST = {
   // the farmer's three, now that the farmer has the same bar as everybody else
-  'My plots': 'plots',
+  // home IS the list of plots now; plots.html was the same eight videos twice.
+  'My plots': 'home',
   Money: 'money',
   Browse: 'invest',
   Portfolio: 'portfolio',
@@ -197,7 +198,7 @@ function relabel(root, user, inHeader) {
 // Where a page falls back to when it was opened cold, per page. Only the ones
 // whose answer is not simply the role's home need an entry.
 const BACK = {
-  record: 'plots', 'leaf-check': 'plots', sent: 'record', plot: 'plots',
+  record: 'home', 'leaf-check': 'home', sent: 'record', plot: 'home',
   'report-harvest': 'money', 'ask-money': 'money',
   setup: 'signin', profile: 'home', ask: 'home',
   notifications: 'home',
@@ -214,7 +215,7 @@ const BACK = {
  * profile. Each is reached from a card, the bell or the avatar rather than from
  * the bar, so no word is theirs and none should claim to be. */
 const SECTION = {
-  plot: 'plots', record: 'plots', sent: 'plots',
+  plot: 'home', record: 'home', sent: 'home',
   'ask-money': 'money', 'report-harvest': 'money',
   'confirm-investment': 'invest',
 };

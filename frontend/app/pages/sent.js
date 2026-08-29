@@ -92,7 +92,7 @@ if (ctx) {
         escape.className = 'pk';
         escape.style.color = '#01579b';
         escape.style.fontWeight = '600';
-        acts(escape, 'A plot not in this list', () => { location.href = './plots.html'; });
+        acts(escape, 'A plot not in this list', () => { location.href = './home.html'; });
       }
     }
 

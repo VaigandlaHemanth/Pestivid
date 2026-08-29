@@ -30,7 +30,6 @@ console.log('  three accounts created and signed in');
 const CHECKS = [
   ['profile',        'farmer',   people.farmer.name],
   ['home',           'farmer',   people.farmer.name.split(' ').slice(0, 2).join(' ')],
-  ['plots',          'farmer',   'not filmed anything yet'],
   ['money',          'farmer',   null],
   // Messages is conversations now; the notices moved behind the envelope, and
   // the unread count moved with them.

@@ -133,20 +133,24 @@
           </div>
         </div>
 
-        <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 26px;">
-          <div style="font-size: 17px; font-weight: 700;">Your plots</div>
-          <!-- 44px, without moving. This is a real destination -- it is the way to
-               the full list -- and it measured 85x42 on a phone, two pixels under
-               the floor. It was not caught before because it was not wired at all:
-               oneByText("My plots") matched the nav word in the bar above, so
-               .closest(".row") found nothing and this went nowhere. Padding buys
-               the height and an equal negative margin gives back the space, so the
-               target grows and the baseline it is aligned on does not move. -->
-          <div class="row" style="background: transparent; padding: 3px 0; margin: -3px 0; display: block;">
-            <div class="lab" style="font-size: 14.5px; font-weight: 600; color: #01579b;">My plots</div>
-            <div data-bind="plots.waiting" class="nat m" style="text-align: right; margin-top: 1px;">2 videos</div>
-          </div>
-        </div>
+    <!-- THIS SECTION IS THE LIST NOW.
+         plots.html showed the same eight videos as this table, in the same order,
+         both rows linking to the same plot page. It printed the length twice --
+         once on the thumbnail and again in a "Length" column -- and left out
+         which plot each video was of, on a page called My plots. This table has
+         the plot name, so this is the one that stayed.
+         What used to sit on the right was a link reading "My plots", three words
+         that were also the nav word directly above it, pointing at the page this
+         one has now absorbed. A link to where you already are is not a link. The
+         count stays, and the sentence plots.html used to carry about batching
+         comes with it, because it is the honest part of that page. -->
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 26px;">
+      <div style="font-size: 17px; font-weight: 700;">Your plots</div>
+      <div data-bind="plots.waiting" class="nat m" style="text-align: right;">8 videos filed</div>
+    </div>
+    <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; max-width: 62ch;">
+      All of these are with us and being batched. Their dates are usually written into a Bitcoin block within a day.
+    </div>
 
         <div class="lift1" style="background: #fff; margin-top: 12px;">
           <div class="colh">

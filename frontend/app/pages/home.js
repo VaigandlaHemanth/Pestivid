@@ -35,7 +35,6 @@ if (ctx) {
   // inside a 76px row means most of what looks pressable is not.
   const destinations = [
     ['Record a video', 'record'],
-    ['My plots',       'plots'],
     ['Money',          'money'],
     ['Check a leaf',   'leaf-check'],
     ['Ask a question', 'ask'],
@@ -184,15 +183,16 @@ if (ctx) {
       }
     }
 
-    // The unread badge showed the artboard's "2" whatever the truth was. There
-    // is no unread-count route, so it counts unread notifications, which is
-    // what the envelope actually leads to.
-    const badge = root.querySelector('[data-readout]');
-    if (badge) {
-      const notes = await api.notifications.mine(ctx.user._id || ctx.user.id).catch(() => []);
-      const unread = (notes || []).filter(n => !n.read && !n.isRead).length;
-      if (unread > 0) badge.textContent = unread > 9 ? '9+' : String(unread);
-      else badge.remove();
-    }
+    /* THE BADGE IS chrome.js's JOB, and this was a second copy of it.
+     *
+     * `root.querySelector('[data-readout]')` takes the FIRST readout anywhere on
+     * the page. That was the bell's, until this section grew a readout of its own
+     * for the video count -- and then home wrote an unread count into "8 videos
+     * filed", which is how it came to read "9+".
+     *
+     * It was also the wrong number. chrome.js filters notices by role before
+     * counting; this copy did not, so it could show a farmer a total that
+     * included notices their own notifications page never lists. One badge, one
+     * place, and that place already exists. */
   });
 }

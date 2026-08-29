@@ -72,7 +72,7 @@ function destination(n, role) {
       return role === 'investor' ? 'portfolio' : role === 'farmer' ? 'money' : null;
     case 'Listing':
       if (role === 'buyer') return n.type === 'purchase' ? 'orders' : 'market';
-      if (role === 'farmer') return n.type === 'purchase' ? 'money' : 'plots';
+      if (role === 'farmer') return n.type === 'purchase' ? 'money' : 'home';
       return null;
     default: return null;
   }
