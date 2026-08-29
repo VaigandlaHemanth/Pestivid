@@ -335,48 +335,31 @@ body > div[style*="width: 824px"] {
   [data-chatcol] { height: calc(100dvh - 241px) !important; min-height: 300px; }
 }
 
-/* ── NOTHING STRETCHES PAST THE WIDTH IT WAS DRAWN AT ───────────────────── */
+/* ── MONEY KEEPS A READING MEASURE ──────────────────────────────────────── */
 
-/* build-pages writes `max-width: none` on every wrapper, so a board drawn at
- * 1320 goes on growing to whatever the window is. On a 1920 screen that put a
- * crop name and its price about fourteen hundred pixels apart with nothing in
- * between, which is the "constrain widths, full-width is almost never right"
- * failure -- the one row the diagnostic fails on these pages.
+/* Its rows are pairs -- a season and its figure, a crop and its price -- and a
+ * pair stops reading as a pair when the halves are a thousand pixels apart with
+ * nothing between them. Every other list here fills its width because it has
+ * four or five columns to fill it with; this one has two. 900 is the width at
+ * which the eye still carries the left of a row to the right of it.
  *
- * Every page stops at the width it was designed for and centres in what is left.
- * The landing is the exception and keeps its full bleed: its hero is a
- * photograph that is supposed to run edge to edge, and capping it would put
- * grey margins beside the one image on the site.
+ * This used to be a cap on EVERY page's wrapper, at its 1320 artboard width.
+ * That was the wrong shape of fix: it put grey gutters down both sides of twenty
+ * pages to solve something one page had, and it capped the app bar too, so a
+ * white bar floated with ground either side of it and each page read as a card
+ * rather than a page. The measure belongs to the content that needs one.
  *
- * 1360, not 1320: verify-layout renders each page at its artboard width, and at
- * exactly 1320 this must not fire or every page would report itself narrower
- * than the drawing. Inline `max-width: none` is on the element, so !important is
- * the only thing that reaches it. */
+ * 1360, not 1320: verify-layout renders each page at its artboard width and
+ * nothing here may fire at exactly 1320. */
 @media (min-width: 1360px) {
-  /* data-page is on the BODY, not the wrapper -- putting :not() on the wrapper
-     matched everything, landing included, and capped the one page that must not
-     be capped. */
-  body:not([data-page="landing"]) [data-surface="desk"][data-w="1320"] {
-    max-width: 1320px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  [data-surface="desk"][data-w="1280"] {
-    max-width: 1280px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-
-  /* And money gets a reading measure of its own. Its rows are pairs -- a season
-     and its figure, a crop and its price -- and a pair stops reading as a pair
-     when the two halves are a thousand pixels apart with nothing between them.
-     Every other list in this product fills its width because it has four or five
-     columns to fill it with; this one has two. 900 is the width at which the eye
-     still carries the left of a row to the right of it. */
   body[data-page="money"] .main {
+    /* A cap, NOT a centring. Auto margins pushed this column into the middle of
+       its grid track and left a gutter down each side -- the same marooned-card
+       look the page-wide cap had, and worse, because the empty 372px rail beside
+       it made the whole thing sit off to the left of true centre. It stays where
+       every other page's content starts, at the page's own padding edge, and
+       simply stops growing. */
     max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
   }
 }
 
