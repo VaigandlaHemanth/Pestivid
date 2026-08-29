@@ -166,7 +166,12 @@
         <h1 data-title="" class="pageh">What has happened</h1>
         <div data-bind="unreadLine" class="pagesub"></div>
       </div>
-      <div data-markall="" style="background: #fff; min-height: 48px; padding: 0 22px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1.5px #016abe; border-radius: 8px; flex-shrink: 0;">
+      <!-- SPECIMEN until the count is known. Whether there is anything to mark as
+     read is a fact about the server's answer, and this was drawn, painted, and
+     then removed at load on a page with nothing unread -- a control that
+     appeared and left again without being for anything. _notices.js reveals it
+     when there is unread work, and otherwise it was never on screen. -->
+<div data-specimen="" data-markall="" style="background: #fff; min-height: 48px; padding: 0 22px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1.5px #016abe; border-radius: 8px; flex-shrink: 0;">
         <div style="font-size: 15.5px; font-weight: 600; color: #016abe;">Mark all as read</div>
       </div>
     </div>

@@ -32,6 +32,7 @@ const FIND = () => {
   const CLASS = /\b(thumb|pthumb|tile|plate|lotplate|shot|frame|media)\b/i;
   const out = [];
   const tried = [];
+  const shown = [];
   for (const el of document.querySelectorAll('div, a, figure, span')) {
     const r = el.getBoundingClientRect();
     if (r.width < 56 || r.height < 40) continue;
@@ -56,8 +57,26 @@ const FIND = () => {
     // Never a control. A button that happens to be dark and square is a button.
     if (el.closest('button, a, [data-act], [data-go], [role="button"]')
         && !named) continue;
-    // Already filled, by a poster or by a player.
+    // Already filled, by a poster, a player, or a background image. The last one
+    // matters: the landing hero is a 1366x660 box whose picture is a CSS
+    // background, so looking only for <img> and <video> reported the biggest
+    // filled surface in the product as an empty slot.
     if (el.querySelector('img, video')) continue;
+    /* Something is painted in here. Not only on the box itself: the landing's
+     * example record draws a field and a horizon out of gradient bands on four
+     * child divs, and the hero's dark panel layers the same way, so looking at
+     * the element's own background-image reported both as empty slots. A slot is
+     * empty when NOTHING inside it paints. */
+    const painted = (n) => {
+      const bi = getComputedStyle(n).backgroundImage;
+      return bi && bi !== 'none';
+    };
+    if (painted(el) || [...el.querySelectorAll('*')].some(painted)) continue;
+    /* A declared illustration. Not every dark rectangle is a slot waiting for a
+     * frame: the landing draws an example record to show what one looks like,
+     * and the reason it holds no real frame is written where the decision was
+     * made. Declared ones are printed, never silently skipped. */
+    if (el.hasAttribute('data-notaslot')) { shown.push(el.getAttribute('data-notaslot')); continue; }
     /* The page DID wire this slot and the record carries no frame. That is a
      * poster missing from the data, not a slot missing from the code, so it is
      * counted and named separately -- cutting a frame for those videos means
@@ -71,7 +90,7 @@ const FIND = () => {
       w: Math.round(r.width), h: Math.round(r.height),
       near: (el.parentElement?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 46) });
   }
-  return { empty: out.map(({ el, ...rest }) => rest), tried: tried.length };
+  return { empty: out.map(({ el, ...rest }) => rest), tried: tried.length, shown: [...new Set(shown)] };
 };
 
 const slugs = process.argv.slice(2).length
@@ -95,7 +114,7 @@ for (const slug of slugs) {
   }
   await p.goto(`http://127.0.0.1:3001/app/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
   await p.waitForTimeout(2200);           // posters are fetched, so give them time
-  const { empty, tried } = await p.evaluate(FIND);
+  const { empty, tried, shown } = await p.evaluate(FIND);
   const filled = await p.evaluate(() => document.querySelectorAll('img[data-poster], video').length);
   await ctx.close();
 
@@ -104,6 +123,7 @@ for (const slug of slugs) {
     .filter(Boolean).join(', ');
   if (!empty.length) {
     console.log(`  ${slug.padEnd(20)} ok   ${note || 'no media slots'}`);
+    for (const d of shown) console.log(`      declared not a slot: ${d}`);
     continue;
   }
   bad += empty.length;

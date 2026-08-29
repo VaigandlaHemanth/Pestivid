@@ -137,15 +137,19 @@
 
       <div data-transcript="" style="flex-grow: 1; overflow-y: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;">
         <div data-spacer="" style="flex-grow: 1;"></div>
+<!-- NOT a specimen. ask.js keeps the FIRST bubble and removes the rest, so this
+     one is the empty state -- the assistant saying what it answers from, before
+     anybody has asked anything. Marking it hid the only thing on the screen.
+     verify-specimens caught that, which is what its second check is for. -->
 <div class="them">
       <div class="p">What do you want to ask? I answer from government farming documents, and I will tell you when they do not cover something.</div>
     </div>
 
-    <div class="me">
+    <div data-specimen="" class="me">
       <div class="p">What do I do with the diseased leaves?</div>
     </div>
 
-    <div class="them">
+    <div data-specimen="" class="them">
       <div class="p">Pull off the badly affected leaves and burn them away from the field. Do not leave them lying between the rows and do not put them in the compost, the spores survive.</div>
       <!-- every answer carries where it came from -->
       <div style="margin-top: 11px; padding-top: 10px; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; box-shadow: inset 0 1px 0 #ddd7d1;">
@@ -158,13 +162,13 @@
       </div>
     </div>
 
-    <div class="me">
+    <div data-specimen="" class="me">
       <div class="p">How much medicine should I use?</div>
     </div>
 
     <!-- the refusal. same shape as an answer, no alarm styling: refusing is the
          system working, not an error. -->
-    <div class="them" style="max-width: 300px;">
+    <div data-specimen="" class="them" style="max-width: 300px;">
       <div class="p" style="font-weight: 700;">I will not give you a quantity.</div>
       <div class="p" style="margin-top: 5px;">
         The amount depends on the exact product in your hand and on what is registered for potato in

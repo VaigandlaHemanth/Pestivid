@@ -148,6 +148,10 @@ if (ctx) {
       if (!localStorage.getItem('pv.model')) {
         remove.remove();                 // nothing downloaded, nothing to free
       } else {
+        // There IS something to free, so the offer can be shown. It is drawn
+        // [data-specimen] and hidden before the first paint, because until this
+        // line nothing had asked the handset whether the model was on it.
+        remove.removeAttribute('data-specimen');
         let armed = false;
         acts(remove, 'Remove the leaf checker to free space', () => {
           if (!armed) {

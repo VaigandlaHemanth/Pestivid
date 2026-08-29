@@ -234,8 +234,15 @@ export function notices(slug, kind = 'notices') {
        * to fade. */
       const paintAll = () => {
         if (unreadOf()) {
-          markAll.firstElementChild?.replaceChildren(
-            document.createTextNode('Mark all as read'));
+          // There IS unread work, so the control can appear. It is drawn
+          // [data-specimen] and hidden before the first paint: until this ran,
+          // nothing knew whether there was anything to mark.
+          markAll.removeAttribute('data-specimen');
+          // textContent, not replaceChildren: the words do not change, so tearing
+          // the label down to build the same one back leaves the control briefly
+          // empty for no reason, and reads to anything watching the DOM as drawn
+          // content being thrown away.
+          if (markAll.firstElementChild) markAll.firstElementChild.textContent = 'Mark all as read';
           markAll.style.boxShadow = 'inset 0 0 0 1.5px #016abe';
           return;
         }

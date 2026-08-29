@@ -92,8 +92,12 @@
     </div>
 
     <!-- the open case, laid out so the two files can actually be compared -->
+    <!-- The card stays; what is INSIDE it is the specimen. This whole case --
+         "94% of frames match, two different farmers", flagged at a time nobody
+         flagged anything -- is drawn so the board shows a case. Marking the card
+         itself hid the "nothing has been flagged" message that replaces it. -->
     <div style="background: #fff; padding: 24px 26px; margin-top: 22px;" class="lift1">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div data-specimen style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
           <div style="font-size: 18px; font-weight: 700;">94% of frames match, two different farmers</div>
           <div class="m" style="font-size: 14px; color: #605a53; margin-top: 3px;">Flagged automatically 19 August, 04:12 &middot; nobody has looked yet</div>
@@ -101,7 +105,7 @@
         <div data-readout class="m" style="font-size: 13.5px; font-weight: 600; color: #a71930; background: #f7e9e6; padding: 6px 11px;">&#8377;1,20,000 already changed hands</div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px;">
+      <div data-specimen style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px;">
 
         <div style="background: #f7f8f9; padding: 18px 20px;">
           <div class="lbl">Sent first</div>
@@ -156,7 +160,7 @@
 
       <!-- what the match does and does not establish. an operator will get this
            wrong under time pressure unless it is written down next to the case. -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px;">
+      <div data-specimen style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px;">
         <div style="background: #eef1f3; padding: 16px 18px;">
           <div style="font-size: 15px; font-weight: 700;">What the match tells you</div>
           <div style="font-size: 14px; line-height: 1.55; margin-top: 4px; color: #4a443d;">
@@ -173,13 +177,13 @@
         </div>
       </div>
 
-      <div style="display: flex; gap: 12px; margin-top: 20px; align-items: center; flex-wrap: wrap;">
+      <div data-specimen style="display: flex; gap: 12px; margin-top: 20px; align-items: center; flex-wrap: wrap;">
         <div class="btn" style="background: #016abe; color: #fff;">Ask both of them, in one thread</div>
         <div class="btn" style="box-shadow: inset 0 0 0 1.5px #b9bfc4;">Same field, both are entitled, close it</div>
         <div class="btn" style="box-shadow: inset 0 0 0 1.5px #a71930; color: #a71930;">Mark the later file as not their footage</div>
         <div class="btn" style="color: #4a443d;">Leave it open</div>
       </div>
-      <div style="font-size: 14px; line-height: 1.5; margin-top: 12px; color: #4a443d; max-width: 116ch;">
+      <div data-specimen style="font-size: 14px; line-height: 1.5; margin-top: 12px; color: #4a443d; max-width: 116ch;">
         Marking the later file does not delete it, hide it, or move its date, none of those are
         possible, for you or for us. It writes a note that everyone who sees that video sees too,
         including the buyer who has already paid, and it tells them why. That is the whole of the
@@ -190,7 +194,7 @@
     <div style="display: flex; gap: 20px; margin-top: 22px; align-items: flex-start;">
 
       <!-- operational health, because a stuck anchor is a broken promise -->
-      <div data-panel="late" style="flex-grow: 1; background: #fff; padding: 22px 24px;" class="lift1">
+      <div data-specimen data-panel="late" style="flex-grow: 1; background: #fff; padding: 22px 24px;" class="lift1">
         <div style="font-size: 16.5px; font-weight: 700;">Timestamps running late</div>
         <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Three batches, 41 videos, waiting longer than two days</div>
         <div style="margin-top: 14px;">
@@ -225,7 +229,7 @@
       </div>
 
       <div style="width: 400px; display: flex; flex-direction: column; gap: 20px;">
-        <div data-panel="unverified" style="background: #fff; padding: 22px 24px;" class="lift1">
+        <div data-specimen data-panel="unverified" style="background: #fff; padding: 22px 24px;" class="lift1">
           <div style="font-size: 16.5px; font-weight: 700;">Hash not computed by us</div>
           <div class="m" style="font-size: 26px; font-weight: 700; margin-top: 6px;">1</div>
           <div style="font-size: 14px; line-height: 1.5; margin-top: 4px; color: #4a443d;">

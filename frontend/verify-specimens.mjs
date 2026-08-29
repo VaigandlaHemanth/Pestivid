@@ -57,6 +57,13 @@ const WATCH = () => {
       txt,
       tag: `${el.tagName}${el.className ? '.' + String(el.className).trim().split(/\s+/).join('.') : ''}`,
       marked: !!el.closest?.('[data-specimen]'),
+      // A deliberate exception, declared in the board with its reason. Not every
+      // drawn thing a page deletes was invented: the record screen's instruction
+      // is the right sentence for the phase it opens in, and only goes on the
+      // refusal path when there is no camera. Hiding that until javascript ran
+      // would take the one line a farmer needs off the screen. Exceptions are
+      // printed rather than skipped, so none of them can go quiet.
+      excused: el.closest?.('[data-notspecimen]')?.getAttribute('data-notspecimen') || null,
       shown: cs.display !== 'none' && cs.visibility !== 'hidden'
              && Number(cs.opacity) > 0.05 && box.width > 1 && box.height > 1,
     });
@@ -66,7 +73,17 @@ const WATCH = () => {
   Element.prototype.remove = function () { seen(this); return rm.call(this); };
   const rc = Element.prototype.replaceChildren;
   Element.prototype.replaceChildren = function (...a) {
-    for (const c of [...this.children]) if (!a.includes(c)) seen(c);
+    /* A PAGE REPLACED BY A MESSAGE IS NOT A PAGE OF SPECIMENS.
+     *
+     * state() puts a [data-statebox] where a screen used to be -- "We cannot see
+     * through the camera", "There is no clip to send". Everything it clears out
+     * was the real page, correct right up until the page learned it could not
+     * proceed. Counting that as invented data reported the record and send
+     * screens as flashing fiction when what they were doing was failing
+     * honestly. */
+    const isState = a.some((n) => n?.nodeType === 1
+      && (n.hasAttribute?.('data-statebox') || n.querySelector?.('[data-statebox]')));
+    if (!isState) for (const c of [...this.children]) if (!a.includes(c)) seen(c);
     return rc.apply(this, a);
   };
   const rch = Element.prototype.removeChild || Node.prototype.removeChild;
@@ -116,8 +133,9 @@ for (const slug of slugs) {
   }
 
   // One entry per distinct element shape: five notice rows are one finding.
+  const excused = [...new Set(drawn.filter((d) => d.shown && d.excused).map((d) => d.excused))];
   const group = new Map();
-  for (const d of drawn.filter((d) => d.shown && !d.marked)) {
+  for (const d of drawn.filter((d) => d.shown && !d.marked && !d.excused)) {
     const g = group.get(d.tag) || [];
     g.push(d.txt); group.set(d.tag, g);
   }
@@ -125,6 +143,7 @@ for (const slug of slugs) {
   ok += good;
   if (!group.size) {
     console.log(`  ${slug.padEnd(20)} clean${good ? `  (${good} drawn row(s), marked)` : ''}`);
+    for (const e of excused) console.log(`      excused: ${e}`);
     continue;
   }
   bad += group.size;

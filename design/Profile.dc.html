@@ -167,7 +167,12 @@
       <div style="flex-grow: 1;">
         <div class="lab">Leaf checker</div>
         <div data-bind="model.state" class="m val">173 MB downloaded &middot; works offline</div>
-        <div style="font-size: 14.5px; color: #01579b; font-weight: 600; margin-top: 7px;">Remove it to free space</div>
+        <!-- SPECIMEN until the handset is asked. This offers to free 173 MB, and
+             whether there is 173 MB to free is a fact about THIS device that only
+             profile.js can check. Marking the row above did not help: model.state
+             is bound, so filling it cleared the mark and the link appeared for as
+             long as it took to find out there was nothing to remove. -->
+        <div data-specimen style="font-size: 14.5px; color: #01579b; font-weight: 600; margin-top: 7px;">Remove it to free space</div>
       </div>
     </div>
 

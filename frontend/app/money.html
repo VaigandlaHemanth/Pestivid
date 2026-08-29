@@ -119,7 +119,7 @@
       <div class="sec">Money coming in</div>
     </div>
 
-    <div data-row="raise" style="background: #fff; padding: 18px 20px;">
+    <div data-specimen="" data-row="raise" style="background: #fff; padding: 18px 20px;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div data-slot="name" style="font-size: 18px; font-weight: 600;">Canal plot</div>
         <div data-slot="amount" class="num" style="font-size: 19px; font-weight: 700;">₹5,00,000</div>
@@ -133,7 +133,7 @@
       </div>
     </div>
 
-    <div data-row="raise-alt" style="background: #f6f3ef; padding: 16px 20px;">
+    <div data-specimen="" data-row="raise-alt" style="background: #f6f3ef; padding: 16px 20px;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div style="font-size: 18px; font-weight: 600;">North plot</div>
         <div class="num" style="font-size: 19px; font-weight: 700;">₹1,80,000</div>
@@ -152,7 +152,7 @@
       <div data-bind="sell.title" class="sec">Produce you are selling</div>
     </div>
 
-    <div data-row="sell" style="background: #fff; padding: 16px 20px; display: flex; gap: 14px;">
+    <div data-specimen="" data-row="sell" style="background: #fff; padding: 16px 20px; display: flex; gap: 14px;">
       <div data-lotthumb="" style="width: 62px; min-height: 62px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div></div>
         <div style="flex-grow: 1;">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
@@ -173,13 +173,13 @@
 
       <!-- the rail: last season, a receipt rather than a task. There is nothing left to do about it. -->
       <div class="rail">
-<div data-sec="paid" style="padding: 20px 20px 10px;">
+<div data-specimen="" data-sec="paid" style="padding: 20px 20px 10px;">
       <div class="sec">What you paid out last season</div>
       <div data-bind="lastSeason.name" class="sub" style="margin-top: 3px;">Canal plot, March 2026</div>
     </div>
 <div style="background: #fff;">
       <div style="display: contents;">
-        <div data-row="payout" style="display: flex; align-items: center; gap: 13px; padding: 14px 20px; background: #f6f3ef;">
+        <div data-specimen="" data-row="payout" style="display: flex; align-items: center; gap: 13px; padding: 14px 20px; background: #f6f3ef;">
           <div data-readout="" style="width: 40px; height: 40px; flex-shrink: 0; background: #e7e1db; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
             <div data-slot="initial" style="font-size: 15px; font-weight: 600; color: #37322d;">C</div>
           </div>
@@ -193,7 +193,7 @@
           </div>
         </div>
       
-        <div data-row="payout" style="display: flex; align-items: center; gap: 13px; padding: 14px 20px; background: #f6f3ef;">
+        <div data-specimen="" data-row="payout" style="display: flex; align-items: center; gap: 13px; padding: 14px 20px; background: #f6f3ef;">
           <div data-readout="" style="width: 40px; height: 40px; flex-shrink: 0; background: #e7e1db; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
             <div data-slot="initial" style="font-size: 15px; font-weight: 600; color: #37322d;">D</div>
           </div>
@@ -207,7 +207,7 @@
           </div>
         </div>
       
-        <div data-row="payout" style="display: flex; align-items: center; gap: 13px; padding: 14px 20px; background: #f6f3ef;">
+        <div data-specimen="" data-row="payout" style="display: flex; align-items: center; gap: 13px; padding: 14px 20px; background: #f6f3ef;">
           <div data-readout="" style="width: 40px; height: 40px; flex-shrink: 0; background: #e7e1db; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
             <div data-slot="initial" style="font-size: 15px; font-weight: 600; color: #37322d;">S</div>
           </div>
@@ -222,7 +222,11 @@
         </div>
       </div>
 
-      <div style="padding: 16px 20px; background: #e7e1db;">
+      <!-- Every figure in this block is drawn: a share, an amount kept, and a
+           basis line naming what was sold and what it cost. bind() fills them
+           from the real last season and clears the mark as it does, or the
+           section goes entirely. Until one or the other, none of it happened. -->
+      <div data-specimen="" style="padding: 16px 20px; background: #e7e1db;">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
           <div style="font-size: 16px; font-weight: 600;">Their share, all together</div>
           <div data-slot="investors" data-bind="lastSeason.investors" class="num" style="font-size: 17px; font-weight: 700;">₹2,23,600</div>
