@@ -37,14 +37,23 @@ if (ctx) {
     const settled = all.find(p => p.harvestReportedAt);
 
     // ---- the one thing that needs them today -------------------------
-    bind(root, {
-      due: {
-        headline: due ? `${due.title} is ready to harvest` : 'Nothing needs you today',
-        line: due
-          ? 'Your investors are waiting to be paid. Tell us what you sold it for and what it cost you to grow.'
-          : 'Nobody is waiting on you.',
-      },
-    });
+    /* No season waiting means no notice. It is drawn on --attention-fill, which
+     * this palette keeps for "take care", and a box in that colour saying
+     * "Nothing needs you today" is a warning about nothing -- the surest way to
+     * teach somebody to stop reading the warnings. The row simply is not there. */
+    const band = root.querySelector('[data-todoband]');
+    if (!due) band?.remove();
+    else {
+      bind(root, {
+        due: {
+          headline: `${due.title} is ready to harvest`,
+          // Shorter than the banner's line was: this is a notice beside a button,
+          // not a hero paragraph. What it costs to get wrong -- that it can only
+          // be done once -- stays.
+          line: 'Your investors are waiting to be paid. You can only do this once.',
+        },
+      });
+    }
     // Found by its mark. This searched for a div whose inline style contained
     // `background: #fff`, and the button stopped being white the moment the two
     // "Report the harvest" buttons were made one button -- so it silently found
