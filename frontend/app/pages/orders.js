@@ -1,5 +1,5 @@
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, arrive } from '../bind.js';
+import { bind, arrive, playsInline, state as showState } from '../bind.js';
 import { rupees, dayMonth } from '../api.js';
 import { goes, acts, press } from '../wire.js';
 
@@ -108,14 +108,65 @@ if (ctx) load(ctx.root, async () => {
       dated.style.color = p.blockHeight ? '#006934' : '#4a443d';
     }
 
-    // "Watch it - check the date" is the whole point of this row: it is how a
-    // buyer verifies the lot they paid for. It goes to the provenance record,
-    // and where there is no video it is removed rather than left to be pressed.
+    /* "Watch it - check the date" IS the row. It is the only reason a receipt in
+     * this product is worth more than a receipt anywhere else, and it went to
+     * `plot?name=<crop>` -- plot.html, which is gated to farmers. So a buyer
+     * pressing the one control that answers "was the thing I paid for real"
+     * landed on "Not your screen. This page is for a farmer." Four times, once
+     * per lot, on the buyer's own orders page.
+     *
+     * It plays here instead. The address comes from the public provenance route,
+     * fetched on the press rather than four times on load, because most visits to
+     * this page are not going to watch anything. If the record has no address, the
+     * row says so where the player would have been rather than opening an empty
+     * box or going quiet. */
     const watch = tr.querySelector('.act');
     if (watch) {
-      if (p.cid) goes(watch, `plot?name=${encodeURIComponent(p.crop || '')}`,
-                      `Watch the video for ${p.crop || 'this lot'} and check its date`);
-      else watch.remove();
+      if (!p.cid) { watch.remove(); }
+      else {
+        let player = null;
+        acts(watch, `Watch the video for ${p.crop || 'this lot'} and check its date`, async () => {
+          if (player) { player.toggle(); return; }
+          const was = watch.textContent;
+          watch.textContent = 'Fetching the record…';
+          try {
+            const v = await api.videos.provenance(p.cid);
+            watch.textContent = was;
+            if (!v?.gateway) throw new Error('This record carries no address for the file.');
+            /* A player belongs in a CELL, not after a row. playsInline inserts a
+             * div after whatever it is given, and a div after a <tr> inside a
+             * <tbody> is not a thing HTML has: the browser hoists it out of the
+             * table and the video ends up above the receipt. So the row gets a
+             * row of its own, spanning every column, and the player opens against
+             * an anchor inside that cell. */
+            const holder = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 5;
+            cell.style.cssText = 'padding: 0 0 16px;';
+            holder.append(cell);
+            tr.after(holder);
+            const anchor = document.createElement('div');
+            cell.append(anchor);
+            player = playsInline(anchor, { gateway: v.gateway });
+            // aria-expanded belongs on the control somebody presses, not on the
+            // empty div the panel is measured against.
+            anchor.removeAttribute('aria-expanded');
+            watch.setAttribute('aria-expanded', 'true');
+            const was2 = player.toggle;
+            player.toggle = () => { was2(); watch.setAttribute('aria-expanded',
+              watch.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); };
+            player.open?.();
+          } catch (err) {
+            watch.textContent = was;
+            const box = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 5;
+            box.append(cell);
+            tr.after(box);
+            showState(cell, 'failed', 'This one will not play', err.message);
+          }
+        });
+      }
     }
     body.append(tr);
     built.push(tr);
