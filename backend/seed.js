@@ -478,7 +478,11 @@ function assertSafeToSeed() {
          console.log('Creating demo notifications...');
          const notifications = [
               // Notification for Demo Farmer about purchase
-             { recipient: demoFarmerUser._id, type: 'purchase', message: `“${demoCucumbersListing?.crop || 'your lot'}” was bought by ${demoBuyerUser.name}.`, timestamp: new Date(Date.now() - 0.1 * 24 * 60 * 60 * 1000), read: false, itemId: demoCucumbersListing?._id, itemType: 'Listing' },
+            // The FIRST name, the way purchases.js writes this same sentence when a
+            // real purchase happens. Seeding the full name put "was bought by Demo
+            // Buyer" directly under two live rows saying "was bought by Demo", the
+            // same person named two ways in one list.
+             { recipient: demoFarmerUser._id, type: 'purchase', message: `“${demoCucumbersListing?.crop || 'your lot'}” was bought by ${demoBuyerUser.name.split(' ')[0]}.`, timestamp: new Date(Date.now() - 0.1 * 24 * 60 * 60 * 1000), read: false, itemId: demoCucumbersListing?._id, itemType: 'Listing' },
               // Notification for Demo Investor about investment
              { recipient: demoInvestorUser._id, type: 'investment', message: 'Your investment of ₹1,00,000 in the wheat season successful!', timestamp: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoWheatRequest._id) && i.amount === 10.0)?._id, itemType: 'Investment' },
              { recipient: demoInvestorUser._id, type: 'investment', message: 'Your investment of ₹55,000 in the wheat season successful!', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), read: false, itemId: investments.find(i => i.projectId.equals(demoWheatRequest._id) && i.amount === 5.5)?._id, itemType: 'Investment' },

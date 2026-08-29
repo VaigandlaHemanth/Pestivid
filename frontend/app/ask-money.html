@@ -154,7 +154,16 @@
             <div class="bx" style="max-width: 360px;">Potato</div>
           </div>
           <div style="margin-top: 15px;">
-            <div class="lb">How much land?</div>
+            <!-- The unit belongs where the eye is. asField replaces the drawn box
+                 below -- which read "2 acres" -- with an input whose placeholder is
+                 just "2", so the word acres left the screen entirely: it appears
+                 nowhere on this page. The aria-label already said "How much land, in
+                 acres", so a screen reader was told the unit and the eye was not,
+                 and later screens go on to assert "2 acres" about whatever was
+                 typed. India measures land in guntas and bighas as readily as acres;
+                 a bare number box is how a farmer records the wrong field size
+                 without ever being told which unit was assumed. -->
+            <div class="lb">How much land, in acres?</div>
             <div class="bx m" style="max-width: 220px;">2 acres</div>
           </div>
 
