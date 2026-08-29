@@ -12,18 +12,21 @@
     a { color: #01579b; } a:hover { color: #013f70; }
     .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    /* NO CARDS ON THIS PAGE.
+       Every group was a #f6f3ef box floating on #ddd7d1 ground, which is what
+       made the screen read as a stack of containers rather than a page. The
+       chat is the one screen here that never did that: a single surface, edge
+       to edge, with a hairline between rows and nothing else. So: one surface
+       from under the app bar to the bottom, the label doing the grouping with
+       space rather than an edge, and no box anywhere. */
     .sec  { font-size: 12.5px; font-weight: 700; letter-spacing: .06em;
-            color: #4a443d; background: #f6f3ef; padding: 15px 20px 9px;
-            margin-top: 22px; }
-    .sec:first-child { margin-top: 0; }
+            color: #605a53; padding: 30px 28px 9px; }
     /* The mark a row wears when pressing it does something. Three rows here
        expanded a form, downloaded a file, or freed 173 MB, and all three drew
        exactly like a row that does nothing at all. */
     .ind  { width: 20px; height: 20px; flex-shrink: 0; color: #605a53; }
-    .row  { background: #f6f3ef; padding: 16px 20px; display: flex; align-items: center; gap: 14px;
-            box-shadow: inset 0 -1px 0 #c3bcb6; }
-    .row2 { background: #f6f3ef; padding: 16px 20px; display: flex; align-items: center; gap: 14px;
-            box-shadow: inset 0 -1px 0 #c3bcb6; }
+    .row, .row2 { padding: 15px 28px; display: flex; align-items: center; gap: 14px;
+                 box-shadow: inset 0 -1px 0 #ddd7d1; }
     .lab  { font-size: 17px; font-weight: 600; }
     .val  { font-size: 15px; color: #605a53; margin-top: 2px; }
     /* language chips stay in their own script — a picker that writes every
@@ -120,7 +123,7 @@
          /auth/me returns no phone, and User has no location field at all, so
          the two lines were "No number on file" and "No district on file". The
          mark is on the leaf now, and the second line says what is true. -->
-    <div class="pagehold" style="padding: 16px 28px 20px;">
+    <div class="pagehold" style="background: #f6f3ef; padding: 16px 28px 20px;">
       <h1 data-title class="pageh" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;">You and your settings</h1>
       <div style="display: flex; gap: 14px; align-items: center;">
         <a data-chrome="back" href="./home.html" class="backlink" title="Back"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg><span data-backword class="sr">Home</span></a>
@@ -135,14 +138,16 @@
     </div>
 
 
-      <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 340px; gap: 26px; padding: 22px 28px 30px; align-items: start;">
+      <!-- ONE COLUMN, ONE SURFACE. The 340px rail held two things and then a
+           column of nothing; both of them are rows at the end of the list now,
+           where a phone puts them. -->
+      <div style="flex-grow: 1; background: #f6f3ef;">
       <div class="main">
-<div style="flex-grow: 1;">
 
 
     <!-- LANGUAGE — the setting that unlocks every other one, so it comes first -->
     <div class="sec">Language</div>
-    <div style="background: #f6f3ef; padding: 16px 20px;">
+    <div style="padding: 2px 28px 22px;">
       <div style="display: flex; flex-wrap: wrap; gap: 8px;">
         <div class="langOn">English</div>
         <div class="lang">తెలుగు</div>
@@ -221,21 +226,21 @@
     </div>
 
   </div>
-      </div>
-      <div class="rail">
-<div style="background: #f2e6cd; padding: 15px 16px;">
+      <!-- The standing disclosure, then the way out: the last two rows, full
+           width, no box around either. -->
+      <div style="height: 30px;"></div>
+      <div style="background: #f2e6cd; padding: 16px 28px;">
         <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">Videos cannot be deleted</div>
-        <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
-          Once a video is sent it is stored permanently and its date is written into a public record.
-          You can hide one from your list, but we cannot remove it, that is what makes the date
-          worth anything to an investor.
+        <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d; max-width: 78ch;">
+          Once a video is sent it is stored permanently and its date is written into a public
+          record. You can hide one from your list, but we cannot remove it, that is what makes
+          the date worth anything to an investor.
         </div>
       </div>
-<div style="flex-shrink: 0; height: 54px; margin-top: 14px; background: #f6f3ef; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 2px #a71930;">
-        <div style="font-size: 16.5px; font-weight: 600; color: #a71930;">Sign out</div>
+      <div class="row" style="box-shadow: inset 0 1px 0 #ddd7d1;">
+        <div style="font-size: 17px; font-weight: 600; color: #a71930;">Sign out</div>
       </div>
       </div>
-    </div>
 
 
 
