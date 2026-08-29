@@ -329,8 +329,14 @@ export function deskNav(root, user) {
         const n = (list || [])
           .filter(x => noticeForRole(x, user?.role))
           .filter(x => !x.read && !x.isRead).length;
-        if (n > 0) badge.textContent = n > 9 ? '9+' : String(n);
-        else badge.remove();
+        if (n > 0) {
+          badge.textContent = n > 9 ? '9+' : String(n);
+          // Drawn as "2" in nineteen boards and hidden before the first paint,
+          // because until this fetch answers nobody knows whether anything is
+          // waiting. A red 2 that appears on every page load and then corrects
+          // itself is the flicker; it is also a count of nothing.
+          badge.removeAttribute('data-specimen');
+        } else badge.remove();
       })
       .catch(() => badge.remove());
   } else if (badge) {
