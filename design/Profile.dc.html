@@ -13,7 +13,13 @@
     .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
     .sec  { font-size: 12.5px; font-weight: 700; letter-spacing: .06em;
-            color: #4a443d; padding: 24px 20px 8px; }
+            color: #4a443d; background: #f6f3ef; padding: 15px 20px 9px;
+            margin-top: 22px; }
+    .sec:first-child { margin-top: 0; }
+    /* The mark a row wears when pressing it does something. Three rows here
+       expanded a form, downloaded a file, or freed 173 MB, and all three drew
+       exactly like a row that does nothing at all. */
+    .ind  { width: 20px; height: 20px; flex-shrink: 0; color: #605a53; }
     .row  { background: #f6f3ef; padding: 16px 20px; display: flex; align-items: center; gap: 14px;
             box-shadow: inset 0 -1px 0 #c3bcb6; }
     .row2 { background: #f6f3ef; padding: 16px 20px; display: flex; align-items: center; gap: 14px;
@@ -58,9 +64,15 @@
     /* The back link: in the content above the heading, naming its destination.
        44px of tap height for a phone, taken as padding so the text still sits
        tight to the heading it belongs to. */
-    .backlink { display: inline-flex; align-items: center; align-self: flex-start;
-                gap: 6px; min-height: 44px; margin-left: -2px; font-size: 14.5px;
-                font-weight: 600; color: #01579b; text-decoration: none; }
+    /* ICON ONLY. The word is still in the document for anyone who cannot see
+       the arrow -- it is drawn off-screen, not deleted. 44x44 of real target
+       under a 21px glyph. */
+    .backlink { display: inline-flex; align-items: center; justify-content: center;
+                align-self: flex-start; width: 44px; height: 44px; margin-left: -11px;
+                color: #605a53; text-decoration: none; }
+    .backlink:hover { color: #1d1a17; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+          overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   </style>
 </helmet>
 
@@ -85,19 +97,41 @@
         </div>
       </div>
     </div>
-    <div class="pagehold" style="padding: 11px 28px; display: flex; align-items: center; gap: 17px;">
-      <!-- BACK AND THE HEADING ON ONE ROW, divided by a hairline. This is the
-           chat rail's geometry, and the rail is the one place in this product
-           where the way out never read as detached: it sits BESIDE the header,
-           not above it, with the rail's own right edge (inset -1px 0 0 #ddd7d1)
-           drawn between the two. Everywhere else the back link had a whole row
-           to itself over the title, which is why it read as something dropped
-           on the page rather than part of its header. Same row, same place, on
-           every screen, so "how do I get out" has one answer. An <a href> so it
-           can still be middle-clicked; chrome.js writes the real word. -->
-      <a data-chrome="back" href="./home.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword>Home</span></a>
-      <div style="width: 1px; align-self: stretch; background: #c3bcb6;"></div>
-      <h1 data-title class="pageh" style="margin: 0;">You and your settings</h1>
+    <!-- THE PERSON IS THE HEADER.
+
+         This page opened with two blocks saying the same thing stacked on each
+         other: a header reading "You and your settings", and directly under it
+         a card holding the avatar and the name. Between them they spent about
+         200px of the top of the screen to repeat what the avatar menu you came
+         from had just told you. They are one block now -- who you are IS the
+         header of your own settings -- and the way out is a quiet line above
+         it rather than a bar across it. Nothing here is chrome: the first thing
+         on the page is content, which is the whole of what "blend in" means.
+
+         The heading keeps its words for the document outline and for
+         [data-title], which wire.js reads, and goes sr-only -- the same thing
+         money and the chat do, and for the same reason: the visible answer to
+         "where am I" is already on the screen, better said.
+
+         The card also carried a BUG. [data-bind="name"] sat on the DIV that
+         CONTAINED the name, the phone and the district, so bind's
+         `el.textContent = name` deleted its own two siblings before either
+         could render. Nobody noticed because of what they would have said:
+         /auth/me returns no phone, and User has no location field at all, so
+         the two lines were "No number on file" and "No district on file". The
+         mark is on the leaf now, and the second line says what is true. -->
+    <div class="pagehold" style="padding: 16px 28px 20px;">
+      <h1 data-title class="pageh" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;">You and your settings</h1>
+      <div style="display: flex; gap: 14px; align-items: center;">
+        <a data-chrome="back" href="./home.html" class="backlink" title="Back"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg><span data-backword class="sr">Home</span></a>
+        <div style="width: 56px; height: 56px; flex-shrink: 0; background: #e7e1db; border-radius: 28px; display: flex; align-items: center; justify-content: center;">
+          <div data-avatar style="font-size: 22px; font-weight: 700;">A</div>
+        </div>
+        <div style="min-width: 0;">
+          <div data-bind="name" style="font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14;">Alice Farmer</div>
+          <div data-bind="who" class="m" style="font-size: 15px; color: #605a53; margin-top: 3px;">Farmer &middot; alice@example.com &middot; here since July 2026</div>
+        </div>
+      </div>
     </div>
 
 
@@ -105,17 +139,6 @@
       <div class="main">
 <div style="flex-grow: 1;">
 
-    <!-- who -->
-    <div style="background: #f6f3ef; padding: 20px; display: flex; gap: 15px; align-items: center;">
-      <div style="width: 56px; height: 56px; flex-shrink: 0; background: #e7e1db; border-radius: 28px; display: flex; align-items: center; justify-content: center;">
-        <div data-avatar style="font-size: 22px; font-weight: 700;">A</div>
-      </div>
-      <div data-bind="name">
-        <div style="font-size: 20px; font-weight: 700;">Alice Farmer</div>
-        <div data-bind="phone" class="m" style="font-size: 15px; color: #605a53; margin-top: 2px;">+91 98765 43210</div>
-        <div data-bind="where" class="m" style="font-size: 14px; color: #605a53;">Kadapa, Andhra Pradesh</div>
-      </div>
-    </div>
 
     <!-- LANGUAGE — the setting that unlocks every other one, so it comes first -->
     <div class="sec">Language</div>
@@ -130,10 +153,8 @@
         <div class="lang">मराठी</div>
       </div>
       <div style="font-size: 14.5px; line-height: 1.5; margin-top: 12px; color: #4a443d;">
-        Saved against your account, and it will change every screen as soon as the translations
-        exist, they do not yet, and the picker says so rather than showing you an English
-        screen and calling it Telugu. Each language is written in its own script here, because a
-        list that says &ldquo;Telugu&rdquo; in English is no use to someone looking for Telugu.
+        Saved against your account. The translations do not exist yet, so the picker
+        says so rather than showing you an English screen and calling it Telugu.
       </div>
     </div>
 
@@ -188,6 +209,7 @@
         <div class="lab">Change your code</div>
         <div class="val">Signs you out on other phones</div>
       </div>
+      <svg class="ind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
     </div>
     <div class="row2">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9" style="flex-shrink: 0;"><path d="M5 3h11l3 3v15H5z"></path><path d="M16 3v3h3"></path><path d="M8.5 12h7M8.5 16h4"></path></svg>
@@ -195,11 +217,7 @@
         <div class="lab">Your videos and money records</div>
         <div class="val">Download everything we hold</div>
       </div>
-    </div>
-
-    <!-- the honest bit -->
-    <div style="padding: 20px;">
-      
+      <svg class="ind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="M7 11l5 5 5-5"></path><path d="M4 20h16"></path></svg>
     </div>
 
   </div>
@@ -213,11 +231,9 @@
           worth anything to an investor.
         </div>
       </div>
-<div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 18px;">
-    <div style="height: 54px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 2px #a71930;">
-      <div style="font-size: 16.5px; font-weight: 600; color: #a71930;">Sign out</div>
-    </div>
-  </div>
+<div style="flex-shrink: 0; height: 54px; margin-top: 14px; background: #f6f3ef; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 2px #a71930;">
+        <div style="font-size: 16.5px; font-weight: 600; color: #a71930;">Sign out</div>
+      </div>
       </div>
     </div>
 

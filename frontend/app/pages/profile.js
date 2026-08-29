@@ -12,6 +12,10 @@ import { appChrome } from '../chrome.js';
 import { acts, goes, press, asField } from '../wire.js';
 import { languagePicker } from '../lang.js';
 
+// The word for what someone is, for the line under their name. Not a claim
+// about what they may do -- just what they signed up as.
+const ROLE = { farmer: 'Farmer', buyer: 'Buyer', investor: 'Investor', admin: 'Pestivid team' };
+
 const ctx = requireUser('profile');
 
 // What each toggle actually controls, and what it is honest to claim.
@@ -71,8 +75,22 @@ if (ctx) {
     if (avatar) avatar.textContent = initial;
     bind(root, {
       name: me.name,
-      phone: me.phone || 'No number on file',
-      where: me.location || 'No district on file',
+      // ONE LINE OF WHAT IS TRUE, replacing two of what was not.
+      //
+      // This used to bind `phone` and `where` as well. Neither ever reached the
+      // screen: [data-bind="name"] was on the DIV WRAPPING all three, so bind's
+      // `el.textContent = name` deleted the other two on the way past. And had
+      // they survived they would have read "No number on file" and "No district
+      // on file" for every account this product can create -- /auth/me does not
+      // return a phone, and User has no location field at all. Role, the address
+      // you sign in with, and the day you joined are returned, are true, and were
+      // shown nowhere.
+      who: [
+        ROLE[me.role] || me.role,
+        me.email,
+        me.memberSince && `here since ${new Date(me.memberSince)
+          .toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}`,
+      ].filter(Boolean).join(' · '),
       // the model is a local file, so its size is a fact about this handset
       model: { state: localStorage.getItem('pv.model')
         ? '173 MB downloaded · works offline'
