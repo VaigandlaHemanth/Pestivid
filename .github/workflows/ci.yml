@@ -321,3 +321,122 @@ jobs:
           grep -q 'average="macro"' "$P" \
             || { echo 'FAIL: macro-F1 missing — accuracy alone hides the rare class'; exit 1; }
           echo ok
+
+  # ── Does a fresh clone actually give you the product? ─────────────────────
+  #
+  # Everything else here checks the code that is written. This checks what a
+  # person who clones the repo RECEIVES, which is not the same thing.
+  #
+  # frontend/app/*.html are generated from design/*.dc.html by build-pages.mjs and
+  # committed. A clone gets whatever was committed, so if a board moved and the
+  # page did not, the download is a product that no longer matches its own source
+  # -- and nothing in the working copy would say so, because the person who made
+  # the change has the rebuilt file sitting there untracked or unnoticed.
+  #
+  # actions/checkout is exactly what a download is: a clean tree, nothing cached,
+  # nothing left over. So the test is simply to build it there and require that
+  # nothing changed, then boot it and put the pages through the same gates they
+  # are held to locally.
+  frontend:
+    name: Frontend — a clean clone builds the same pages, and they pass
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # Playwright lives at the repo root; the server's own deps are in backend/.
+      - run: npm ci
+      - run: npm ci
+        working-directory: backend
+
+      - name: The committed pages are the ones the boards produce
+        run: |
+          node frontend/build-pages.mjs | tee /tmp/build.log
+          # build-pages reports these and exits 0, so they have to be read here or
+          # a page can go missing from the download without anything failing.
+          grep -q 'NOT FOUND in any artboard' /tmp/build.log && {
+            echo
+            echo 'A page in PAGES has no artboard, so it was never generated.'
+            echo 'Somebody cloning this repo would not get that page at all.'
+            exit 1
+          }
+          git diff --exit-code -- frontend/app frontend/robots.txt || {
+            echo
+            echo 'The committed pages are NOT what the boards produce.'
+            echo 'A clone of this commit gets an app that does not match design/.'
+            echo 'Fix: node frontend/build-pages.mjs, then commit frontend/app.'
+            exit 1
+          }
+          echo 'a clean checkout rebuilds byte-for-byte to what is committed'
+
+      - name: Nothing a page needs is missing from the checkout
+        run: |
+          # A committed page whose module was never added is a blank screen for
+          # whoever downloads it, and a stylesheet that was generated but never
+          # committed is the same. So: every page has its module, and every local
+          # file any page points at is actually here.
+          node -e '
+            const fs = require("fs");
+            const pages = fs.readdirSync("frontend/app").filter(f => f.endsWith(".html"));
+            let bad = 0;
+            for (const f of pages) {
+              const slug = f.replace(".html", "");
+              const mod = `frontend/app/pages/${slug}.js`;
+              if (!fs.existsSync(mod)) { console.log(`  ${f} has no ${mod}`); bad++; }
+              const html = fs.readFileSync(`frontend/app/${f}`, "utf8");
+              for (const m of html.matchAll(/(?:src|href)="\.\/([^"#?]+)"/g)) {
+                if (!fs.existsSync(`frontend/app/${m[1]}`)) {
+                  console.log(`  ${f} points at missing ./${m[1]}`); bad++;
+                }
+              }
+            }
+            if (bad) { console.log(`${bad} thing(s) a clone would not have`); process.exit(1); }
+            console.log(`all ${pages.length} pages have their module, and every local file they reference exists`);
+          '
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: Boot the app the way a new clone would
+        working-directory: backend
+        env:
+          JWT_SECRET: ci-secret-not-used-anywhere-real
+        run: |
+          # No arguments and no seeded database: exactly what somebody gets after
+          # `git clone && npm ci && node dev-server.js`. It seeds itself when the
+          # database is empty, which is the path a first run always takes.
+          node dev-server.js > /tmp/frontend-server.log 2>&1 &
+          for i in $(seq 1 90); do
+            grep -q 'Server running' /tmp/frontend-server.log && break
+            sleep 2
+          done
+          grep -q 'Server running' /tmp/frontend-server.log \
+            || { cat /tmp/frontend-server.log; exit 1; }
+          # and wait for the seed, or every harness logs in against an empty
+          # database. A function, because `curl | grep -q ... && break` inside a
+          # loop returns non-zero on every waiting iteration, and Actions runs
+          # these with bash -e, which would abort the wait on its first pass.
+          signin() {
+            curl -sf http://127.0.0.1:3001/api/auth/login               -H 'Content-Type: application/json'               -d '{"email":"demo.farmer@pestivid.sim","password":"password123"}'               2>/dev/null | grep -q token
+          }
+          for i in $(seq 1 60); do
+            if signin; then break; fi
+            sleep 2
+          done
+          signin || { echo 'the seed never finished'; cat /tmp/frontend-server.log; exit 1; }
+          echo 'booted and seeded from nothing'
+
+      - name: The pages a clone receives pass their own gates
+        run: |
+          # Every gate runs even after one fails, because "which of these is
+          # broken" is the useful answer and stopping at the first hides the rest.
+          fails=0
+          for h in smoke-pages verify-selectors verify-layout verify-nav \
+                   verify-doors verify-specimens verify-media verify-linkcolour; do
+            echo "=== $h ==="
+            node "frontend/$h.mjs" || { echo "GATE FAILED: $h"; fails=$((fails+1)); }
+          done
+          [ "$fails" -eq 0 ] || { echo "$fails gate(s) failed"; exit 1; }
