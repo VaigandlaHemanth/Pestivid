@@ -27,10 +27,16 @@ const SHOW_MS = 6500;       // macOS banners hold for about six seconds
 const MAX_ON_SCREEN = 3;
 const STILL = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// One baseline per person, kept across pages: the newest notice they have
-// already been shown. Without it every page load would re-announce the same
-// backlog, and eighteen unread notices would arrive as eighteen banners.
+// One baseline per person PER TAB, kept across pages: the newest notice this
+// tab has already been shown. Without it every page load would re-announce the
+// same backlog, and eighteen unread notices would arrive as eighteen banners.
+//
+// sessionStorage, not localStorage. Shared across tabs, the first tab to poll
+// moved the baseline past an arrival and every other tab then read it as old:
+// measured with home and the chat open side by side, home raised the banner
+// and the chat never learned a message had come. Each tab keeps its own.
 const seenKey = (uid) => `pv.notice.seen.${uid}`;
+const store = () => { try { return sessionStorage; } catch { return null; } };
 
 /* Pages that handle a kind of notice themselves say so here, and get the
  * arrival as an event instead of a banner. The notices page IS the list, and
@@ -298,18 +304,18 @@ export function watchNotices(root, user) {
         const t = Date.parse(n.timestamp || n.createdAt || 0) || 0;
         return t > m ? t : m;
       }, 0);
-      const seen = Number(localStorage.getItem(seenKey(uid)) || 0);
+      const seen = Number(store()?.getItem(seenKey(uid)) || 0);
       if (!seen) {
         // First time on this device: everything here is backlog, and the bell
         // already says so. Only what arrives from now on is announced.
-        if (newest) localStorage.setItem(seenKey(uid), String(newest));
+        if (newest) store()?.setItem(seenKey(uid), String(newest));
         return;
       }
       const fresh = list
         .filter(n => (Date.parse(n.timestamp || n.createdAt || 0) || 0) > seen)
         .filter(n => !n.read && !n.isRead && !shown.has(String(n._id)))
         .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));   // oldest first, so the newest ends on top
-      if (newest > seen) localStorage.setItem(seenKey(uid), String(newest));
+      if (newest > seen) store()?.setItem(seenKey(uid), String(newest));
       if (!fresh.length) return;
       fresh.forEach(n => shown.add(String(n._id)));
 
