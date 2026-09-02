@@ -164,6 +164,15 @@ router.get('/', authenticateToken, async (req, res) => {
 // @route GET /api/videos/farmer/:farmerId
 // @desc Get videos metadata uploaded by a specific farmer
 // @access Private (Requires authentication. User should typically only fetch their own videos)
+// Whether this server writes dates at all. Development runs with anchoring
+// off so a laptop does not call public calendars on every restart -- and the
+// screens then said "usually by tomorrow" about dates that were never going
+// to land: eight demo videos, two weeks, none written. The page asks, and
+// says the truth instead. Public: it is a fact about the server, not a person.
+router.get('/anchoring', (req, res) => {
+    res.json({ enabled: String(process.env.ANCHOR_ENABLED || '').toLowerCase() === 'true' });
+});
+
 router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
     const farmerId = req.params.farmerId; // Get the farmer ID from the URL parameter
 

@@ -301,6 +301,15 @@ export const whenShort = (iso) => {
   return `${dayMonth(iso)}, ${t}`;
 };
 
+/* Does this server write dates at all? Development runs with anchoring off,
+ * and every screen went on saying "usually by tomorrow" about dates that
+ * would never land. Asked once per page; until the answer arrives the screens
+ * assume yes, which is what production is. */
+export const anchoring = { enabled: true, known: false };
+export const anchoringReady = get('/videos/anchoring')
+  .then((r) => { anchoring.enabled = Boolean(r?.enabled); anchoring.known = true; })
+  .catch(() => {});
+
 /** The three states a video's date can be in, in the words the screens use. */
 export function dateState(v) {
   // `text` is the full line for a detail screen. `short` is for a row in a
@@ -311,10 +320,14 @@ export function dateState(v) {
     text: `Date stamped · block ${Number(v.blockHeight).toLocaleString('en-IN')}`,
     short: `Block ${Number(v.blockHeight).toLocaleString('en-IN')}`,
   };
-  if (v?.cid) return {
+  if (v?.cid) return anchoring.enabled ? {
     kind: 'waiting',
     text: 'On our server · date being written, usually by tomorrow',
     short: 'Date being written',
+  } : {
+    kind: 'waiting',
+    text: 'On our server · this server is not writing dates yet',
+    short: 'Date not written here',
   };
   return { kind: 'phone', text: 'Not sent yet', short: 'Not sent yet' };
 }

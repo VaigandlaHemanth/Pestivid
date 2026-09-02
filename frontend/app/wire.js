@@ -1,5 +1,5 @@
 import { deskNav } from './chrome.js';
-import { session } from './api.js';
+import { session, anchoring, anchoringReady } from './api.js';
 // Shared conduct for every generated page.
 //
 // The markup is cut from the artboards and must not be edited, so behaviour is
@@ -461,6 +461,25 @@ function hideDecoration(root) {
   }
 }
 
+/* When the server is not writing dates, no screen may promise one by tomorrow.
+ * The promise is drawn into several boards as plain prose, so it is corrected
+ * the way deClaimProps corrects invented proof: by walking the text. */
+function deAnchorClaims(root) {
+  const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walk.nextNode()) nodes.push(walk.currentNode);
+  for (const n of nodes) {
+    const v = n.nodeValue;
+    if (!/usually by tomorrow|within a day/i.test(v)) continue;
+    n.nodeValue = v
+      .replace(/are usually written into a Bitcoin block within a day/i, 'will be written into a Bitcoin block once this server is set to write dates')
+      .replace(/,\s*usually by tomorrow/gi, ', once this server is set to write dates')
+      .replace(/Usually by tomorrow/g, 'Not on this server yet')
+      .replace(/usually by tomorrow/gi, 'once this server is set to write dates')
+      .replace(/within a day/gi, 'once this server is set to write dates');
+  }
+}
+
 export function wire(slug) {
   const root = document.querySelector('body > div');
   if (!root) return;
@@ -480,6 +499,7 @@ export function wire(slug) {
   // screen -- wired no navigation at all, so Portfolio and Messages were plain
   // text an investor could not click.
   deskNav(root, session.user);
+  anchoringReady.then(() => { if (anchoring.known && !anchoring.enabled) deAnchorClaims(root); });
   document.documentElement.dataset.ready = slug;
   return root;
 }
