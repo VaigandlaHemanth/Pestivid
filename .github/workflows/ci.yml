@@ -375,7 +375,14 @@ jobs:
             echo 'Somebody cloning this repo would not get that page at all.'
             exit 1
           }
-          git diff --exit-code -- frontend/app frontend/robots.txt || {
+          # The heights are MEASURED, not drawn: build-pages reads each board's
+          # scrollHeight and writes it to data-design-height and sizes.json, and a
+          # Linux runner's fonts are a few pixels taller or shorter than the
+          # Windows machine the pages were built on (signin 1185 vs 1205, profile
+          # 1079 vs 1038). Every other byte was identical. So a hunk made only of
+          # those two measured lines is ignored; any change to markup, style or
+          # text still fails.
+          git diff --exit-code -I 'data-design-height="[0-9]+"' -I '"h": [0-9]+' \n            -- frontend/app frontend/robots.txt || {
             echo
             echo 'The committed pages are NOT what the boards produce.'
             echo 'A clone of this commit gets an app that does not match design/.'
