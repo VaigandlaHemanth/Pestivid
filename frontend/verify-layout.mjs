@@ -44,6 +44,17 @@ const WALK = (rootSel) => {
   return out;
 };
 
+  /* Both renders measure with the SAME fonts, or the comparison is about a
+   * CDN rather than about our markup. The landing loads Anek Latin from Google
+   * Fonts; on a runner one render got it and the other fell back to the system
+   * face, and thirty elements moved by 1.8px -- a red gate for a page nobody
+   * had touched. The webfont hosts are refused for both, so board and page
+   * are laid out in the same fallback and any difference left is ours. */
+  const noWebfonts = (pg) => Promise.all([
+    pg.route('**fonts.googleapis.com/**', r => r.abort()),
+    pg.route('**fonts.gstatic.com/**', r => r.abort()),
+  ]);
+
   const settle = async (pg) => {
     // A `ch` measure is taken against the font that is actually loaded, so
     // measuring before the webfont lands reports the fallback's metrics and
@@ -88,6 +99,7 @@ for (const slug of slugs) {
   // its own desktop reflow -- which is what produced three false mismatches
   // when responsive.css landed. Responsive behaviour is proved separately.
   const a = await browser.newPage({ viewport: { width: Math.max(size.w, 1500), height: Math.max(size.h, 600) } });
+  await noWebfonts(a);
   await a.goto(pathToFileURL(path.join(DESIGN, board)).href, { waitUntil: 'load' });
   await a.addScriptTag({ content: shim });
   await a.evaluate(() => document.querySelectorAll('[data-fold]').forEach(n => n.remove()));
@@ -129,6 +141,7 @@ for (const slug of slugs) {
   await a.close();
 
   const b = await browser.newPage({ viewport: { width: size.w, height: size.h } });
+  await noWebfonts(b);
   // Compare the page as drawn. With no API reachable a page module correctly
   // replaces the screen with a failure state, which is right behaviour and
   // useless for measuring fidelity -- so the module is blocked on purpose

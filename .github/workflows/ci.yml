@@ -353,9 +353,20 @@ jobs:
       - run: npm ci
         working-directory: backend
 
+      # The boards are rendered in Chromium to cut the pages, so the browser has
+      # to exist BEFORE the rebuild check, not after it. It was installed after:
+      # the build crashed on a missing executable and `| tee` swallowed the exit
+      # code, so the byte-for-byte check passed on a tree nothing had rewritten.
+      - run: npx playwright install --with-deps chromium
+
       - name: The committed pages are the ones the boards produce
         run: |
+          set -o pipefail
           node frontend/build-pages.mjs | tee /tmp/build.log
+          grep -q 'generated .* pages' /tmp/build.log || {
+            echo 'build-pages did not report generating the pages; see the log above.'
+            exit 1
+          }
           # build-pages reports these and exits 0, so they have to be read here or
           # a page can go missing from the download without anything failing.
           grep -q 'NOT FOUND in any artboard' /tmp/build.log && {
@@ -397,8 +408,6 @@ jobs:
             if (bad) { console.log(`${bad} thing(s) a clone would not have`); process.exit(1); }
             console.log(`all ${pages.length} pages have their module, and every local file they reference exists`);
           '
-
-      - run: npx playwright install --with-deps chromium
 
       - name: Boot the app the way a new clone would
         working-directory: backend
