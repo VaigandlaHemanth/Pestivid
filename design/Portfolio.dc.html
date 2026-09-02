@@ -7,74 +7,104 @@
 <body>
 <x-dc>
 <helmet>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap">
   <style>
     body { margin: 0; }
     a { color: #01579b; } a:hover { color: #013f70; }
-    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
-    .lift1 { box-shadow: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05); }
-    .lbl { font-size: 13.5px; color: #605a53; letter-spacing: .01em; }
-    .nav { font-size: 15.5px; color: #4a443d; display: inline-flex; align-items: center; min-height: 34px; }
-    .navOn { font-size: 15.5px; font-weight: 500; color: #1d1a17; box-shadow: inset 0 -2px 0 #012169; display: inline-flex; align-items: center; min-height: 34px; }
+
+    /* NO CARDS ON THIS PAGE. This was the investor's cool surface: a white table
+       in a lifted box and two white notes on blue-grey ground. It is a section
+       of Money now -- every season you funded, in full -- and it is built the
+       way Money is: one surface from under the bar, a hairline between rows,
+       the way out a 44px chevron beside the heading. */
+    .lbl  { font-size: 14px; color: #605a53; line-height: 1.5; }
+    .sec  { font-size: 12px; font-weight: 500; letter-spacing: .06em; color: #605a53; padding: 28px 28px 8px; }
     /* a table, deliberately. four seasons in four different states cannot be
-       compared in cards — the eye needs one column per question */
-    .th { font-size: 13px; color: #605a53; letter-spacing: .05em;
-          padding: 0 0 9px; text-align: left; font-weight: 600; }
-    .td { padding: 17px 0; vertical-align: top; box-shadow: inset 0 1px 0 #e4e9ee; }
-    .pill { display: inline-block; font-size: 13px; font-weight: 600; padding: 4px 9px; }
+       compared in cards -- the eye needs one column per question */
+    .th { font-size: 12px; color: #605a53; letter-spacing: .06em; padding: 0 0 10px; text-align: left; font-weight: 500; }
+    .td { padding: 16px 0; vertical-align: top; box-shadow: inset 0 1px 0 #ddd7d1; }
+    .pill { display: inline-block; font-size: 13px; font-weight: 500; padding: 4px 9px; }
+    .row  { padding: 16px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+
+    /* -- the shell, identical on every board ------------------------------- */
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .backlink { display: inline-flex; align-items: center; justify-content: center;
+                align-self: flex-start; width: 44px; height: 44px; margin-left: -11px;
+                color: #605a53; text-decoration: none; }
+    .backlink:hover { color: #1d1a17; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+          overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   </style>
 </helmet>
 
-<div data-page="portfolio" class="a" style="width: 1320px; background: #f3f6f9; color: #1d1a17; box-sizing: border-box;">
+<div data-page="portfolio" class="f" style="width: 1320px; min-height: 900px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box;">
 
-  <!-- same bar as the browse page, Portfolio now the live tab -->
-  <div style="background: #fff; padding: 15px 44px; display: flex; align-items: center; gap: 34px; box-shadow: inset 0 -1px 0 #e0e6ec;">
-    <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.022em; min-height: 44px; display: flex; align-items: center;">Pestivid</div>
-    <div style="display: flex; gap: 26px; align-items: center; flex-grow: 1;">
-      <div class="nav">Browse</div>
-      <div class="navOn">Portfolio</div>
-      <div class="nav">Chat</div>
+  <div class="appbar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div class="appbrand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="appnav">My plots</div>
+          <div class="appnav">Market</div>
+          <div class="appnavOn">Money</div>
+          <div class="appnav">Chat</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial data-bind="me.initial" style="font-size: 13px; font-weight: 500;">C</div>
+        </div>
+      </div>
     </div>
-    <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
-      <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+
+    <!-- the header sits on the surface: the chevron back to Money, then who and what -->
+    <div class="pagehold" style="background: #f6f3ef; padding: 16px 28px 0;">
+      <div style="display: flex; gap: 14px; align-items: center;">
+        <a data-chrome="back" href="./money.html" class="backlink" title="Back"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg><span data-backword class="sr">Money</span></a>
+        <div style="min-width: 0;">
+          <h1 data-bind="heading" class="pageh" style="margin: 0;">Your four seasons</h1>
+          <div data-bind="investor.name" class="lbl" style="margin-top: 3px;">Charlie Investor</div>
+        </div>
+      </div>
     </div>
-    <div data-chrome="you" data-readout data-bind="me.initial" style="width: 34px; height: 34px; background: #e6ebf0; border-radius: 17px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600;">C</div>
-  </div>
 
-  <div style="padding: 32px 44px 44px;">
-
-    <div data-bind="investor.name" class="lbl">Charlie Investor</div>
-    <h1 data-bind="heading" style="margin: 4px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.03em;">Your four seasons</h1>
+  <div style="flex-grow: 1; background: #f6f3ef;">
 
     <!-- three figures that are facts. no fourth figure that is a guess. -->
-    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) 1.5fr; margin-top: 26px; align-items: start; box-shadow: inset 0 1px 0 #1d1a17, inset 0 -1px 0 #e4e9ee;">
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) 1.5fr; margin: 22px 28px 0; align-items: start; box-shadow: inset 0 1px 0 #1d1a17, inset 0 -1px 0 #ddd7d1;">
       <div style="padding: 18px 26px 18px 0;">
         <div data-bind="labels.putIn" class="lbl">You have put in, all together</div>
-        <div class="m" style="font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin-top: 4px;">&#8377;2,00,000</div>
+        <div class="m" style="font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin-top: 4px;">&#8377;2,00,000</div>
       </div>
-      <div style="padding: 18px 26px; box-shadow: inset 1px 0 0 #e4e9ee;">
+      <div style="padding: 18px 26px; box-shadow: inset 1px 0 0 #ddd7d1;">
         <div class="lbl">Still out in unfinished seasons</div>
-        <div class="m" style="font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin-top: 4px;">&#8377;80,000</div>
+        <div class="m" style="font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin-top: 4px;">&#8377;80,000</div>
       </div>
-      <div style="padding: 18px 26px; box-shadow: inset 1px 0 0 #e4e9ee;">
+      <div style="padding: 18px 26px; box-shadow: inset 1px 0 0 #ddd7d1;">
         <div class="lbl">Paid back to you so far</div>
-        <div class="m" style="font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin-top: 4px;">&#8377;1,42,864</div>
+        <div class="m" style="font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin-top: 4px;">&#8377;1,42,864</div>
       </div>
-      <!-- the missing figure, and why it is missing. it is a note, not a tile:
-           giving it a fill made it look like a fourth statistic. -->
-      <div style="padding: 18px 0 18px 26px; box-shadow: inset 1px 0 0 #e4e9ee;">
-        <div style="font-size: 15px; font-weight: 700;">There is no return figure here</div>
-        <div data-bind="noReturn" style="font-size: 14px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+      <!-- the missing figure, and why it is missing. a note, not a tile. -->
+      <div style="padding: 18px 0 18px 26px; box-shadow: inset 1px 0 0 #ddd7d1;">
+        <div style="font-size: 15px; font-weight: 600;">There is no return figure here</div>
+        <div data-bind="noReturn" class="lbl" style="margin-top: 4px; color: #4a443d;">
           Two of these seasons have not finished and one failed outright. A single percentage would
           average those together into a number that describes none of them.
         </div>
       </div>
     </div>
 
-    <!-- the four seasons, in the order they need attention -->
-    <div style="background: #fff; padding: 24px 26px 8px; margin-top: 22px;" class="lift1">
+    <!-- the seasons, in the order they need attention: rows of the surface -->
+    <div style="padding: 24px 28px 8px;">
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
           <th class="th" style="width: 27%;">Season</th>
@@ -86,98 +116,96 @@
 
         <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Canal plot, potato</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 6px;">3 dated videos</div>
+            <div style="font-size: 16px; font-weight: 500;">Canal plot, potato</div>
+            <div class="lbl" style="margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
+            <div class="lbl" style="margin-top: 6px;">3 dated videos</div>
           </td>
-          <td class="td m" style="font-size: 17px; font-weight: 600;">&#8377;50,000</td>
+          <td class="td m" style="font-size: 16px; font-weight: 600;">&#8377;50,000</td>
           <td class="td">
             <div data-readout class="pill" style="background: #eae4de; color: #4a443d;">Growing</div>
-            <div class="m" style="font-size: 14px; color: #4a443d; margin-top: 6px;">Week 11 of 18</div>
+            <div class="m lbl" style="margin-top: 6px; color: #4a443d;">Week 11 of 18</div>
           </td>
-          <td class="td" style="font-size: 14.5px; line-height: 1.5; color: #4a443d;">
+          <td class="td lbl" style="color: #4a443d;">
             Alice to report what she sold it for. She has been told it is due.
           </td>
-          <td class="td" style="text-align: right; font-size: 15px; color: #605a53;">Not yet</td>
+          <td class="td lbl" style="text-align: right; font-size: 15px;">Not yet</td>
         </tr>
 
         <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">North plot, potato</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 6px;">3 dated videos</div>
+            <div style="font-size: 16px; font-weight: 500;">North plot, potato</div>
+            <div class="lbl" style="margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
+            <div class="lbl" style="margin-top: 6px;">3 dated videos</div>
           </td>
-          <td class="td m" style="font-size: 17px; font-weight: 600;">&#8377;30,000</td>
+          <td class="td m" style="font-size: 16px; font-weight: 600;">&#8377;30,000</td>
           <td class="td">
             <div data-readout class="pill" style="background: #f2e6cd; color: #7c4a12;">Still raising</div>
-            <div class="m" style="font-size: 14px; color: #4a443d; margin-top: 6px;">&#8377;1,80,000 of &#8377;5,00,000</div>
+            <div class="m lbl" style="margin-top: 6px; color: #4a443d;">&#8377;1,80,000 of &#8377;5,00,000</div>
           </td>
-          <td class="td" style="font-size: 14.5px; line-height: 1.5; color: #4a443d;">
-            Another &#8377;3,20,000, or sowing is missed. <span style="font-weight: 600;">Your money has not
+          <td class="td lbl" style="color: #4a443d;">
+            Another &#8377;3,20,000, or sowing is missed. <span style="font-weight: 500;">Your money has not
             reached the farmer yet</span> and comes back if it does not fill.
           </td>
-          <td class="td" style="text-align: right; font-size: 15px; color: #605a53;">Not yet</td>
+          <td class="td lbl" style="text-align: right; font-size: 15px;">Not yet</td>
         </tr>
 
         <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Red soil plot, groundnut</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Bhaskar Naidu &middot; Anantapur</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 6px;">3 dated videos on the record</div>
+            <div style="font-size: 16px; font-weight: 500;">Red soil plot, groundnut</div>
+            <div class="lbl" style="margin-top: 2px;">Bhaskar Naidu &middot; Anantapur</div>
+            <div class="lbl" style="margin-top: 6px;">3 dated videos on the record</div>
           </td>
-          <td class="td m" style="font-size: 17px; font-weight: 600;">&#8377;80,000</td>
+          <td class="td m" style="font-size: 16px; font-weight: 600;">&#8377;80,000</td>
           <td class="td">
             <div data-readout class="pill" style="background: #eae4de; color: #1d1a17; box-shadow: inset 0 0 0 1.5px #1d1a17;">Paid out</div>
-            <div style="font-size: 14px; color: #4a443d; margin-top: 6px;">March 2026</div>
+            <div class="lbl" style="margin-top: 6px; color: #4a443d;">March 2026</div>
           </td>
-          <td class="td" style="font-size: 14.5px; line-height: 1.5; color: #4a443d;">
+          <td class="td lbl" style="color: #4a443d;">
             Nothing. Closed.
           </td>
           <td class="td" style="text-align: right;">
-            <div class="m" style="font-size: 19px; font-weight: 700;">&#8377;1,33,664</div>
-            <div class="m" style="font-size: 14px; color: #4a443d; margin-top: 3px;">&#8377;80,000 back, &#8377;53,664 share</div>
+            <div class="m" style="font-size: 17px; font-weight: 600;">&#8377;1,33,664</div>
+            <div class="m lbl" style="margin-top: 3px; color: #4a443d;">&#8377;80,000 back, &#8377;53,664 share</div>
           </td>
         </tr>
 
         <!-- the row most platforms would quietly drop -->
         <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Tank bed plot, paddy</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Lakshmi Devi &middot; Nellore</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 6px;">3 dated videos on the record</div>
+            <div style="font-size: 16px; font-weight: 500;">Tank bed plot, paddy</div>
+            <div class="lbl" style="margin-top: 2px;">Lakshmi Devi &middot; Nellore</div>
+            <div class="lbl" style="margin-top: 6px;">3 dated videos on the record</div>
           </td>
-          <td class="td m" style="font-size: 17px; font-weight: 600;">&#8377;40,000</td>
+          <td class="td m" style="font-size: 16px; font-weight: 600;">&#8377;40,000</td>
           <td class="td">
             <div data-readout class="pill" style="background: #f7e9e6; color: #a71930;">Crop failed</div>
-            <div style="font-size: 14px; color: #4a443d; margin-top: 6px;">February 2026</div>
+            <div class="lbl" style="margin-top: 6px; color: #4a443d;">February 2026</div>
           </td>
-          <td class="td" style="font-size: 14.5px; line-height: 1.5; color: #4a443d;">
+          <td class="td lbl" style="color: #4a443d;">
             Nothing. The tank did not fill and the crop did not come.
           </td>
           <td class="td" style="text-align: right;">
-            <div class="m" style="font-size: 19px; font-weight: 700;">&#8377;9,200</div>
-            <div class="m" style="font-size: 14px; color: #a71930; font-weight: 600; margin-top: 3px;">You lost &#8377;30,800</div>
+            <div class="m" style="font-size: 17px; font-weight: 600;">&#8377;9,200</div>
+            <div class="m lbl" style="color: #a71930; font-weight: 500; margin-top: 3px;">You lost &#8377;30,800</div>
           </td>
         </tr>
       </table>
     </div>
 
-    <div style="display: flex; gap: 20px; margin-top: 20px; align-items: stretch;">
-      <div style="flex-grow: 1; background: #fff; padding: 20px 22px;" class="lift1">
-        <div data-bind="fail.head" style="font-size: 16px; font-weight: 700;">Why a failed season stays on this page</div>
-        <div style="font-size: 14.5px; line-height: 1.55; margin-top: 5px; color: #4a443d; max-width: 92ch;">
-          <span data-bind="fail.lead">It stays here permanently, in the same table and the same type size as the one that paid.</span>
-          A page that shows you only the seasons that worked is not a record of what you did, it is
-          an advertisement.
-        </div>
+    <!-- the standing note, then the way on: the last two rows, full width -->
+    <div style="height: 22px;"></div>
+    <div class="row" style="box-shadow: inset 0 1px 0 #ddd7d1, inset 0 -1px 0 #ddd7d1;">
+      <div data-bind="fail.head" style="font-size: 16px; font-weight: 500;">Why a failed season stays on this page</div>
+      <div class="lbl" style="margin-top: 4px; color: #4a443d; max-width: 92ch;">
+        <span data-bind="fail.lead">It stays here permanently, in the same table and the same type size as the one that paid.</span>
+        A page that shows you only the seasons that worked is not a record of what you did, it is
+        an advertisement.
       </div>
-      <div style="width: 260px; background: #012169; padding: 20px 22px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div style="font-size: 15.5px; line-height: 1.5; color: #dbe3ef;">
-          More seasons are open for funding.
-        </div>
-        <div style="background: #fff; height: 46px; margin-top: 16px; display: flex; align-items: center; justify-content: center;">
-          <div style="font-size: 15.5px; font-weight: 600; color: #012169;">Browse them</div>
-        </div>
+    </div>
+    <div class="row" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+      <div class="lbl" style="color: #1d1a17; font-size: 15px;">More seasons are open for funding.</div>
+      <div style="background: #1d1a17; min-height: 44px; padding: 0 22px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <div style="font-size: 15px; font-weight: 600; color: #f6f3ef;">Browse them</div>
       </div>
     </div>
   </div>

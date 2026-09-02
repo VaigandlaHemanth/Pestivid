@@ -11,7 +11,7 @@
   <!-- generated from design/Confirm.dc.html by frontend/build-pages.mjs -- do not edit -->
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <meta name="robots" content="noindex, follow">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&amp;display=swap">
+  
   <link rel="stylesheet" href="./tokens.css">
   <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
        at a design's own width. -->
@@ -21,7 +21,7 @@
 
     body { margin: 0; }
     a { color: #01579b; } a:hover { color: #013f70; }
-    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .a { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
     .lift1 { box-shadow: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05); }
@@ -226,13 +226,14 @@
           overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   </style>
 </head>
-<body data-page="report-harvest" data-role="farmer" data-design-width="1320" data-design-height="880">
-<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+<body data-page="report-harvest" data-role="any" data-design-width="1320" data-design-height="880">
+<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-family: system-ui, 'Anek Latin', 'Noto Sans', sans-serif; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
       <div class="appbar">
       <div style="display: flex; align-items: center; gap: 30px;">
         <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
           <div class="appnav">My plots</div>
+          <div class="appnav">Market</div>
           <div class="appnavOn">Money</div>
           <div class="appnav">Chat</div>
         </div>

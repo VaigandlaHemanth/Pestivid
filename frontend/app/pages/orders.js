@@ -7,7 +7,7 @@ import { goes, acts, press } from '../wire.js';
 // inside the string literal -- which is exactly how this file broke once.
 const NEWLINE = String.fromCharCode(13, 10);
 
-const ctx = requireUser('orders', ['buyer']);
+const ctx = requireUser('orders');
 
 // The nav and the three "Watch it - check the date" links were painted to read
 // unmistakably as links and did nothing: the board carried no data-act and this
@@ -25,7 +25,7 @@ if (ctx) load(ctx.root, async () => {
   const initial = (ctx.user.name || '?').trim()[0].toUpperCase();
 
   const buys = await api.purchases.asBuyer(ctx.user._id || ctx.user.id);
-  bind(ctx.root, { me: { initial }, buyer: { line: `${ctx.user.name} · buyer since ${dayMonth(ctx.user.memberSince)}` } });
+  bind(ctx.root, { me: { initial }, buyer: { line: `${ctx.user.name} · here since ${dayMonth(ctx.user.memberSince)}` } });
   // Addressed by name, not by type size. This looked up '29px' and the board's
   // figures became 32px when the KPI cards turned into a ledger band -- so the
   // page went on showing "4 lots bought, 3,86,000 paid" from the artboard while
