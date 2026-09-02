@@ -13,7 +13,7 @@
 // parts so the code addresses them by name rather than by position.
 import { requireUser, api, load, state } from './_guard.js';
 import { showPoster, bind, rows, slot, dropSection } from '../bind.js';
-import { rupees, whenShort } from '../api.js';
+import { rupees, whenShort, rupeeRange } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { goes, press } from '../wire.js';
 
@@ -131,7 +131,7 @@ if (ctx) {
         // commented out in the model -- so every one of these slots was read as
         // null and REMOVED, and the rows showed a crop name and nothing else.
         price: l.minPrice != null && l.maxPrice != null
-          ? `${rupees(l.minPrice)}, ${rupees(l.maxPrice)}`
+          ? rupeeRange(l.minPrice, l.maxPrice)
           : (l.minPrice != null ? rupees(l.minPrice) : null),
         per: l.minPrice != null ? 'for the whole lot' : null,
         qty: l.status === 'sold' ? 'Sold' : (l.createdAt ? `Listed ${whenShort(l.createdAt)}` : null),

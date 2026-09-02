@@ -6,7 +6,7 @@
 // because nothing ever swapped it.
 import { requireUser, api, load, state } from './_guard.js';
 import { bind, repeat, rows as rows2, slot as slot2, showPoster, playsInline } from '../bind.js';
-import { rupees, whenShort, dateState } from '../api.js';
+import { rupees, whenShort, dateState, rupeeRange } from '../api.js';
 import { promote, goes, acts, asField, press } from '../wire.js';
 
 const ctx = requireUser('market', ['buyer', 'investor']);
@@ -134,7 +134,7 @@ if (ctx) {
       where: l.location || '',
       // A lot is sold whole for an offer inside a range. There is no unit rate,
       // because Purchase has no quantity and dividing by weight would invent one.
-      price: `${rupees(l.minPrice)}, ${rupees(l.maxPrice)}`,
+      price: rupeeRange(l.minPrice, l.maxPrice),
       qty: l.crop || '',
       stamp: l.cid ? 'Dated video attached' : 'No video, not listed as proved',
     })), (el, row, i) => {
@@ -259,7 +259,7 @@ if (ctx) {
         lot: {
           who: [l.farmerName, l.location].filter(Boolean).join(' · '),
           ask: l.farmerName ? `Message ${l.farmerName}` : 'Message the farmer',
-          accept: `${rupees(l.minPrice)}, ${rupees(l.maxPrice)}`,
+          accept: rupeeRange(l.minPrice, l.maxPrice),
           what: l.crop ? `${l.crop}, sold whole` : 'Sold whole',
           grown: l.method ? `${l.method}, farmer's word` : 'Not stated',
           // never a hash the server did not give us

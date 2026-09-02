@@ -1,6 +1,6 @@
 import { requireUser, api, load, state } from './_guard.js';
 import { bind, arrive, playsInline, state as showState } from '../bind.js';
-import { rupees, dayMonth } from '../api.js';
+import { rupees, dayMonth, rupeeRange } from '../api.js';
 import { goes, acts, press } from '../wire.js';
 
 // A CSV row separator, named so no editing pass can put a real newline
@@ -91,7 +91,7 @@ if (ctx) load(ctx.root, async () => {
     const asked = tr.querySelector('[data-asked]');
     if (asked) {
       if (p.minPrice != null && p.maxPrice != null) {
-        asked.textContent = `She asked ${rupees(p.minPrice)}, ${rupees(p.maxPrice)}`;
+        asked.textContent = `She asked ${rupeeRange(p.minPrice, p.maxPrice)}`;
       } else asked.remove();
     }
     const dated = tr.querySelector('[data-dated]');
