@@ -99,10 +99,25 @@ export async function removeMessagesNotIn(before, { quiet = false } = {}) {
   await mongoose.connect(URI);
   try {
     const col = mongoose.connection.db.collection('messages');
-    const rows = await col.find({}).project({ _id: 1, text: 1 }).toArray();
+    const rows = await col.find({}).project({ _id: 1, text: 1, conversationId: 1 }).toArray();
     const mine = rows.filter(r => !before.has(String(r._id)));
     if (!mine.length) return 0;
     await col.deleteMany({ _id: { $in: mine.map(r => r._id) } });
+    // The conversation still quotes the deleted message as its last one. A
+    // probe's sentence sat in the demo's chat list for a day this way. Each
+    // touched conversation takes its last line back from the messages that
+    // remain, in the route's own 50-character form.
+    const convs = [...new Set(mine.map(r => String(r.conversationId)))];
+    for (const id of convs) {
+      const cid = new mongoose.Types.ObjectId(id);
+      const last = (await col.find({ conversationId: cid }).sort({ timestamp: -1 }).limit(1).toArray())[0];
+      if (!last) continue;
+      const text = String(last.text);
+      await mongoose.connection.db.collection('conversations').updateOne({ _id: cid }, { $set: {
+        lastMessageSnippet: text.substring(0, 50) + (text.length > 50 ? '…' : ''),
+        lastMessageTimestamp: last.timestamp,
+      } });
+    }
     if (!quiet) {
       for (const r of mine) {
         console.log(`  took back: ${JSON.stringify(String(r.text).slice(0, 52))}`);
