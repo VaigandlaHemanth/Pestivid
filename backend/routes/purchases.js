@@ -287,8 +287,19 @@ router.post('/', authenticateToken, async (req, res) => {
               await notification.save();
               console.log(`SIMULATING: Notified farmer ${updatedListing.farmerWallet} about purchase of listing ${updatedListing._id}.`);
 
-             // Optional: Notify the buyer about their successful purchase (less critical, frontend might handle this)
-             // const buyerNotification = new Notification({ ... }); await buyerNotification.save();
+             // The buyer's own receipt notice. It was a comment, so the person
+             // who paid got nothing while the person who was paid got a bell.
+             // type purchase + Listing sends a buyer's row to their orders page.
+             const paid = '₹' + Math.round(Number(savedPurchase.price) || 0).toLocaleString('en-IN');
+             const buyerNotification = new Notification({
+                 recipient: req.user._id,
+                 type: 'purchase',
+                 message: `You bought “${savedPurchase.crop || 'a lot'}” for ${paid}. The receipt is on your orders page.`,
+                 itemId: savedPurchase.listingId,
+                 itemType: 'Listing',
+                 read: false,
+             });
+             await buyerNotification.save();
 
          } catch (notificationError) {
              console.error('Error creating notification after purchase:', notificationError);

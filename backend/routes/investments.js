@@ -436,8 +436,19 @@ router.post('/', authenticateToken, async (req, res) => {
               await farmerNotification.save();
               console.log(`SIMULATING: Notified farmer ${updatedFundingRequest.farmerWallet} about new investment in project ${updatedFundingRequest._id}.`);
 
-             // Optional: Notify the investor about their successful investment (less critical, frontend might handle this)
-             // const investorNotification = new Notification({ ... }); await investorNotification.save();
+             // The investor's own record of what they just did. This was a
+             // comment for two years: money left an account and the person it
+             // left had no notice of it, so their bell stayed quiet while the
+             // farmer's rang. itemType Investment sends the row to the portfolio.
+             const investorNotification = new Notification({
+                 recipient: req.user._id,
+                 type: 'investment',
+                 message: `You put ${rupees(parsedAmount)} into “${updatedFundingRequest.title}”. It pays out after the farmer reports the harvest.`,
+                 itemId: savedInvestment._id,
+                 itemType: 'Investment',
+                 read: false,
+             });
+             await investorNotification.save();
 
          } catch (notificationError) {
              console.error('Error creating notification after investment:', notificationError);
