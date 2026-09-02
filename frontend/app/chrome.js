@@ -35,7 +35,7 @@ import { watchNotices } from './notify.js';
  */
 const BACKWORD = {
   plots: 'My plots', money: 'Money', home: 'Home', record: 'Film your field',
-  messages: 'Chat', invest: 'Market', market: 'Market', orders: 'My orders',
+  messages: 'Chat', invest: 'Browse', market: 'Buy produce', orders: 'My orders',
   portfolio: 'Portfolio', admin: 'Flagged', signin: 'Sign in', profile: 'You',
 };
 
@@ -118,7 +118,6 @@ const DEST = {
   Chat: 'messages',
   Messages: 'messages',
   'Buy produce': 'market',
-  Market: 'market',
   'Lots for sale': 'market',
   'My orders': 'orders',
   'What you bought': 'orders',
@@ -139,22 +138,27 @@ const DEST = {
  * the one destination all four roles share.
  */
 const NAV = {
-  /* ONE KIND OF ACCOUNT. Farmer, investor and buyer were three bars for what
-   * is one person: the trader who buys a lot is who funds the next season, and
-   * the farmer who sells one buys seed from somebody else's. Everybody films,
-   * funds and buys, so everybody gets the same four words. Chat is last: it is
-   * the one destination even the reviewer shares. */
-  member: ['My plots', 'Market', 'Money', 'Chat'],
-  /* The reviewer has TWO destinations. Their screens are the flagged queue and
-   * chat; the bell carries notices and the avatar the profile, so those are
-   * not slots. relabel() removes the drawn slots this bar does not want. */
-  admin: ['Flagged', 'Chat'],
+  farmer:   ['My plots', 'Money', 'Chat'],
+  investor: ['Browse', 'Portfolio', 'Chat'],
+  buyer:    ['Buy produce', 'My orders', 'Chat'],
+  /* The reviewer has TWO destinations, not three, and both of the three it used
+   * to be were refused.
+   *
+   * 'Browse' is the investor's word and 'Buy produce' is the buyer's; invest.html
+   * and market.html are gated to those roles, so an admin pressing either landed
+   * on "Not your screen". Two thirds of this bar was a dead end into a refusal,
+   * and the combination -- half investor, half buyer -- belonged to nobody.
+   *
+   * A reviewer's screens are the flagged queue and chat. The bell already
+   * carries notifications and the avatar carries the profile, so those are not
+   * slots. relabel() removes the third drawn slot rather than leaving a word on
+   * it that goes somewhere this person is not allowed. */
+  admin:    ['Flagged', 'Chat'],
 };
-const navFor = (role) => NAV[role === 'admin' ? 'admin' : 'member'];
 
 function relabel(root, user, inHeader) {
-  const want = navFor(user?.role);
-  if (!user) return;
+  const want = NAV[user?.role];
+  if (!want) return;
   /* The BAR, not "the top 110px". The page heading on the chat page is the word
    * "Chat", it sits just under the bar, and it is a known destination -- so
    * the geometric filter found four nav slots where there are three, the count
@@ -183,18 +187,7 @@ function relabel(root, user, inHeader) {
    * heading is the word "Chat", it sits inside the geometric filter, and it
    * would be removed as a surplus nav slot. More slots than a role wants is a
    * bar this code does not understand, so it is left alone. */
-  if (slots.length < want.length) {
-    /* Every board draws three slots and everybody now wants four. Inside a real
-     * bar the last drawn slot is repeated after itself for each word missing,
-     * so a bar this code understands grows rather than being left carrying
-     * somebody else's words. Outside one, nothing is guessed at. */
-    if (!realBar || !slots.length) return;
-    while (slots.length < want.length) {
-      const more = slots[slots.length - 1].cloneNode(true);
-      slots[slots.length - 1].after(more);
-      slots.push(more);
-    }
-  }
+  if (slots.length < want.length) return;     // an unfamiliar bar is left alone
   if (slots.length > want.length && !realBar) return;
   slots.forEach((el, i) => {
     if (i >= want.length) { el.remove(); return; }
@@ -209,8 +202,6 @@ const BACK = {
   'report-harvest': 'money', 'ask-money': 'money',
   setup: 'signin', profile: 'home', ask: 'home',
   notifications: 'home',
-  // The two ledgers are parts of Money now; the two browse screens are Market.
-  portfolio: 'money', orders: 'money', invest: 'market', 'confirm-investment': 'market',
 };
 
 /* Which nav word a page BELONGS to, where that is not the page itself.
@@ -226,10 +217,7 @@ const BACK = {
 const SECTION = {
   plot: 'home', record: 'home', sent: 'home',
   'ask-money': 'money', 'report-harvest': 'money',
-  // Seasons to fund and lots for sale are the two halves of Market; what you
-  // funded and what you bought are two sections of Money.
-  invest: 'market', 'confirm-investment': 'market',
-  portfolio: 'money', orders: 'money',
+  'confirm-investment': 'invest',
 };
 
 export function deskNav(root, user) {
@@ -256,8 +244,7 @@ export function deskNav(root, user) {
       return !(kid && kid.textContent.trim() === t);
     });
 
-  // One home for everybody but the reviewer, who has a queue instead.
-  const HOME = { admin: 'admin' };
+  const HOME = { farmer: 'home', investor: 'invest', buyer: 'market', admin: 'admin' };
   wireBack(root, BACK[here] || HOME[user?.role] || 'home');
   for (const el of labels) {
     const t = el.textContent.trim();

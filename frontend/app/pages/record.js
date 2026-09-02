@@ -87,7 +87,7 @@ function wireFileCard(root) {
   return pick;
 }
 
-const ctx = requireUser('record');
+const ctx = requireUser('record', ['farmer']);
 if (ctx) wireFileCard(ctx.root);
 if (ctx) load(ctx.root, async () => {
   if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {

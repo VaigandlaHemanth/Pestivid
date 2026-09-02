@@ -23,10 +23,8 @@ const pass = asField(oneByText('••••••••', root), {
   placeholder: 'Your new password', label: 'Password',
 });
 
-// One kind of account. The three role cards are gone from the board; the
-// selectors below find nothing, and the risk statement is the member's,
-// which names all three things the account can do.
-const role = 'member';
+// role
+let role = 'farmer';
 const cards = [...root.querySelectorAll('[data-role-pick]')];
 const paintRole = () => cards.forEach((c) => {
   const mine = c.dataset.rolePick === role;
@@ -57,15 +55,6 @@ paintRole();
  * changed afterwards.
  */
 const RISK = {
-  member: [
-    'One account, three things you can do with it',
-    'You can film a field, fund a season, or buy a lot. A video’s date is fixed the '
-      + 'moment it reaches us and cannot be moved afterwards, by you or by us. Money you '
-      + 'put into a season can be lost: crops fail, and there is no capital protection. '
-      + 'A lot you buy is recorded as a sale, not a delivery.',
-    'I understand a filed date cannot be changed, a funded season can lose my money, '
-      + 'and a sale is not a delivery.',
-  ],
   farmer: [
     'What you film and report is yours',
     'The date on a video is fixed the moment it reaches us and cannot be moved '
@@ -171,7 +160,8 @@ button?.addEventListener('click', async () => {
     await api.auth.register({ name: n, email: e, password: pw, role });
     const r = await api.auth.login(e, pw);
     session.set(r.token, r.user);
-    location.href = './home.html';
+    location.href = role === 'buyer' ? './market.html'
+      : role === 'farmer' ? './home.html' : './invest.html';
   } catch (err) {
     label.textContent = was;
     fail(err.status === 409 ? 'That address already has an account' : 'The account was not created',

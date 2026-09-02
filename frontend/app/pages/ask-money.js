@@ -41,7 +41,7 @@ const chips = (root, cls, onPick, group) => {
   return list;
 };
 
-const ctx = requireUser('ask-money');
+const ctx = requireUser('ask-money', ['farmer']);
 if (ctx) load(ctx.root, async () => {
   const root = ctx.root;
   const steps = [1, 2, 3].map(n => root.querySelector(`[data-step="${n}"]`));

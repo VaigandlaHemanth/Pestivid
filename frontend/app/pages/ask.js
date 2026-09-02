@@ -6,7 +6,7 @@ import { oneByText, reason } from '../bind.js';
 import { asField, acts, press } from '../wire.js';
 import { plainText } from '../bind.js';
 
-const ctx = requireUser('ask');
+const ctx = requireUser('ask', ['farmer', 'investor', 'buyer', 'admin']);
 // The board drew an example exchange so the bubbles could be judged. Keep the
 // opening line, drop the rest: a farmer must not read a worked example as an
 // answer they were given.

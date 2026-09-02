@@ -97,10 +97,7 @@ router.post('/register', async (req, res) => {
     // brand-new account -- tenure is exactly the kind of signal an investor uses
     // to decide whether to trust a farmer, so it must come from the server. The
     // pre-save hook in User.js sets it to createdAt.
-    const { name, email, password, phone } = req.body;
-    // Nobody picks a side any more. One account films, funds and buys; the
-    // old words are still accepted so nothing that sends one breaks.
-    const role = req.body.role || 'member';
+    const { name, email, role, password, phone } = req.body;
 
     // 'admin' is a valid value on the User schema because provenance review needs
     // it, but it must never be obtainable by asking. Without this check, adding
@@ -115,15 +112,15 @@ router.post('/register', async (req, res) => {
     }
 
     // Basic input validation
-    if (!name || !email || !password) {
-        return res.status(400).json({ message: 'Please enter all required fields (name, email, password).' });
+    if (!name || !email || !role || !password) {
+        return res.status(400).json({ message: 'Please enter all required fields (name, email, role, password).' });
     }
     if (password.length < 8) { // matches the schema and the create-account screen
          return res.status(400).json({ message: 'Password must be at least 8 characters long.' });
     }
      // Validate role against enum
-     if (!['member', 'farmer', 'buyer', 'investor'].includes(role)) {
-          return res.status(400).json({ message: 'Invalid role specified.' });
+     if (!['farmer', 'buyer', 'investor'].includes(role)) {
+          return res.status(400).json({ message: 'Invalid role specified. Must be farmer, buyer, or investor.' });
      }
     // Basic email format check (schema also validates, but frontend/early check is good)
     if (!/\S+@\S+\.\S+/.test(email)) {

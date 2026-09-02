@@ -13,7 +13,7 @@ import { showPoster, bind } from '../bind.js';
 import { rupees } from '../api.js';
 import { acts, goes, press } from '../wire.js';
 
-const ctx = requireUser('confirm-investment');
+const ctx = requireUser('confirm-investment', ['investor']);
 
 if (ctx) {
   const root = ctx.root;

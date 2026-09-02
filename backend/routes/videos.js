@@ -743,8 +743,8 @@ router.post('/:cid/appeal', authenticateToken, async (req, res) => {
 // sent us, which is exactly the design this file was written to replace. The
 // bytes we hash are the bytes that are actually stored, fetched by us.
 router.post('/upload-url', authenticateToken, limits.uploadBurstLimiter, async (req, res) => {
-    if (req.user.role === 'admin') {
-        return res.status(403).json({ message: 'A reviewer account does not upload videos.' });
+    if (req.user.role !== 'farmer') {
+        return res.status(403).json({ message: "Forbidden: Only users with the 'farmer' role can upload videos." });
     }
     if (!ipfs.pinataConfigured()) {
         return res.status(503).json({
@@ -782,8 +782,8 @@ router.post('/upload-url', authenticateToken, limits.uploadBurstLimiter, async (
 });
 
 router.post('/confirm-upload', authenticateToken, limits.uploadLimiter, async (req, res) => {
-    if (req.user.role === 'admin') {
-        return res.status(403).json({ message: 'A reviewer account does not upload videos.' });
+    if (req.user.role !== 'farmer') {
+        return res.status(403).json({ message: "Forbidden: Only users with the 'farmer' role can upload videos." });
     }
     const { cid, crop, pesticide, location, pesticideCompany, purpose } = req.body;
     if (!cid || !crop || !location || !purpose) {
@@ -894,8 +894,10 @@ router.post('/upload', authenticateToken,
     (req, res, next) => {
     // Role check BEFORE multer runs, so a non-farmer cannot make us accept and
     // write 100 MB to disk just to be rejected afterwards.
-    if (req.user.role === 'admin') {
-        return res.status(403).json({ message: 'A reviewer account does not upload videos.' });
+    if (req.user.role !== 'farmer') {
+        return res.status(403).json({
+            message: "Forbidden: Only users with the 'farmer' role can upload videos.",
+        });
     }
     if (!ipfs.pinataConfigured()) {
         return res.status(503).json({
@@ -1083,8 +1085,9 @@ router.post('/upload', authenticateToken,
 
 router.post('/', authenticateToken, async (req, res) => {
     // Authorization: Ensure the authenticated user has the 'farmer' role.
-    if (req.user.role === 'admin') {
-        return res.status(403).json({ message: 'A reviewer account does not upload videos.' });
+    if (req.user.role !== 'farmer') {
+        console.warn(`Authorization failed: User ${req.user._id} with role ${req.user.role} attempted to create video metadata.`);
+        return res.status(403).json({ message: "Forbidden: Only users with the 'farmer' role can upload video metadata." }); // 403 Forbidden
     }
 
     // Extract video metadata from the request body

@@ -37,10 +37,8 @@ const OWNS = {
   home: 'My plots', plot: 'My plots', record: 'My plots', sent: 'My plots',
   money: 'Money', 'ask-money': 'Money', 'report-harvest': 'Money',
   messages: 'Chat',
-  // One kind of account now: the two browse screens are the two halves of
-  // Market, and the two ledgers are sections of Money.
-  invest: 'Market', 'confirm-investment': 'Market', market: 'Market',
-  portfolio: 'Money', orders: 'Money', admin: 'Flagged',
+  invest: 'Browse', 'confirm-investment': 'Browse', portfolio: 'Portfolio',
+  market: 'Buy produce', orders: 'My orders', admin: 'Flagged',
 };
 const WORDS = new Set(Object.values(OWNS));
 

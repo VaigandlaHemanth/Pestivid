@@ -30,13 +30,9 @@ export const PAGES = {
   // number and a six-digit code standing in for a password. A phone login needs
   // an OTP this product has no way to send, and one role having its own front
   // door is exactly the split it was reported as. Everybody uses signup.
-  // ONE KIND OF ACCOUNT. farmer, investor and buyer were three bars for one
-  // person, so every signed-in screen is role 'any' except the reviewer's
-  // queue. The word 'farmer' below is kept only where a page still means a
-  // field's owner and nobody else -- there are none left; they are all 'any'.
-  'home':               { title: 'Home', role: 'any' },
-  'record':             { title: 'Record a video', role: 'any' },
-  'sent':               { title: 'That is saved', role: 'any' },
+  'home':               { title: 'Home', role: 'farmer' },
+  'record':             { title: 'Record a video', role: 'farmer' },
+  'sent':               { title: 'That is saved', role: 'farmer' },
   // 'plots' was a second list of the same eight videos home already shows, in the
   // same order, every row going to the same plot page. It printed each video's
   // length twice -- on the thumbnail and again in a "Length" column -- and left
@@ -44,23 +40,23 @@ export const PAGES = {
   // the plot name. Two pages cannot both be the list, so the nav word "My plots"
   // points at home and this one is gone. Plots.dc.html stays where it is, the way
   // Setup.dc.html did.
-  'plot':               { title: 'Plot', role: 'any' },
-  'ask-money':          { title: 'Ask for money', role: 'any' },
-  'money':              { title: 'Money', role: 'any' },
+  'plot':               { title: 'Plot', role: 'farmer' },
+  'ask-money':          { title: 'Ask for money', role: 'farmer' },
+  'money':              { title: 'Money', role: 'farmer' },
   // Shared by all four roles, so not the farmer's. A buyer reaching a page
   // marked 'farmer' got the farmer's nav bar and thought they were in the wrong
   // app -- which they were.
   'messages':           { title: 'Messages', role: 'any' },
   'notifications':      { title: 'What has happened', role: 'any' },
-  'ask':                { title: 'Ask a question', role: 'any' },
+  'ask':                { title: 'Ask a question', role: 'farmer' },
   'profile':            { title: 'You and your settings', role: 'any' },
-  'leaf-check':        { title: 'Check a leaf', role: 'any' },
-  'invest':             { title: 'Open for funding', role: 'any' },
-  'confirm-investment': { title: 'Confirm your investment', role: 'any' },
-  'report-harvest':     { title: 'Report the harvest', role: 'any' },
-  'portfolio':          { title: 'Your seasons', role: 'any' },
-  'market':             { title: 'Lots for sale', role: 'any' },
-  'orders':             { title: 'What you bought', role: 'any' },
+  'leaf-check':        { title: 'Check a leaf', role: 'farmer' },
+  'invest':             { title: 'Open for funding', role: 'investor' },
+  'confirm-investment': { title: 'Confirm your investment', role: 'investor' },
+  'report-harvest':     { title: 'Report the harvest', role: 'farmer' },
+  'portfolio':          { title: 'Your seasons', role: 'investor' },
+  'market':             { title: 'Lots for sale', role: 'buyer' },
+  'orders':             { title: 'What you bought', role: 'buyer' },
   'admin':              { title: 'Flagged by the system', role: 'admin' },
 };
 

@@ -93,12 +93,10 @@ async function t(name, fn) {
         assert.strictEqual(Math.max(0, back.harvestRevenue - back.inputCostBasis), 3000);
     });
 
-    await t('the harvest route exists, is the owner\'s alone, and one-shot', async () => {
+    await t('the harvest route exists and is farmer-only and one-shot', async () => {
         const src = require('fs').readFileSync('./routes/fundingRequests.js', 'utf8');
         assert.ok(src.includes("router.post('/:id/harvest'"), 'no harvest endpoint');
-        // Any account may farm now, so the gate is ownership of the season, in
-        // the same atomic filter as the one-shot check.
-        assert.ok(src.includes('farmerWallet: req.user._id'), 'harvest endpoint does not check the season is yours');
+        assert.ok(/role !== 'farmer'/.test(src), 'harvest endpoint is not farmer-gated');
         assert.ok(src.includes('harvestReportedAt: { $exists: false }'),
             'the one-shot filter is missing, so a farmer could revise figures after seeing payouts');
     });
