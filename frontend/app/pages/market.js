@@ -9,7 +9,7 @@ import { bind, repeat, rows as rows2, slot as slot2, showPoster, playsInline } f
 import { rupees, whenShort, dateState, rupeeRange } from '../api.js';
 import { promote, goes, acts, asField, press } from '../wire.js';
 
-const ctx = requireUser('market');
+const ctx = requireUser('market', ['buyer', 'investor']);
 
 if (ctx) {
   const root = ctx.root;
@@ -20,8 +20,7 @@ if (ctx) {
   press(root);
 
   load(root, async () => {
-    // The name alone. "Bob · buyer" named a side, and there are no sides now.
-    bind(root, { me: { line: ctx.user.name || '' } });
+    bind(root, { me: { line: `${ctx.user.name} · ${ctx.user.role}` } });
     const initial = (ctx.user.name || '?').trim()[0].toUpperCase();
     const avatar = [...root.querySelectorAll('div')]
       .find(d => d.children.length === 0 && d.textContent.trim() === 'B');
@@ -147,8 +146,8 @@ if (ctx) {
     const rows = [...(list?.children || [])];
     const select = (i) => rows.forEach((el, n) => {
       el.style.boxShadow = n === i
-        ? 'inset 3px 0 0 #016abe, inset 0 -1px 0 #ddd7d1'
-        : 'inset 0 -1px 0 #ddd7d1';
+        ? 'inset 3px 0 0 #016abe, inset 0 -1px 0 #e4e9ee'
+        : 'inset 0 -1px 0 #e4e9ee';
       el.setAttribute('aria-current', n === i ? 'true' : 'false');
     });
     rows.forEach((el, i) => {

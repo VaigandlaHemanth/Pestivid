@@ -13,11 +13,11 @@
 // parts so the code addresses them by name rather than by position.
 import { requireUser, api, load, state } from './_guard.js';
 import { showPoster, bind, rows, slot, dropSection } from '../bind.js';
-import { rupees, rupeeRange, whenShort, dayMonth } from '../api.js';
+import { rupees, whenShort, rupeeRange } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { goes, press } from '../wire.js';
 
-const ctx = requireUser('money');
+const ctx = requireUser('money', ['farmer']);
 
 if (ctx) {
   const root = ctx.root;
@@ -26,13 +26,9 @@ if (ctx) {
 
   load(root, async () => {
     const id = ctx.user._id || ctx.user.id;
-    const [projects, listings, stakes, bought, ledger] = await Promise.all([
+    const [projects, listings] = await Promise.all([
       api.projects.mine(id).catch(() => []),
       api.listings.mine(id).catch(() => []),
-      // One account grows, funds and buys, so the page reads all three.
-      api.investments.mine(id).catch(() => []),
-      api.purchases.asBuyer(id).catch(() => []),
-      api.money.transactions(id).catch(() => []),
     ]);
     const all = projects || [];
     const lots = listings || [];
@@ -153,66 +149,6 @@ if (ctx) {
       });
     }
 
-    // ---- seasons you funded ------------------------------------------
-    // The portfolio page's rows, here in brief: this page is the one answer to
-    // where the money is, and money you put into somebody else's season is
-    // as much yours as money raised on your own.
-    const funded = (stakes || []).filter(s => s && s.status !== 'cancelled' || (s && s.amount));
-    if (!funded.length) {
-      dropSection(root, 'funded', 'funded');
-      root.querySelector('[data-more="portfolio"]')?.remove();
-    } else {
-      rows(root, 'funded', funded.map(s => {
-        const paid = s.payoutAmount != null && s.payoutAmount > 0;
-        return {
-          name: s.projectTitle || 'A season',
-          amount: rupees(s.amount || 0),
-          state: s.status === 'harvested' ? `Paid out${s.payoutDate ? ' · ' + dayMonth(s.payoutDate) : ''}`
-            : s.status === 'cancelled' ? 'Failed'
-            : `Growing${Number.isFinite(s.progress) ? ` · ${s.progress}% of the way through` : ''}`,
-          back: paid ? `${rupees(s.payoutAmount)} back` : s.status === 'cancelled' ? 'nothing back' : 'nothing back yet',
-          who: s.farmerName ? `${s.farmerName}’s season` : null,
-        };
-      }));
-      // drawn as specimens until this moment: nobody knew whether there was anything to show
-      for (const el of root.querySelectorAll('[data-sec="funded"], [data-more="portfolio"]')) el.removeAttribute('data-specimen');
-      goes(root.querySelector('[data-more="portfolio"]'), 'portfolio', 'Every season you funded');
-    }
-
-    // ---- lots you bought ---------------------------------------------
-    const buys = bought || [];
-    if (!buys.length) {
-      dropSection(root, 'bought', 'bought');
-      root.querySelector('[data-more="orders"]')?.remove();
-    } else {
-      rows(root, 'bought', buys.map(p => ({
-        crop: p.crop || 'A lot',
-        price: rupees(p.price || 0),
-        when: p.purchaseDate ? `Bought ${dayMonth(p.purchaseDate)}` : null,
-        from: p.farmerName ? `from ${p.farmerName}` : null,
-      })), (el, row, i) => showPoster(el.querySelector('[data-boughtthumb]'), buys[i]));
-      for (const el of root.querySelectorAll('[data-sec="bought"], [data-more="orders"]')) el.removeAttribute('data-specimen');
-      goes(root.querySelector('[data-more="orders"]'), 'orders', 'Every lot you bought');
-    }
-
-    // ---- all together ------------------------------------------------
-    // The server's own transaction ledger, both directions. It is the one
-    // list that already knows every rupee that moved, whichever screen moved it.
-    const tx = ledger || [];
-    const sum = (types) => tx.filter(t => types.includes(t.type)).reduce((a, t) => a + (t.amount || 0), 0);
-    const stillOut = funded.filter(s => s.status !== 'harvested' && s.status !== 'cancelled')
-      .reduce((a, s) => a + (s.amount || 0), 0);
-    if (!tx.length) {
-      root.querySelectorAll('[data-totals]').forEach(el => el.remove());
-    } else {
-      bind(root, { totals: {
-        in: rupees(sum(['sale', 'payout'])),
-        out: rupees(sum(['purchase', 'investment'])),
-        open: rupees(stillOut),
-      } });
-      root.querySelectorAll('[data-totals]').forEach(el => el.removeAttribute('data-specimen'));
-    }
-
     // ---- what you paid out last season -------------------------------
     if (!settled) {
       // Nothing has closed, so there is nothing to pay out. Three named
@@ -249,11 +185,10 @@ if (ctx) {
       }));
     }
 
-    if (!all.length && !lots.length && !funded.length && !buys.length) {
+    if (!all.length && !lots.length) {
       state(root, 'empty', 'No money has moved yet',
-        'When you raise for a season, sell a lot, fund somebody else’s season or buy '
-        + 'their produce, every figure lands on this page.',
-        { label: 'See the market', go: 'market' });
+        'When you raise for a season or sell a lot, every figure lands on this page.',
+        { label: 'Ask for money', go: 'ask-money' });
     }
     // With no settled season the rail is empty, and a 372px column of nothing
     // beside the work is worse than no column. The main takes the width.

@@ -3,7 +3,7 @@ import { repeat, bind, playsInline, showPoster } from '../bind.js';
 import { rupees } from '../api.js';
 import { promote, goes, press } from '../wire.js';
 
-const ctx = requireUser('invest');
+const ctx = requireUser('invest', ['investor']);
 if (ctx) load(ctx.root, async () => {
   const initial = (ctx.user.name || '?').trim()[0].toUpperCase();
   const all = await api.projects.open();
@@ -42,7 +42,7 @@ if (ctx) load(ctx.root, async () => {
   const rows = [...list.children];
   const select = (i) => rows.forEach((el, n) => {
     const on = n === i;
-    el.style.background = on ? '#eae4de' : '';
+    el.style.background = on ? '#eae4de' : '#fff';
     el.style.borderLeftColor = on ? '#012169' : 'transparent';
     el.setAttribute('aria-current', on ? 'true' : 'false');
   });

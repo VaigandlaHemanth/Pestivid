@@ -29,8 +29,6 @@
        name at 16/500, a figure at 16/600, everything else 14 and grey. The
        19px/700 figures made every row shout at once. */
     .lab  { font-size: 16px; font-weight: 500; }
-    /* the chevron a row wears when it leads to a fuller screen */
-    .ind  { width: 20px; height: 20px; flex-shrink: 0; color: #605a53; }
     .fig  { font-size: 16px; font-weight: 600; }
 
     /* -- the shell, identical on every farmer board -----------------------
@@ -73,7 +71,6 @@
         <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
           <div class="appnav">My plots</div>
-          <div class="appnav">Market</div>
           <div class="appnavOn">Money</div>
           <div class="appnav">Chat</div>
         </div>
@@ -177,69 +174,10 @@
       </div>
     </div>
 
-
-    <!-- MONEY YOU PUT IN. One account funds seasons and buys lots as well as
-         growing, so the two ledgers that were two other people's screens --
-         portfolio and orders -- are two sections of the same page: what came
-         in above, what went out here. Each leads to its fuller screen. -->
-    <div data-specimen data-sec="funded" class="sec">Seasons you funded</div>
-
-    <div data-specimen data-row="funded" class="row">
-      <div style="display: flex; align-items: baseline; gap: 12px;">
-        <div data-slot="name" class="lab">Canal plot, potato</div>
-        <div data-slot="amount" class="num fig">&#8377;50,000</div>
-        <div style="flex-grow: 1;"></div>
-        <div data-slot="state" class="sub">Growing &middot; 50% of the way through</div>
-        <div data-slot="back" class="num sub">nothing back yet</div>
-      </div>
-      <div data-slot="who" class="sub" style="margin-top: 2px;">Alice&rsquo;s season</div>
-    </div>
-    <div data-specimen data-more="portfolio" class="row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-      <div class="sub" style="color: #01579b; font-weight: 500;">Every season you funded, and what came back</div>
-      <svg class="ind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
-    </div>
-
-    <div data-specimen data-sec="bought" class="sec">Lots you bought</div>
-
-    <div data-specimen data-row="bought" class="row" style="display: flex; gap: 14px; align-items: center;">
-      <div data-boughtthumb style="width: 56px; height: 56px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div></div>
-      <div style="flex-grow: 1; min-width: 0;">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;">
-          <div data-slot="crop" class="lab">Tomatoes</div>
-          <div data-slot="price" class="num fig">&#8377;44,000</div>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 2px;">
-          <div data-slot="when" class="num sub">Bought 27 August</div>
-          <div data-slot="from" class="sub">from Demo</div>
-        </div>
-      </div>
-    </div>
-    <div data-specimen data-more="orders" class="row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-      <div class="sub" style="color: #01579b; font-weight: 500;">Every lot you bought, with its receipt</div>
-      <svg class="ind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
-    </div>
       </div>
 
       <!-- the rail: last season, a receipt rather than a task. There is nothing left to do about it. -->
       <div class="rail">
-<!-- ALL TOGETHER. Everything that actually moved, both ways, from the
-     transaction ledger the server already keeps: sales and payouts came in,
-     purchases and money put into seasons went out. Nothing projected, nothing
-     still to come -- the seasons still growing are named on the left. -->
-<div data-totals data-specimen class="sec">All together</div>
-<div data-totals data-specimen class="row" style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;">
-  <div class="lab">Came in</div>
-  <div data-bind="totals.in" class="num fig">&#8377;2,23,600</div>
-</div>
-<div data-totals data-specimen class="row" style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;">
-  <div class="lab">Went out</div>
-  <div data-bind="totals.out" class="num fig">&#8377;1,55,000</div>
-</div>
-<div data-totals data-specimen class="row" style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;">
-  <div class="lab">Still out in seasons</div>
-  <div data-bind="totals.open" class="num fig">&#8377;1,55,000</div>
-</div>
-<div data-totals data-specimen class="sub" style="padding: 10px 28px 0;">Only money that has actually moved. Sales and payouts came in; lots bought and seasons funded went out.</div>
 <div data-specimen data-sec="paid">
       <div class="sec">What you paid out last season</div>
       <div data-bind="lastSeason.name" class="sub" style="padding: 0 28px 8px;">Canal plot, March 2026</div>

@@ -16,16 +16,14 @@ import { bind, arrive } from '../bind.js';
 import { rupees, dayMonth } from '../api.js';
 import { goes, press } from '../wire.js';
 
-const ctx = requireUser('portfolio');
+const ctx = requireUser('portfolio', ['investor']);
 
 // The four states the API actually reports, and the pill each one wears. No
 // green anywhere: whether money reached your bank is a thing you take our word
 // for, and green in this product means a fact you can check without us.
 const PILL = {
   harvested: ['Paid out',     '#eae4de', '#1d1a17', 'inset 0 0 0 1.5px #1d1a17'],
-  // a hairline, not none: #eae4de on the surface is 1.14:1 and the edge has
-  // to be drawn or the pill is a smudge (verify-surfaces)
-  growing:   ['Growing',      '#eae4de', '#4a443d', 'inset 0 0 0 1px #c3bcb6'],
+  growing:   ['Growing',      '#eae4de', '#4a443d', 'none'],
   active:    ['Still raising', '#f2e6cd', '#7c4a12', 'none'],
   cancelled: ['Crop failed',  '#f7e9e6', '#a71930', 'none'],
 };

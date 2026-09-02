@@ -92,9 +92,8 @@
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--ground); }
 
-/* There is no cool ground any more. Investor, buyer and admin boards were
-   drawn on --page-cool and read as a second product beside the farmer's; every
-   board is on the one warm ground now. The token stays for the record. */
+/* A page whose board was drawn on the cool desktop ground keeps it */
+body[data-role="investor"], body[data-role="buyer"], body[data-role="admin"] { background: var(--page-cool); }
 body[data-role="public"] { background: var(--ground); }
 
 /* Never remove a focus ring without replacing it. Two rings so it survives on

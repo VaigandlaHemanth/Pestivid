@@ -7,10 +7,11 @@
 <body>
 <x-dc>
 <helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap">
   <style>
     body { margin: 0; }
     a { color: #01579b; } a:hover { color: #013f70; }
-    .a { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
     .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
     .lift1 { box-shadow: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05); }
@@ -216,7 +217,7 @@
   </style>
 </helmet>
 
-<div class="a" style="width: 1320px; background: #eae4de; color: #1d1a17; padding: 34px 44px 44px; box-sizing: border-box; position: relative;">
+<div class="a" style="width: 1320px; background: #f3f6f9; color: #1d1a17; padding: 34px 44px 44px; box-sizing: border-box; position: relative;">
 
   <div class="lbl">The step that was missing</div>
   <h1 style="margin: 5px 0 0; font-size: 32px; font-weight: 700; letter-spacing: -0.03em;">
@@ -231,10 +232,7 @@
   <div style="display: grid; grid-template-columns: 1fr 380px; gap: 28px; margin-top: 26px;">
 
     <!-- ══ INVESTOR: confirm ══ -->
-    <!-- One surface, like every other signed-in screen: the same paper, no lift.
-         It keeps its 824px measure (responsive.css) because it is a dialog, but a
-         dialog on this product is a sheet, not a card floating on grey. -->
-    <div data-page="confirm-investment" style="background: #f6f3ef; padding: 28px 30px;">
+    <div data-page="confirm-investment" style="background: #fff; padding: 28px 30px;" class="lift2">
       <h1 data-title style="font-size: 25px; font-weight: 700; letter-spacing: -0.025em;">Confirm your investment</h1>
 
       <!-- what you are funding, restated -->
@@ -250,15 +248,15 @@
 
       <!-- the numbers, tabular and aligned -->
       <div style="margin-top: 22px;">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #ddd7d1;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
           <div style="font-size: 16px;">You are sending</div>
           <div data-bind="amount" class="m" style="font-size: 22px; font-weight: 700;">&#8377;50,000</div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #ddd7d1;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
           <div style="font-size: 16px;">Your share of any profit</div>
           <div data-bind="lot.share" class="m" style="font-size: 18px; font-weight: 600;">60%</div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #ddd7d1;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; box-shadow: inset 0 -1px 0 #e4e9ee;">
           <div style="font-size: 16px;">Paid back after</div>
           <div data-bind="lot.when" style="font-size: 16px; font-weight: 600;">Harvest reported, about 7 weeks</div>
         </div>
@@ -269,7 +267,7 @@
       </div>
 
       <!-- no projected total. deliberately. -->
-      <div style="background: #eae4de; padding: 16px 18px; margin-top: 6px;">
+      <div style="background: #f3f6f9; padding: 16px 18px; margin-top: 6px;">
         <div style="font-size: 15.5px; font-weight: 700;">We are not showing you a projected return</div>
         <div class="p" style="font-size: 14.5px; margin-top: 4px;">
           The profit does not exist yet. Any total we printed here would be a guess dressed up as a
@@ -319,7 +317,6 @@
         <div class="appbrand">Pestivid</div>
         <div style="display: flex; gap: 24px; align-items: baseline;">
           <div class="appnav">My plots</div>
-          <div class="appnav">Market</div>
           <div class="appnavOn">Money</div>
           <div class="appnav">Chat</div>
         </div>
