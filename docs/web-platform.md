@@ -109,6 +109,13 @@ rebuild.
 
 ### Seeded demo accounts
 
+One kind of account. Farmer, buyer and investor are the names these
+accounts were seeded with, not roles: every signed-in account films fields,
+funds seasons and buys lots, and sees the same four-word bar (My plots,
+Market, Money, Chat). Only `admin` differs, and it is not self-assignable.
+New registrations get role `member`.
+
+
 | Role | Email | Password |
 |---|---|---|
 | Farmer | `demo.farmer@pestivid.sim` | `password123` |
@@ -147,18 +154,18 @@ Everything is under `/api`. All routes require
 | PUT | `/users/:id/profile` | own profile only; role is immutable |
 | GET | `/listings` | **public** marketplace browse |
 | GET | `/listings/:id/media` | owner or purchaser only |
-| POST/DELETE | `/listings`, `/listings/:id` | farmer only |
+| POST/DELETE | `/listings`, `/listings/:id` | any account but admin |
 | GET | `/videos`, `/videos/farmer/:id` | own videos only |
 | GET | `/funding-requests` | **public** |
-| POST/PUT/DELETE | `/funding-requests` | farmer only |
-| POST | `/investments` | investor only; atomic, goal-bounded |
+| POST/PUT/DELETE | `/funding-requests` | any account but admin; the harvest by the season's owner only |
+| POST | `/investments` | any account but admin and the season's own farmer; atomic, goal-bounded |
 | PUT | `/investments/:id/progress` | project owner only |
-| POST | `/purchases` | buyer only; price validated server-side |
+| POST | `/purchases` | any account but admin and the seller; price validated server-side |
 | GET | `/purchases/buyer/:id`, `/transactions/user/:id` | own records only |
 | GET/POST | `/messaging/*` | participants only |
 | GET/PUT/DELETE | `/notifications/*` | recipient only |
-| POST | `/ai/agribot`, `/ai/chatbot` | farmer only; server-owned prompt |
-| POST | `/ai/predict-proxy` | farmer only; `503` when the model is absent |
+| POST | `/ai/agribot`, `/ai/chatbot` | any signed-in account; server-owned prompt |
+| POST | `/ai/predict-proxy` | any signed-in account; `503` when the model is absent |
 
 Flask AI server on 5000: `POST /predict`, `POST /chat`,
 `POST /simple-ai-advice`.

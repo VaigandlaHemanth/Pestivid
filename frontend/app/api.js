@@ -241,16 +241,13 @@ export function noticeKind(n) {
 export function noticeDestination(n, role) {
   // An admin's notices are the queue they exist to act on.
   if (role === 'admin') return n?.itemType ? 'admin' : null;
+  // Everybody else is one kind of account, so the TYPE decides, not the role:
+  // something offered goes to the market, money that moved goes to Money.
   switch (n?.itemType) {
     case 'Message': return 'messages';
-    case 'FundingRequest':
-      return role === 'investor' ? 'invest' : role === 'farmer' ? 'money' : null;
-    case 'Investment':
-      return role === 'investor' ? 'portfolio' : role === 'farmer' ? 'money' : null;
-    case 'Listing':
-      if (role === 'buyer') return n.type === 'purchase' ? 'orders' : 'market';
-      if (role === 'farmer') return n.type === 'purchase' ? 'money' : 'home';
-      return null;
+    case 'FundingRequest': return n.type === 'funding' ? 'invest' : 'money';
+    case 'Investment': return 'money';
+    case 'Listing': return n.type === 'listing' ? 'market' : 'money';
     default: return null;
   }
 }
@@ -270,14 +267,11 @@ export function noticeDestination(n, role) {
  * set -- the page saying "4 you have not read" under a badge reading 7 is worse
  * than either number being wrong on its own.
  */
-const BROADCAST_FOR = {
-  funding: ['investor', 'admin'],   // somebody is asking for money
-  listing: ['buyer', 'admin'],      // a lot has come up for sale
-};
+/* Everybody may fund a season and buy a lot now, so a broadcast is for
+ * everybody. The one person it is not for -- whoever asked, or listed -- is
+ * kept out on the server, in dismissedBy, at the moment it is written. */
 export function noticeForRole(n, role) {
-  if (!n || !n.global) return true;
-  const who = BROADCAST_FOR[n.type];
-  return !who || who.includes(role);
+  return Boolean(n);
 }
 
 export const dayMonth = (iso) => {

@@ -146,10 +146,11 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
 // @desc Record a new purchase transaction and update the corresponding listing status
 // @access Private (Requires authentication. Must be a buyer.)
 router.post('/', authenticateToken, async (req, res) => {
-    // Authorization: Ensure the authenticated user has the 'buyer' role.
-    if (req.user.role !== 'buyer') {
-         console.warn(`Authorization failed: User ${req.user._id} with role ${req.user.role} attempted to record a purchase.`);
-        return res.status(403).json({ message: "Forbidden: Only users with the 'buyer' role can record purchases." }); // 403 Forbidden
+    // One account does everything here: whoever is signed in may buy a lot,
+    // except a reviewer, whose account never moves money. Buying your own lot
+    // is refused further down, once the listing is loaded.
+    if (req.user.role === 'admin') {
+        return res.status(403).json({ message: 'A reviewer account does not move money.' });
     }
 
     // Extract purchase details from the request body

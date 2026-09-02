@@ -248,10 +248,11 @@ router.get('/investor/:investorId', authenticateToken, async (req, res) => {
 // @desc Create a new investment record and update the corresponding funding request
 // @access Private (Requires authentication. Must be an investor.)
 router.post('/', authenticateToken, async (req, res) => {
-    // Authorization: Ensure the authenticated user has the 'investor' role.
-    if (req.user.role !== 'investor') {
-         console.warn(`Authorization failed: User ${req.user._id} with role ${req.user.role} attempted to create an investment.`);
-        return res.status(403).json({ message: "Forbidden: Only users with the 'investor' role can make investments." }); // 403 Forbidden
+    // One account does everything here: whoever is signed in may fund a season.
+    // The exceptions are a reviewer, whose account never moves money, and the
+    // season's own farmer -- refused below, in the update filter, atomically.
+    if (req.user.role === 'admin') {
+        return res.status(403).json({ message: 'A reviewer account does not move money.' });
     }
 
     // Extract investment details from the request body
@@ -286,6 +287,13 @@ router.post('/', authenticateToken, async (req, res) => {
         // join key, instead of searching the embedded array afterwards by
         // (investor, exact float amount, 5-second window) -- which returned the
         // wrong entry for two same-amount investments inside that window.
+        // Your own season is not something you fund. The update filter below
+        // refuses it atomically; this names the reason, so the answer is not
+        // "fully funded" about a season that is neither.
+        const own = await FundingRequest.findById(projectId).select('farmerWallet').lean();
+        if (own && String(own.farmerWallet) === String(req.user._id)) {
+            return res.status(400).json({ message: 'You cannot fund your own season.' });
+        }
         const txHash = generateSimulatedTxHash('sim_invest');
         const investmentDate = new Date();
 
@@ -305,6 +313,7 @@ router.post('/', authenticateToken, async (req, res) => {
         const updatedFundingRequest = await FundingRequest.findOneAndUpdate(
             {
                 _id: projectId,
+                farmerWallet: { $ne: req.user._id },   // never your own
                 status: { $in: ['pending', 'partially_funded'] },
                 // Half-a-paisa tolerance, and it is not sloppiness -- it is the
                 // fix for a deadlock. fundedAmount accumulates as a double, so

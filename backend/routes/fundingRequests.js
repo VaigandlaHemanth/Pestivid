@@ -295,9 +295,10 @@ router.get('/:id', async (req, res) => {
 // @access Private (Requires authentication. Must be a farmer.)
 router.post('/', authenticateToken, async (req, res) => {
     // Authorization: Ensure the authenticated user has the 'farmer' role.
-    if (req.user.role !== 'farmer') {
-         console.warn(`Authorization failed: User ${req.user._id} with role ${req.user.role} attempted to create a funding request.`);
-        return res.status(403).json({ message: "Forbidden: Only users with the 'farmer' role can create funding requests." }); // 403 Forbidden
+    // Anyone with dated videos of a field may ask; the eligibility check below
+    // is what decides, not the word on the account. A reviewer never asks.
+    if (req.user.role === 'admin') {
+        return res.status(403).json({ message: 'A reviewer account does not raise money.' });
     }
 
     // Extract funding request details from the request body
@@ -381,7 +382,10 @@ router.post('/', authenticateToken, async (req, res) => {
         // This should ideally be a background task, but for demo, we create a global notification.
          try {
               const notification = new Notification({
-                  global: true, // This is a global notification for the investment marketplace
+                  global: true,
+                  // Everybody may fund a season now, so the broadcast goes to
+                  // everybody -- except the person asking, who already knows.
+                  dismissedBy: [req.user._id],
                   type: 'funding', // Custom notification type
                   message: `A farmer is asking for money to grow “${savedRequest.title}”, with a video anyone can check.`,
                   itemId: savedRequest._id, // Link to the new funding request document
@@ -440,8 +444,8 @@ router.post('/', authenticateToken, async (req, res) => {
  * seeing the resulting payouts. Corrections go through support, deliberately.
  */
 router.post('/:id/harvest', authenticateToken, async (req, res) => {
-    if (req.user.role !== 'farmer') {
-        return res.status(403).json({ message: 'Only the farmer can report a harvest.' });
+    if (req.user.role === 'admin') {
+        return res.status(403).json({ message: 'A reviewer account does not report harvests.' });
     }
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         return res.status(400).json({ message: 'Invalid project ID.' });

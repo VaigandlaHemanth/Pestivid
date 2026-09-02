@@ -84,9 +84,8 @@ const upload = multer({
 // @access Private / farmer
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/agribot', authenticateToken, async (req, res) => {
-    if (req.user.role !== 'farmer') {
-        return res.status(403).json({ message: 'Only farmers can use AgriBot.' });
-    }
+    // Anyone signed in may ask. A buyer checking a lot's leaf and an investor
+    // asking about blight have the same question a farmer has.
     // Validate the request BEFORE checking server configuration. With the
     // config check first, an oversized or malformed question reported a 500
     // "not configured", which blames the operator for a client error and hides
@@ -205,9 +204,8 @@ router.post('/agribot', authenticateToken, async (req, res) => {
 // 10MB upload was persisted and then abandoned on the 403 path, so any
 // authenticated non-farmer could fill the disk with orphaned temp files.
 const farmersOnly = (req, res, next) => {
-    if (req.user.role !== 'farmer') {
-        return res.status(403).json({ message: 'Only farmers can use plant analysis.' });
-    }
+    // Anyone signed in may ask. A buyer checking a lot's leaf and an investor
+    // asking about blight have the same question a farmer has.
     next();
 };
 
@@ -278,9 +276,8 @@ router.post('/predict-proxy', authenticateToken, farmersOnly, upload.single('fil
 // @access Private / farmer
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/analyze-plant', authenticateToken, async (req, res) => {
-    if (req.user.role !== 'farmer') {
-        return res.status(403).json({ message: 'Only farmers can use plant analysis.' });
-    }
+    // Anyone signed in may ask. A buyer checking a lot's leaf and an investor
+    // asking about blight have the same question a farmer has.
     if (!GEMINI_API_KEY || GEMINI_API_KEY.startsWith('YOUR_GEMINI')) {
         return res.status(500).json({ message: 'Plant analysis service is not configured on the server.' });
     }
@@ -318,9 +315,8 @@ router.post('/analyze-plant', authenticateToken, async (req, res) => {
 // @access Private / farmer
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/chatbot', authenticateToken, async (req, res) => {
-    if (req.user.role !== 'farmer') {
-        return res.status(403).json({ message: 'Only farmers can use the AgriBot feature.' });
-    }
+    // Anyone signed in may ask. A buyer checking a lot's leaf and an investor
+    // asking about blight have the same question a farmer has.
     // The caller used to supply `systemPrompt` AND the whole message array,
     // which made this an open LLM proxy billed to the operator's Groq key: any
     // registered user could set an arbitrary persona and use it for anything.

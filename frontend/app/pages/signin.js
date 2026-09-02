@@ -91,7 +91,8 @@ async function submit() {
      * it made a phone number look like a thing you could sign in with. */
     const r = await api.auth.login(who.value.trim(), pass.value);
     session.set(r.token, r.user);
-    const home = { farmer: 'home', investor: 'invest', buyer: 'market', admin: 'admin' }[r.user.role] || 'home';
+    // One account, one front door. Only the reviewer has a different one.
+    const home = r.user.role === 'admin' ? 'admin' : 'home';
     location.href = `./${home}.html`;
   } catch (err) {
     label.textContent = was;

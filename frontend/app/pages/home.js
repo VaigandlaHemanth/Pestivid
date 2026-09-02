@@ -25,7 +25,7 @@ function moneyLine(projects) {
   return `${rupees(inHand)} in of ${rupees(asked)} asked for`;
 }
 
-const ctx = requireUser('home', ['farmer']);
+const ctx = requireUser('home');
 
 if (ctx) {
   const root = ctx.root;

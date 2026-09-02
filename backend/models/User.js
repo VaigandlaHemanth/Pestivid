@@ -37,7 +37,10 @@ const userSchema = new mongoose.Schema({
             // it is a direct database change by whoever runs the platform. Adding
             // a privileged value to a public enum without that guard would be
             // handing it out.
-            values: ['farmer', 'buyer', 'investor', 'admin'],
+            // 'member' is the one kind of account there is now: it films, funds
+            // and buys. farmer, buyer and investor are the words accounts made
+            // before the merge carry; they mean member.
+            values: ['member', 'farmer', 'buyer', 'investor', 'admin'],
             message: 'Invalid role. Must be farmer, buyer, or investor.'
         }
     },

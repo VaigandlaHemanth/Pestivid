@@ -12,7 +12,7 @@ import { whenShort, dateState, rupees } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { goes, press, acts } from '../wire.js';
 
-const ctx = requireUser('plot', ['farmer']);
+const ctx = requireUser('plot');
 
 if (ctx) {
   const root = ctx.root;

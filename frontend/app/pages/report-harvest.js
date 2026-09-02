@@ -15,7 +15,7 @@ import { bind, rows } from '../bind.js';
 import { asField, acts, press, digitsOnly } from '../wire.js';
 import { rupees } from '../api.js';
 
-const ctx = requireUser('report-harvest', ['farmer']);
+const ctx = requireUser('report-harvest');
 if (ctx) load(ctx.root, async () => {
   const id = new URLSearchParams(location.search).get('project');
   if (!id) return state(ctx.root, 'empty', 'No season chosen', 'Open this from the season you are reporting on.',

@@ -171,9 +171,10 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
 // @access Private (Requires authentication. Must be a farmer.)
 router.post('/', authenticateToken, async (req, res) => {
     // Authorization: Ensure the authenticated user has the 'farmer' role.
-    if (req.user.role !== 'farmer') {
-         console.warn(`Authorization failed: User ${req.user._id} with role ${req.user.role} attempted to create a listing.`);
-        return res.status(403).json({ message: "Forbidden: Only users with the 'farmer' role can create listings." }); // 403 Forbidden
+    // Anyone may list what they grew; the dated video is what a buyer checks,
+    // not the word on the account. A reviewer never sells.
+    if (req.user.role === 'admin') {
+        return res.status(403).json({ message: 'A reviewer account does not sell.' });
     }
 
     // Extract listing details from the request body
@@ -263,7 +264,8 @@ router.post('/', authenticateToken, async (req, res) => {
         if (notifyBuyers) {
              try {
                   const notification = new Notification({
-                      global: true, // This is a global notification for the marketplace
+                      global: true,
+                      dismissedBy: [req.user._id],   // everybody but the seller
                       type: 'listing', // Custom notification type
                       message: `“${savedListing.crop}” is now listed by a farmer.`,
                       itemId: savedListing._id, // Link to the new listing document
@@ -400,7 +402,8 @@ router.put('/:id/notify', authenticateToken, async (req, res) => {
         // Create a global notification for buyers
          try {
               const notification = new Notification({
-                  global: true, // This notification is for the marketplace (buyers)
+                  global: true,
+                  dismissedBy: [req.user._id],   // everybody but the seller
                   type: 'listing', // Custom notification type
                   message: `“${listing.crop}” is now listed by a farmer.`,
                   itemId: listing._id, // Link to the listing document

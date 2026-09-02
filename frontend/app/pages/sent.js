@@ -28,7 +28,7 @@ import { appChrome } from '../chrome.js';
 import { acts, press } from '../wire.js';
 import { takeClip, dropClip } from '../clip.js';
 
-const ctx = requireUser('sent', ['farmer']);
+const ctx = requireUser('sent');
 
 if (ctx) {
   appChrome(ctx.root, { back: 'record', user: ctx.user });
