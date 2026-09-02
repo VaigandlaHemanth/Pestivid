@@ -36,11 +36,15 @@ router.get('/user/:userId', authenticateToken, async (req, res) => {
         // dismissedBy set was added when DELETE stopped removing globals for
         // everyone, but this query never consulted it -- so "delete" appeared to
         // do nothing and the item reappeared on the next poll.
+        // A broadcast this person has switched off is not fetched at all, so the
+        // list, the bell's count and the banner agree by construction.
+        const prefs = (await mongoose.model('User').findById(userId).select('notices').lean())?.notices || {};
+        const muted = ['funding', 'listing'].filter((k) => prefs[k] === false);
         const filter = {
             dismissedBy: { $ne: userId },
             $or: [
                 { recipient: userId },  // addressed to this user
-                { global: true },       // platform-wide broadcast
+                { global: true, ...(muted.length ? { type: { $nin: muted } } : {}) },  // platform-wide broadcast
             ],
         };
         // ?after=<ISO date>: only what arrived since then. A page that polls

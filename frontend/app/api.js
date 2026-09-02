@@ -189,6 +189,7 @@ export const api = {
     }).then(r => ({ ...r, answer: r?.text ?? r?.answer ?? '' })),
     leaf: (b) => post('/ai/analyze-plant', b),
   },
+  users: { notices: (b) => put('/users/me/notices', b) },
   admin: { flagged: () => get('/videos/review-queue') },
 };
 

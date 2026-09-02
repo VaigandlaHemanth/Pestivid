@@ -89,7 +89,7 @@
           overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   </style>
 </head>
-<body data-page="profile" data-role="any" data-design-width="1320" data-design-height="1057">
+<body data-page="profile" data-role="any" data-design-width="1320" data-design-height="1261">
 <div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
   <div class="appbar">
@@ -188,6 +188,33 @@
       </div>
       <div data-toggle="" style="width: 50px; height: 30px; background: #c3bcb6; border-radius: 15px; position: relative; flex-shrink: 0; transition: background-color var(--t-release, 260ms) var(--e-press, ease);">
         <div data-knob="" style="position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; background: #fff; border-radius: 12px; transform: translateX(0); transition: transform var(--t-release, 260ms) var(--e-press, ease);"></div>
+      </div>
+    </div>
+
+    <!-- NOTICES. The two broadcasts can be switched off; the notices about
+         your own money and your own messages cannot, because they are about
+         you. profile.js removes the row a role never receives -- a farmer gets
+         neither broadcast, so the section goes entirely -- and both toggles
+         are drawn on, which is what a fresh account has. -->
+    <div data-specimen="" data-sec="notices" class="sec">Notices</div>
+    <div data-specimen="" data-notice="funding" class="row">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9" style="flex-shrink: 0;"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+      <div style="flex-grow: 1;">
+        <div class="lab">A season opens for funding</div>
+        <div class="val">Every new ask, on the bell</div>
+      </div>
+      <div data-toggle="" style="width: 50px; height: 30px; background: #016abe; border-radius: 15px; position: relative; flex-shrink: 0; transition: background-color var(--t-release, 260ms) var(--e-press, ease);">
+        <div data-knob="" style="position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; background: #fff; border-radius: 12px; transform: translateX(20px); transition: transform var(--t-release, 260ms) var(--e-press, ease);"></div>
+      </div>
+    </div>
+    <div data-specimen="" data-notice="listing" class="row2">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9" style="flex-shrink: 0;"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+      <div style="flex-grow: 1;">
+        <div class="lab">A lot comes up for sale</div>
+        <div class="val">Every new listing, on the bell</div>
+      </div>
+      <div data-toggle="" style="width: 50px; height: 30px; background: #016abe; border-radius: 15px; position: relative; flex-shrink: 0; transition: background-color var(--t-release, 260ms) var(--e-press, ease);">
+        <div data-knob="" style="position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; background: #fff; border-radius: 12px; transform: translateX(20px); transition: transform var(--t-release, 260ms) var(--e-press, ease);"></div>
       </div>
     </div>
 

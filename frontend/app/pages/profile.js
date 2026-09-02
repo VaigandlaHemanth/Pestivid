@@ -103,6 +103,7 @@ if (ctx) {
 
     // ---- the switches ------------------------------------------------
     for (const track of root.querySelectorAll('[data-toggle]')) {
+      if (track.closest('[data-notice]')) continue;     // server-backed, wired below
       const row = track.closest('.row, .row2') || track.parentElement;
       const label = row?.querySelector('.lab')?.textContent.trim() || 'This setting';
       const spec = SWITCHES.find(s => s.match.test(label));
@@ -156,6 +157,49 @@ if (ctx) {
         else notice.replaceChildren();
       });
     }
+
+    // ---- the broadcast switches --------------------------------------
+    // Not a localStorage preference: the server drops a muted broadcast from
+    // the list itself, so the bell, the notices page and the banner agree on
+    // every device. Only the broadcasts a role actually receives are offered --
+    // see noticeForRole -- and a farmer receives neither, so the section goes.
+    const GETS = { investor: ['funding'], buyer: ['listing'], admin: ['funding', 'listing'] };
+    const gets = GETS[me.role] || [];
+    const prefs = { funding: true, listing: true, ...(me.notices || {}) };
+    for (const row of root.querySelectorAll('[data-notice]')) {
+      const kind = row.dataset.notice;
+      if (!gets.includes(kind)) { row.remove(); continue; }
+      row.removeAttribute('data-specimen');       // drawn hidden until the role and the server were known
+      const track = row.querySelector('[data-toggle]');
+      const knob = row.querySelector('[data-knob]');
+      const label = row.querySelector('.lab')?.textContent.trim() || kind;
+      let on = prefs[kind] !== false;
+      const paint = () => {
+        if (track) track.style.background = on ? '#016abe' : '#c3bcb6';
+        if (knob) knob.style.transform = on ? 'translateX(20px)' : 'translateX(0)';
+        row.setAttribute('aria-checked', String(on));
+      };
+      row.setAttribute('role', 'switch');
+      track?.setAttribute('aria-hidden', 'true');
+      paint();
+      let busy = false, notice = null;
+      acts(row, label, async () => {
+        if (busy) return;
+        busy = true;
+        on = !on; paint();                         // on screen first
+        try {
+          const saved = await api.users.notices({ [kind]: on });
+          const u = session.user; if (u) { u.notices = { ...(u.notices || {}), ...saved }; session.set(session.token, u); }
+          notice?.replaceChildren();
+        } catch (err) {
+          on = !on; paint();                       // the server refused, so it comes back
+          if (!notice) { notice = document.createElement('div'); row.after(notice); }
+          state(notice, 'failed', 'That did not save', err.message);
+        } finally { busy = false; }
+      });
+    }
+    const noticesSec = root.querySelector('[data-sec="notices"]');
+    if (!root.querySelector('[data-notice]')) noticesSec?.remove(); else noticesSec?.removeAttribute('data-specimen');
 
     // ---- the leaf model ----------------------------------------------
     // "Remove it to free space" is 173 MB sitting on a handset that may not
