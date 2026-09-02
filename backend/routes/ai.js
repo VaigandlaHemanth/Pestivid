@@ -84,9 +84,8 @@ const upload = multer({
 // @access Private / farmer
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/agribot', authenticateToken, async (req, res) => {
-    if (req.user.role !== 'farmer') {
-        return res.status(403).json({ message: 'Only farmers can use AgriBot.' });
-    }
+    // Any signed-in account may ask. The ask page invites farmers, investors and
+    // buyers alike, and answered three of the four with a 403 from here.
     // Validate the request BEFORE checking server configuration. With the
     // config check first, an oversized or malformed question reported a 500
     // "not configured", which blames the operator for a client error and hides
@@ -318,9 +317,8 @@ router.post('/analyze-plant', authenticateToken, async (req, res) => {
 // @access Private / farmer
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/chatbot', authenticateToken, async (req, res) => {
-    if (req.user.role !== 'farmer') {
-        return res.status(403).json({ message: 'Only farmers can use the AgriBot feature.' });
-    }
+    // Any signed-in account may ask. The ask page invites farmers, investors and
+    // buyers alike, and answered three of the four with a 403 from here.
     // The caller used to supply `systemPrompt` AND the whole message array,
     // which made this an open LLM proxy billed to the operator's Groq key: any
     // registered user could set an arbitrary persona and use it for anything.
