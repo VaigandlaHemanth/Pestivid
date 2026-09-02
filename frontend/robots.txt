@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Everything under /app/ except the landing page carries a noindex meta tag:
+# they need a token to say anything, and CSS and JS have to stay crawlable
+# for the landing page to render, so nothing is Disallowed here.

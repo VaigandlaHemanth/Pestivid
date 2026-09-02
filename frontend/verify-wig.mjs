@@ -1,25 +1,77 @@
 // Web Interface Guidelines checks that can be MEASURED rather than eyeballed,
 // run against the served pages so what is tested is what ships.
 import { chromium } from 'playwright';
-const PAGES = process.argv.slice(2);
+import { readdirSync } from 'node:fs';
+import { needs } from './_needs.mjs';
+// No arguments used to mean NO PAGES, and the summary still read like a pass
+// ("0 findings across 0 pages"). It now means every page.
+const PAGES = (process.argv.slice(2).length
+  ? process.argv.slice(2)
+  : readdirSync('frontend/app').filter(f => f.endsWith('.html')).map(f => f.replace('.html', '')).sort());
 const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', {
   method: 'POST', headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ email: `demo.${r}@pestivid.sim`, password: 'password123' }) })).json();
-const ROLE = { orders: 'buyer', admin: 'admin', 'report-harvest': 'farmer',
-  'ask-money-video': 'farmer', 'ask-money-amount': 'farmer', 'ask-money-terms': 'farmer',
-  'leaf-result': 'farmer', 'leaf-refusal': 'farmer', 'setup-identity': null };
+// Roles are derived from build-pages.mjs so this map cannot drift out of date.
+// It did: a five-entry map meant eighteen pages loaded with no token, bounced
+// to sign-in, and were audited as the sign-in page under their own names.
+const ROLE = {
+  'admin': 'admin',
+  'ask': 'farmer',
+  'ask-money': 'farmer',
+  'confirm-investment': 'investor',
+  'home': 'farmer',
+  'invest': 'investor',
+  'landing': null,
+  'leaf-check': 'farmer',
+  'market': 'buyer',
+  'messages': 'farmer',
+  'money': 'farmer',
+  'notifications': 'farmer',
+  'orders': 'buyer',
+  'plot': 'farmer',
+  'portfolio': 'investor',
+  'profile': 'farmer',
+  'record': 'farmer',
+  'report-harvest': 'farmer',
+  'sent': 'farmer',
+  'signin': null,
+  'signup': null,
+  };
 
 const b = await chromium.launch();
+// Five pages are ABOUT something and are blank without an id.
+const QUERY = await needs();
 const tokens = {};
 let total = 0;
 for (const slug of PAGES) {
+  /* AN UNKNOWN SLUG IS NOT A PUBLIC PAGE.
+   *
+   * ROLE[slug] gave undefined for anything missing from the map, and undefined is
+   * as falsy as the deliberate null that marks landing, signin and signup -- so a
+   * page nobody had listed was loaded with no token, redirected to the sign-in
+   * screen, and every finding on it was filed under the slug it was not. That is
+   * what happened to notifications: twenty-one entries for twenty-two pages, and
+   * the audit reported the sign-in page's DOM as the notifications page.
+   *
+   * The map is checked against, not defaulted from. A slug that is not in it
+   * stops the run and says so, which is the only way a harness that discovers
+   * its own page list can stay honest as pages are added. Every other verifier
+   * here already guards this with `slug in ROLE`. */
+  if (!Object.prototype.hasOwnProperty.call(ROLE, slug)) {
+    console.error(`
+  ${slug}.html has no entry in ROLE, so it cannot be signed in.`
+      + `
+  Add it (or null if the page is public) rather than letting it audit`
+      + ` the sign-in screen under this slug.`);
+    process.exit(2);
+  }
   const role = ROLE[slug];
   if (role && !tokens[role]) tokens[role] = await login(role);
   const p = await b.newPage({ viewport: { width: 1440, height: 1000 } });
   if (role) await p.addInitScript(([t, u]) => {
     localStorage.setItem('pv.token', t); localStorage.setItem('pv.user', u);
   }, [tokens[role].token, JSON.stringify(tokens[role].user)]);
-  await p.goto(`http://127.0.0.1:3001/app/${slug}.html`, { waitUntil: 'load' });
+  await p.goto(`http://127.0.0.1:3001/app/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
   await p.waitForTimeout(1400);
 
   const f = await p.evaluate(() => {
@@ -38,7 +90,14 @@ for (const slug of PAGES) {
       const id = el.name || el.type || 'input';
       if (!el.getAttribute('aria-label') && !el.labels?.length) say('form label', `<input ${id}> unlabelled`);
       if (!el.getAttribute('autocomplete')) say('autocomplete', `<input ${id}> has no autocomplete`);
-      if (el.placeholder && !/…$/.test(el.placeholder)) say('placeholder', `"${el.placeholder}" does not end in an ellipsis`);
+      // The ellipsis belongs on an instruction that trails off, not on a
+      // SPECIMEN of the value wanted: "98765 43210…" is not a phone number.
+      // Same exemption wire.js applies when it builds the field, so the two
+      // agree instead of the checker reporting what the code deliberately did.
+      const specimen = /^[\d\s+•·.,₹-]+$/.test(el.placeholder || '');
+      if (el.placeholder && !specimen && !/[…:]$/.test(el.placeholder)) {
+        say('placeholder', `"${el.placeholder}" does not end in an ellipsis`);
+      }
       if ((el.type === 'email' || /code|otp|phone|tel/.test(id)) && el.spellcheck) say('spellcheck', `<input ${id}> should disable spellcheck`);
     }
 
@@ -103,7 +162,7 @@ for (const slug of PAGES) {
 
   const uniq = [...new Set(f)];
   total += uniq.length;
-  console.log(`\n## ${slug}.html`);
+  console.log(`\n## ${slug}.html${QUERY[slug] || ''}`);
   if (!uniq.length) console.log('  ✓ pass');
   else uniq.slice(0, 14).forEach(x => console.log(`  ${x}`));
   if (uniq.length > 14) console.log(`  … ${uniq.length - 14} more of the same kinds`);

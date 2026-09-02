@@ -12,7 +12,7 @@
 // the "Waiting on" sentence kept the artboard's text on every row -- four
 // different seasons all "Growing", all "Week 11 of 18", all waiting on Alice.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind } from '../bind.js';
+import { bind, arrive } from '../bind.js';
 import { rupees, dayMonth } from '../api.js';
 import { goes, press } from '../wire.js';
 
@@ -50,8 +50,11 @@ if (ctx) {
     const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
     bind(root, {
       me: { initial },
-      heading: mine.length === 1 ? 'Your one season'
-             : `Your ${WORDS[mine.length] || mine.length} seasons`,
+      // The rows are INVESTMENTS, and two of them can be in the same season --
+      // "Organic Wheat Expansion" appeared twice, at ₹55,000 and ₹1,00,000, under
+      // a heading that called them three seasons. It counts what it lists.
+      heading: mine.length === 1 ? 'Your one investment'
+             : `Your ${WORDS[mine.length] || mine.length} investment${mine.length === 1 ? '' : 's'}`,
       investor: { name: ctx.user.name },
       labels: { putIn: 'You have put in, all together' },
       // The note described the artboard's mix -- "two have not finished and one
@@ -59,12 +62,30 @@ if (ctx) {
       noReturn: (() => {
         const open = mine.filter(i => !done(i)).length;
         const failed = mine.filter(i => i.status === 'cancelled').length;
+        /* THE CARD EXPLAINED A STATE THAT WAS NOT ON THE PAGE.
+         *
+         * "Why a failed season stays on this page" is drawn once, in the present
+         * tense, as though one were sitting in the table above it -- and with
+         * three healthy rows an investor reads it, looks for the failure, and
+         * finds none. It is worth saying either way, because it is a promise
+         * about what this page will not hide; it just has to say which one it is.
+         */
+        bind(ctx.root, { fail: failed ? {
+          head: failed === 1 ? 'Why a failed season stays on this page'
+                             : 'Why failed seasons stay on this page',
+          lead: failed === 1
+            ? 'It stays here permanently, in the same table and the same type size as the one that paid.'
+            : 'They stay here permanently, in the same table and the same type size as the ones that paid.',
+        } : {
+          head: 'A failed season would stay on this page',
+          lead: 'None of yours has failed. If one does it stays here permanently, in the same table and the same type size as the one that paid.',
+        } });
         const parts = [];
         // word numbers, to match the heading -- "2 of these seasons" next to
         // "Your three seasons" reads like two different pages
         const w = (n) => WORDS[n] || String(n);
-        if (open) parts.push(open === 1 ? 'One of these seasons has not finished'
-                                        : `${w(open)[0].toUpperCase()}${w(open).slice(1)} of these seasons have not finished`);
+        if (open) parts.push(open === 1 ? 'One of these has not finished'
+                                        : `${w(open)[0].toUpperCase()}${w(open).slice(1)} of these have not finished`);
         if (failed) parts.push(failed === 1 ? 'one failed outright' : `${w(failed)} failed outright`);
         const lead = parts.length ? parts.join(' and ') + '. ' : '';
         return lead + 'A single percentage would average them together into a number that describes none of them.';
@@ -80,15 +101,18 @@ if (ctx) {
     const body = table?.querySelector('tr')?.parentElement;
     if (!mine.length) {
       return state(table?.parentElement || root, 'empty', 'You have not funded a season yet',
-        'When you do, every one you fund stays on this page — including any that fail.',
+        'When you do, every one you fund stays on this page, including any that fail.',
         { label: 'See what is open', go: 'invest' });
     }
 
     const header = body.children[0];
     const tpl = body.children[1]?.cloneNode(true);
+    tpl?.removeAttribute('data-specimen');      // the clones carry real stakes
     if (!tpl) return;
     body.replaceChildren(header);
 
+    // The table replaces a blank, so the rows arrive rather than appear.
+    const built = [];
     for (const inv of mine) {
       const tr = tpl.cloneNode(true);
       const tds = tr.querySelectorAll('td');
@@ -138,13 +162,21 @@ if (ctx) {
       }
 
       if (tds[4]) {
-        tds[4].textContent = inv.payoutAmount != null && inv.payoutAmount > 0
-          ? rupees(inv.payoutAmount)
+        // A column that is money on one row and words on the next: the drawn
+        // cell was styled for "Not yet", so a real payout landed in it grey and
+        // without tabular figures, and would not line up under the row above.
+        const paid = inv.payoutAmount != null && inv.payoutAmount > 0;
+        tds[4].textContent = paid ? rupees(inv.payoutAmount)
           : inv.status === 'cancelled' ? 'Nothing' : 'Not yet';
+        tds[4].classList.toggle('m', paid);
+        tds[4].style.color = paid ? '#1d1a17' : '#605a53';
+        tds[4].style.fontWeight = paid ? '600' : '';
       }
 
       body.append(tr);
+      built.push(tr);
     }
+    arrive(built);
 
     press(root);
   });

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The mark is the tick, in the one green this product allows itself: a fact
+       anybody can check without trusting us. At 16px a leaf is a blob; a tick
+       still reads. Palette from frontend/app/tokens.css. -->
+  <rect width="32" height="32" fill="#1d1a17"/>
+  <path d="M7 17.5l5.5 5.5L25 9.5" fill="none" stroke="#2f9e5f" stroke-width="4"
+        stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>

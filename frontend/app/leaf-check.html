@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
+  <title>Check a leaf · Pestivid</title>
+  <!-- generated from design/LeafCheck.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta name="robots" content="noindex, follow">
+  
+  <link rel="stylesheet" href="./tokens.css">
+  <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
+       at a design's own width. -->
+  <link rel="stylesheet" href="./loaders.css">
+  <link rel="stylesheet" href="./responsive.css">
+  <style>
+
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+    .scr { width: 360px; background: #ddd7d1; }
+    .hd  { background: #fff; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; }
+    .hdt { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .sub { font-size: 15px; line-height: 1.5; color: #4a443d; }
+
+    /* Dark glass, for a readout that has to stay legible over a frame nobody
+       chose. Light .glass at 13% cannot carry #ddd7d1 over an arbitrary photo;
+       this can, and it does real work rather than decoration: mono text laid
+       straight onto a video frame has whatever contrast that frame happens to
+       give it, which is not a number anyone can promise.
+
+       64% and not the 42% this started at, because 42% was measured, not
+       guessed: over a blown-out frame the plate composited to rgb(153,153,152)
+       and the readout came out at 2.00:1, which is unreadable. The frame is not
+       ours to choose, so the guarantee has to hold against the worst one --
+       pure white -- and 64% is where it does. A third of the frame still shows
+       through, blurred, so it still reads as glass.
+
+       14px of blur, not the hero’s 18px: a blur wider than the plate’s short
+       side stops frosting and starts smearing. The reduced-transparency
+       fallback is the flat panel the board already drew, so asking for less
+       transparency costs nothing here. */
+    .gplate {
+      background: rgba(12,11,10,.64);
+      backdrop-filter: blur(14px) saturate(118%);
+      -webkit-backdrop-filter: blur(14px) saturate(118%);
+      box-shadow: inset 0 1px 0 rgba(246,243,239,.14);
+    }
+    @supports not (backdrop-filter: blur(1px)) { .gplate { background: rgba(12,11,10,.88); } }
+    @media (prefers-reduced-transparency: reduce) {
+      .gplate { background: rgba(12,11,10,.92); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    /* A nav item was a 20px-tall word: under the 28x28 pointer minimum and
+       well under 44x44 by touch, which is the HIG recommended control size.
+       The bar centres its items, so giving them a real height moves nothing
+       and makes the whole word-plus-air pressable. */
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .railcard  { color: #1d1a17; padding: 20px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .railh { font-size: 15px; font-weight: 600; }
+    .railp { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; }
+    .rail  { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    /* The back link: in the content above the heading, naming its destination.
+       44px of tap height for a phone, taken as padding so the text still sits
+       tight to the heading it belongs to. */
+    /* The way out: an icon-only chevron, 44x44 of target under a 21px glyph,
+       the same control profile.html carries. The word stays in the document
+       for anyone who cannot see the arrow, drawn off-screen rather than deleted.
+       It sits ON the surface, beside the heading, and is grey, not blue: a
+       blue word at weight 600 competed with the heading from every position
+       it was tried in (design/taste-references.md). */
+    .backlink { display: inline-flex; align-items: center; justify-content: center;
+                align-self: flex-start; width: 44px; height: 44px; margin-left: -11px;
+                color: #605a53; text-decoration: none; flex-shrink: 0; }
+    .backlink:hover { color: #1d1a17; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+          overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  </style>
+</head>
+<body data-page="leaf-check" data-role="farmer" data-design-width="1320" data-design-height="1571">
+<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-family: system-ui, 'Anek Latin', 'Noto Sans', sans-serif; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+      <div class="appbar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div class="appbrand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="appnavOn">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnav">Chat</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen="" data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial="" style="font-size: 13px; font-weight: 500;">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagehold" style="background: #f6f3ef; padding: 12px 28px 8px; display: flex; align-items: center; gap: 14px;">
+      <!-- BACK AND THE HEADING ON ONE ROW, divided by a hairline. This is the
+           chat rail's geometry, and the rail is the one place in this product
+           where the way out never read as detached: it sits BESIDE the header,
+           not above it, with the rail's own right edge (inset -1px 0 0 #ddd7d1)
+           drawn between the two. Everywhere else the back link had a whole row
+           to itself over the title, which is why it read as something dropped
+           on the page rather than part of its header. Same row, same place, on
+           every screen, so "how do I get out" has one answer. An <a href> so it
+           can still be middle-clicked; chrome.js writes the real word. -->
+      <a data-chrome="back" href="./home.html" class="backlink" title="Back"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg><span data-backword="" class="sr">My plots</span></a>
+      <h1 data-title="" class="pageh" style="margin: 0;">Check a leaf</h1>
+    </div>
+
+
+          <div style="flex-grow: 1; background: #f6f3ef; display: grid; grid-template-columns: 1fr 372px; align-items: start;">
+      <div class="main" style="padding: 20px 28px 30px;">
+<div data-plate="" style="min-height: 430px; background: #37322d; position: relative; overflow: hidden;">
+        <div style="position: absolute; inset: 8px; border: 1px solid #605a53;"></div>
+
+        <!-- Until there is a photo, this IS the page. The affordance used to be a
+             box the script prepended above the app bar, which is why nobody could
+             find where to put a leaf in. -->
+        <div data-capture="" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 30px;">
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#c3bcb6" stroke-width="1.6"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg>
+          <div style="font-size: 20px; font-weight: 700; color: #f6f3ef; text-align: center;">One leaf, filling most of the frame</div>
+          <div style="font-size: 15px; line-height: 1.5; color: #c3bcb6; text-align: center; max-width: 44ch;">
+            The photo is read on this machine. It is never uploaded, and no part of it reaches us.
+          </div>
+          <div data-choose="" style="background: #016abe; min-height: 52px; box-sizing: border-box; padding: 0 26px; display: flex; align-items: center; justify-content: center; margin-top: 4px;">
+            <div style="font-size: 17px; font-weight: 700; color: #fff;">Choose a photo</div>
+          </div>
+        </div>
+
+        <!-- where the download-and-read steps are drawn, over the photo -->
+        <div data-loadhold="" style="position: absolute; left: 20px; right: 20px; bottom: 44px;"></div>
+        <div data-bind="shot.file" data-readout="" class="gplate" style="position: absolute; left: 18px; top: 16px; padding: 7px 10px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.7; color: #f6f3ef;">IMG_20260822_0914_IST.jpg <br>3024×4032 · 2.4 MB</div>
+        <div data-readout="" class="gplate" style="position: absolute; left: 12px; bottom: 11px; padding: 5px 10px;">
+          <div data-bind="shot.where" style="font-size: 12px; font-weight: 600; color: #f6f3ef;">Checked on your phone</div>
+        </div>
+      </div>
+<div data-verdictcard="" style="padding: 20px 0 0;">
+        <div style="font-size: 15px; color: #605a53;">Most likely</div>
+        <h1 data-title="" data-bind="verdict.name" style="font-size: 27px; font-weight: 700; letter-spacing: -0.028em; margin-top: 3px; line-height: 1.1;">Early blight</h1>
+        <div data-bind="verdict.note" class="sub" style="margin-top: 7px;">
+          Dark rings on the older, lower leaves. Common, and treatable.
+        </div>
+      </div>
+<div data-treatment="" style="padding: 20px;">
+        <div style="font-size: 17px; font-weight: 700;">Do these first, no spraying</div>
+        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 11px;">
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <div class="num" style="font-size: 15px; font-weight: 700; color: #01579b; flex-shrink: 0; width: 14px;">1</div>
+            <div class="sub">Pull off the worst leaves and burn them. Do not leave them lying in the field.</div>
+          </div>
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <div class="num" style="font-size: 15px; font-weight: 700; color: #01579b; flex-shrink: 0; width: 14px;">2</div>
+            <div class="sub">Water the soil, not the leaves.</div>
+          </div>
+          <div style="display: flex; gap: 11px; align-items: flex-start;">
+            <div class="num" style="font-size: 15px; font-weight: 700; color: #01579b; flex-shrink: 0; width: 14px;">3</div>
+            <div class="sub">Give the rows room so leaves dry quickly after rain.</div>
+          </div>
+        </div>
+      </div>
+<div data-treatment="" style="padding: 20px 0 0; margin-top: 20px; box-shadow: inset 0 1px 0 #ddd7d1;">
+        <div style="font-size: 17px; font-weight: 700;">If you do spray</div>
+
+        <div style="background: #f2e6cd; padding: 14px 15px; margin-top: 13px;">
+          <div style="font-size: 15.5px; font-weight: 700; color: #013f70;">We are not going to tell you how much</div>
+          <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+            This product is not yet checked against the CIBRC register. Read the amount off the bottle.
+            Do not guess, and do not let anyone guess for you.
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div style="font-size: 18px; font-weight: 700;">Mancozeb 75% WP</div>
+          <div style="font-size: 14px; color: #605a53; margin-top: 2px;">A protectant, it prevents, it does not cure</div>
+
+          <div style="margin-top: 11px; display: flex; gap: 10px; align-items: baseline;">
+            <div style="font-size: 15px; color: #605a53; width: 74px; flex-shrink: 0;">Amount</div>
+            <div style="font-size: 15.5px; font-weight: 700; color: #4a443d;">Read the bottle</div>
+          </div>
+          <div style="margin-top: 8px; display: flex; gap: 10px; align-items: baseline;">
+            <div style="font-size: 15px; color: #605a53; width: 74px; flex-shrink: 0;">Wear</div>
+            <div class="sub">Gloves, full sleeves, boots, something over your eyes</div>
+          </div>
+          <div style="margin-top: 8px; display: flex; gap: 10px; align-items: baseline;">
+            <div style="font-size: 15px; color: #605a53; width: 74px; flex-shrink: 0;">Careful</div>
+            <div class="sub">Do not spray if rain or wind is coming</div>
+          </div>
+        </div>
+      </div>
+<div data-treatment="" style="background: #1d1a17; padding: 16px 20px;">
+        <div style="font-size: 14px; line-height: 1.55; color: #e7e1db;">
+          This is guidance, not a prescription. Check the product and the amount with your extension
+          officer before you spray. <span style="font-weight: 700; color: #fff;">The label is the law.</span>
+        </div>
+      </div>
+      <!-- Asking sits WHERE THE ANSWER ENDS.
+
+           It used to be the first card in the right rail, at the very top of the
+           page, while the diagnosis and the treatment ran down the left column.
+           Measured: the result ended 938px down and the composer was at 211, so
+           finishing the answer and then wanting to ask about it meant scrolling
+           back up more than a whole screen. A question is what you have AFTER
+           reading, so it belongs after the reading.
+
+           The rail keeps what is read BEFORE the photo (how to frame it) and the
+           way out afterwards. -->
+<div data-askcard="" style="background: #e7e1db; padding: 18px 20px;">
+        <div style="font-size: 17px; font-weight: 700;">Ask about this result</div>
+        <div style="font-size: 14.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+          It already knows what it found on your photo. You do not have to explain it again.
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 13px;">
+          <div data-ask="" style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1;">Is it too late to save this crop?</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
+          </div>
+          <div data-ask="" style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1;">What will it cost me to treat?</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
+          </div>
+          <div data-ask="" style="background: #f6f3ef; padding: 12px 14px; font-size: 15px; line-height: 1.35; min-height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1;">Will it spread to my other plot?</div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: stretch; margin-top: 13px;">
+          <div style="flex-grow: 1; background: #fff; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; padding: 0 14px; min-height: 54px;">
+            <div data-askfield="" style="font-size: 15.5px; color: #4a443d;">Ask something else</div>
+          </div>
+          <div data-asksend="" style="width: 54px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
+          </div>
+        </div>
+      </div>
+<div data-retake="" style="padding: 20px; display: none;">
+        <!-- The three rules are stated once, in the rail, where they are also read
+             BEFORE the photo is taken. What belongs here is what to do next. -->
+        <div>
+        <div style="background: #1d1a17; height: 60px; display: flex; align-items: center; justify-content: center; gap: 11px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
+          <div style="font-size: 18px; font-weight: 700; color: #fff;">Take another photo</div>
+        </div>
+        <div style="margin-top: 12px; height: 54px; display: flex; align-items: center; justify-content: center; gap: 10px; background: #e7e1db;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M4 5h16v11H8l-4 4z"></path></svg>
+          <div style="font-size: 16px; font-weight: 600;">Ask about this photo</div>
+        </div>
+
+        <div style="margin-top: 12px; background: #e7e1db; padding: 14px 16px;">
+          <div style="font-size: 15.5px; font-weight: 700;">Talk to someone who knows</div>
+          <div style="font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+            Kisan Call Centre, free, and they speak Telugu.
+          </div>
+          <div style="display: flex; align-items: center; gap: 11px; margin-top: 11px;">
+            <div style="width: 46px; height: 46px; flex-shrink: 0; background: #016abe; display: flex; align-items: center; justify-content: center;">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><path d="M4.5 4h4l2 5-2.5 1.5a12 12 0 0 0 5.5 5.5L15 13.5l5 2v4a1.5 1.5 0 0 1-1.7 1.5A16.5 16.5 0 0 1 3 5.7 1.5 1.5 0 0 1 4.5 4z"></path></svg>
+            </div>
+            <div>
+              <div style="font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums;">1800 180 1551</div>
+              <div style="font-size: 13.5px; color: #605a53;">6 am to 10 pm, every day</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      </div>
+      <div class="rail">
+
+<!-- Before a photo: how to take one the checker will accept. That is the whole
+     difference between a verdict and a refusal, so it is said before the
+     mistake rather than after it. -->
+<div data-framing="" class="railcard">
+        <div class="railh">Take it like this</div>
+        <div style="display: flex; flex-direction: column; gap: 11px; margin-top: 11px;">
+          <div style="display: flex; gap: 11px;">
+            <div class="num" style="color: #016abe; font-weight: 700; flex-shrink: 0;">1</div>
+            <div class="railp" style="margin-top: 0;">The whole leaf, with a little space around it. Step back rather than zoom in.</div>
+          </div>
+          <div style="display: flex; gap: 11px;">
+            <div class="num" style="color: #016abe; font-weight: 700; flex-shrink: 0;">2</div>
+            <div class="railp" style="margin-top: 0;">One leaf only, not a handful and not a whole row.</div>
+          </div>
+          <div style="display: flex; gap: 11px;">
+            <div class="num" style="color: #016abe; font-weight: 700; flex-shrink: 0;">3</div>
+            <div class="railp" style="margin-top: 0;">Even daylight, straight above, no shadow across it.</div>
+          </div>
+        </div>
+        <div class="railp" style="box-shadow: inset 0 1px 0 #e7e1db; padding-top: 12px; margin-top: 14px;">
+          The checker refuses rather than guesses. A photo it cannot read gets no name at all.
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+
+    </div>
+<script type="module" src="./pages/leaf-check.js"></script>
+</body>
+</html>

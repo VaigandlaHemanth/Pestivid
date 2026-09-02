@@ -30,13 +30,13 @@ console.log('  three accounts created and signed in');
 const CHECKS = [
   ['profile',        'farmer',   people.farmer.name],
   ['home',           'farmer',   people.farmer.name.split(' ').slice(0, 2).join(' ')],
-  ['plots',          'farmer',   'not filmed anything yet'],
   ['money',          'farmer',   null],
-  ['messages',       'farmer',   'you have not read'],
-  ['payout',         'farmer',   'No season chosen'],
+  // Messages is conversations now; the notices moved behind the envelope, and
+  // the unread count moved with them.
+  ['messages',       'farmer',   'conversation'],
+  ['notifications',  'farmer',   'you have not read'],
   ['report-harvest', 'farmer',   'No season chosen'],
-  ['thread-farmer',  'farmer',   'No conversation chosen'],
-  ['plot',           'farmer',   'No videos on this plot'],
+  ['plot',           'farmer',   'No plot chosen'],
   ['sent',           'farmer',   'no clip to send'],
   ['portfolio',      'investor', people.investor.name],
   ['invest',         'investor', null],
@@ -46,11 +46,9 @@ const CHECKS = [
   // the nine that were placeholders until now
   ['landing',        'farmer',   'A field you can see'],
   ['home-empty',     'farmer',   null],
-  ['setup-language', 'farmer',   'Choose your language'],
-  ['setup-identity', 'farmer',   'phone number is your account name'],
-  ['ask-money-video','farmer',   'Film the field first'],
-  ['leaf-result',    'farmer',   'Take a photo of one leaf'],
-  ['leaf-refusal',   'farmer',   'Take a photo of one leaf'],
+  ['ask-money',      'farmer',   'Film the field first'],
+  // The capture prompt is the plate itself now, not a box above the app bar.
+  ['leaf-check',    'farmer',   'One leaf, filling most of the frame'],
 ];
 
 const browser = await chromium.launch();

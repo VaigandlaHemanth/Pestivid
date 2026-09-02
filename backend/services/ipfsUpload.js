@@ -42,8 +42,24 @@ const multer = require('multer');
 // free-tier instance and a rural uplink can both survive it.
 const MAX_BYTES = Number(process.env.MAX_VIDEO_BYTES || 100 * 1024 * 1024);
 
+/**
+ * What a phone's recorder actually produces, and what a content sniffer makes
+ * of it.
+ *
+ * MediaRecorder writes a STREAMING WebM: the container header goes out before
+ * the track layout is complete, so a sniffer reading the first bytes classifies
+ * it as audio/webm. Pinata sniffs, and rejected every single real recording
+ * with "Presigned URL does not grant permissions to upload detected MIME type:
+ * audio/webm". No farmer could send a video at all.
+ *
+ * So audio/webm and audio/mp4 are on the list -- not because we want audio, but
+ * because that is what a video from a browser looks like to a sniffer. It costs
+ * nothing: the server downloads the object back and hashes the bytes itself
+ * before recording anything, so the file is checked on its content either way.
+ */
 const ALLOWED_MIME = new Set([
     'video/mp4', 'video/webm', 'video/quicktime', 'video/x-matroska',
+    'audio/webm', 'audio/mp4', 'application/octet-stream',
 ]);
 
 const upload = multer({

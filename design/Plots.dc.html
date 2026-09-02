@@ -7,154 +7,172 @@
 <body>
 <x-dc>
 <helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&display=swap">
   <style>
     body { margin: 0; }
     a { color: #01579b; } a:hover { color: #013f70; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m, .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
 
-    /* Farmer surface uses the SYSTEM stack, deliberately.
-       Google Fonts for Telugu costs 35.6 KB for one weight and 123.8 KB for two;
-       AOSP already ships Noto Sans Telugu/Devanagari/Tamil as variable fonts at
-       400-700. Spending a farmer’s metered data to re-deliver a font already on
-       the phone is not a design decision, it is a mistake. */
-    .f  { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
-    .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+    /* ── the shell, identical on every farmer board ───────────────────────
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. responsive.css folds .appbar, .colh and .colr onto a phone once,
+       for all fifteen of them. */
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    /* A nav item was a 20px-tall word: under the 28x28 pointer minimum and
+       well under 44x44 by touch, which is the HIG recommended control size.
+       The bar centres its items, so giving them a real height moves nothing
+       and makes the whole word-plus-air pressable. */
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .railcard  { color: #1d1a17; padding: 20px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .railh { font-size: 15px; font-weight: 600; }
+    .railp { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; }
+    .rail  { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
 
-    /* Hierarchy comes from size and weight. Hairlines only where a boundary
-       carries meaning; grouping is done with background and space instead. */
-    .row  { padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; }
-    .zeb  { background: #f6f3ef; }
-    .zeb2 { background: #f6f3ef; }
-    .lbl  { font-size: 13px; color: #4a443d; }
-    .ttl  { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: #1d1a17; }
+    /* the table. .row keeps its name because plots.js repeats on '.row', and
+       .ttl / .lbl keep theirs because it fills them by class. Relayout, never
+       rename: the row is a grid instead of a flex column, and nothing else
+       about it moved. */
+    .colh  { display: grid; grid-template-columns: 96px 1fr 132px 262px 34px; gap: 18px;
+           padding: 12px 22px; font-size: 11.5px; font-weight: 600; letter-spacing: .05em;
+           color: #605a53; box-shadow: inset 0 -1px 0 #e4e9ee; }
+    .colr, .row { display: grid; grid-template-columns: 96px 1fr 132px 262px 34px; gap: 18px;
+           padding: 15px 22px; align-items: center; box-shadow: inset 0 -1px 0 #e4e9ee; }
+    .tile { width: 96px; height: 64px; background: #37322d; position: relative; overflow: hidden; }
+    .lbl  { font-size: 13.5px; color: #4a443d; }
+    .ttl  { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: #1d1a17; }
+    .st   { display: flex; align-items: center; gap: 8px; }
+    /* The back link: in the content above the heading, naming its destination.
+       44px of tap height for a phone. align-self keeps it from stretching when
+       its parent is a flex column. */
+    .backlink { display: inline-flex; align-items: center; align-self: flex-start;
+                gap: 6px; min-height: 44px; margin-left: -2px; font-size: 14.5px;
+                font-weight: 600; color: #01579b; text-decoration: none; }
   </style>
 </helmet>
 
-<div data-page="plots" class="f" style="width: 360px; min-height: 900px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+<div class="f" style="width: 1400px; background: #e7e1db; color: #1d1a17; padding: 28px 28px 34px; box-sizing: border-box;">
 
-  <!-- header: no border, just a background change and weight -->
-  <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-      <div data-title style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">My plots</div>
-    </div>
-    <div style="display: flex; gap: 16px; align-items: center;">
-      <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
-        <!-- concrete depiction, not an abstract glyph: an envelope -->
-        <div style="display: flex; align-items: center; justify-content: center;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg></div>
-        <div data-readout class="num" style="position: absolute; top: 1px; right: -1px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+  <div style="font-size: 15px; color: #605a53;">Every video this farmer has filed</div>
+  <h2 style="margin: 5px 0 0; font-size: 27px; font-weight: 700; letter-spacing: -0.028em;">One list, and the state of each date on its row</h2>
+  <p style="margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; max-width: 104ch; color: #4a443d;">
+    The phone version drew two groups, on the phone and sent, to show both states at once. There is one
+    real list. The state belongs in a column, and the sentence that explains what the state means belongs
+    once, in the rail, not repeated on every row.
+  </p>
+
+  <div style="margin-top: 22px;">
+
+  <!-- RETIRED. This panel no longer generates a page: home shows the same eight
+     videos with the plot name this table left out, so home is the list and the
+     nav word "My plots" points there. The drawing is kept for reference, and
+     the data-page mark is gone so build-pages stops offering to build it --
+     the same way Setup.dc.html was retired. -->
+<div data-retired="plots" class="f" style="width: 1320px; min-height: 900px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+
+    <div class="appbar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div class="appbrand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="appnavOn">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnav">Chat</div>
+        </div>
       </div>
-      <div data-chrome="you" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg></div>
-    </div>
-  </div>
-
-  <div>
-
-    <!-- ── group 1: still on the phone ─────────────────────────────
-         Attention colour is OCHRE, not green. Green is reserved for one
-         thing only in this app: a healthy leaf verdict. -->
-    <div style="padding: 18px 20px 12px;">
-      <div style="display: flex; align-items: baseline; gap: 9px;">
-        <div data-bind="group.title" style="font-size: 17px; font-weight: 700;">Still on your phone</div>
-        <div data-bind="group.count" class="num" style="font-size: 17px; font-weight: 700;">2</div>
-      </div>
-      <div data-bind="onPhone.note" style="font-size: 14.5px; line-height: 1.5; margin-top: 5px; color: #605a53; max-width: 32ch;">
-        Not sent yet. If this phone breaks, these two are gone.
-      </div>
-    </div>
-
-    <div class="row zeb">
-      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:38</div></div>
-      <div style="flex-grow: 1;">
-        <div class="ttl">North plot</div>
-        <div class="lbl num" style="margin-top: 3px;">Today 8:40 am &middot; 38 sec</div>
-        <div style="display: flex; align-items: center; gap: 7px; margin-top: 10px;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.2"><path d="M12 20v-8"></path><path d="M8 15l4-4 4 4"></path><path d="M5 5h14"></path></svg>
-          <div style="font-size: 14.5px; font-weight: 600; color: #01579b;">Waiting for signal</div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial style="font-size: 13px; font-weight: 500;">A</div>
         </div>
       </div>
     </div>
 
-    <div class="row zeb2">
-      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:44</div></div>
-      <div style="flex-grow: 1;">
-        <div class="ttl">North plot</div>
-        <div class="lbl num" style="margin-top: 3px;">Yesterday 6:15 pm &middot; 44 sec</div>
-        <div style="margin-top: 11px;">
-          <div style="height: 10px; background: #e4e0d8; overflow: hidden;">
-            <div style="width: 40%; height: 100%; background: #01579b;"></div>
+    <!-- ══ ONE COLUMN ══
+         The rail held a primary action and two explainer cards. The cards are
+         gone: "Nobody can move a stamped date" was doctrine, restated on every
+         visit, and "What the state means" restated the "Where the date is"
+         column that is already on every row. What was worth keeping in the
+         second one is LIVE -- how many of these videos already have their date
+         in a block -- so it is the page's sub-line, under the heading, where
+         every other page in this product puts its summary.
+
+         With the cards gone a 372px rail held one button, so the button moved to
+         the top right of the heading row, which is where a page-level primary
+         belongs, and the table took the 372px back. The Plot column was 270px
+         wide and is 668px now. -->
+    <div style="flex-grow: 1; padding: 18px 28px 30px;">
+
+      <div>
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 26px;">
+          <div>
+            <a data-chrome="back" href="./home.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword>Home</span></a>
+            <div style="display: flex; align-items: baseline; gap: 10px;">
+              <h1 data-bind="group.title" data-title class="pageh">On our server</h1>
+              <div data-bind="group.count" class="num pageh" style="color: #605a53;">4</div>
+            </div>
+            <div data-bind="onPhone.note" style="font-size: 15px; line-height: 1.5; color: #4a443d; margin-top: 5px; max-width: 74ch;">
+              All of these are with us and being batched. Their dates are usually written into a Bitcoin
+              block within a day.
+            </div>
           </div>
-          <div class="num" style="font-size: 14.5px; font-weight: 600; margin-top: 6px; color: #01579b;">Sending &mdash; 40 of 100</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── group 2: safe on the server ───────────────────────────── -->
-    <div style="padding: 22px 20px 12px;">
-      <div style="display: flex; align-items: baseline; gap: 9px;">
-        <div style="font-size: 17px; font-weight: 700; color: #37322d;">Sent and safe</div>
-        <div class="num" style="font-size: 17px; font-weight: 700; color: #37322d;">2</div>
-      </div>
-      <div data-bind="sent.note" style="font-size: 14.5px; line-height: 1.5; margin-top: 5px; color: #605a53; max-width: 34ch;">
-        On our server. Safe even if you lose this phone.
-      </div>
-    </div>
-
-    <div class="row zeb">
-      <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:41</div></div>
-      <div style="flex-grow: 1;">
-        <div class="ttl">Canal plot</div>
-        <div class="lbl num" style="margin-top: 3px;">18 August &middot; 41 sec</div>
-        <div style="display: flex; align-items: center; gap: 7px; margin-top: 10px;">
-          <!-- a stamp, not a tick: a tick would read as "we verified the field" -->
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
-          <div style="font-size: 14.5px; font-weight: 600; color: #37322d;">Date stamped</div>
-        </div>
-        <div style="font-size: 14px; line-height: 1.45; margin-top: 6px; color: #605a53;">
-          2 investors are looking at this one.
-        </div>
-      </div>
-    </div>
-
-    <!-- flagged: ochre, worded as a check and not an accusation -->
-    <div class="row zeb2">
-      <div style="display: flex; gap: 14px; align-items: flex-start;">
-        <div style="width: 68px; min-height: 68px; flex-shrink: 0; background: #37322d; position: relative; overflow: hidden;"><div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div><div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div style="position: absolute; left: 8px; bottom: 6px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ded7d0;">0:36</div></div>
-        <div style="flex-grow: 1;">
-          <div class="ttl">Back field</div>
-          <div class="lbl num" style="margin-top: 3px;">11 August &middot; 36 sec</div>
-          <div style="display: flex; align-items: center; gap: 7px; margin-top: 10px;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
-            <div style="font-size: 14.5px; font-weight: 600; color: #37322d;">Date stamped</div>
+          <!-- The primary action. Ink fill: the highest contrast this palette has,
+               and it cannot be confused with the healthy-leaf green. -->
+          <div data-recordcta style="background: #1d1a17; min-height: 56px; padding: 0 24px; display: flex; align-items: center; justify-content: center; gap: 11px; flex-shrink: 0; border-radius: 8px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
+            <div style="font-size: 16.5px; font-weight: 700; color: #fff;">Record a video</div>
           </div>
         </div>
+
+        <div class="lift1" style="background: #fff; margin-top: 18px;">
+          <div class="colh">
+            <div></div><div>Plot</div><div>Length</div><div>Where the date is</div><div></div>
+          </div>
+
+          <!-- One drawn row, repeated per video by plots.js. It is marked as a
+               SPECIMEN: until the fetch answers this row is an invented video with
+               an invented date on it, and responsive.css keeps it off the screen. -->
+          <div data-specimen class="row">
+            <div data-tile class="tile">
+              <div style="position: absolute; inset: 5px; border: 1px solid #605a53;"></div>
+              <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div>
+              <div data-dur style="position: absolute; left: 8px; bottom: 6px; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.4; color: #ddd7d1;">0:41</div>
+            </div>
+            <div>
+              <div class="ttl">Canal plot</div>
+              <div class="lbl num" style="margin-top: 3px;">18 August, 6:15 pm</div>
+            </div>
+            <div data-len class="lbl num">41 sec</div>
+            <div class="st">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
+              <div data-state style="font-size: 14.5px; font-weight: 600; color: #37322d;">Date stamped</div>
+            </div>
+            <div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg>
+            </div>
+          </div>
+        </div>
       </div>
 
-      
-    </div>
-
-  </div>
-
-  <!-- primary action: ink fill. Highest possible contrast, and it cannot be
-       confused with the healthy-leaf green. -->
-  <div style="flex-shrink: 0; background: #f6f3ef; padding: 16px 20px 20px;">
-    <div style="background: #1d1a17; height: 64px; display: flex; align-items: center; justify-content: center; gap: 12px;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
-      <div style="font-size: 19px; font-weight: 700; color: #fff;">Record a video</div>
     </div>
   </div>
 
+  <div style="font-size: 13px; color: #605a53; letter-spacing: .04em; margin-top: 13px;">LAPTOP, 1320</div>
+  <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">The explanation moved out of the rows</div>
+  <div style="font-size: 14px; line-height: 1.5; margin-top: 8px; max-width: 92ch; color: #4a443d;">
+    Four rows repeating "date being written, usually by tomorrow" says it three times too often. The
+    column carries the state in two or three words; the rail says once what the state means.
+  </div>
 
-  <!-- everything below this line needs a scroll on a 360x800 handset -->
-  <div data-fold style="position: absolute; left: 0; right: 0; top: 800px; height: 0; border-top: 1px dashed rgba(167,25,48,.45); pointer-events: none;">
-    <div style="position: absolute; right: 0; top: -8px; background: rgba(167,25,48,.82); color: #fff; font: 600 9.5px/1 system-ui, sans-serif; letter-spacing: .06em; padding: 3px 5px;">FOLD</div>
   </div>
 </div>
-</x-dc>
 
-<script data-dc-script data-props='{}'>
-class Component extends DCLogic {
-  renderVals() { return {}; }
-}
-</script>
+</x-dc>
 </body>
 </html>

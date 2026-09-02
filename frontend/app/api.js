@@ -97,7 +97,7 @@ export async function sendVideo(file, meta, onProgress) {
         // refusal, and the clip is still on the phone either way.
         return reject(new ApiError(xhr.status, {
           message: xhr.status === 429
-            ? 'Storage is busy just now. Your video is still on your phone — it will go on the next try.'
+            ? 'Storage is busy just now. Your video is still on your phone, it will go on the next try.'
             : 'Storage would not take the file.',
         }, 'upload'));
       }
@@ -143,7 +143,13 @@ export const api = {
   },
   investments: {
     mine: (investorId) => get(`/investments/investor/${investorId}`),
-    onProject: (projectId) => get(`/investments/project/${projectId}`),
+    // The route answers {project, investments}, and both callers treated the
+    // answer as an array. On the payout screen that threw
+    // "investments.reduce is not a function" ON SCREEN -- and because it threw
+    // before any bind ran, the page kept the artboard's numbers: a payout of
+    // 4,04,160 split between four named investors, none of it real.
+    onProject: (projectId) => get(`/investments/project/${projectId}`)
+      .then(r => (Array.isArray(r) ? r : (r?.investments || []))),
     create: (b) => post('/investments', b),
   },
   listings: {
@@ -171,20 +177,114 @@ export const api = {
   },
   money: { transactions: (userId) => get(`/transactions/user/${userId}`) },
   ai: {
-    ask: (question, history) => post('/ai/chatbot', { question, history }),
+    // POST /ai/chatbot takes { messages: [{role, content}] } and answers
+    // { text }. This sent { question, history } and read r.answer, so the
+    // chatbot answered "Invalid chat data format" to every question ever asked
+    // -- and would have printed the not-covered fallback even on success.
+    ask: (question, history = []) => post('/ai/chatbot', {
+      messages: [
+        ...history.slice(-8).map(m => ({ role: m.role, content: String(m.content || '') })),
+        { role: 'user', content: String(question || '') },
+      ],
+    }).then(r => ({ ...r, answer: r?.text ?? r?.answer ?? '' })),
     leaf: (b) => post('/ai/analyze-plant', b),
   },
+  users: { notices: (b) => put('/users/me/notices', b) },
   admin: { flagged: () => get('/videos/review-queue') },
 };
 
 // ---- formatting, in one place so two screens cannot disagree ----------------
 
 /** Indian grouping, no decimals, and a real rupee sign. */
-export const rupees = (n) => n == null ? '—'
+export const rupees = (n) => n == null ? 'not yet'
   : '₹' + Math.round(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
+/* A lot's price is a RANGE the farmer will accept, and four screens printed it
+ * as "₹26,000, ₹34,000" -- two figures joined by a comma, which reads as two
+ * prices, or as one price with a stray thousand. One dash, one figure. */
+export const rupeeRange = (lo, hi) => {
+  if (lo == null && hi == null) return 'not yet';
+  if (lo == null || hi == null || Number(lo) === Number(hi)) return rupees(lo ?? hi);
+  return `${rupees(lo)} – ${rupees(hi)}`;
+};
+
+/* Which glyph a notice wears, and where pressing it goes.
+ *
+ * Shared by the notices page and the banner that shows a notice the moment it
+ * arrives, so the two cannot disagree about what a notice IS.
+ *
+ * The server names the event in `type`, and that is what decides. The words
+ * were being matched by regex instead, so "Bob sent you a message" wore the
+ * paperwork glyph and "Charlie put ₹50,000 into your season" did too: neither
+ * sentence contained the verb the pattern was waiting for. The words are only a
+ * fallback now, for rows written before the types were consistent. */
+export function noticeKind(n) {
+  switch (n?.type) {
+    case 'message': return 'person';
+    case 'investment': case 'funding': case 'purchase': case 'sale': case 'payout': return 'money';
+    case 'listing': return 'listing';
+    case 'warning': case 'error': return 'wrong';
+    case 'success': return 'proved';
+    default: break;
+  }
+  const txt = `${n?.title || ''} ${n?.message || ''}`.toLowerCase();
+  if (/\bwrote\b|asked you|sent you a message/.test(txt)) return 'person';
+  if (/\bblock\b/.test(txt) || /date .*(landed|written)/.test(txt)) return 'proved';
+  if (/bought|paid|funded|put .* into|asking for money|investor/.test(txt)) return 'money';
+  if (/listed|listing/.test(txt)) return 'listing';
+  if (/failed|queried|problem|cannot|refus/.test(txt)) return 'wrong';
+  return 'listing';
+}
+
+/* Where a notice leads, when it leads anywhere. Only pairs that really exist: a
+ * screen that shows the thing the notice is about, to the role reading it.
+ * Anything else is null, and a caller shows no chevron and goes nowhere. */
+export function noticeDestination(n, role) {
+  // An admin's notices are the queue they exist to act on.
+  if (role === 'admin') return n?.itemType ? 'admin' : null;
+  switch (n?.itemType) {
+    // Straight into the conversation. Older notices carry a message id here
+    // and fall back to the first thread, which is what messages.js did anyway.
+    case 'Message': return n.itemId ? `messages?c=${n.itemId}` : 'messages';
+    case 'FundingRequest':
+      return role === 'investor' ? 'invest' : role === 'farmer' ? 'money' : null;
+    case 'Investment':
+      return role === 'investor' ? 'portfolio' : role === 'farmer' ? 'money' : null;
+    case 'Listing':
+      if (role === 'buyer') return n.type === 'purchase' ? 'orders' : 'market';
+      if (role === 'farmer') return n.type === 'purchase' ? 'money' : 'home';
+      return null;
+    default: return null;
+  }
+}
+
+/* Whose notice is this?
+ *
+ * A global notification is one document every user can see, and the notices
+ * page promises in its own rail that "only your own plots and your own money
+ * appear here". It was breaking that promise three times over on the farmer's
+ * screen: "a farmer is asking for money to grow Potato, 2 acres" is addressed
+ * to somebody with money to put in, and it was showing up on the screen of the
+ * farmer who is asking for it.
+ *
+ * So a broadcast reaches the role it was written for. Anything addressed to one
+ * person is that person's, whatever its type. This lives here because BOTH the
+ * notices page and the envelope badge in the app bar have to count the same
+ * set -- the page saying "4 you have not read" under a badge reading 7 is worse
+ * than either number being wrong on its own.
+ */
+const BROADCAST_FOR = {
+  funding: ['investor', 'admin'],   // somebody is asking for money
+  listing: ['buyer', 'admin'],      // a lot has come up for sale
+};
+export function noticeForRole(n, role) {
+  if (!n || !n.global) return true;
+  const who = BROADCAST_FOR[n.type];
+  return !who || who.includes(role);
+}
+
 export const dayMonth = (iso) => {
-  if (!iso) return '—';
+  if (!iso) return 'not yet';
   const d = new Date(iso);
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
 };
@@ -202,6 +302,15 @@ export const whenShort = (iso) => {
   return `${dayMonth(iso)}, ${t}`;
 };
 
+/* Does this server write dates at all? Development runs with anchoring off,
+ * and every screen went on saying "usually by tomorrow" about dates that
+ * would never land. Asked once per page; until the answer arrives the screens
+ * assume yes, which is what production is. */
+export const anchoring = { enabled: true, known: false };
+export const anchoringReady = get('/videos/anchoring')
+  .then((r) => { anchoring.enabled = Boolean(r?.enabled); anchoring.known = true; })
+  .catch(() => {});
+
 /** The three states a video's date can be in, in the words the screens use. */
 export function dateState(v) {
   // `text` is the full line for a detail screen. `short` is for a row in a
@@ -212,10 +321,14 @@ export function dateState(v) {
     text: `Date stamped · block ${Number(v.blockHeight).toLocaleString('en-IN')}`,
     short: `Block ${Number(v.blockHeight).toLocaleString('en-IN')}`,
   };
-  if (v?.cid) return {
+  if (v?.cid) return anchoring.enabled ? {
     kind: 'waiting',
     text: 'On our server · date being written, usually by tomorrow',
     short: 'Date being written',
+  } : {
+    kind: 'waiting',
+    text: 'On our server · this server is not writing dates yet',
+    short: 'Date not written here',
   };
   return { kind: 'phone', text: 'Not sent yet', short: 'Not sent yet' };
 }

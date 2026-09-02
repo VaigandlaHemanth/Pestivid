@@ -36,13 +36,24 @@ router.get('/user/:userId', authenticateToken, async (req, res) => {
         // dismissedBy set was added when DELETE stopped removing globals for
         // everyone, but this query never consulted it -- so "delete" appeared to
         // do nothing and the item reappeared on the next poll.
+        // A broadcast this person has switched off is not fetched at all, so the
+        // list, the bell's count and the banner agree by construction.
+        const prefs = (await mongoose.model('User').findById(userId).select('notices').lean())?.notices || {};
+        const muted = ['funding', 'listing'].filter((k) => prefs[k] === false);
         const filter = {
             dismissedBy: { $ne: userId },
             $or: [
                 { recipient: userId },  // addressed to this user
-                { global: true },       // platform-wide broadcast
+                { global: true, ...(muted.length ? { type: { $nin: muted } } : {}) },  // platform-wide broadcast
             ],
         };
+        // ?after=<ISO date>: only what arrived since then. A page that polls
+        // for arrivals has no use for the whole history it already holds. A
+        // date that does not parse is ignored rather than guessed at.
+        if (req.query.after !== undefined) {
+            const after = new Date(String(req.query.after));
+            if (!Number.isNaN(after.getTime())) filter.timestamp = { $gt: after };
+        }
 
         const notifications = await Notification.find(filter)
                                                .sort({ timestamp: -1 })

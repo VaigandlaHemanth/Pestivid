@@ -44,8 +44,11 @@ router.get('/conversations/:userId', authenticateToken, async (req, res) => {
         return res.status(400).json({ message: 'Invalid User ID format.' }); // 400 Bad Request
     }
 
-    // Authorization: Ensure the authenticated user is the user whose conversations are being requested.
-    // Or allow an admin user to view any user's conversations.
+    // Authorization: the authenticated user must BE the user whose conversations
+    // are being requested. Not "or an admin", which is what this comment used to
+    // say and what the code below has never done -- there is no branch for it.
+    // A comment promising a back door that does not exist is the kind that gets
+    // one built.
     if (authenticatedUserId.toString() !== userId.toString()) {
          console.warn(`Authorization failed: User ${authenticatedUserId} attempted to view conversations for user ${userId}`);
         return res.status(403).json({ message: "Forbidden: You can only view your own conversations." }); // 403 Forbidden
@@ -330,7 +333,9 @@ router.post('/conversations/:conversationId/messages', authenticateToken, async 
 
 
         // Update the parent conversation's last message snippet and timestamp
-        conversation.lastMessageSnippet = savedMessage.text.substring(0, 50) + (savedMessage.text.length > 50 ? '...' : '');
+        // One character, not three: three dots is a typographic tell and the
+        // messages list prints this snippet straight onto the screen.
+        conversation.lastMessageSnippet = savedMessage.text.substring(0, 50) + (savedMessage.text.length > 50 ? '…' : '');
         conversation.lastMessageTimestamp = savedMessage.timestamp;
         // Save the updated conversation document
         await conversation.save();
@@ -341,14 +346,22 @@ router.post('/conversations/:conversationId/messages', authenticateToken, async 
          const senderUser = req.user; // Payload from token includes _id, role, name (if included during login)
          const senderDisplayName = (senderUser.name && senderUser.name.split(' ')[0]) ||
                                    senderUser.displayIdentifier ||
-                                   senderUser._id.toString().substring(0, 6) + '...';
+                                   senderUser._id.toString().substring(0, 6) + '…';
 
          try {
               const notification = new Notification({
                   recipient: receiverId, // Target the receiver user
                   type: 'message', // Custom notification type
-                  message: `New message from ${senderDisplayName}: "${savedMessage.text.substring(0, 50)}..."`,
-                   itemId: savedMessage._id, // Link to the message document
+                  // Curly quotes, a real ellipsis, and the sender's name reading as a person
+                  // rather than a field. Straight quotes and three dots were both
+                  // showing on screen.
+                  message: `${senderDisplayName} wrote: “${savedMessage.text.slice(0, 60).trim()}${savedMessage.text.length > 60 ? '…' : ''}”`,
+                   // The CONVERSATION, not the message. A notice is a door, and the
+                   // screen behind this one is the conversation the message sits in;
+                   // nothing opens a single message. With the message id here the
+                   // banner and the notices row could only land on the chat page and
+                   // leave the person to find the thread themselves.
+                   itemId: conversation._id,
                    itemType: 'Message',
                    read: false, // Initially unread for the receiver
               });
@@ -418,21 +431,25 @@ router.put('/conversations/:conversationId/messages/read', authenticateToken, as
         // including 'nModified' (number of documents modified).
         console.log(`Marked ${result.nModified} messages in conversation ${conversationId} as read for user ${userId}.`);
 
-        // Optional: Mark related 'message' notifications for this user/conversation as read?
-        // This depends on your notification logic granularity.
-        // You could find and update Notification documents where recipient is userId,
-        // type is 'message', and itemId is one of the message IDs modified above.
-        // Or simpler: just update notifications where recipient is userId and itemType is 'Message'.
-         // await Notification.updateMany(
-         //     { recipient: userId, itemType: 'Message', read: false, itemId: { $in: modifiedMessageIds } }, // Need to get modified message IDs first
-         //     { $set: { read: true } }
-         // );
-         // Or simplest for demo: just mark notifications related to this user AND message type as read.
-         await Notification.updateMany(
-             { recipient: userId, type: 'message', read: false },
-             { $set: { read: true } }
-         );
-         console.log(`SIMULATING: Marked related 'message' notifications for user ${userId} as read.`);
+        // The notices for the messages just read, and ONLY those.
+        //
+        // This used to be `{ recipient, type: 'message', read: false }` with no
+        // conversation in it -- every unread message notice the user had, wiped
+        // by opening any one thread. Reading Bob's thread about the lettuce also
+        // silenced "Alice replied about the bell peppers", which nobody had
+        // opened. A notice that clears itself when you were not looking at it is
+        // worse than no notice: you never learn the message is there.
+        //
+        // A notice with no itemId is not about a particular message and is left
+        // alone; "Mark all as read" is what clears those.
+        const inThread = await Message.find({ conversationId }, '_id').lean();
+        await Notification.updateMany(
+            {
+                recipient: userId, type: 'message', read: false,
+                itemId: { $in: inThread.map((m) => m._id) }
+            },
+            { $set: { read: true } }
+        );
 
 
         // Send a success response, indicating how many messages were updated

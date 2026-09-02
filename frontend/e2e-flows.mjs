@@ -12,6 +12,7 @@ import { readFileSync, statSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import ffmpeg from '../backend/node_modules/ffmpeg-static/index.js';
+import { sweep } from './_teardown.mjs';
 
 const API = 'http://127.0.0.1:3001/api';
 const APP = 'http://127.0.0.1:3001/app';
@@ -28,27 +29,37 @@ const call = async (p, b, t) => {
 const browser = await chromium.launch();
 const stamp = Date.now();
 const digits = String(9000000000 + (stamp % 999999999));
-const code = '246813';
+// Eight or more: the create-account screen, the auth route and the schema all
+// ask for eight. The old six-digit value was the retired phone page's code.
+const code = 'testcase246813';
 
-// ── 1. signing up by phone number ───────────────────────────────────────────
+// ── 1. a farmer signing up, through the one door everybody uses ─────────────
+//
+// This used to go through setup.html: a phone number and a six-digit code,
+// which is a login that needs an OTP nobody can send. That page is gone and the
+// farmer is a role on the shared create-account page, so the flow signs up the
+// way a farmer actually would.
 {
   const page = await browser.newPage();
   const errs = [];
   page.on('pageerror', e => errs.push(String(e).slice(0, 90)));
-  await page.goto(`${APP}/setup-identity.html`, { waitUntil: 'load' });
-  await page.waitForTimeout(500);
+  await page.goto(`${APP}/signup.html`, { waitUntil: 'load' });
+  await page.waitForTimeout(700);
 
+  const mail = `testcase.farmer.${stamp}@pestivid.sim`;
+  await page.click('[data-role-pick="farmer"]');
   await page.fill('input[name="name"]', `Testcase Farmer ${stamp}`);
-  await page.fill('input[name="tel"]', digits);
+  await page.fill('input[name="email"]', mail);
   await page.fill('input[name="new-password"]', code);
-  await page.getByText('Continue', { exact: true }).click();
-  await page.waitForTimeout(2000);
+  await page.click('[data-ack]');
+  await page.getByText('Create the account', { exact: true }).click();
+  await page.waitForTimeout(2500);
 
-  ok('signing up by phone number lands on the empty home',
+  ok('a farmer signing up lands on the empty home',
      /home-empty|home\.html/.test(page.url()), page.url().split('/app/')[1]);
   ok('no script error while signing up', errs.length === 0, errs[0] || '');
 
-  const login = await call('/auth/login', { email: `${digits}@phone.pestivid.local`, password: code });
+  const login = await call('/auth/login', { email: mail, password: code });
   ok('the account really exists on the server', login.status === 200);
   var token = login.body?.token;
   var userId = login.body?.user?._id || login.body?.user?.id;
@@ -94,7 +105,7 @@ const code = '246813';
     localStorage.setItem('pv.token', t); localStorage.setItem('pv.user', u);
   }, [token, JSON.stringify({ _id: userId, name: 'Testcase Farmer', role: 'farmer' })]);
 
-  await page.goto(`${APP}/ask-money-video.html`, { waitUntil: 'load' });
+  await page.goto(`${APP}/ask-money.html`, { waitUntil: 'load' });
   await page.waitForTimeout(1500);
   // a video whose date has not landed is deliberately not selectable, so this
   // clicks whatever the page offers and reports what happened
@@ -113,23 +124,25 @@ const code = '246813';
   });
   await page.waitForTimeout(300);
   const picked = await page.evaluate(() => JSON.parse(sessionStorage.getItem('pv.ask') || '{}').cid || null);
-  ok('choosing a video is remembered between screens', Boolean(picked));
+  ok('choosing a video is remembered', Boolean(picked));
 
   if (picked) {
     await page.evaluate(() => {
       const d = JSON.parse(sessionStorage.getItem('pv.ask'));
       sessionStorage.setItem('pv.ask', JSON.stringify({ ...d, crop: 'Potato', acres: 2 }));
     });
-    await page.goto(`${APP}/ask-money-amount.html`, { waitUntil: 'load' });
-    await page.waitForTimeout(900);
+    // One page now: Next reveals the amount step rather than loading a URL.
+    await page.getByText('Next', { exact: true }).click();
+    await page.waitForTimeout(400);
     await page.fill('input[inputmode="numeric"]', '500000');
     await page.getByText('6 months', { exact: true }).click();
     await page.getByText('No sprays at all', { exact: true }).click();
     await page.getByText('Next', { exact: true }).click();
-    await page.waitForTimeout(1200);
-    ok('the amount step moves on to the terms', /ask-money-terms/.test(page.url()), page.url().split('/app/')[1]);
+    await page.waitForTimeout(600);
+    const onTerms = await page.evaluate(() =>
+      getComputedStyle(document.querySelector('[data-step="3"]')).display !== 'none');
+    ok('the amount step reveals the terms step, in place', onTerms);
 
-    await page.waitForTimeout(900);
     const termsText = await page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
     ok('with no finished season it refuses to invent a return',
        /not known|nothing to work it out from/.test(termsText));
@@ -151,5 +164,19 @@ const code = '246813';
 }
 
 await browser.close();
+
+/* Hand the server back the way it was found.
+ *
+ * The signup above creates a REAL account, and the dev database persists across
+ * runs, so this test used to leave one behind every time. After a dozen runs the
+ * demo investor's chat list was nine test farmers against three real people, and
+ * most of the videos on the server belonged to a test. A test that quietly
+ * rewrites the demo it runs against is not a passing test.
+ *
+ * It sweeps every leftover, not only this run's, so one run repairs a database
+ * that earlier runs already polluted. */
+console.log('\n  putting the server back:');
+await sweep();
+
 console.log(`\n  ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

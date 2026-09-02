@@ -1,4 +1,4 @@
-// Create an account, for an investor or a buyer.
+// Create an account. One page, all three roles.
 //
 // The farmer route is the phone flow; this is the desktop one, and it did not
 // exist at all before. The order on the page is deliberate: the loss risk, then
@@ -20,11 +20,11 @@ const email = asField(oneByText('ravi@example.com', root), {
 });
 const pass = asField(oneByText('••••••••', root), {
   type: 'password', name: 'new-password', autocomplete: 'new-password',
-  placeholder: 'Eight or more', label: 'Password',
+  placeholder: 'Your new password', label: 'Password',
 });
 
 // role
-let role = 'investor';
+let role = 'farmer';
 const cards = [...root.querySelectorAll('[data-role-pick]')];
 const paintRole = () => cards.forEach((c) => {
   const mine = c.dataset.rolePick === role;
@@ -40,13 +40,56 @@ cards.forEach((c) => {
   c.setAttribute('data-act', '');
   c.setAttribute('role', 'radio');
   c.tabIndex = 0;
-  c.addEventListener('click', () => { role = c.dataset.rolePick; paintRole(); });
+  c.addEventListener('click', () => { role = c.dataset.rolePick; paintRole(); sayRisk(); });
 });
 paintRole();
 
 // the acknowledgement, and the button it gates
+
+/* What you are agreeing to depends on which side of the deal you are on.
+ *
+ * This page was the investor-and-buyer page, so it warned every reader that a
+ * season can lose their money and made them tick a box saying so. A farmer
+ * picking "Film my own field" is not putting money in: what they take on is
+ * that the numbers they report are theirs, and that a video's date cannot be
+ * changed afterwards.
+ */
+const RISK = {
+  farmer: [
+    'What you film and report is yours',
+    'The date on a video is fixed the moment it reaches us and cannot be moved '
+      + 'afterwards, by you or by us. What you say you sold and what you say it cost '
+      + 'is your word, it is shown to investors as your word, and they are paid from it.',
+    'I understand a video’s date cannot be changed once it is filed, and that '
+      + 'what I report about a harvest is what people are paid on.',
+  ],
+  investor: [
+    'Funding a season is not saving money',
+    null,
+    null,
+  ],
+  buyer: [
+    'You are buying a lot, not a guarantee',
+    'You get the produce and the dated video it was sold on. We record the sale and '
+      + 'nothing after it: no dispatch, no delivery, no condition on arrival. Those are '
+      + 'between you and the farmer.',
+    'I understand this records the sale and not the delivery.',
+  ],
+};
+const riskHead = root.querySelector('[data-risk-head]');
+const riskBody = root.querySelector('[data-risk-body]');
+const ackText = root.querySelector('[data-ack-text]');
+const DRAWN = [riskHead?.textContent, riskBody?.textContent, ackText?.textContent];
+function sayRisk() {
+  const r = RISK[role] || RISK.investor;
+  if (riskHead) riskHead.textContent = r[0] || DRAWN[0];
+  if (riskBody) riskBody.textContent = r[1] || DRAWN[1];
+  if (ackText) ackText.textContent = r[2] || DRAWN[2];
+}
+sayRisk();
+
 const ack = root.querySelector('[data-ack]');
-const ackBox = ack?.querySelector('div[style*="inset 0 0 0 2px #a71930"]');
+const ackBox = ack?.querySelector('[data-ackbox]');
 const label = oneByText('Create the account', root);
 const button = label?.parentElement;
 let agreed = false;
@@ -105,7 +148,7 @@ let busy = false;
 button?.addEventListener('click', async () => {
   if (!agreed || busy) return;
   const n = name?.value.trim(), e = email?.value.trim(), pw = pass?.value || '';
-  if (!n) return fail('We need a name', 'It is what a farmer sees when you fund their season.');
+  if (!n) return fail('We need a name', 'It is the name the other side of the deal sees.');
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e || '')) return fail('That address does not look right', 'Check it and try again.');
   // the server's floor is 6; 8 is what the screen asks for, so hold the screen's line
   if (pw.length < 8) return fail('Eight characters or more', 'Longer is better. A passphrase beats a clever short one.');
@@ -117,7 +160,8 @@ button?.addEventListener('click', async () => {
     await api.auth.register({ name: n, email: e, password: pw, role });
     const r = await api.auth.login(e, pw);
     session.set(r.token, r.user);
-    location.href = role === 'buyer' ? './market.html' : './invest.html';
+    location.href = role === 'buyer' ? './market.html'
+      : role === 'farmer' ? './home.html' : './invest.html';
   } catch (err) {
     label.textContent = was;
     fail(err.status === 409 ? 'That address already has an account' : 'The account was not created',
@@ -130,3 +174,14 @@ const back = oneByText('Sign in', root);
 if (back) { back.setAttribute('data-act', ''); back.dataset.go = 'signin'; }
 
 name?.focus();
+
+// No farmer route on this page. It used to be a sentence telling a farmer to
+// sign in, on the one page a farmer without an account cannot use, and the
+// account page it linked to is gone along with it. A farmer is a role on the
+// card above now, like the other two.
+//
+// This note used to sit BETWEEN `name?.focus()` and its semicolon -- four
+// comment lines inside one statement, with a bare `;` on its own line after
+// them. Automatic semicolon insertion made it run, which is the worst case: it
+// works, so nothing complains, and the next edit near it breaks the statement.
+

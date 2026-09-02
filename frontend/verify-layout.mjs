@@ -44,6 +44,17 @@ const WALK = (rootSel) => {
   return out;
 };
 
+  /* Both renders measure with the SAME fonts, or the comparison is about a
+   * CDN rather than about our markup. The landing loads Anek Latin from Google
+   * Fonts; on a runner one render got it and the other fell back to the system
+   * face, and thirty elements moved by 1.8px -- a red gate for a page nobody
+   * had touched. The webfont hosts are refused for both, so board and page
+   * are laid out in the same fallback and any difference left is ours. */
+  const noWebfonts = (pg) => Promise.all([
+    pg.route('**fonts.googleapis.com/**', r => r.abort()),
+    pg.route('**fonts.gstatic.com/**', r => r.abort()),
+  ]);
+
   const settle = async (pg) => {
     // A `ch` measure is taken against the font that is actually loaded, so
     // measuring before the webfont lands reports the fallback's metrics and
@@ -82,15 +93,55 @@ const report = [];
 
 for (const slug of slugs) {
   const size = SIZES[slug], board = originOf(slug);
-  const a = await browser.newPage({ viewport: { width: 1500, height: Math.max(size.h, 600) } });
+  // The BOARD is rendered at a wide viewport because an artboard is a fixed-size
+  // drawing that does not care. The PAGE is now responsive, so it has to be
+  // rendered at the design's own width or this compares a phone layout against
+  // its own desktop reflow -- which is what produced three false mismatches
+  // when responsive.css landed. Responsive behaviour is proved separately.
+  const a = await browser.newPage({ viewport: { width: Math.max(size.w, 1500), height: Math.max(size.h, 600) } });
+  await noWebfonts(a);
   await a.goto(pathToFileURL(path.join(DESIGN, board)).href, { waitUntil: 'load' });
   await a.addScriptTag({ content: shim });
   await a.evaluate(() => document.querySelectorAll('[data-fold]').forEach(n => n.remove()));
+  /* THE TWO RENDERS HAVE TO BE PINNED THE SAME WAY, or the root's height is not a
+   * fact about the design at all.
+   *
+   * build-pages writes `min-height: 100vh` on every page wrapper, so a page whose
+   * content is shorter than the window still paints its background to the bottom.
+   * The board panel has no such rule: it settles at its content height. Compare
+   * them and the root differs by exactly the slack -- but only where the content
+   * happens to be shorter than the viewport, which depends on where the text
+   * wraps, which depends on the font metrics of the machine doing the rendering.
+   *
+   * So it passed on Windows and failed on Linux in CI, on three pages: profile by
+   * 37.8px, the leaf check by 19.9, record by 1.6. Nothing was wrong with any of
+   * them. sizes.json is itself baked from a render, so the viewport this runs at
+   * is one machine's answer to a question the other machine answers differently.
+   *
+   * Pinning the board the same way the page is pinned makes the roots comparable
+   * again, and leaves every child's geometry -- which is what this is actually
+   * for -- measured exactly as before. */
+  await a.evaluate((sel) => {
+    const root = document.querySelector(sel);
+    if (!root) return;
+    /* In BORDER-box terms, because that is what the page's rule means. The page
+     * wrapper is border-box (build-pages sets it) so `min-height: 100vh` bounds
+     * its outer edge. A board panel is content-box, so the same declaration
+     * bounds the content and then adds the padding on top -- which on the
+     * confirmation dialog turned a 907.5px panel into 964, its 56px of padding
+     * appearing out of nowhere and reading as a real 56px difference. */
+    const cs = getComputedStyle(root);
+    const outside = cs.boxSizing === 'border-box' ? 0
+      : parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+        + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+    root.style.minHeight = (window.innerHeight - outside) + 'px';
+  }, `[data-page="${slug}"]`);
   await settle(a);
   const A = await a.evaluate(WALK, `[data-page="${slug}"]`);
   await a.close();
 
   const b = await browser.newPage({ viewport: { width: size.w, height: size.h } });
+  await noWebfonts(b);
   // Compare the page as drawn. With no API reachable a page module correctly
   // replaces the screen with a failure state, which is right behaviour and
   // useless for measuring fidelity -- so the module is blocked on purpose

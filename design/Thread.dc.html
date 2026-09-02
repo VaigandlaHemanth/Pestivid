@@ -16,14 +16,84 @@
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
     .ph { width: 360px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column;
           box-sizing: border-box; }
-    .them { background: #f6f3ef; padding: 13px 15px; max-width: 268px; }
-    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 15px; max-width: 262px; margin-left: auto; }
+    /* A BUBBLE, not a card.
+     *
+     * These were fixed-width blocks -- 520px received, 440px sent, whatever the
+     * message said -- so "Yes, I will" drew the same rectangle as a paragraph,
+     * and a column of equal rectangles is a table, not a conversation. That was
+     * the whole of what was wrong with this screen.
+     *
+     * So a bubble hugs its own text and takes the shape a reader already knows
+     * from every messaging app: rounded, with the corner on the side it came
+     * FROM squared off into a tail. Received sits left with the tail at the
+     * bottom-left, sent sits right with the tail at the bottom-right, so which
+     * side a line is on is legible before a word of it is read.
+     *
+     * This is the one deliberate exception to the shape rule (paper is square,
+     * controls are 8px, round is for avatars and badges): a chat bubble is
+     * neither paper nor a control, and here the shape IS the meaning. */
+    .them { background: #fff; padding: 13px 16px; max-width: 62%; width: fit-content;
+            align-self: flex-start; border-radius: 16px 16px 16px 4px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 16px; max-width: 62%;
+            width: fit-content; align-self: flex-end; border-radius: 16px 16px 4px 16px; }
     .t    { font-size: 15.5px; line-height: 1.5; }
     .when { font-size: 12.5px; color: #4a443d; margin-top: 5px; }
+    /* The day a run of messages belongs to. Without it a transcript is a list of
+       clock times with no idea whether two of them are a minute or a month
+       apart -- and every chat app has solved this the same way, with a small
+       still label centred in the column. Round because it is a badge. */
+    /* Plain text, not a pill.
+     *
+     * Drawn as a filled round chip with a hairline it looked exactly like the
+     * quick-reply chips two hundred pixels below it, and verify-pressable
+     * flagged it for what it was: a thing that looks pressable and does
+     * nothing. WhatsApp fills its day label because its transcript has a
+     * photograph behind it; this one has a flat ground, so the words carry
+     * themselves. */
+    .day  { align-self: center; font-size: 12.5px; font-weight: 600; color: #605a53;
+            padding: 3px 0; letter-spacing: 0.01em; }
+    /* A RUN of messages from the same side.
+     *
+     * Every bubble getting the same 12px of air and its own tail is the second
+     * tell that this was not a real conversation: three lines typed in a row
+     * read as three separate events instead of one person talking. So
+     * consecutive bubbles from the same side close up to 4px, and only the LAST
+     * of a run keeps its tail -- the ones above it are the middle of the same
+     * utterance. Pure sibling CSS, so nothing has to mark it and nothing can
+     * drift: a day label between two bubbles breaks the adjacency by itself,
+     * which is exactly right. */
+    .them + .them, .me + .me { margin-top: -8px; }
+    .them:has(+ .them) { border-bottom-left-radius: 16px; }
+    .me:has(+ .me)     { border-bottom-right-radius: 16px; }
+
     /* quick replies are chips, not a rotating prompt: still text, tappable, and
        they spare somebody typing a reply on a phone keyboard */
     .chip { background: #e7e1db; min-height: 46px; box-sizing: border-box; display: flex; align-items: center; padding: 10px 13px; font-size: 15px; }
     .cap  { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px; max-width: 46ch; }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    /* A nav item was a 20px-tall word: under the 28x28 pointer minimum and
+       well under 44x44 by touch, which is the HIG recommended control size.
+       The bar centres its items, so giving them a real height moves nothing
+       and makes the whole word-plus-air pressable. */
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .railcard  { color: #1d1a17; padding: 20px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .railh { font-size: 15px; font-weight: 600; }
+    .railp { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; }
+    .rail  { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </helmet>
 
@@ -33,24 +103,50 @@
   <h2 style="margin: 5px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -0.028em;">One thread, from both ends</h2>
   <p style="margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; max-width: 84ch; color: #4a443d;">
     The same four messages, seen by the person who is owed an answer and the person who owes it. What
-    differs is the strip under the name &mdash; each side needs the money context the other already has.
+    differs is the strip under the name, each side needs the money context the other already has.
   </p>
 
   <div style="display: flex; gap: 36px; margin-top: 22px; align-items: flex-start;">
 
     <!-- ══ FARMER ══ -->
     <div>
-      <div data-page="thread-farmer" class="ph f" style="min-height: 800px;">
-        <div style="background: #f6f3ef; padding: 14px 18px 13px; display: flex; align-items: center; gap: 11px; flex-shrink: 0;">
-          <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-          <div data-readout style="width: 38px; height: 38px; background: #e7e1db; border-radius: 19px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700;">R</div>
-          <div style="flex-grow: 1;">
-            <div data-title data-bind="other.name" style="font-size: 18px; font-weight: 700;">Ravi Kumar</div>
-            <div data-bind="other.context" class="m" style="font-size: 13.5px; color: #605a53;">Put &#8377;2,00,000 into Canal plot</div>
-          </div>
+      <!-- RETIRED. Merged into the messages page as its right-hand pane: the
+     people on the left, the talking on the right, switching by click rather
+     than by page load. The drawing stays because it is what that pane was
+     cut from. -->
+      <div data-retired="thread" class="f" style="width: 1320px; min-height: 880px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+        <div class="appbar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
+        <div class="appbrand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="appnav">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnavOn">Chat</div>
         </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial style="font-size: 13px; font-weight: 500;">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagehold" style="padding: 26px 28px 0;">
+      <h1 data-title data-bind="other.name" class="pageh">Ravi Kumar</h1>
+      <div data-bind="other.context" class="pagesub"></div>
+    </div>
 
-        <div style="flex-grow: 1; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;">
+
+            <div data-chatgrid style="flex-grow: 1; display: grid; grid-template-columns: minmax(0, 880px) 340px; gap: 26px; padding: 22px 28px 30px; align-items: start; justify-content: space-between;">
+      <div class="main">
+<div data-chatcol style="height: 628px; background: #ddd7d1; display: flex; flex-direction: column;">
+          <div data-transcript style="flex-grow: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div data-spacer style="flex-grow: 1;"></div>
+          <div class="day">17 August</div>
           <div class="them">
             <div class="t">Namaste Alice. Is the canal water reaching the far end of the plot this year?</div>
             <div class="m when">17 August, 9:12 am</div>
@@ -67,9 +163,9 @@
             <div class="m when">17 August, 2:05 pm</div>
           </div>
 
-          <div style="flex-grow: 1;"></div>
+          </div>
 
-          <div>
+          <div style="flex-shrink: 0; padding: 2px 20px 12px;">
             <div style="font-size: 13.5px; color: #605a53; margin-bottom: 7px;">Tap one to answer</div>
             <div style="display: flex; flex-wrap: wrap; gap: 7px;">
               <div class="chip">Yes, I will</div>
@@ -77,14 +173,12 @@
               <div class="chip">The far end is dry</div>
             </div>
           </div>
-        </div>
-
-        <div style="flex-shrink: 0; background: #f6f3ef; padding: 13px 18px 16px;">
+        <div data-sendfail style="flex-shrink: 0; padding: 13px 20px 16px; box-shadow: inset 0 1px 0 #ddd7d1;">
           <div style="display: flex; gap: 9px; align-items: stretch;">
-            <div style="flex-grow: 1; background: #ddd7d1; display: flex; align-items: center; padding: 0 14px; min-height: 56px;">
+            <div data-fieldbox style="flex-grow: 1; background: #fff; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; padding: 0 14px; min-height: 56px; border-radius: 8px;">
               <div data-reply style="font-size: 16px; color: #4a443d;">Write a message</div>
             </div>
-            <div data-send style="width: 56px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <div data-send style="width: 56px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 8px;">
               <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
             </div>
           </div>
@@ -92,6 +186,34 @@
             These are kept on our server and are not scrambled. Assume we could read them.
           </div>
         </div>
+      </div>
+      </div>
+      <div class="rail">
+        <div class="railcard">
+          <div style="display: flex; align-items: center; gap: 11px;">
+            <div style="width: 42px; height: 42px; background: #e1e6ec; border-radius: 21px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <div data-avatar style="font-size: 17px; font-weight: 600;">R</div>
+            </div>
+            <div>
+              <div data-bind="other.name" class="railh">Ravi Kumar</div>
+              <div style="font-size: 13.5px; color: #605a53; margin-top: 1px;">Funds seasons</div>
+            </div>
+          </div>
+          <div class="railp">
+            That is the only reason anyone can write to you here. Nobody else can start a
+            conversation, and neither can we.
+          </div>
+        </div>
+        <div class="railcard">
+          <div class="railh">Words only</div>
+          <div class="railp">
+            There is no photo button because the server keeps text and nothing else. Video of your
+            field goes through <b>Film your field</b>, where it is hashed and timestamped.
+          </div>
+        </div>
+      </div>
+    </div>
+
       </div>
       <div style="font-size: 16.5px; font-weight: 700; margin-top: 13px;">The farmer owes an answer</div>
       <div class="cap">
@@ -103,12 +225,12 @@
 
     <!-- ══ INVESTOR ══ -->
     <div>
-      <div data-page="thread-investor" class="ph f" style="min-height: 800px;">
+      <div data-retired="thread-investor"  class="ph f" style="min-height: 800px;">
         <div style="background: #f6f3ef; padding: 14px 18px 13px; display: flex; align-items: center; gap: 11px; flex-shrink: 0;">
           <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
           <div data-readout style="width: 38px; height: 38px; background: #e7e1db; border-radius: 19px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700;">A</div>
           <div style="flex-grow: 1;">
-            <div data-title data-bind="other.name" style="font-size: 18px; font-weight: 700;">Alice Farmer</div>
+            <h1 data-title data-bind="other.name" style="font-size: 18px; font-weight: 700;">Alice Farmer</h1>
             <div data-bind="other.context" class="m" style="font-size: 13.5px; color: #605a53;">Canal plot &middot; week 11 of 18</div>
           </div>
         </div>

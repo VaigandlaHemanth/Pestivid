@@ -31,7 +31,7 @@ if (ctx) {
 
   load(root, async () => {
     const { bind } = await import('../bind.js');
-    bind(root, { me: { line: `${ctx.user.name} · admin · every action here is written to the audit collection under your name` } });
+    bind(root, { me: { line: `${ctx.user.name}, admin. Every action here is written to the audit collection under your name` } });
 
     // GET /videos/review-queue answers { state, count, truncated, items } -- not
     // an array and not { videos }. Reading it as either left items as an object
@@ -73,6 +73,23 @@ if (ctx) {
       root.querySelector(`[data-panel="${kind}"]`)?.remove();
     }
 
+    // With nothing flagged -- which is the normal state -- every panel in that
+    // row goes, and "What this page cannot do" was left as a 400px dark block
+    // alone at the left of a 1440px window, under two full-width cards. It is
+    // the most important statement on the page; when it is the only thing left
+    // in its row it takes the row.
+    const cannot = [...root.querySelectorAll('div')]
+      .find(d => d.firstElementChild?.textContent.trim() === 'What this page cannot do');
+    const column = cannot?.parentElement;
+    const rowOf = column?.parentElement;
+    if (cannot && column && rowOf) {
+      const siblingsLeft = [...rowOf.children].filter(c => c !== column && c.textContent.trim()).length;
+      if (!siblingsLeft) {
+        column.style.width = 'auto';
+        column.style.flexGrow = '1';
+      }
+    }
+
     // ---- the decisions -------------------------------------------------
     for (const btn of root.querySelectorAll('.btn')) {
       const label = btn.textContent.trim();
@@ -83,7 +100,7 @@ if (ctx) {
           note.setAttribute('data-note', '');
           btn.parentElement?.after(note);
         }
-        state(note, 'waiting', NOT_YET[0], `“${label}” — ${NOT_YET[1]}`);
+        state(note, 'waiting', NOT_YET[0], `“${label}”, ${NOT_YET[1]}`);
       });
     }
 

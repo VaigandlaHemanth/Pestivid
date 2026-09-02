@@ -5,8 +5,8 @@
 // detail column showed the artboard's lot whichever row you were looking at,
 // because nothing ever swapped it.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, repeat, rows as rows2, slot as slot2 } from '../bind.js';
-import { rupees, whenShort, dateState } from '../api.js';
+import { bind, repeat, rows as rows2, slot as slot2, showPoster, playsInline } from '../bind.js';
+import { rupees, whenShort, dateState, rupeeRange } from '../api.js';
 import { promote, goes, acts, asField, press } from '../wire.js';
 
 const ctx = requireUser('market', ['buyer', 'investor']);
@@ -33,13 +33,34 @@ if (ctx) {
       .sort((a, b) => (a.minPrice || 0) - (b.minPrice || 0));
 
     const list = root.querySelector('[data-list="lots"]');
-    const detail = root.querySelector('[data-bind="lot.file"]')?.closest('div[style*="grid-template-columns"]')
-                || root.querySelector('[data-bind="lot.file"]')?.parentElement?.parentElement;
+    // Was closest('div[style*="grid-template-columns"]') from inside the panel.
+    // The PAGE is a three-column grid, so on a week with nothing listed that
+    // climbed past the panel and removed the whole page -- filters, listings
+    // and all -- and then wrote the empty message into a detached node. The
+    // market rendered as a nav bar over nothing, and every checker passed it.
+    const detail = root.querySelector('[data-detail]');
+    const listings = root.querySelector('[data-listings]');
 
     if (!active.length) {
       detail?.remove();
-      return state(list || root, 'empty', 'No lots are for sale',
-        'Nobody has produce listed this week. Nothing has gone wrong.');
+      root.querySelector('[data-bind="list.sub"]')?.remove();
+      bind(root, { list: { title: 'Nothing is for sale this week' } });
+      // The rail's drawn counts -- 14 potato, 9 wheat, 6 corn -- are specimens
+      // that nobody counted, and the code that replaces them with real ones
+      // runs below this return. So they have to go here too, or an empty week
+      // shows a filter offering fourteen lots of potato.
+      const crops = root.querySelector('[data-crops]');
+      if (crops) {
+        const none = document.createElement('div');
+        none.style.cssText = 'font-size: 14.5px; line-height: 1.5; color: #605a53;';
+        none.textContent = 'Nothing to filter yet.';
+        crops.replaceChildren(none);
+      }
+      root.querySelector('[data-sort]')?.remove();
+      // Into the listings column, which is still attached.
+      return state(list?.parentElement || listings || root, 'empty', 'No lots are for sale',
+        'Nobody has produce listed this week. Nothing has gone wrong, and the filters on the '
+        + 'left will start counting as soon as somebody lists something.');
     }
 
     // ---- the filter rail ---------------------------------------------
@@ -97,7 +118,7 @@ if (ctx) {
         title: picked.size ? [...picked].join(', ') : 'Everything for sale',
         sub: shown.length === active.length
           ? `${active.length} lot${active.length === 1 ? '' : 's'} listed`
-          : `${shown.length} of ${active.length} lots`,
+          : `${shown.length} of ${active.length} lot${active.length === 1 ? '' : 's'}`,
       } });
       if (!shown.length) {
         state(list, 'empty', 'Nothing matches that',
@@ -113,10 +134,14 @@ if (ctx) {
       where: l.location || '',
       // A lot is sold whole for an offer inside a range. There is no unit rate,
       // because Purchase has no quantity and dividing by weight would invent one.
-      price: `${rupees(l.minPrice)}–${rupees(l.maxPrice)}`,
+      price: rupeeRange(l.minPrice, l.maxPrice),
       qty: l.crop || '',
-      stamp: l.cid ? 'Dated video attached' : 'No video — not listed as proved',
-    })));
+      stamp: l.cid ? 'Dated video attached' : 'No video, not listed as proved',
+    })), (el, row, i) => {
+      // One real frame per row. The board draws a 92x68 dark rectangle with a
+      // play triangle over it, and until now that was all it ever was.
+      showPoster(el.querySelector('[data-thumb]'), shown[i]);
+    });
 
     const rows = [...(list?.children || [])];
     const select = (i) => rows.forEach((el, n) => {
@@ -165,7 +190,7 @@ if (ctx) {
             ? `Below her lowest of ${rupees(lo)}. She can still see it, but she is unlikely to accept.`
             : n > hi
               ? `Above her asking price of ${rupees(hi)}. She can accept it, and you may be paying more than you need to.`
-              : 'Inside her range, so she can accept it. She is not obliged to — she can refuse or wait for a better offer, and there is no auction clock pushing either of you.';
+              : 'Inside her range, so she can accept it. She is not obliged to, she can refuse or wait for a better offer, and there is no auction clock pushing either of you.';
       }
     };
 
@@ -182,13 +207,61 @@ if (ctx) {
     }
 
       open = l;
+
+      /* THE PANEL PLAYS THE LOT IT IS A PANEL FOR.
+       *
+       * 176px of dark with a play triangle on it and nothing behind any of it.
+       * This is the screen where a buyer decides whether to send money to a
+       * stranger for a crop they have not seen, and the one thing that could
+       * settle it -- the dated video -- was drawn as an offer and then refused.
+       * The frame and the gateway address both come from the listings route,
+       * which is the same public answer that carries the file's hash. */
+      const shot = root.querySelector('[data-lotshot]');
+      if (shot) {
+        showPoster(shot, l);
+        // show() runs again on every row click, so the handler is ASSIGNED.
+        // addEventListener would stack one per click and the player would toggle
+        // open and shut on a single press.
+        shot.onclick = null;
+        if (l.gateway) {
+          const player = playsInline(shot, { gateway: l.gateway }, { into: shot });
+          promote(shot, `Play the ${(l.crop || 'lot').toLowerCase()} video and check its date`);
+          shot.onclick = () => player.toggle();
+        } else {
+          shot.removeAttribute('data-act');
+        }
+      }
+
+      // Reaching the farmer. An investor has had this on their screen all
+      // along; a buyer could only bid, with no way to ask anything first.
+      const msgRow = root.querySelector('[data-message]');
+      if (msgRow) {
+        if (l.farmerWallet) {
+          promote(msgRow, l.farmerName ? `Message ${l.farmerName}` : 'Message the farmer');
+          // assigned, not added: this runs again on every lot click
+          msgRow.onclick = async () => {
+            try {
+              const conv = await api.messages.open({ targetUserId: l.farmerWallet });
+              // messages.html, not thread.html -- the two chat screens became
+              // one two-pane page and thread was retired. See invest.js, which
+              // had the same dangling link to the same removed page.
+              location.href = `./messages.html?c=${conv._id || conv.id}`;
+            } catch (err) {
+              state(msgRow, 'failed', 'Could not open the conversation', err.message);
+            }
+          };
+        } else {
+          msgRow.style.display = 'none';
+        }
+      }
       const proved = l.cid ? dateState({ cid: l.cid, anchored: l.anchored, blockHeight: l.blockHeight }) : null;
       bind(root, {
         lot: {
           who: [l.farmerName, l.location].filter(Boolean).join(' · '),
-          accept: `${rupees(l.minPrice)} – ${rupees(l.maxPrice)}`,
+          ask: l.farmerName ? `Message ${l.farmerName}` : 'Message the farmer',
+          accept: rupeeRange(l.minPrice, l.maxPrice),
           what: l.crop ? `${l.crop}, sold whole` : 'Sold whole',
-          grown: l.method ? `${l.method} — farmer's word` : 'Not stated',
+          grown: l.method ? `${l.method}, farmer's word` : 'Not stated',
           // never a hash the server did not give us
           file: l.cid ? `sha256 ${String(l.videoFileHash || '').slice(0, 8)}…` : 'No video on this lot',
           when: l.createdAt ? whenShort(l.createdAt) : '',

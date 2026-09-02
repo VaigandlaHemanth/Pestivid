@@ -9,15 +9,22 @@
 // control -- a painted or ringed box holding a short label, or a chevron, or
 // link-coloured text -- and reports the ones with no handler behind them.
 import { chromium } from 'playwright';
+import { readdirSync } from 'node:fs';
+import { needs } from './_needs.mjs';
+// Five pages are ABOUT something and are blank without an id.
+const QUERY = await needs();
 const login = async (r) => (await fetch('http://127.0.0.1:3001/api/auth/login', {
   method: 'POST', headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ email: `demo.${r}@pestivid.sim`, password: 'password123' }) })).json();
 
 const ROLE = {
   landing: null, signin: null, signup: null, 'signin-farmer': null,
-  'setup-language': null, 'setup-identity': null,
+  setup: null,
   invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor',
-  'thread-investor': 'investor', market: 'buyer', orders: 'buyer', admin: 'admin',
+  // _needs.mjs resolves the FARMER's conversation, and an investor who is not
+  // a participant sees an empty thread -- which is why this page reported zero
+  // controls while its chips, its composer and its send arrow all worked.
+  market: 'buyer', orders: 'buyer', admin: 'admin',
 };
 const roleFor = (s) => (s in ROLE ? ROLE[s] : 'farmer');
 
@@ -72,7 +79,12 @@ const FIND = () => {
   return out;
 };
 
-const slugs = process.argv.slice(2);
+// Run bare it audited NOTHING and still printed "0 things ... across 0 pages",
+// which reads like a pass. No arguments now means every page.
+const slugs = process.argv.slice(2).length
+  ? process.argv.slice(2)
+  : readdirSync('frontend/app').filter(f => f.endsWith('.html')).map(f => f.replace('.html', '')).sort();
+if (!slugs.length) { console.error('no pages found in frontend/app'); process.exit(1); }
 const b = await chromium.launch();
 const tok = {};
 let total = 0;
@@ -83,7 +95,7 @@ for (const slug of slugs) {
   if (role) await p.addInitScript(([t, u]) => {
     localStorage.setItem('pv.token', t); localStorage.setItem('pv.user', u);
   }, [tok[role].token, JSON.stringify(tok[role].user)]);
-  await p.goto(`http://127.0.0.1:3001/app/${slug}.html`, { waitUntil: 'load' });
+  await p.goto(`http://127.0.0.1:3001/app/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
   await p.waitForTimeout(1400);
   const found = await p.evaluate(FIND);
   if (found.length) {

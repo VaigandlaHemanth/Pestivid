@@ -1,0 +1,20 @@
+{
+  "//": "These files are ES modules, and nothing but this file says so.",
+  "//why": [
+    "pil-resize.js uses `export`. The browser knows that from the import that",
+    "fetches it, but Node decides by the nearest package.json -- which was the",
+    "repo root, declaring \"type\": \"commonjs\". So Node parsed it as CommonJS and",
+    "threw. Two CI steps had been failing on it since the monorepo restructure:",
+    "the Python job's browser-preprocessing parity (SyntaxError: Named export",
+    "'preprocess' not found) and the backend job's headless feature parity",
+    "(SyntaxError: Unexpected token 'export').",
+    "",
+    "This is the fix rather than renaming to .mjs, because the file is served to",
+    "the browser at the URL /js/pil-resize.js from three places in the app and a",
+    "rename would mean changing a shipped path to satisfy a test runner. A",
+    "package.json here changes nothing that is served -- the browser never asks",
+    "for it -- and every file in this directory really is a module."
+  ],
+  "type": "module",
+  "private": true
+}

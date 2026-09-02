@@ -48,7 +48,7 @@
        readout legible. It simply is not glass, and no longer claims to be. */
 
     /* A scrim, formerly dark glass, for a readout that has to stay legible over a frame nobody
-       chose. Light .glass at 13% cannot carry #ded7d0 over an arbitrary photo;
+       chose. Light .glass at 13% cannot carry #ddd7d1 over an arbitrary photo;
        this can, and it does real work rather than decoration: mono text laid
        straight onto a video frame has whatever contrast that frame happens to
        give it, which is not a number anyone can promise.
@@ -76,16 +76,20 @@
   <!-- top bar: hierarchy by weight, no boxes -->
   <div style="background: #fff; padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;" class="lift1">
     <div style="display: flex; align-items: baseline; gap: 30px;">
-      <div style="font-size: 21px; font-weight: 700; letter-spacing: -0.025em;">Pestivid</div>
+      <div style="font-size: 21px; font-weight: 700; letter-spacing: -0.025em; min-height: 44px; display: flex; align-items: center;">Pestivid</div>
       <div style="display: flex; gap: 24px; align-items: baseline;">
-        <div style="font-size: 15px; font-weight: 600;">Browse</div>
-        <div style="font-size: 15px; color: #4a443d;">Portfolio</div>
-        <div style="font-size: 15px; color: #4a443d;">Messages</div>
+        <div data-navword style="font-size: 15px; font-weight: 600;">Browse</div>
+        <div data-navword style="font-size: 15px; color: #4a443d; min-height: 44px; display: flex; align-items: center;">Portfolio</div>
+        <div data-navword style="font-size: 15px; color: #4a443d; min-height: 44px; display: flex; align-items: center;">Chat</div>
       </div>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
       <div data-bind="me.name" style="font-size: 14px; color: #4a443d;">Charlie</div>
-      <div style="width: 32px; height: 32px; background: #d3ccc5; display: flex; align-items: center; justify-content: center; border-radius: 16px;">
+      <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #d3ccc5; display: flex; align-items: center; justify-content: center; border-radius: 16px;">
         <div data-bind="me.initial" style="font-size: 13px; font-weight: 600;">C</div>
       </div>
     </div>
@@ -101,7 +105,7 @@
       </div>
 
       <sc-for data-list="projects" list="{{projects}}" as="p" hint-placeholder-count="4">
-        <div style="padding: 16px 24px; background: {{p.bg}}; border-left: 3px solid {{p.sel}}; box-shadow: inset 0 -1px 0 #e4e9ee;">
+        <div data-specimen style="padding: 16px 24px; background: {{p.bg}}; border-left: 3px solid {{p.sel}}; box-shadow: inset 0 -1px 0 #e4e9ee;">
           <div style="display: flex; gap: 14px;">
             <div style="width: 78px; height: 58px; flex-shrink: 0; background: {{p.t1}}; overflow: hidden; position: relative;">
               <div style="position: absolute; left: -10%; top: 46%; width: 120%; height: 54%; background: {{p.t2}};"></div>
@@ -114,7 +118,7 @@
 
           <div style="margin-top: 12px;">
             <div style="height: 6px; background: #c3bcb6; overflow: hidden;">
-              <div style="width: {{p.pct}}; height: 100%; background: #01579b;"></div>
+              <div data-bar style="width: {{p.pct}}; height: 100%; background: #01579b;"></div>
             </div>
             <div style="display: flex; justify-content: space-between; margin-top: 7px; align-items: baseline;">
               <div data-bind="raised" class="num" style="font-size: 15px; font-weight: 600;">{{p.raised}}</div>
@@ -131,7 +135,7 @@
       <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 30px;">
         <div>
           <div data-bind="lot.season" style="font-size: 14px; color: #4a443d;">Rabi season, week 11 of 18</div>
-          <h1 data-bind="lot.title" style="margin: 6px 0 0; font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;">Canal plot &mdash; two acres of potato</h1>
+          <h1 data-bind="lot.title" style="margin: 6px 0 0; font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;">Canal plot, two acres of potato</h1>
           <div style="display: flex; align-items: center; gap: 10px; margin-top: 11px;">
             <div style="width: 28px; height: 28px; background: #d3ccc5; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
               <div style="font-size: 12px; font-weight: 600;">A</div>
@@ -151,7 +155,7 @@
 
         <div>
           <!-- video with GLASS chrome — the one place it earns its keep -->
-          <div style="height: 300px; position: relative; overflow: hidden; background: #37322d;" class="lift1"><div style="position: absolute; inset: 12px; border: 1px solid #605a53;"></div><div data-bind="file.meta" data-readout class="gplate" style="position: absolute; left: 24px; top: 24px; padding: 9px 12px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 12px; line-height: 1.85; color: #f6f3ef;">VID_20260818_064410_IST.mp4<br>0:41 &middot; 10.1 MB &middot; 1080&times;1920 &middot; 30fps<br>sha256 &mdash; reading the record&hellip;</div>
+          <div data-lotplate style="height: 300px; position: relative; overflow: hidden; background: #37322d;" class="lift1"><div style="position: absolute; inset: 12px; border: 1px solid #605a53;"></div><div data-bind="file.meta" data-readout class="gplate" style="position: absolute; left: 24px; top: 24px; padding: 9px 12px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 12px; line-height: 1.85; color: #f6f3ef;">VID_20260818_064410_IST.mp4 <br>0:41 &middot; 10.1 MB &middot; 1080&times;1920 &middot; 30fps <br>sha256, reading the record&hellip;</div>
 
             <div style="position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); width: 66px; height: 66px; border-radius: 50%; background: rgba(255,255,255,.22); border: 1px solid rgba(255,255,255,.4); display: flex; align-items: center; justify-content: center;">
               <div style="width: 0; height: 0; border-left: 21px solid #fff; border-top: 13px solid transparent; border-bottom: 13px solid transparent; margin-left: 7px;"></div>
@@ -195,7 +199,7 @@
               </div>
               <div style="padding-left: 13px; padding-top: 12px;">
                 <div style="font-size: 15.5px; font-weight: 700;">Hashed on arrival</div>
-                <div data-chain-note="hashed" class="num" style="font-size: 13px; line-height: 1.6; margin-top: 2px; color: #4a443d;">sha256 &mdash; reading the record&hellip;</div>
+                <div data-chain-note="hashed" class="num" style="font-size: 13px; line-height: 1.6; margin-top: 2px; color: #4a443d;">sha256, reading the record&hellip;</div>
               </div>
             </div>
 
@@ -218,21 +222,30 @@
             <div style="margin-top: 16px; display: flex; gap: 13px;">
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><rect x="4" y="9" width="16" height="11"></rect><path d="M8 9V6h8v3"></path><path d="M8 14h8"></path></svg>
               <div>
-                <div style="font-size: 15.5px; font-weight: 700;">Proved &mdash; you can check it yourself</div>
+                <div style="font-size: 15.5px; font-weight: 700;">Proved, you can check it yourself</div>
                 <div data-bind="proved.line" style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
                   This exact video file has not been altered. Its date has not landed in a
-                  block yet, so there is no block number to check &mdash; usually by tomorrow.
+                  block yet, so there is no block number to check, usually by tomorrow.
                 </div>
               </div>
             </div>
 
             <div style="margin-top: 15px; display: flex; gap: 13px;">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#7c4a12" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
               <div>
-                <div data-bind="told.title" style="font-size: 15.5px; font-weight: 700; color: #01579b;">Alice told us &mdash; nobody has checked</div>
+<!-- THE LIMIT TIER IS NOT A CONTROL.
+           #01579b is --link, the one colour in this palette that means "press
+           this". Four places were using it for the OPPOSITE of --proved -- the
+           farmer's unchecked word, and the "this does not" half of every
+           proves/does-not pair -- because the palette had a colour for a fact
+           anybody can check and the boards had never named one for a limit.
+           There is one: --attention-ink on --attention-fill, which this product
+           already uses for "take care". A caveat in the colour of a button reads
+           as something to click, and none of these can be clicked. -->
+      <div data-bind="told.title" style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">Alice told us, nobody has checked</div>
                 <div data-bind="told.body" style="font-size: 15px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
                   That this is her land, that it is two acres, that it is potato, and the sowing date.
-                  The location her phone reported is here too &mdash; and a phone’s location can be faked.
+                  The location her phone reported is here too, and a phone’s location can be faked.
                 </div>
               </div>
             </div>

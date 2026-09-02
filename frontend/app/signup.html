@@ -1,14 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#ffffff">
-  <title>Create an account</title>
+  <title>Create an account · Pestivid</title>
   <!-- generated from design/Login.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta name="robots" content="noindex, follow">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&amp;display=swap">
   <link rel="stylesheet" href="./tokens.css">
+  <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
+       at a design's own width. -->
+  <link rel="stylesheet" href="./loaders.css">
+  <link rel="stylesheet" href="./responsive.css">
   <style>
 
     body { margin: 0; }
@@ -83,11 +91,11 @@
               min-height: 44px; box-sizing: border-box; display: flex; align-items: center; }
   </style>
 </head>
-<body data-page="signup" data-role="public" data-design-width="1280" data-design-height="1215">
-<div class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #ddd7d1; color: #1d1a17; box-sizing: border-box;">
+<body data-page="signup" data-role="public" data-design-width="1280" data-design-height="1238">
+<div data-surface="desk" data-w="1280" class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #ddd7d1; color: #1d1a17; box-sizing: border-box;">
 
     <div class="r1" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 56px; box-shadow: inset 0 -1px 0 #c3bcb6;">
-      <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.024em;">Pestivid</div>
+      <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.024em; min-height: 44px; display: flex; align-items: center;">Pestivid</div>
       <div style="font-size: 14.5px; color: #4a443d;">Already have an account? <span style="color: #01579b; font-weight: 600;">Sign in</span></div>
     </div>
 
@@ -98,9 +106,8 @@
           Before you make an account.
         </h1>
         <p style="font-size: 17px; line-height: 1.5; margin: 12px 0 0; max-width: 64ch; color: #4a443d;">
-          Two paragraphs, then three fields. The first paragraph is the one that
-          matters, and it is here rather than on a confirmation screen because by
-          then you have already decided.
+          What you are agreeing to is here, before the fields, rather than on a
+          confirmation screen after you have already decided.
         </p>
       </div>
 
@@ -110,8 +117,8 @@
         <div style="display: flex; gap: 13px; align-items: flex-start;">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#a71930" stroke-width="2.1" style="flex-shrink: 0; margin-top: 2px;"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9.5v5M12 17.5v.01"></path></svg>
           <div>
-            <div style="font-size: 18px; font-weight: 700; color: #a71930;">Funding a season is not saving money</div>
-            <div style="font-size: 16px; line-height: 1.55; margin-top: 6px; max-width: 70ch;">
+            <div data-risk-head="" style="font-size: 18px; font-weight: 700; color: #a71930;">Funding a season is not saving money</div>
+            <div data-risk-body="" style="font-size: 16px; line-height: 1.55; margin-top: 6px; max-width: 70ch;">
               Crops fail. When one does there may be no profit to share, and a total
               loss can return less than you put in. There is no capital protection,
               no guaranteed return, and no projected return shown anywhere in this
@@ -129,14 +136,14 @@
         <div style="font-size: 17px; font-weight: 700;">What we hold, and what we do not ask for</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 12px;">
           <div>
-            <div style="font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #605a53;">WE HOLD</div>
+            <div style="font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #605a53;">What we hold</div>
             <div style="font-size: 15.5px; line-height: 1.6; margin-top: 6px; color: #1d1a17;">
               Your name, an email address, and a record of every season you funded,
               including the ones that failed. That record does not get quietly tidied.
             </div>
           </div>
           <div>
-            <div style="font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #605a53;">WE DO NOT ASK</div>
+            <div style="font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #605a53;">What we never ask for</div>
             <div style="font-size: 15.5px; line-height: 1.6; margin-top: 6px; color: #1d1a17;">
               For a PAN, an Aadhaar, or a bank account. Not until money actually has
               to move, and you will be asked then, on purpose.
@@ -151,6 +158,17 @@
         <div>
           <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">What are you here to do?</div>
           <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div data-role-pick="farmer" style="background: #f6f3ef; padding: 15px 17px;">
+              <div style="display: flex; gap: 11px; align-items: flex-start;">
+                <div style="width: 19px; height: 19px; flex-shrink: 0; border-radius: 10px; box-shadow: inset 0 0 0 2px #8c857e; margin-top: 2px;"></div>
+                <div>
+                  <div style="font-size: 16.5px; font-weight: 600;">Film my own field</div>
+                  <div style="font-size: 14.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">
+                    You grow the crop, film it, and ask for money against what the video proves.
+                  </div>
+                </div>
+              </div>
+            </div>
             <div data-role-pick="investor" style="background: #f6f3ef; padding: 15px 17px; box-shadow: inset 0 0 0 2px #1d1a17;">
               <div style="display: flex; gap: 11px; align-items: flex-start;">
                 <div style="width: 19px; height: 19px; flex-shrink: 0; border-radius: 10px; background: #1d1a17; margin-top: 2px;"></div>
@@ -174,10 +192,7 @@
               </div>
             </div>
           </div>
-          <div style="font-size: 14.5px; line-height: 1.55; margin-top: 14px; max-width: 46ch; color: #4a443d;">
-            If you farm, neither of these is you. Sign in with your phone number
-            instead, on this same site.
-          </div>
+          
         </div>
 
         <div>
@@ -189,7 +204,7 @@
 
           <div style="font-size: 14.5px; font-weight: 600; margin-top: 16px;">Email</div>
           <div class="fld" style="margin-top: 6px; box-shadow: inset 0 0 0 1px #c3bcb6;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8"><path d="M3 6h18v12H3z"></path><path d="M3 6l9 7 9-7"></path></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8" stroke-linejoin="round"><path d="M3.5 6.5h17v11h-17z"></path><path d="M3.9 7.1l8.1 5.9 8.1-5.9"></path></svg>
             <div style="font-size: 16px; color: #1d1a17;">ravi@example.com</div>
           </div>
 
@@ -201,14 +216,14 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#605a53" stroke-width="1.8"><rect x="4" y="10" width="16" height="10"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
             <div class="num" style="font-size: 18px; letter-spacing: .16em; color: #1d1a17;">••••••••</div>
             <div style="flex-grow: 1;"></div>
-            <div style="font-size: 14px; font-weight: 600; color: #01579b;">Show</div>
+            <div style="font-size: 14px; font-weight: 600; color: #01579b; min-height: 44px; min-width: 44px; display: flex; align-items: center; justify-content: center; justify-content: center;">Show</div>
           </div>
 
           <!-- Not a tick-box for terms. An explicit sentence, because a checkbox
                next to a link nobody opens is consent theatre. -->
           <div data-ack="" style="margin-top: 18px; background: #f6f3ef; padding: 14px 16px; display: flex; gap: 11px; align-items: flex-start;">
-            <div style="width: 21px; height: 21px; flex-shrink: 0; background: #fff; box-shadow: inset 0 0 0 2px #a71930; margin-top: 1px;"></div>
-            <div style="font-size: 15px; line-height: 1.5; font-weight: 600;">
+            <div data-ackbox="" style="width: 21px; height: 21px; flex-shrink: 0; background: #fff; box-shadow: inset 0 0 0 2px #a71930; margin-top: 1px;"></div>
+            <div data-ack-text="" style="font-size: 15px; line-height: 1.5; font-weight: 600;">
               I understand a season can lose money and that nothing here is a
               guaranteed return.
             </div>

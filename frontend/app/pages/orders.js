@@ -1,6 +1,6 @@
 import { requireUser, api, load, state } from './_guard.js';
-import { bind } from '../bind.js';
-import { rupees, dayMonth } from '../api.js';
+import { bind, arrive, playsInline, state as showState } from '../bind.js';
+import { rupees, dayMonth, rupeeRange } from '../api.js';
 import { goes, acts, press } from '../wire.js';
 
 // A CSV row separator, named so no editing pass can put a real newline
@@ -40,12 +40,14 @@ if (ctx) load(ctx.root, async () => {
   const top = buys[0];
   const short = (v) => (v ? `${String(v).slice(0, 8)}…${String(v).slice(-4)}` : 'not recorded');
   bind(ctx.root, { receipt: top ? {
-    head: `Receipt — ${top.crop || 'lot'}, ${dayMonth(top.purchaseDate)}`,
+    head: `Receipt, ${top.crop || 'lot'}, ${dayMonth(top.purchaseDate)}`,
     paid: rupees(top.price),
     tx: short(top.txHash), hash: short(top.videoFileHash), cid: short(top.cid),
     block: top.blockHeight ? `Block ${Number(top.blockHeight).toLocaleString('en-IN')}` : 'Not written into a block yet',
   } : {
-    head: 'No receipt yet', paid: '—',
+    // An em dash where money belongs reads as a fault, which is the same
+    // reason the hash rows below say it in words.
+    head: 'No receipt yet', paid: 'No purchase yet',
     tx: 'No purchase yet', hash: 'No purchase yet', cid: 'No purchase yet',
     block: 'No purchase yet',
   } });
@@ -63,11 +65,21 @@ if (ctx) load(ctx.root, async () => {
   }
   const body = ctx.root.querySelector('table tr')?.parentElement;
   const header = body.children[0], tpl = body.children[1]?.cloneNode(true);
+  tpl?.removeAttribute('data-specimen');        // the clones carry real orders
   if (!tpl) return;
   body.replaceChildren(header);
+  // The table replaces a blank, so the rows arrive rather than appear.
+  const built = [];
   for (const p of buys) {
     const tr = tpl.cloneNode(true), tds = tr.querySelectorAll('td');
     tds[0]?.querySelector('div')?.replaceChildren(document.createTextNode(p.crop || 'Lot'));
+    // The farmer and where the lot came from. Unmarked on the board, so every
+    // row said "Alice Farmer · Kadapa" whoever had actually grown it.
+    const who = tr.querySelector('[data-who]');
+    if (who) {
+      const line = [p.farmerName, p.location].filter(Boolean).join(' · ');
+      if (line) who.textContent = line; else who.remove();
+    }
     tds[1]?.querySelector('.m')?.replaceChildren(document.createTextNode(rupees(p.price)));
     if (tds[2]) tds[2].textContent = dayMonth(p.purchaseDate);
     // the pesticide field is what the farmer typed; blank is blank, not none
@@ -79,28 +91,87 @@ if (ctx) load(ctx.root, async () => {
     const asked = tr.querySelector('[data-asked]');
     if (asked) {
       if (p.minPrice != null && p.maxPrice != null) {
-        asked.textContent = `She asked ${rupees(p.minPrice)}–${rupees(p.maxPrice)}`;
+        asked.textContent = `She asked ${rupeeRange(p.minPrice, p.maxPrice)}`;
       } else asked.remove();
     }
     const dated = tr.querySelector('[data-dated]');
     if (dated) {
+      /* The short form in the cell, the explanation once above the table.
+       * Four rows each carrying "On our server, its date has not landed in a
+       * block yet" is eleven words repeated four times, wrapping to two lines
+       * every time -- the same thing plots.js and plot.js already avoid by
+       * using dateState()'s short form. "Watch it, check the date" underneath
+       * is what the row is FOR, and it was competing with the sentence. */
       dated.textContent = p.blockHeight
-        ? `Block ${Number(p.blockHeight).toLocaleString('en-IN')} · you can check this yourself`
-        : 'On our server · its date has not landed in a block yet';
+        ? `Block ${Number(p.blockHeight).toLocaleString('en-IN')}`
+        : 'Date being written';
       dated.style.color = p.blockHeight ? '#006934' : '#4a443d';
     }
 
-    // "Watch it - check the date" is the whole point of this row: it is how a
-    // buyer verifies the lot they paid for. It goes to the provenance record,
-    // and where there is no video it is removed rather than left to be pressed.
+    /* "Watch it - check the date" IS the row. It is the only reason a receipt in
+     * this product is worth more than a receipt anywhere else, and it went to
+     * `plot?name=<crop>` -- plot.html, which is gated to farmers. So a buyer
+     * pressing the one control that answers "was the thing I paid for real"
+     * landed on "Not your screen. This page is for a farmer." Four times, once
+     * per lot, on the buyer's own orders page.
+     *
+     * It plays here instead. The address comes from the public provenance route,
+     * fetched on the press rather than four times on load, because most visits to
+     * this page are not going to watch anything. If the record has no address, the
+     * row says so where the player would have been rather than opening an empty
+     * box or going quiet. */
     const watch = tr.querySelector('.act');
     if (watch) {
-      if (p.cid) goes(watch, `plot?name=${encodeURIComponent(p.crop || '')}`,
-                      `Watch the video for ${p.crop || 'this lot'} and check its date`);
-      else watch.remove();
+      if (!p.cid) { watch.remove(); }
+      else {
+        let player = null;
+        acts(watch, `Watch the video for ${p.crop || 'this lot'} and check its date`, async () => {
+          if (player) { player.toggle(); return; }
+          const was = watch.textContent;
+          watch.textContent = 'Fetching the record…';
+          try {
+            const v = await api.videos.provenance(p.cid);
+            watch.textContent = was;
+            if (!v?.gateway) throw new Error('This record carries no address for the file.');
+            /* A player belongs in a CELL, not after a row. playsInline inserts a
+             * div after whatever it is given, and a div after a <tr> inside a
+             * <tbody> is not a thing HTML has: the browser hoists it out of the
+             * table and the video ends up above the receipt. So the row gets a
+             * row of its own, spanning every column, and the player opens against
+             * an anchor inside that cell. */
+            const holder = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 5;
+            cell.style.cssText = 'padding: 0 0 16px;';
+            holder.append(cell);
+            tr.after(holder);
+            const anchor = document.createElement('div');
+            cell.append(anchor);
+            player = playsInline(anchor, { gateway: v.gateway });
+            // aria-expanded belongs on the control somebody presses, not on the
+            // empty div the panel is measured against.
+            anchor.removeAttribute('aria-expanded');
+            watch.setAttribute('aria-expanded', 'true');
+            const was2 = player.toggle;
+            player.toggle = () => { was2(); watch.setAttribute('aria-expanded',
+              watch.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); };
+            player.open?.();
+          } catch (err) {
+            watch.textContent = was;
+            const box = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 5;
+            box.append(cell);
+            tr.after(box);
+            showState(cell, 'failed', 'This one will not play', err.message);
+          }
+        });
+      }
     }
     body.append(tr);
+    built.push(tr);
   }
+  arrive(built);
 
   // "Download" is the record of everything held about these purchases. It is
   // built here from what is already on screen -- no route needed, and nothing

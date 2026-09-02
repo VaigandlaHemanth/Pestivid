@@ -1,14 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#f6f3ef">
-  <title>Messages</title>
+  <meta name="theme-color" content="#ffffff">
+  <title>Messages · Pestivid</title>
   <!-- generated from design/Messages.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta name="robots" content="noindex, follow">
   
   <link rel="stylesheet" href="./tokens.css">
+  <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
+       at a design's own width. -->
+  <link rel="stylesheet" href="./loaders.css">
+  <link rel="stylesheet" href="./responsive.css">
   <style>
 
     body { margin: 0; }
@@ -17,108 +25,308 @@
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
     /* unread is carried by a solid left edge, not by colour alone and not by a
        dot small enough to miss in sunlight */
-    .n  { padding: 16px 20px 16px 17px; display: flex; gap: 13px; align-items: flex-start; background: #f6f3ef; }
-    .nu { padding: 16px 20px 16px 14px; display: flex; gap: 13px; align-items: flex-start;
-          background: #f6f3ef; box-shadow: inset 3px 0 0 #016abe; }
-    .h  { font-size: 16.5px; font-weight: 600; line-height: 1.35; }
-    .b  { font-size: 15px; line-height: 1.5; color: #4a443d; margin-top: 3px; }
-    .t  { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-          color: #605a53; margin-top: 8px; }
-    .ic { width: 38px; height: 38px; flex-shrink: 0; background: #e7e1db; display: flex;
+    /* One surface, hairline between rows. Nineteen separately filled blocks
+       each with its own filled icon tile is what made this read as a stack of
+       boxes rather than a list -- and a card is for elevation that means
+       something, which a notice does not have. */
+    /* Read and unread are the SAME box with the left bar lit or not, on the same
+       padding. They used to differ by 3px of padding as well, so marking one
+       read shifted its text sideways -- a row you just touched twitching is
+       read as a bug, not as a state change. Now only the bar's colour moves,
+       so it can fade. */
+    .n  { padding: 15px 20px 15px 14px; display: flex; gap: 12px; align-items: flex-start;
+          background: #f6f3ef;
+          box-shadow: inset 3px 0 0 transparent, inset 0 -1px 0 #e3ddd6;
+          transition: box-shadow var(--t-smooth, 746ms) var(--e-smooth, ease); }
+    .nu { padding: 15px 20px 15px 14px; display: flex; gap: 12px; align-items: flex-start;
+          background: #f6f3ef;
+          box-shadow: inset 3px 0 0 #016abe, inset 0 -1px 0 #e3ddd6;
+          transition: box-shadow var(--t-smooth, 746ms) var(--e-smooth, ease); }
+    /* The chevron a row wears when it leads somewhere. A notice that has no
+       screen to open loses it, so you can tell which is which before pressing
+       rather than after. */
+    .go { width: 22px; height: 22px; flex-shrink: 0; margin-top: 2px; display: flex;
           align-items: center; justify-content: center; }
+    .h  { font-size: 16px; font-weight: 600; line-height: 1.4; }
+    /* A row that has been read de-emphasises: the bar goes out AND the headline
+       stops being bold. Weight is not animated -- it reflows -- so it changes on
+       the same press the bar starts fading on, which reads as one event. */
+    .n .h { font-weight: 400; }
+    .b  { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 2px; }
+    /* sentence case: text-transform made every timestamp shout TODAY, 10:40 PM */
+    .t  { font-size: 12.5px; color: #605a53; margin-top: 6px; }
+    /* the glyph, not a tile around the glyph */
+    .ic { width: 22px; height: 22px; flex-shrink: 0; margin-top: 2px; display: flex;
+          align-items: center; justify-content: center; }
+    .grp { font-size: 13px; font-weight: 700; letter-spacing: .04em; color: #605a53;
+           padding: 0 0 9px; margin-top: 22px; }
+    .grp:first-child { margin-top: 0; }
+
+    /* ── the conversation, in the right pane ─────────────────────────────
+     * A BUBBLE, not a card. These were fixed-width blocks -- 520px received,
+     * 440px sent, whatever the message said -- so "Yes, I will" drew the same
+     * rectangle as a paragraph, and a column of equal rectangles is a table.
+     * A bubble hugs its own text and takes the shape a reader knows from every
+     * messaging app: rounded, with the corner on the side it came FROM squared
+     * into a tail. This is the one deliberate exception to the shape rule
+     * (paper square, controls 8px, round for badges): here the shape IS the
+     * meaning. */
+    .them { background: #fff; padding: 13px 16px; max-width: 62%; width: fit-content;
+            align-self: flex-start; border-radius: 16px 16px 16px 4px; }
+    .me   { background: #1d1a17; color: #f6f3ef; padding: 13px 16px; max-width: 62%;
+            width: fit-content; align-self: flex-end; border-radius: 16px 16px 4px 16px; }
+    /* .bt, not .t. This board already used .t for a notice's timestamp --
+       12.5px #605a53 -- and the transcript arriving from the thread board
+       brought its own .t for the message text. Both applied: the size came from
+       the new rule and the COLOUR from the old one, so every bubble's words
+       rendered #605a53 while the bubble's own colour sat unused. On the sent
+       bubble that is 1.9:1 on near-black. The bubble text gets its own name. */
+    .bt   { font-size: 15.5px; line-height: 1.5; }
+    .when { font-size: 12.5px; color: #4a443d; margin-top: 5px; }
+    /* A RUN from the same side closes up to 4px and only the last of it keeps a
+       tail -- three lines typed in a row are one person talking, not three
+       events. Pure sibling CSS, so a day label between two bubbles breaks the
+       run by itself, which is right. */
+    /* 12px of transcript gap, pulled back to 3 inside a run, so the space
+       BETWEEN turns is four times the space within one. */
+    .them + .them, .me + .me { margin-top: -9px; }
+
+    /* ONE CLOCK PER TURN.
+       Five messages sent in a row are one turn in a conversation, and this
+       printed the time and "read" under every single one of them -- so a run of
+       five read as five receipts stacked up rather than somebody talking. Every
+       chat groups consecutive messages from the same sender and prints the clock
+       once, on the last of the run, which is also the only one whose time you
+       would look for. The bubbles were already grouped; only the clock was not. */
+    .them:has(+ .them) [data-when],
+    .me:has(+ .me)     [data-when] { display: none; }
+    /* A RUN READS AS ONE COLUMN, not a stack of separate pills.
+       Two things do it, and this had only the first: the tail comes off any
+       bubble that is not the last of its run, AND the corners where two bubbles
+       MEET are squared to 6. Leave every corner at 16 and five messages look
+       like five things; square the join and they look like one person talking. */
+    .them:has(+ .them) { border-bottom-left-radius: 6px; }
+    .them + .them      { border-top-left-radius: 6px; }
+    .me:has(+ .me)     { border-bottom-right-radius: 6px; }
+    .me + .me          { border-top-right-radius: 6px; }
+    /* The day a run belongs to. Plain text, not a pill: drawn as a round chip it
+       looked exactly like the quick-reply chips below it. */
+    .day  { align-self: center; font-size: 12.5px; font-weight: 600; color: #605a53;
+            padding: 3px 0; letter-spacing: 0.01em; }
+    /* quick replies: still text, tappable, and they spare somebody typing a
+       reply on a phone keyboard */
+    .chip { background: #e7e1db; min-height: 46px; box-sizing: border-box; display: flex;
+            align-items: center; padding: 10px 13px; font-size: 15px; }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    /* A nav item was a 20px-tall word: under the 28x28 pointer minimum and
+       well under 44x44 by touch, which is the HIG recommended control size.
+       The bar centres its items, so giving them a real height moves nothing
+       and makes the whole word-plus-air pressable. */
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .railcard  { color: #1d1a17; padding: 20px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .railh { font-size: 15px; font-weight: 600; }
+    .railp { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; }
+    .rail  { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+
+    /* A DEFINITE HEIGHT, so the column below can be given what is left.
+       build-pages writes `min-height: 100vh` on every wrapper, and a MINIMUM is
+       not something flex-grow can divide: with the transcript taller than the
+       window the wrapper simply grew and the chat ran off the bottom of the page.
+       A definite height bounds it, the panes carry min-height: 0 so they may
+       shrink, and the transcript scrolls inside instead of the document doing it.
+       In the helmet rather than responsive.css because the drawing has to compute
+       the same thing the page does -- verify-layout renders both and compares. */
+    [data-fullheight] { height: 100dvh; }
+
+    /* THE CORNER RULE ON THIS PAGE, written down because a mixed radius scale is
+       only allowed when there is a rule and the rule is followed:
+         controls   8px   the message field and the send button
+         bubbles   16px   with the corner nearest its own side cut to 4, which is
+                          what makes a bubble read as coming FROM somebody
+         avatars   round
+       Nothing here should introduce a fourth value. */
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    /* The back link: in the content above the heading, naming its destination.
+       44px of tap height for a phone. align-self keeps it from stretching when
+       its parent is a flex column. */
+    /* The way out: an icon-only chevron, 44x44 of target under a 21px glyph,
+       the same control profile.html carries. The word stays in the document
+       for anyone who cannot see the arrow, drawn off-screen rather than deleted.
+       It sits ON the surface, beside the heading, and is grey, not blue: a
+       blue word at weight 600 competed with the heading from every position
+       it was tried in (design/taste-references.md). */
+    .backlink { display: inline-flex; align-items: center; justify-content: center;
+                align-self: flex-start; width: 44px; height: 44px; margin-left: -11px;
+                color: #605a53; text-decoration: none; flex-shrink: 0; }
+    .backlink:hover { color: #1d1a17; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+          overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   </style>
 </head>
-<body data-page="messages" data-role="farmer" data-design-width="360" data-design-height="990">
-<div class="f" style="box-sizing: border-box; width: 100%; max-width: 360px; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
-
-  <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-    <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-    <div style="flex-grow: 1;">
-      <div data-title="" style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Messages</div>
-      <div data-bind="unreadLine" style="font-size: 14.5px; color: #605a53;">Two you have not read</div>
-    </div>
-  </div>
-
-  <div style="flex-grow: 1;">
-
-    <!-- the message the whole product exists to send -->
-    <div class="nu">
-      <div class="ic">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4a443d" stroke-width="2.2"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+<body data-page="messages" data-role="any" data-design-width="1320" data-design-height="1200">
+<div data-surface="desk" data-w="1320" data-fullheight="" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+      <div class="appbar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div class="appbrand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="appnav">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnavOn">Chat</div>
+        </div>
       </div>
-      <div style="flex-grow: 1;">
-        <div class="h">Your Canal plot video now has a date nobody can change</div>
-        <div class="b">The one you filmed on 18 August. Its date is written into Bitcoin block 881,204. Investors can check it themselves.</div>
-        <div class="m t">Today, 11:40 am</div>
-      </div>
-    </div>
-
-    <div style="height: 1px; background: #ddd7d1;"></div>
-
-    <div class="nu">
-      <div class="ic">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M12 3v18"></path><path d="M17 7.5c0-2-2.2-3-5-3s-5 1-5 3 2.2 2.7 5 3.3 5 1.4 5 3.4-2.2 3.3-5 3.3-5-1.3-5-3.3"></path></svg>
-      </div>
-      <div style="flex-grow: 1;">
-        <div class="h">Meena Rao put ₹50,000 into your North plot</div>
-        <div class="b">North plot has now raised ₹1,80,000 of the ₹5,00,000 you asked for.</div>
-        <div class="m t">Yesterday, 4:18 pm</div>
-      </div>
-    </div>
-
-    <div style="height: 1px; background: #ddd7d1;"></div>
-
-    <div class="n">
-      <div class="ic">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M5 3h11l3 3v15H5z"></path><path d="M16 3v3h3"></path><path d="M8.5 12.5h7M8.5 16h4"></path></svg>
-      </div>
-      <div style="flex-grow: 1;">
-        <div class="h">Your North plot is open to investors</div>
-        <div class="b">We checked you have three date stamped videos on it, which is what we ask for before a plot can raise money.</div>
-        <div class="m t">19 August</div>
-      </div>
-    </div>
-
-    <div style="height: 1px; background: #ddd7d1;"></div>
-
-    <div class="n">
-      <div class="ic">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="1.9"><path d="M21 12a8.5 8.5 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l1.9-5.1A8.5 8.5 0 0 1 12 3.5a8.5 8.5 0 0 1 9 8.5z"></path></svg>
-      </div>
-      <div style="flex-grow: 1;">
-        <div class="h">Ravi Kumar asked you a question</div>
-        <div class="b">“Is the canal water reaching the far end of the plot this year?”</div>
-        <div class="m t">17 August</div>
-      </div>
-    </div>
-
-    <div style="height: 1px; background: #ddd7d1;"></div>
-
-    <!-- a failure told plainly, with the one thing they can do about it -->
-    <div class="n">
-      <div class="ic" style="background: #f7e9e6;">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#a71930" stroke-width="2.1"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9.5v5M12 17.5v.01"></path></svg>
-      </div>
-      <div style="flex-grow: 1;">
-        <div class="h">A video did not finish sending</div>
-        <div class="b">The Back field one from 14 August stopped at 60%. It is still on your phone. It will try again on wi-fi.</div>
-        <div class="m t">14 August</div>
-      </div>
-    </div>
-
-    <div style="padding: 22px 20px;">
-      <div style="background: #eae4de; padding: 15px 16px;">
-        <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
-          Only your own plots and your own money appear here. We do not send offers or advertisements,
-          and there is nothing to unsubscribe from.
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen="" data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial="" style="font-size: 13px; font-weight: 500;">A</div>
         </div>
       </div>
     </div>
+    <!-- Tight, because there is one thing in it. The heading below is hidden
+         to the eye and kept for the document, so this row holds only the way
+         out -- which is the one question of the four ("where am I, where can I
+         go, what is here, how do I get out") that the bar does not answer. -->
+    <!-- No padding and no height: all this holds now is the hidden heading. The
+         way out moved into the rail, where a desktop chat keeps it, so the chat
+         surface starts directly under the bar instead of after a bare 56px band
+         carrying one word. -->
+    <div class="pagehold" style="padding: 0;">
+      <!-- HIDDEN, NOT DELETED. The nav word "Chat" is underlined two lines
+           above this, so as a visible heading it repeated the answer to "where
+           am I" and charged 129px of the window for it. The h1 stays for the
+           document outline and for [data-title], which wire.js reads. -->
+      <h1 data-title="" class="pageh" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;">Chat</h1>
+    </div>
+
+  <!-- ══ ONE SCREEN, TWO PANES ══
+       This was two pages: a list of people, and a conversation you navigated to.
+       Every chat anybody has used puts the people on the left and the talking on
+       the right, and switching conversations is a click rather than a page load.
+       So they are one page now, which also takes the count down by one.
+
+       What went, and why:
+         "16 messages" under the name -- a count of a thing you are looking at.
+         "These are kept on our server and are not scrambled" -- a standing
+           disclosure that belonged in the privacy copy, not above the keyboard
+           on every single reply.
+         "Words only" -- the absence of a paperclip already says it.
+       The one fact worth keeping, that only people who funded you can write
+       here, explains why this list is short, so it sits at the top of the list. -->
+  <!-- flex, so the column below can actually take what flex-grow gives this. -->
+  <!-- EDGE TO EDGE. This held the chat in 28px of side padding and 30px at the
+       bottom, so a two-pane chat sat as a panel with ground showing all round
+       it -- the framing is what read as wasted space, not the panes. No
+       desktop chat does that: the surface goes to the window edge and the two
+       panes divide it. -->
+  <div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column;">
+    <div data-chatcol="" style="flex: 1; min-height: 0;   /* NOT a fixed height, and not a counted one either: responsive.css carried three constants for this -- 68vh, 100dvh-241, 100dvh-211 -- each the chrome above it measured by hand at one breakpoint, and each one went stale the moment anything above it moved. Filling what is left needs no number at all. */ display: grid; grid-template-columns: 340px 1fr; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6;">
+
+      <!-- ── the people ─────────────────────────────────────────────────── -->
+      <div style="display: flex; flex-direction: column; min-height: 0; box-shadow: inset -1px 0 0 #ddd7d1;">
+        <!-- The way out, at the top of the list, above the conversations. -->
+        <div style="flex-shrink: 0; padding: 11px 17px 10px; box-shadow: inset 0 -1px 0 #ddd7d1;">
+        <a data-chrome="back" href="./home.html" class="backlink" title="Back"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg><span data-backword="" class="sr">Home</span></a>
+        </div>
+        <div data-people="" style="flex-grow: 1; overflow-y: auto; min-height: 0;">
+          <div data-specimen="" data-row="person" data-on="" style="padding: 13px 17px; display: flex; gap: 12px; align-items: flex-start; background: #eae4de; box-shadow: inset 3px 0 0 #016abe, inset 0 -1px 0 #ddd7d1;">
+            <div style="width: 40px; height: 40px; background: #e1e6ec; border-radius: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 0 1px #c3bcb6;">
+              <div data-slot="initial" style="font-size: 16px; font-weight: 600;">R</div>
+            </div>
+            <div style="flex-grow: 1; min-width: 0;">
+              <div data-slot="name" style="font-size: 15.5px; font-weight: 600;">Ravi Kumar</div>
+              <div data-slot="snippet" style="font-size: 13.5px; line-height: 1.4; color: #605a53; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Can you walk to the far end in the next video?</div>
+            </div>
+            <div data-slot="when" class="m" style="font-size: 12.5px; color: #605a53; flex-shrink: 0;">2:05 pm</div>
+          </div>
+          <div data-specimen="" data-row="person" style="padding: 13px 17px; display: flex; gap: 12px; align-items: flex-start; box-shadow: inset 3px 0 0 transparent, inset 0 -1px 0 #ddd7d1;">
+            <div style="width: 40px; height: 40px; background: #e1e6ec; border-radius: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 0 1px #c3bcb6;">
+              <div data-slot="initial" style="font-size: 16px; font-weight: 600;">M</div>
+            </div>
+            <div style="flex-grow: 1; min-width: 0;">
+              <div data-slot="name" style="font-size: 15.5px; font-weight: 600;">Meena Rao</div>
+              <div data-slot="snippet" style="font-size: 13.5px; line-height: 1.4; color: #605a53; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Thanks for the update!</div>
+            </div>
+            <div data-slot="when" class="m" style="font-size: 12.5px; color: #605a53; flex-shrink: 0;">Yesterday</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── the conversation ───────────────────────────────────────────── -->
+      <div data-pane="" style="display: flex; flex-direction: column; min-height: 0; background: #ddd7d1;">
+        <!-- SPECIMEN until the conversation is known. This header carries a name and a
+     line about who that person is, and it is drawn with "Ravi Kumar" and "Put
+     money into one of your seasons" -- so while the fetch was in flight the
+     screen named a person nobody was talking to. bind() fills other.name here
+     and clears the mark as it does; with no conversation at all the page is
+     replaced by its empty state and this never appears. -->
+      <div data-specimen="" data-threadhead="" style="flex-shrink: 0; background: #f6f3ef; padding: 11px 20px; display: flex; align-items: center; gap: 12px; box-shadow: inset 0 -1px 0 #ddd7d1;">
+          <div style="width: 38px; height: 38px; background: #e1e6ec; border-radius: 19px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 0 1px #c3bcb6;">
+            <div data-avatar="" style="font-size: 16px; font-weight: 600;">R</div>
+          </div>
+          <div style="flex-grow: 1; min-width: 0;">
+            <div data-bind="other.name" style="font-size: 17px; font-weight: 700;">Ravi Kumar</div>
+            <div data-bind="other.context" style="font-size: 13px; color: #605a53; margin-top: 1px;">Funds seasons</div>
+          </div>
+        </div>
+
+        <div data-transcript="" style="flex-grow: 1; overflow-y: auto; min-height: 0; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div data-spacer="" style="flex-grow: 1;"></div>
+          <div data-specimen="" class="day">17 August</div>
+          <div data-specimen="" class="them">
+            <div class="bt">Namaste Alice. Is the canal water reaching the far end of the plot this year?</div>
+            <div data-when="" class="m when">9:12 am</div>
+          </div>
+          <div data-specimen="" class="me">
+            <div class="bt">Yes. These two weeks it came every third day.</div>
+            <div data-when="" style="display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 5px;">
+              <div class="m" style="font-size: 12.5px; color: #c4bdb6;">1:40 pm</div>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c4bdb6" stroke-width="2.4"><path d="M2 13l4 4 8-9"></path><path d="M10 15l2 2 9-10"></path></svg>
+            </div>
+          </div>
+          <div data-specimen="" class="them">
+            <div class="bt">Good. Can you walk to the far end in the next video? I have only seen the near side.</div>
+            <div data-when="" class="m when">2:05 pm</div>
+          </div>
+        </div>
+
+        <div data-chips="" style="flex-shrink: 0; padding: 2px 20px 12px;">
+          <div style="font-size: 13.5px; color: #605a53; margin-bottom: 7px;">Tap one to answer</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+            <div class="chip">Yes, I will</div>
+            <div class="chip">Give me two days</div>
+            <div class="chip">The far end is dry</div>
+          </div>
+        </div>
+
+        <div data-sendfail="" style="flex-shrink: 0; padding: 0 20px 16px;">
+          <div style="display: flex; gap: 9px; align-items: stretch;">
+            <div data-fieldbox="" style="flex-grow: 1; background: #fff; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; padding: 0 14px; min-height: 52px; border-radius: 8px;">
+              <div data-reply="" style="font-size: 16px; color: #4a443d;">Write a message</div>
+            </div>
+            <div data-send="" style="width: 52px; background: #016abe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 8px;">
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
-
-
-  <!-- everything below this line needs a scroll on a 360x800 handset -->
-  
 </div>
 <script type="module" src="./pages/messages.js"></script>
 </body>

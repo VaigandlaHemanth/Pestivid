@@ -16,6 +16,7 @@ const FundingRequest = mongoose.model('FundingRequest'); // Get FundingRequest m
 const { authenticateToken } = require('./auth'); // Import the authentication middleware
 const ipfs = require('../services/ipfsUpload'); // Server-side pinning + hashing
 const provenanceSvc = require('../services/provenance'); // Recycle/theft detection
+const posterSvc = require('../services/videoPoster'); // one frame, for the lists
 const anchorSvc = require('../services/anchor'); // Merkle log + Bitcoin timestamping
 const limits = require('../middleware/rateLimits'); // upload + public-read ceilings
 
@@ -93,6 +94,11 @@ router.get('/', authenticateToken, async (req, res) => {
         // Find video documents based on the filter
         // Populate the farmerWallet field to get the farmer's name (and other public profile info if selected)
         const videos = await Video.find(filter)
+                                  // poster is select:false on the model so it can
+                                  // never be dragged into a query that did not
+                                  // want 8-40 KB per row. These lists draw
+                                  // thumbnails, so these lists ask for it.
+                                  .select('+poster')
                                   .populate('farmerWallet', 'name role displayIdentifier') // Populate farmer's _id, name, role, displayIdentifier
                                   .sort({ uploadTimestamp: -1 }); // Sort by newest upload first
 
@@ -113,6 +119,23 @@ router.get('/', authenticateToken, async (req, res) => {
                  pesticideCompany: video.pesticideCompany,
                  purpose: video.purpose,
                  uploadTimestamp: video.uploadTimestamp ? video.uploadTimestamp.toISOString() : null,
+                 // One frame, so a list of videos looks like a list of videos
+                 // rather than five identical grey rectangles. Null until the
+                 // clip was uploaded through a server that could cut one.
+                 poster: video.poster || null,
+                 /* Where the file itself can be watched.
+                  *
+                  * Every screen could NAME a video and none could play one: the
+                  * plot page's rows carried no handler at all, and the buyer's
+                  * "Watch it, check the date" link led to that same page, so the
+                  * chain ended nowhere. A <video> loads cross-origin without
+                  * CORS, so the browser reads the gateway directly and no bytes
+                  * pass through us.
+                  *
+                  * The base comes from here and not from the frontend because
+                  * PINATA_GATEWAY is server configuration: a dedicated gateway
+                  * changes this string and nothing else. */
+                 gateway: video.cid ? ipfs.gatewayUrl(video.cid) : null,
              };
              if (!ownScope) return base;
 
@@ -141,6 +164,15 @@ router.get('/', authenticateToken, async (req, res) => {
 // @route GET /api/videos/farmer/:farmerId
 // @desc Get videos metadata uploaded by a specific farmer
 // @access Private (Requires authentication. User should typically only fetch their own videos)
+// Whether this server writes dates at all. Development runs with anchoring
+// off so a laptop does not call public calendars on every restart -- and the
+// screens then said "usually by tomorrow" about dates that were never going
+// to land: eight demo videos, two weeks, none written. The page asks, and
+// says the truth instead. Public: it is a fact about the server, not a person.
+router.get('/anchoring', (req, res) => {
+    res.json({ enabled: String(process.env.ANCHOR_ENABLED || '').toLowerCase() === 'true' });
+});
+
 router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
     const farmerId = req.params.farmerId; // Get the farmer ID from the URL parameter
 
@@ -160,6 +192,7 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
         // Find video documents for the specified farmer
         // Populate farmerWallet to get farmer details if needed (though we just verified the ID matches req.user._id)
         const videos = await Video.find({ farmerWallet: farmerId })
+                                  .select('+poster')
                                   .populate('farmerWallet', 'name role displayIdentifier') // Populate farmer's _id, name, role
                                   .sort({ uploadTimestamp: -1 }); // Sort by newest upload first
 
@@ -182,6 +215,8 @@ router.get('/farmer/:farmerId', authenticateToken, async (req, res) => {
              pesticideCompany: video.pesticideCompany,
              purpose: video.purpose,
              uploadTimestamp: video.uploadTimestamp ? video.uploadTimestamp.toISOString() : null, // Send timestamp as ISO string
+             poster: video.poster || null,
+             gateway: video.cid ? ipfs.gatewayUrl(video.cid) : null,
 
              // A farmer's own list has to carry the two facts that decide
              // whether a video can back a funding request, or the app cannot
@@ -247,6 +282,10 @@ router.get('/:cid/provenance', limits.publicReadLimiter, async (req, res) => {
         const video = await Video.findOne({ cid: String(req.params.cid).trim() })
             .select('cid videoFileHash hashComputedBy uploadTimestamp crop location ' +
                     'provenance fingerprint.nFrames fingerprint.algorithm farmerWallet')
+            // +poster: select:false on the model, so it has to be asked for. One
+            // frame, cut server-side from the same object the hash was computed
+            // from, which is why it belongs in the same public answer.
+            .select('+poster')
             .populate('farmerWallet', 'name')
             .lean();
 
@@ -258,6 +297,19 @@ router.get('/:cid/provenance', limits.publicReadLimiter, async (req, res) => {
 
         return res.json({
             cid: video.cid,
+            /* Where the file can be watched, on the one public record route.
+             *
+             * The investor's page has a 300px media plate with a play mark on it
+             * and nothing behind it, on the screen whose own words are "the video
+             * is the only thing here you can verify without trusting the farmer".
+             * A play button that does nothing is worse than no play button: it
+             * says the check is available and then refuses it.
+             *
+             * This route is already public, which is right -- anybody should be
+             * able to check a claim -- so the address of the file belongs in the
+             * same answer as its fingerprint. */
+            gateway: video.cid ? ipfs.gatewayUrl(video.cid) : null,
+            poster: video.poster || null,
             uploadedAt: video.uploadTimestamp,
             crop: video.crop,
             farmer: video.farmerWallet && video.farmerWallet.name,
@@ -732,7 +784,7 @@ router.post('/upload-url', authenticateToken, limits.uploadBurstLimiter, async (
         const busy = err.response && err.response.status === 429;
         return res.status(busy ? 429 : 502).json({
             message: busy
-                ? 'We are asking storage too often just now. Wait a moment and try again — nothing is lost.'
+                ? 'We are asking storage too often just now. Wait a moment and try again, nothing is lost.'
                 : 'Could not get an upload address from storage. Try again.',
         });
     }
@@ -794,10 +846,26 @@ router.post('/confirm-upload', authenticateToken, limits.uploadLimiter, async (r
             analysis.provenance.flags = ['analysis_error'];
         }
 
+        /* One frame, from the same temp file the hash came from.
+         *
+         * Deliberately after the hash and the provenance analysis, and
+         * deliberately unable to fail the request: the bytes are already in
+         * storage by this point, so a missing thumbnail must never turn a
+         * completed upload into an error. posterDataUri returns null rather
+         * than throwing, and null is just the grey placeholder the lists have
+         * always drawn. */
+        let poster = null;
+        try {
+            poster = await posterSvc.posterDataUri(tmp);
+        } catch (e) {
+            console.warn('Poster extraction failed, continuing:', e.message);
+        }
+
         const savedVideo = await new Video({
             cid,
             storageType: 'ipfs',
             videoFileHash,
+            poster: poster || undefined,
             hashComputedBy: 'server',
             fingerprint: analysis.fingerprint,
             provenance: analysis.provenance,

@@ -18,20 +18,44 @@
            box-sizing: border-box; }
     .cap { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px; }
     .stp { font-size: 13px; color: #605a53; letter-spacing: .04em; }
-    .lang   { padding: 15px 17px; font-size: 19px; background: #f6f3ef; box-shadow: inset 0 -1px 0 #c3bcb6; }
-    .langOn { padding: 15px 17px; font-size: 19px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
+    .lang   { padding: 11px 15px; font-size: 18px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; }
+    .langOn { padding: 11px 15px; font-size: 18px; background: #1d1a17; color: #f6f3ef; font-weight: 600; }
     .fldL { font-size: 16px; font-weight: 600; }
     .fldB { background: #f6f3ef; height: 62px; margin-top: 7px; display: flex; align-items: center;
             padding: 0 16px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 17px; color: #4a443d; }
     .row0 { display: flex; align-items: center; gap: 15px; padding: 0 20px; min-height: 70px;
             background: #f6f3ef; box-shadow: inset 0 -1px 0 #c3bcb6; }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    /* A nav item was a 20px-tall word: under the 28x28 pointer minimum and
+       well under 44x44 by touch, which is the HIG recommended control size.
+       The bar centres its items, so giving them a real height moves nothing
+       and makes the whole word-plus-air pressable. */
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .railcard  { color: #1d1a17; padding: 20px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .railh { font-size: 15px; font-weight: 600; }
+    .railp { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; }
+    .rail  { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </helmet>
 
 <div class="a" style="width: 1200px; background: #e7e1db; color: #1d1a17; padding: 28px 28px 34px; box-sizing: border-box; position: relative;">
 
   <div style="font-size: 15px; color: #605a53;">Opening the app for the very first time</div>
-  <h2 style="margin: 5px 0 0; font-size: 27px; font-weight: 700; letter-spacing: -0.028em;">Three screens, then they are filming</h2>
+  <h2 style="margin: 5px 0 0; font-size: 27px; font-weight: 700; letter-spacing: -0.028em;">One screen, then they are filming</h2>
   <p style="margin: 8px 0 0; font-size: 15.5px; line-height: 1.5; max-width: 104ch; color: #4a443d;">
     No splash animation, no carousel of value propositions, no tour. Somebody standing in a field on a
     borrowed phone is not going to swipe through four slides about blockchain, and every second before
@@ -42,10 +66,10 @@
 
     <!-- 1 ─────────── language, before literally anything else ─────────── -->
     <div>
-      <div data-page="setup-language" class="ph f" style="min-height: 800px;">
+      <div data-retired="setup-language" class="ph f" style="min-height: 800px;">
         <div style="background: #f6f3ef; padding: 26px 20px 20px; flex-shrink: 0;">
           <div style="font-size: 24px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
-          <div data-title style="font-size: 17px; color: #4a443d; margin-top: 3px;">Choose your language</div>
+          <h1 data-title style="font-size: 17px; color: #4a443d; margin-top: 3px;">Choose your language</h1>
         </div>
         <div style="flex-grow: 1; padding: 14px 0 0; display: flex; flex-direction: column;">
           <div class="langOn">English</div>
@@ -59,14 +83,14 @@
         <div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 20px;">
           <!-- "Read this aloud" removed with the rest of the voice work. -->
           <div style="background: #016abe; height: 60px; margin-top: 10px; display: flex; align-items: center; justify-content: center;">
-            <div style="font-size: 18px; font-weight: 700; color: #fff;">Continue</div>
+            <div style="font-size: 18px; font-weight: 700; color: #fff; min-height: 44px; display: flex; align-items: center;">Continue</div>
           </div>
         </div>
       </div>
-      <div class="stp" style="margin-top: 13px;">STEP 1 OF 3</div>
-      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Language, before the account</div>
+      <div class="stp" style="margin-top: 13px;">WAS STEP 1 OF 3</div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Retired, folded into the one setup screen</div>
       <div class="cap" style="max-width: 44ch;">
-        Every option is written in its own script, and the list is the whole screen &mdash; no logo
+        Every option is written in its own script, and the list is the whole screen, no logo
         animation ahead of it. The read-aloud button is here rather than three screens later, because
         somebody who cannot read this screen needs it on this screen.
       </div>
@@ -74,13 +98,48 @@
 
     <!-- 2 ─────────── who you are, and what we refuse to ask ─────────── -->
     <div>
-      <div data-page="setup-identity" class="ph f" style="min-height: 800px;">
-        <div style="background: #f6f3ef; padding: 22px 20px 18px; flex-shrink: 0;">
-          <div data-title style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Who are you?</div>
-          <div style="font-size: 15px; color: #605a53; margin-top: 2px;">Two things, and a code to get back in</div>
+      <div data-retired="setup" class="f" style="width: 1320px; min-height: 860px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+        <div class="appbar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div data-chrome="back" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
+        <div class="appbrand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="appnav">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnav">Chat</div>
         </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial style="font-size: 13px; font-weight: 500;">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagehold" style="padding: 30px 28px 0; width: 1006px; max-width: 100%; box-sizing: border-box; margin: 0 auto;">
+      <h1 data-title class="pageh">Set this up once, then film</h1>
+    </div>    <div style="flex-grow: 1; display: grid; grid-template-columns: 640px 340px; gap: 26px; justify-content: center; align-items: start; padding: 22px 28px 34px;">
+      <div class="main" style="max-width: 100%;">
         <div style="flex-grow: 1; padding: 18px 20px;">
+          <!-- Language first, because it decides what the rest of this screen says.
+               It was its own screen, which meant a tap and a page load between
+               choosing Telugu and being asked your name. -->
           <div>
+            <div class="fldL">Your language</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+            <div class="langOn">English</div>
+            <div class="lang">&#3108;&#3142;&#3122;&#3137;&#3095;&#3137;</div>
+            <div class="lang">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</div>
+            <div class="lang">&#2980;&#2990;&#3007;&#2996;&#3021;</div>
+            <div class="lang">&#2476;&#2494;&#2434;&#2482;&#2494;</div>
+            <div class="lang">&#3221;&#3240;&#3277;&#3240;&#3233;</div>
+            <div class="lang">&#2350;&#2352;&#2366;&#2336;&#2368;</div>
+            </div>
+          </div>
+          <div style="margin-top: 20px;">
             <div class="fldL">Your name</div>
             <div class="fldB" style="color: #1d1a17;">Alice Farmer</div>
           </div>
@@ -94,12 +153,12 @@
           <div style="margin-top: 17px;">
             <div data-bind="code.label" class="fldL">Pick a six number code</div>
             <div style="display: flex; gap: 9px; margin-top: 7px;">
-              <div style="flex: 1; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
-              <div style="flex: 1; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
-              <div style="flex: 1; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
-              <div style="flex: 1; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
-              <div style="flex: 1; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
-              <div style="flex: 1; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 2px #1d1a17;"></div>
+              <div data-codebox style="width: 62px; flex-shrink: 0; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
+              <div data-codebox style="width: 62px; flex-shrink: 0; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
+              <div data-codebox style="width: 62px; flex-shrink: 0; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
+              <div data-codebox style="width: 62px; flex-shrink: 0; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
+              <div data-codebox style="width: 62px; flex-shrink: 0; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 1px #c3bcb6; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">&bull;</div>
+              <div data-codebox style="width: 62px; flex-shrink: 0; height: 62px; background: #f6f3ef; box-shadow: inset 0 0 0 2px #1d1a17;"></div>
             </div>
             <div data-bind="code.hint" style="font-size: 14px; line-height: 1.45; margin-top: 6px; color: #605a53;">
               Not your bank PIN. Six numbers, because four is too easy to guess.
@@ -110,32 +169,38 @@
           <div style="background: #eae4de; padding: 15px 16px; margin-top: 18px;">
             <div style="font-size: 15.5px; font-weight: 700;">What we are not asking for</div>
             <div style="font-size: 14.5px; line-height: 1.55; margin-top: 5px; color: #4a443d;">
-              No Aadhaar. No land papers. No bank account &mdash; not until somebody actually wants to
+              No Aadhaar. No land papers. No bank account, not until somebody actually wants to
               send you money, and you will be asked then, on purpose, not now.
             </div>
           </div>
         </div>
-        <div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 20px;">
+        <div style="flex-shrink: 0; padding: 18px 20px 0;">
           <div style="background: #016abe; height: 60px; display: flex; align-items: center; justify-content: center;">
-            <div style="font-size: 18px; font-weight: 700; color: #fff;">Continue</div>
+            <div  style="font-size: 18px; font-weight: 700; color: #fff; min-height: 44px; display: flex; align-items: center; justify-content: center;">Continue</div>
           </div>
         </div>
       </div>
-      <div class="stp" style="margin-top: 13px;">STEP 2 OF 3</div>
-      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">Three fields, and a refusal</div>
+
+      <div class="rail"></div>
+    </div>
+</div>
+      <div class="stp" style="margin-top: 13px;">THE WHOLE FIRST RUN</div>
+      <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">One screen: language, three fields, a refusal</div>
       <div class="cap" style="max-width: 44ch;">
-        Name, phone, four digits. No email, no password with a capital letter and a symbol, no crop
-        survey, no acreage &mdash; those get asked when they are needed and not before. The panel
-        listing what we do not want is doing more work here than any of the fields.
+        Language was a screen of its own and the account was the next one, so somebody standing in a
+        field crossed two page loads before the camera. It is one screen now. No email, no password
+        with a capital letter and a symbol, no crop survey, no acreage, those get asked when
+        they are needed and not before. The panel listing what we do not want is doing more work here
+        than any of the fields.
       </div>
     </div>
 
     <!-- 3 ─────────── the empty home, told honestly ─────────── -->
     <div>
-      <div data-page="home-empty" class="ph f" style="min-height: 800px;">
+      <div data-retired="home-empty" class="ph f" style="min-height: 800px;">
         <div style="background: #f6f3ef; padding: 16px 20px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
           <div>
-            <div data-title style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
+            <h1 data-title style="font-size: 22px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</h1>
             <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Alice</div>
           </div>
           <div data-chrome="you" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20.4a7.2 7.2 0 0 1 14.4 0"></path></svg></div>
@@ -188,11 +253,10 @@
           </div>
         </div>
       </div>
-      <div class="stp" style="margin-top: 13px;">STEP 3 OF 3 &mdash; AND IT IS DONE</div>
+      <div class="stp" style="margin-top: 13px;">STEP 3 OF 3, AND IT IS DONE</div>
       <div style="font-size: 16.5px; font-weight: 700; margin-top: 2px;">An empty home that admits it</div>
       <div class="cap" style="max-width: 44ch;">
-        The rows a farmer will eventually use are visible from day one, greyed with the true reason
-        &mdash; none yet, nothing yet &mdash; rather than hidden until unlocked or padded with
+        The rows a farmer will eventually use are visible from day one, greyed with the true reason, none yet, nothing yet, rather than hidden until unlocked or padded with
         &#8377;0 tiles. One black block, one instruction, one button. There is no plot to name yet
         because a plot only exists once there is a video of it.
       </div>

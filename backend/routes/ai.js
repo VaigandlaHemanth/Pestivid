@@ -58,7 +58,13 @@ knowledge. Behave accordingly:
 
 Provide practical, concise advice on crop diseases and pest management, planting and
 harvesting schedules, soil health, irrigation, and sustainable practices. Always
-prioritise farmer safety and environmental sustainability.`;
+prioritise farmer safety and environmental sustainability.
+
+Write PLAIN TEXT. No Markdown of any kind: no asterisks for emphasis, no hyphens or
+digits starting a list, no headings, no tables, no code fences. The answer is shown
+in a chat bubble that renders text exactly as you write it, so a farmer reading it
+on a phone sees every asterisk you type. Short sentences and short paragraphs, one
+idea each.`;
 
 // Simple file upload handling using multer
 const UPLOAD_DIR = path.join(__dirname, '..', 'temp_uploads');
@@ -78,9 +84,8 @@ const upload = multer({
 // @access Private / farmer
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/agribot', authenticateToken, async (req, res) => {
-    if (req.user.role !== 'farmer') {
-        return res.status(403).json({ message: 'Only farmers can use AgriBot.' });
-    }
+    // Any signed-in account may ask. The ask page invites farmers, investors and
+    // buyers alike, and answered three of the four with a 403 from here.
     // Validate the request BEFORE checking server configuration. With the
     // config check first, an oversized or malformed question reported a 500
     // "not configured", which blames the operator for a client error and hides
@@ -312,9 +317,8 @@ router.post('/analyze-plant', authenticateToken, async (req, res) => {
 // @access Private / farmer
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/chatbot', authenticateToken, async (req, res) => {
-    if (req.user.role !== 'farmer') {
-        return res.status(403).json({ message: 'Only farmers can use the AgriBot feature.' });
-    }
+    // Any signed-in account may ask. The ask page invites farmers, investors and
+    // buyers alike, and answered three of the four with a 403 from here.
     // The caller used to supply `systemPrompt` AND the whole message array,
     // which made this an open LLM proxy billed to the operator's Groq key: any
     // registered user could set an arbitrary persona and use it for anything.

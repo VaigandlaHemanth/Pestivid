@@ -12,7 +12,7 @@
 //
 //   node frontend/build-pages.mjs
 import { chromium } from 'playwright';
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -25,28 +25,32 @@ mkdirSync(path.join(OUT, 'pages'), { recursive: true });
 export const PAGES = {
   'landing':            { title: 'Pestivid', role: 'public' },
   'signin':             { title: 'Sign in', role: 'public' },
-  'signin-farmer':      { title: 'Sign in', role: 'public' },
   'signup':             { title: 'Create an account', role: 'public' },
-  'setup-language':     { title: 'Choose your language', role: 'public' },
-  'setup-identity':     { title: 'Who are you?', role: 'public' },
-  'home-empty':         { title: 'Pestivid', role: 'farmer' },
-  'home':               { title: 'Pestivid', role: 'farmer' },
+  // 'setup' was the farmer's own account page: a language picker, a phone
+  // number and a six-digit code standing in for a password. A phone login needs
+  // an OTP this product has no way to send, and one role having its own front
+  // door is exactly the split it was reported as. Everybody uses signup.
+  'home':               { title: 'Home', role: 'farmer' },
   'record':             { title: 'Record a video', role: 'farmer' },
   'sent':               { title: 'That is saved', role: 'farmer' },
-  'plots':              { title: 'My plots', role: 'farmer' },
+  // 'plots' was a second list of the same eight videos home already shows, in the
+  // same order, every row going to the same plot page. It printed each video's
+  // length twice -- on the thumbnail and again in a "Length" column -- and left
+  // out which plot the video was of, on a page called My plots. Home's table has
+  // the plot name. Two pages cannot both be the list, so the nav word "My plots"
+  // points at home and this one is gone. Plots.dc.html stays where it is, the way
+  // Setup.dc.html did.
   'plot':               { title: 'Plot', role: 'farmer' },
-  'ask-money-video':    { title: 'Ask for money', role: 'farmer' },
-  'ask-money-amount':   { title: 'How much do you need?', role: 'farmer' },
-  'ask-money-terms':    { title: 'How do they get paid?', role: 'farmer' },
+  'ask-money':          { title: 'Ask for money', role: 'farmer' },
   'money':              { title: 'Money', role: 'farmer' },
-  'payout':             { title: 'Check who gets what', role: 'farmer' },
-  'messages':           { title: 'Messages', role: 'farmer' },
-  'thread-farmer':      { title: 'Message', role: 'farmer' },
-  'thread-investor':    { title: 'Message', role: 'investor' },
+  // Shared by all four roles, so not the farmer's. A buyer reaching a page
+  // marked 'farmer' got the farmer's nav bar and thought they were in the wrong
+  // app -- which they were.
+  'messages':           { title: 'Messages', role: 'any' },
+  'notifications':      { title: 'What has happened', role: 'any' },
   'ask':                { title: 'Ask a question', role: 'farmer' },
-  'profile':            { title: 'You and your settings', role: 'farmer' },
-  'leaf-result':        { title: 'Leaf check', role: 'farmer' },
-  'leaf-refusal':       { title: 'Leaf check', role: 'farmer' },
+  'profile':            { title: 'You and your settings', role: 'any' },
+  'leaf-check':        { title: 'Check a leaf', role: 'farmer' },
   'invest':             { title: 'Open for funding', role: 'investor' },
   'confirm-investment': { title: 'Confirm your investment', role: 'investor' },
   'report-harvest':     { title: 'Report the harvest', role: 'farmer' },
@@ -55,6 +59,89 @@ export const PAGES = {
   'orders':             { title: 'What you bought', role: 'buyer' },
   'admin':              { title: 'Flagged by the system', role: 'admin' },
 };
+
+/* ── what a crawler and a link preview see ────────────────────────────────
+ * Only the landing page is worth indexing: everything else is behind a token,
+ * and an indexed sign-in shell is noise that competes with the page you want
+ * found. So landing gets the full set and the other twenty-three get noindex.
+ *
+ * Absolute URLs need an origin, and this repo has no domain yet. Rather than
+ * ship a guessed one -- a wrong canonical is worse than none, it points every
+ * signal at a URL that does not exist -- canonical, og:url and the sitemap are
+ * emitted only when PESTIVID_SITE is set at build time:
+ *
+ *     PESTIVID_SITE=https://pestivid.example node frontend/build-pages.mjs
+ */
+const SITE = (process.env.PESTIVID_SITE || '').replace(/\/+$/, '');
+
+const SEO_TITLE = 'Pestivid — farm video evidence with a date nobody can move';
+const SEO_DESC = 'Farmers film their crop. Pestivid fingerprints the file the moment it '
+  + 'arrives and writes that fingerprint into Bitcoin, so the date cannot be changed later.';
+
+function seoHead(slug) {
+  const out = ['  <link rel="icon" href="./favicon.svg" type="image/svg+xml">'];
+  if (slug !== 'landing') {
+    // Behind a token, and nothing here is a landing page for anything.
+    out.push('  <meta name="robots" content="noindex, follow">');
+    return out.join('\n');
+  }
+  out.push(`  <meta name="description" content="${SEO_DESC}">`);
+  out.push('  <meta name="robots" content="index, follow">');
+  if (SITE) out.push(`  <link rel="canonical" href="${SITE}/">`);
+  out.push('  <meta property="og:type" content="website">');
+  out.push('  <meta property="og:site_name" content="Pestivid">');
+  out.push(`  <meta property="og:title" content="${SEO_TITLE}">`);
+  out.push(`  <meta property="og:description" content="${SEO_DESC}">`);
+  if (SITE) {
+    out.push(`  <meta property="og:url" content="${SITE}/">`);
+    out.push(`  <meta property="og:image" content="${SITE}/app/og.png">`);
+    out.push('  <meta property="og:image:width" content="1200">');
+    out.push('  <meta property="og:image:height" content="630">');
+    out.push('  <meta property="og:image:alt" content="Pestivid: a field you can see, a date nobody can move.">');
+    out.push('  <meta name="twitter:card" content="summary_large_image">');
+  } else {
+    // A relative og:image is ignored by most scrapers, so claim nothing.
+    out.push('  <meta name="twitter:card" content="summary">');
+  }
+  out.push(`  <meta name="twitter:title" content="${SEO_TITLE}">`);
+  out.push(`  <meta name="twitter:description" content="${SEO_DESC}">`);
+  // Organization and WebSite only. No HowTo (deprecated) and no FAQPage (rich
+  // results retired), and nothing this product cannot substantiate: no ratings,
+  // no address, no founder, no trial results.
+  const graph = [
+    { '@type': 'Organization', name: 'Pestivid', description: SEO_DESC,
+      ...(SITE ? { url: SITE + '/', logo: SITE + '/app/favicon.svg' } : {}) },
+    { '@type': 'WebSite', name: 'Pestivid', inLanguage: 'en-IN',
+      ...(SITE ? { url: SITE + '/' } : {}) },
+  ];
+  out.push('  <script type="application/ld+json">'
+    + JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })
+    + '</script>');
+  return out.join('\n');
+}
+
+function writeCrawlerFiles(slugs) {
+  const lines = ['User-agent: *', 'Allow: /', '',
+    '# Everything under /app/ except the landing page carries a noindex meta tag:',
+    '# they need a token to say anything, and CSS and JS have to stay crawlable',
+    '# for the landing page to render, so nothing is Disallowed here.'];
+  if (SITE) lines.push('', `Sitemap: ${SITE}/sitemap.xml`);
+  writeFileSync(path.join(OUT, '..', 'robots.txt'), lines.join('\n') + '\n');
+
+  if (!SITE) {
+    // A sitemap from an earlier build still names that earlier origin, so it
+    // goes rather than lingering as a file full of URLs nobody serves.
+    rmSync(path.join(OUT, '..', 'sitemap.xml'), { force: true });
+    return 'robots.txt (no sitemap: PESTIVID_SITE is not set)';
+  }
+  const urls = [`${SITE}/`];
+  writeFileSync(path.join(OUT, '..', 'sitemap.xml'),
+    '<?xml version="1.0" encoding="UTF-8"?>\n'
+    + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + urls.map(u => `  <url><loc>${u}</loc></url>`).join('\n')
+    + '\n</urlset>\n');
+  return `robots.txt and sitemap.xml (${urls.length} url)`;
+}
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) await build();
 
@@ -139,22 +226,31 @@ export async function build() {
     const clamp = f.w > 400 ? 'max-width: none;' : `max-width: ${f.w}px;`;
     style = `box-sizing: border-box; width: 100%; ${clamp} margin-left: auto; margin-right: auto; min-height: 100vh; `
       + (f.inherited ? f.inherited + '; ' : '') + style;
-    let open2 = open.replace(/\sdata-page="[^"]*"/, '');
+    // The root says which kind of surface it is, so responsive.css can adapt a
+    // desktop layout without also rewriting a phone one that is already narrow.
+    let open2 = open.replace(/\sdata-page="[^"]*"/, ` data-surface="${f.w > 400 ? 'desk' : 'phone'}" data-w="${f.w}"`);
     open2 = /style="/.test(open2) ? open2.replace(/style="[^"]*"/, `style="${style}"`)
                                   : open2.replace(/^<div/, `<div style="${style}"`);
     const body = open2 + f.html.slice(open.length);
 
     writeFileSync(path.join(OUT, slug + '.html'), `<!doctype html>
-<html lang="en">
+<html lang="en-IN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="${f.w <= 400 ? '#f6f3ef' : '#ffffff'}">
-  <title>${meta.title}</title>
+  <title>${slug === 'landing' ? SEO_TITLE : meta.title + ' · Pestivid'}</title>
   <!-- generated from design/${f.from} by frontend/build-pages.mjs -- do not edit -->
+${seoHead(slug)}
   ${f.links}
   <link rel="stylesheet" href="./tokens.css">
+  <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
+       at a design's own width. -->
+  <link rel="stylesheet" href="./loaders.css">
+  <link rel="stylesheet" href="./responsive.css">
   <style>
 ${f.css.trimEnd()}
   </style>
@@ -169,6 +265,7 @@ ${body}
   }
   writeFileSync(path.join(OUT, 'sizes.json'), JSON.stringify(sizes, null, 1));
   console.log(`generated ${wrote} pages into frontend/app/`);
+  console.log(`  ${writeCrawlerFiles(Object.keys(PAGES))}`);
   if (missing.length) console.log(`  NOT FOUND in any artboard: ${missing.join(', ')}`);
   const extra = Object.keys(found).filter(s => !PAGES[s]);
   if (extra.length) console.log(`  marked but not listed: ${extra.join(', ')}`);

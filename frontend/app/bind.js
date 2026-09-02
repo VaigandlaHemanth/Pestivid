@@ -11,6 +11,16 @@
 const dig = (obj, path) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
 
 /** Fill one subtree from one object. */
+/* A drawn example stops being one the moment real data lands in it.
+ *
+ * responsive.css hides [data-specimen] before the first paint, which is how an
+ * artboard keeps its example rows without any page ever showing them as records.
+ * But a marked panel the server FILLS rather than replaces would stay invisible
+ * for good, so filling it clears the mark, and every cloner below clears it on
+ * its clones. Between them a mark can only ever hide something the page has not
+ * yet put real content into -- which is the whole point of it. */
+const unmark = (el) => el?.closest?.('[data-specimen]')?.removeAttribute('data-specimen');
+
 export function bind(root, data) {
   // Two calls over the same root must not wipe each other. A path whose FIRST
   // segment is absent from this call's data was not addressed by it, so it is
@@ -21,11 +31,13 @@ export function bind(root, data) {
   for (const el of root.querySelectorAll('[data-bind]')) {
     if (!addressed(el.dataset.bind)) continue;
     const v = dig(data, el.dataset.bind);
-    el.textContent = v == null || v === '' ? '—' : String(v);
+    el.textContent = v == null || v === '' ? 'not yet' : String(v);
+    el.setAttribute('data-filled', '');
+    unmark(el);
   }
   for (const el of root.querySelectorAll('[data-bind-html]')) {
     const v = dig(data, el.dataset.bindHtml);
-    if (v != null) el.textContent = String(v);
+    if (v != null) { el.textContent = String(v); el.setAttribute('data-filled', ''); unmark(el); }
   }
   for (const el of root.querySelectorAll('[data-when]')) {
     let key = el.dataset.when, want = true;
@@ -44,6 +56,43 @@ export function bind(root, data) {
   return root;
 }
 
+/* A list arriving from the server ---------------------------------------------
+ *
+ * Every list on this product is empty until a fetch resolves, and then the rows
+ * appear all at once with no bridge. verify-motion-coverage put a number on it:
+ * seventeen of twenty-four pages had press feedback and nothing else, so the one
+ * moment where the screen changes shape was the one moment with no motion.
+ *
+ * One recipe, applied in the shared row helper rather than seventeen times:
+ *   purpose    preventing a jarring change -- rows replace a blank
+ *   frequency  once per page load, which is where a stagger is affordable
+ *   budget     568ms on the snappy spring, the token this product already uses
+ *   stagger    45ms, capped at eight rows so a long list does not crawl
+ *
+ * transform and opacity only, one shot, and under reduced motion the fade stays
+ * while the travel goes -- the rule this repo already holds itself to.
+ */
+const STILL = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+export function arrive(els) {
+  if (!els || !els.length) return;
+  const still = STILL();
+  els.forEach((el, i) => {
+    if (!el || el.nodeType !== 1) return;
+    const wait = Math.min(i, 8) * 45;
+    el.style.opacity = '0';
+    if (!still) el.style.transform = 'translateY(8px)';
+    el.style.transition = `opacity var(--t-press, 120ms) var(--e-smooth, ease) ${wait}ms,`
+      + ` transform var(--t-snappy, 568ms) var(--e-snappy, ease) ${wait}ms`;
+  });
+  requestAnimationFrame(() => {
+    for (const el of els) {
+      if (!el || el.nodeType !== 1) continue;
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    }
+  });
+}
+
 /**
  * Repeat the first child of a container once per row.
  *
@@ -57,14 +106,17 @@ export function repeat(container, rows, decorate) {
     const first = container.firstElementChild;
     if (!first) return;
     container.__tpl = first.cloneNode(true);
+    container.__tpl.removeAttribute('data-specimen');   // the clones are real rows
   }
   container.replaceChildren();
-  rows.forEach((row, i) => {
+  const made = rows.map((row, i) => {
     const el = container.__tpl.cloneNode(true);
     bind(el, row);
     if (decorate) decorate(el, row, i);
     container.append(el);
+    return el;
   });
+  arrive(made);
 }
 
 /**
@@ -89,11 +141,34 @@ export function state(container, kind, headline, detail, action) {
   }[kind] || ['#eae4de', '#1d1a17', '#4a443d'];
   const box = document.createElement('div');
   box.setAttribute('role', kind === 'failed' ? 'alert' : 'status');
+  // The 20px side margin exists so a box dropped into an UNPADDED container
+  // lines up with padded content around it. In a container that is already
+  // padded it indents twice, which is what made the setup screen's notice sit
+  // 20px inside every panel above it. So: ask the container.
+  // Nine call sites append an unpadded holder div into a padded panel, so
+  // asking the container alone still indented twice. Climb while the padding is
+  // zero: the question is "am I already inside something padded", not "is my
+  // immediate parent padded".
+  let side = 20;
+  for (let n = container instanceof Element ? container : null, hop = 0;
+       n && hop < 4; n = n.parentElement, hop++) {
+    const pl = parseFloat(getComputedStyle(n).paddingLeft) || 0;
+    if (pl > 8) { side = 0; break; }
+  }
   // These arrive in place of something the reader was looking at -- an error
   // over a form, an empty state over a list -- so they come in rather than
   // teleport. Opacity and transform only, and the travel is 6px: this is a
   // message appearing, not a panel sliding.
-  box.style.cssText = `background: ${tone[0]}; padding: 16px 17px; margin: 16px 20px;`
+  // A sentence set across 1400px is not a sentence anybody reads. These boxes
+  // were drawn for a 360px panel and inherited the whole laptop width when the
+  // farmer pages widened.
+  // The hairline is part of the box, not a stylesheet rule: cssText serialises
+  // the background to rgb(), so nothing keyed on the hex could reach it, and the
+  // amber attention band sat at 1.154:1 against the page it was warning about.
+  const edge = kind === 'failed' ? '#e0b4ac' : kind === 'waiting' ? '#d9c69b' : '#c3bcb6';
+  box.style.cssText = `background: ${tone[0]}; padding: 18px 20px; margin: 16px ${side}px;`
+    + ` box-shadow: inset 0 0 0 1px ${edge};`
+    + ' max-width: 720px; box-sizing: border-box;'
     + ' opacity: 0; transform: translateY(6px);'
     + ' transition: opacity var(--t-press, 120ms) var(--e-smooth, ease),'
     + ' transform var(--t-release, 260ms) var(--e-snappy, ease);';
@@ -107,15 +182,25 @@ export function state(container, kind, headline, detail, action) {
   const p = document.createElement('div');
   p.style.cssText = `font-size: 14.5px; line-height: 1.5; margin-top: 4px; color: ${tone[2]};`;
   p.textContent = detail;
+  box.style.display = 'flex';
+  box.style.flexDirection = 'column';
   box.append(h, p);
-  if (action && action.label && action.go) {
+  // An action is either somewhere to go or something to do. The record screen's
+  // camera refusal needs the second kind: it opens a file picker rather than
+  // navigating, and without it that screen was a red panel over a black void
+  // with no way forward at all.
+  if (action && action.label && (action.go || action.act)) {
     const a = document.createElement('div');
-    a.dataset.go = action.go;
+    if (action.go) a.dataset.go = action.go;
+    if (action.act) a.addEventListener('click', action.act);
     a.dataset.act = '';
     a.setAttribute('role', 'button');
     a.tabIndex = 0;
-    a.style.cssText = 'margin-top: 13px; min-height: 48px; background: #1d1a17; color: #fff;'
-      + ' display: flex; align-items: center; justify-content: center;'
+    // A button is the width of its label plus room to hit it, not the width of
+    // whatever it happens to sit in.
+    a.style.cssText = 'margin-top: 14px; min-height: 48px; background: #1d1a17; color: #fff;'
+      + ' display: inline-flex; align-self: flex-start; padding: 0 28px;'
+      + ' align-items: center; justify-content: center;'
       + ' font-size: 16px; font-weight: 600; cursor: pointer;';
     a.textContent = action.label;
     a.addEventListener('keydown', e => {
@@ -123,12 +208,31 @@ export function state(container, kind, headline, detail, action) {
     });
     box.append(a);
   }
+  /* Marked before ANY of the paths below return.
+   *
+   * It started life just above the last one, so a box placed by the page-root
+   * branch never carried it -- and record.js, which reaches for the mark to
+   * centre its camera refusal, found nothing at all. A mark that only some of
+   * the exits apply is worse than none: it reads as absence. */
+  box.setAttribute('data-statebox', '');
   // An empty state must not replace the PAGE. Nine call sites handed this the
   // page root, and replaceChildren() then took the header, the heading and the
   // back arrow with it -- so "No season chosen" arrived on a screen with no
   // title and no way off it. Handed a page root, it keeps the header and
   // replaces what is below.
-  if (container.matches?.('body > div') && container.children.length > 1) {
+  /* ...and a NUDGE never replaces the page, whatever it is handed.
+   *
+   * 'waiting' is always "you still have to do something" -- a field left blank,
+   * a figure not named. It is never a page-level refusal, so it has no business
+   * clearing the page even when a call site hands it the root. report-harvest
+   * did exactly that: pressing Send with the revenue box empty replaced the form
+   * with the message asking for the revenue, taking both number boxes, all four
+   * payee rows, and the cost already typed. The call site is fixed; this is so
+   * the next one cannot repeat it.
+   *
+   * 'empty' and 'failed' still may: "No season chosen" and "Not your screen" are
+   * refusals of the whole page and there is nothing behind them worth keeping. */
+  if (kind !== 'waiting' && container.matches?.('body > div') && container.children.length > 1) {
     const keep = [];
     for (const child of container.children) {
       // the header is whatever holds the title or the chrome
@@ -143,12 +247,40 @@ export function state(container, kind, headline, detail, action) {
       return;
     }
   }
-  container.replaceChildren(box);
+  /* AN EMPTY STATE REPLACES CONTENT. A FAILURE MUST NOT TAKE THE CONTROLS.
+   *
+   * replaceChildren() was unconditional, and half the call sites hand this the
+   * PARENT of a button, because the message belongs beside the thing that
+   * failed. So a failed send deleted the thing that failed: on
+   * confirm-investment, an investor whose payment did not go through went from
+   * three controls to one -- "Send Rs 25,000" and "Go back without sending"
+   * both replaced by "The money did not move". No retry, and no way off the
+   * screen. Same shape on the market's offer and message rows and on invest's
+   * ask row.
+   *
+   * The two intents were conflated under one verb, and they separate cleanly by
+   * kind:
+   *
+   *   'empty'   there is nothing to show, so the message stands INSTEAD of the
+   *             content -- the drawn specimen rows of a list have to go, which
+   *             is what replaceChildren was for.
+   *   anything  something went wrong with an action, so the message stands
+   *   else      BESIDE it and the action stays available.
+   *
+   * Repeated failures do not stack: each box carries a mark so the one before it
+   * is removed rather than pushed down the page.
+   */
+  if (kind === 'empty') {
+    container.replaceChildren(box);
+    return;
+  }
+  for (const old of container.querySelectorAll(':scope > [data-statebox]')) old.remove();
+  container.append(box);
 }
 
 /** The message for a failure, in the words the screens use elsewhere. */
 export function reason(err) {
-  if (err?.offline) return ['No connection', 'Your phone cannot reach us. Nothing is lost — try again when you have a bar of signal.'];
+  if (err?.offline) return ['No connection', 'Your phone cannot reach us. Nothing is lost, try again when you have a bar of signal.'];
   if (err?.rateLimited) return ['Too many questions just now', 'We are on a free allowance and it is used up for the minute. Wait a moment and ask again.'];
   if (err?.status === 404) return ['Not there', 'That is not something we hold.'];
   if (err?.status >= 500) return ['Our end broke', 'This is our fault, not yours. Nothing you sent has been lost.'];
@@ -156,16 +288,166 @@ export function reason(err) {
 }
 
 /** Wraps a page load so a thrown error always lands somewhere visible. */
+/* A LOADER, while a fetch is in flight -------------------------------------
+ *
+ * load() handled the failure and showed nothing at all while waiting, so every
+ * page sat with the artboard's drawn example on screen until real data replaced
+ * it -- which reads as "these are your figures" for as long as the fetch takes.
+ *
+ * Two shapes, and which one is not a style choice:
+ *   working()  the pill. Work in flight with no figure to report.
+ *   writing()  the pencil. A date being WRITTEN: a video waiting for the day's
+ *              hashes to land in a Bitcoin block. The product already says
+ *              "date being written, usually by tomorrow" in words.
+ *
+ * Both are in app/loaders.css with the attribution and the reason they loop.
+ */
+const PENCIL = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="pencil pencil--sm" aria-hidden="true" focusable="false">
+  <defs><clipPath id="pv-eraser"><rect height="30" width="30" ry="5" rx="5"></rect></clipPath></defs>
+  <circle transform="rotate(-113,100,100)" stroke-linecap="round" stroke-dashoffset="439.82" stroke-dasharray="439.82 439.82" stroke-width="4" stroke="currentColor" fill="none" r="70" class="pencil__stroke"></circle>
+  <g transform="translate(100,100)" class="pencil__rotate">
+    <g fill="none">
+      <circle transform="rotate(-90)" stroke-dashoffset="402" stroke-dasharray="402.12 402.12" stroke-width="30" stroke="#016abe" r="64" class="pencil__body1"></circle>
+      <circle transform="rotate(-90)" stroke-dashoffset="465" stroke-dasharray="464.96 464.96" stroke-width="10" stroke="#0a86e0" r="74" class="pencil__body2"></circle>
+      <circle transform="rotate(-90)" stroke-dashoffset="339" stroke-dasharray="339.29 339.29" stroke-width="10" stroke="#01579b" r="54" class="pencil__body3"></circle>
+    </g>
+    <g transform="rotate(-90) translate(49,0)" class="pencil__eraser">
+      <g class="pencil__eraser-skew">
+        <rect height="30" width="30" ry="5" rx="5" fill="#a71930"></rect>
+        <rect clip-path="url(#pv-eraser)" height="30" width="5" fill="#8a1428"></rect>
+        <rect height="20" width="30" fill="#e3ddd6"></rect>
+        <rect height="20" width="15" fill="#c3bcb6"></rect>
+        <rect height="20" width="5" fill="#d3ccc5"></rect>
+      </g>
+    </g>
+    <g transform="rotate(-90) translate(49,-30)" class="pencil__point">
+      <polygon points="15 0,30 30,0 30" fill="#e8cfa6"></polygon>
+      <polygon points="15 0,6 30,0 30" fill="#c9a262"></polygon>
+      <polygon points="15 0,20 10,10 10" fill="#1d1a17"></polygon>
+    </g>
+  </g>
+</svg>`;
+
+const PILL = `<div class="loader" aria-hidden="true">
+  <span class="loader-text">working</span>
+  <span class="load"></span>
+</div>`;
+
+function loaderBox(kind, said) {
+  const box = document.createElement('div');
+  box.setAttribute('data-loader', kind);
+  // status, not alert: it is progress, and it must not interrupt a reader.
+  box.setAttribute('role', 'status');
+  box.setAttribute('aria-live', 'polite');
+  box.innerHTML = (kind === 'writing' ? PENCIL : PILL)
+    + `<div class="said">${said}</div>`;
+  return box;
+}
+
+/* Where a loader goes, without disturbing anything.
+ *
+ * Two attempts, both wrong, and the second is the instructive one:
+ *   append to the container -> it landed at the very bottom-left of the page,
+ *     past every rail card, unpadded. A message about the list you are waiting
+ *     for, a thousand pixels below the list.
+ *   prepend to the content column -> the "column" resolved to the two-column
+ *     GRID on pages whose board has no .main, so the loader became a grid item
+ *     and pushed the table into the rail's track. A loading state must never
+ *     move the layout it is loading.
+ *
+ * So it does not enter the layout at all. It is a band directly after the app
+ * bar, full width with the page's own side padding, and it cannot be anyone's
+ * grid or flex child because the bar's parent is the page's column stack.
+ */
+function loaderSlot(container) {
+  const bar = container.querySelector('.appbar, .bar, header');
+  return { parent: (bar && bar.parentElement) || container, after: bar || null };
+}
+function placeLoader(container, box) {
+  /* A board can ask for it somewhere specific, and one does.
+   *
+   * The band-after-the-bar rule is right when the whole page is waiting: it is
+   * out of the layout and it cannot become anyone's grid child. It is wrong when
+   * the loader is ABOUT one thing on the page. On the sent screen the pencil
+   * means "this video's date is being written" and it belongs to the step that
+   * says so -- put at the top of the page it was reported as not being there at
+   * all, because the reader was looking at the timeline eight hundred pixels
+   * below it. So [data-loader-slot] names the element it goes inside. */
+  /* A board may name a slot per KIND, because the two loaders mean different
+   * things and belong in different places. On the send screen the pill reports
+   * an upload in flight and belongs beside the step it is about, inside the
+   * timeline; the pencil reports a date being written over the next several
+   * hours and belongs under the button, full width, in the space the warning
+   * about deleting vacates the moment the thing is sent. Naming the kind is
+   * what stops the tall one growing a card it has to fit inside. */
+  const kind = box.getAttribute('data-loader');
+  const slot = container.querySelector(`[data-loader-slot="${kind}"]`)
+    || container.querySelector('[data-loader-slot]:not([data-loader-slot=""])')
+    || container.querySelector('[data-loader-slot]');
+  if (slot) { slot.append(box); return; }
+  const { parent, after } = loaderSlot(container);
+  box.style.padding = '20px 28px';
+  if (after && after.parentElement === parent) after.after(box);
+  else parent.prepend(box);
+}
+
+/** The pill, while something is in flight. Returns a function that removes it. */
+export function working(container, said = 'Fetching this from the server.') {
+  if (!container) return () => {};
+  const box = loaderBox('working', said);
+  placeLoader(container, box);
+  return () => box.remove();
+}
+
+/** The pencil, for a date being written into a block. */
+export function writing(container, said = 'The date is being written. Usually by tomorrow.') {
+  if (!container) return () => {};
+  const box = loaderBox('writing', said);
+  placeLoader(container, box);
+  return () => box.remove();
+}
+
 export async function load(container, fn) {
+  // A loader only appears if the work outlasts a beat. Showing one for a fetch
+  // that resolves in 80ms is a flash of noise, so it waits 220ms first.
+  let stop = () => {};
+  const timer = setTimeout(() => { stop = working(container); }, 220);
   try {
     await fn();
   } catch (err) {
+    clearTimeout(timer); stop();
     console.error(err);
     const [h, d] = reason(err);
-    // append rather than replace: losing signal should not also lose the nav
-    const holder = document.createElement('div');
-    container.append(holder);
-    state(holder, err?.rateLimited ? 'waiting' : 'failed', h, d);
+
+    // A failed load used to leave every DRAWN figure on screen and append the
+    // message at the bottom. On confirm-investment that meant an investor read
+    // "You are sending ₹50,000 / your share 60% / this project still needs
+    // ₹3,20,000" -- all of it the artboard's -- with the failure notice BELOW
+    // the send button. Every field the page meant to fill and did not now says
+    // so, in place.
+    const unfilled = [...container.querySelectorAll('[data-bind], [data-bind-html]')]
+      .filter(el => !el.hasAttribute('data-filled'));
+    for (const el of unfilled) el.textContent = 'not loaded';
+
+    // And you can leave, but you cannot act. Navigation stays live; anything
+    // that would commit is refused, because the page does not know what it is
+    // acting on.
+    const box = document.createElement('div');
+    container.append(box);
+    for (const el of container.querySelectorAll('[data-act]')) {
+      if (el.closest('[data-chrome]') || el.hasAttribute('data-chrome')
+          || el.hasAttribute('data-back') || box.contains(el)) continue;
+      el.setAttribute('aria-disabled', 'true');
+      el.style.opacity = '0.55';
+      el.style.pointerEvents = 'none';
+    }
+    state(box, err?.rateLimited ? 'waiting' : 'failed', h, d);
+    // Put the reader at the message rather than wherever they happened to be.
+    box.scrollIntoView({ block: 'center' });
+  } finally {
+    // Both paths: a loader that outlives its fetch is a page that looks stuck.
+    clearTimeout(timer);
+    stop();
   }
 }
 
@@ -192,12 +474,194 @@ export const oneByText = (text, root = document) => byText(text, root)[0] || nul
  * This takes the first match as the template, removes the rest of the matches,
  * and inserts the clones where the first one stood.
  */
+/* ════ ONE FRAME IN A THUMBNAIL ════════════════════════════════════════════
+ *
+ * Every list of videos drew a dark rectangle with a play glyph in it. That is an
+ * honest placeholder and it is not a thumbnail: five identical grey boxes tell a
+ * farmer nothing about which clip is which.
+ *
+ * The frame comes from the server, cut from the bytes the server itself fetched
+ * back and hashed -- see backend/services/videoPoster.js for why the browser is
+ * not allowed to supply it. Here it is only painted.
+ *
+ * The placeholder STAYS underneath rather than being replaced, so a video with
+ * no poster -- anything uploaded before this existed, or a seeded row whose CID
+ * points at nothing -- looks exactly as it did, and a slow image cannot leave an
+ * empty white box behind it.
+ */
+export function showPoster(el, video) {
+  if (!el) return null;
+  /* "Nothing to show" and "nobody asked" look identical on screen and are not
+   * the same defect. A slot the page never wires needs code; a slot whose record
+   * carries no frame needs a poster cutting for that video. The mark says which,
+   * so verify-media can tell them apart instead of reporting both as empty. */
+  if (!video?.poster) { el.setAttribute('data-noposter', ''); return null; }
+  el.removeAttribute('data-noposter');
+  if (el.querySelector('[data-poster]')) return null;
+  const cs = getComputedStyle(el);
+  if (cs.position === 'static') el.style.position = 'relative';
+  if (cs.overflow === 'visible') el.style.overflow = 'hidden';
+  const img = document.createElement('img');
+  img.setAttribute('data-poster', '');
+  // Decorative: the row already names the crop and the date in text, so a
+  // screen reader repeating it as alt text would say everything twice.
+  img.alt = '';
+  img.setAttribute('aria-hidden', 'true');
+  img.decoding = 'async';
+  img.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%;'
+    + ' object-fit: cover; display: block; opacity: 0;'
+    + ' transition: opacity var(--t-press, 120ms) var(--e-smooth, ease);';
+  // It fades in over the placeholder rather than snapping, and if it fails to
+  // decode it removes itself and the placeholder is simply still there.
+  img.addEventListener('load', () => { img.style.opacity = '1'; });
+  img.addEventListener('error', () => img.remove());
+  img.src = video.poster;
+  // FIRST child: the duration, the play glyph and the inner rule are drawn after
+  // it in the board and have to stay on top.
+  el.prepend(img);
+  el.dataset.hasposter = '';
+
+  /* Everything drawn on top was designed for a FLAT #37322d and has to survive a
+   * photograph instead. Uncorrected, the duration sat as #ddd7d1 on whatever the
+   * frame happened to be and vanished over anything pale.
+   */
+  for (const kid of el.children) {
+    // The placeholder's inset rule: it gave an empty box some shape, and over a
+    // real frame it is a rectangle drawn on a picture.
+    if (kid !== img && /border:\s*1px solid/.test(kid.getAttribute('style') || '')) {
+      kid.style.display = 'none';
+    }
+  }
+  const dur = el.querySelector('[data-dur], .dur');
+  if (dur) {
+    // A scrim, the way every video player does it, rather than hoping the frame
+    // is dark where the number is.
+    dur.style.background = 'rgba(29, 26, 23, .74)';
+    dur.style.color = '#f6f3ef';
+    dur.style.padding = '1px 5px';
+    dur.style.borderRadius = '3px';
+  }
+  // The play mark says "this is a video and it plays". Over a frame it needs its
+  // own edge, not a mid-grey stroke.
+  for (const svg of el.querySelectorAll('svg')) {
+    svg.setAttribute('stroke', '#f6f3ef');
+    svg.style.filter = 'drop-shadow(0 1px 2px rgba(29, 26, 23, .7))';
+    for (const path of svg.querySelectorAll('[fill]:not([fill="none"])')) {
+      path.setAttribute('fill', '#f6f3ef');
+    }
+  }
+  return img;
+}
+
+/* WATCHING THE VIDEO.
+ *
+ * Every screen in this product could NAME a video and not one could play one.
+ * The plot page's rows carried no click handler at all, and the buyer's "Watch
+ * it, check the date" link -- the thing that row exists for -- led to that same
+ * page, so the chain ended on a list you could only look at. On a product whose
+ * whole claim is "a field you can see", that is the claim not being kept.
+ *
+ * The player opens UNDER the row that was pressed, and the row toggles it. No
+ * new page: the list is the context, and a video that replaced the page would
+ * lose the date sitting next to it, which is the pair a person is checking.
+ *
+ * No `crossorigin` attribute, deliberately. A media element loads cross-origin
+ * without CORS; adding it would demand headers the gateway does not send and
+ * break every playback.
+ *
+ * NOT EVERY RECORD HAS A FILE. Seven of this demo's ten CIDs are seeded
+ * placeholders that resolve to something that is not a video, and a real one can
+ * always go missing from a gateway. Either way the element fires `error`, and the
+ * honest answer is a sentence about the record rather than a dead black
+ * rectangle with a crossed-out play button in it.
+ */
+export function playsInline(row, video, opts = {}) {
+  if (!row || !video?.gateway) return null;
+  let panel = null;
+  const close = () => {
+    panel?.remove();
+    panel = null;
+    row.setAttribute('aria-expanded', 'false');
+  };
+  const open = () => {
+    panel = document.createElement('div');
+    panel.setAttribute('data-player', '');
+    panel.style.cssText = 'background: #37322d; overflow: hidden;';
+    const el = document.createElement('video');
+    el.controls = true;
+    el.preload = 'metadata';
+    el.setAttribute('playsinline', '');
+    if (video.poster) el.poster = video.poster;
+    el.src = video.gateway;
+    el.style.cssText = 'display: block; width: 100%; max-height: 62vh; background: #37322d;';
+    el.addEventListener('error', () => {
+      // Replaced, not annotated: a broken player next to an explanation of why
+      // it is broken is two things saying one thing.
+      panel.replaceChildren();
+      state(panel, 'failed', 'This one will not play',
+        'The record and its date are real, but there is no video file behind this '
+        + 'entry any more. Nothing about the date changes: it was fixed when the '
+        + 'file arrived, and that is what the block holds.');
+    }, { once: true });
+
+    /* Something to read while it arrives.
+     *
+     * The file comes from an IPFS gateway, and measured from here the first frame
+     * took about twenty seconds -- a black rectangle for twenty seconds after a
+     * deliberate press reads as broken, not as loading. Seven of this demo's ten
+     * clips have no poster either, so there is not even a frame to hold the
+     * space. It says where the file is coming from and goes the moment the
+     * browser has the video's own dimensions. */
+    const waiting = document.createElement('div');
+    waiting.setAttribute('data-playerwait', '');
+    waiting.style.cssText = 'position: absolute; left: 0; right: 0; bottom: 0; padding: 9px 14px;'
+      + ' background: rgba(29, 26, 23, .74); color: #f6f3ef; font-size: 13.5px;';
+    waiting.textContent = 'Fetching the file from storage. It is not held on this machine.';
+    panel.style.position = 'relative';
+    el.addEventListener('loadedmetadata', () => waiting.remove(), { once: true });
+    el.addEventListener('error', () => waiting.remove(), { once: true });
+
+    panel.append(el, waiting);
+    /* Two shapes, because two surfaces.
+     *
+     * A LIST row has no room of its own, so the player opens beneath it and the
+     * row keeps its place above -- the date and the picture side by side, which
+     * is the pair being checked.
+     *
+     * A media PLATE is already the space for a video: the investor's evidence
+     * panel is 300px of dark with a play mark drawn on it. There the player fills
+     * the plate, covering the mark and the drawn playback strip, and closing
+     * gives them back. Anything else would stack a second video box under a box
+     * that looks like a video. */
+    if (opts.into) {
+      panel.style.cssText += 'position: absolute; inset: 0;';
+      if (getComputedStyle(opts.into).position === 'static') opts.into.style.position = 'relative';
+      el.style.cssText = 'display: block; width: 100%; height: 100%;'
+        + ' object-fit: contain; background: #37322d;';
+      opts.into.append(panel);
+    } else {
+      row.after(panel);
+    }
+    row.setAttribute('aria-expanded', 'true');
+    if (opts.autoplay !== false) el.play().catch(() => { /* a browser may refuse */ });
+  };
+  row.setAttribute('aria-expanded', 'false');
+  return { open, close, toggle: () => (panel ? close() : open()) };
+}
+
 export function repeatRows(root, selector, rows, decorate) {
   const found = [...root.querySelectorAll(selector)];
   if (!found.length) return null;
   const anchor = document.createComment('rows');
   found[0].before(anchor);
   const tpl = found[0].cloneNode(true);
+  /* The template is a drawn SPECIMEN, and the rows made from it are not.
+   *
+   * responsive.css hides [data-specimen] before the first paint, so a board's
+   * example rows cannot be mistaken for somebody's data during the 126ms before
+   * the fetch resolves. The mark has to come off the template or every real row
+   * would inherit it and the list would render invisible. */
+  tpl.removeAttribute('data-specimen');
   found.forEach(el => el.remove());
   const made = rows.map((row, i) => {
     const el = tpl.cloneNode(true);
@@ -207,6 +671,7 @@ export function repeatRows(root, selector, rows, decorate) {
     return el;
   });
   anchor.remove();
+  arrive(made);
   return made;
 }
 
@@ -245,6 +710,7 @@ export function rows(root, name, items, decorate) {
   const made = [];
   for (const item of items) {
     const el = tpl.cloneNode(true);
+    el.removeAttribute('data-specimen');              // the clones are real rows
     for (const slot of el.querySelectorAll('[data-slot]')) {
       const v = item[slot.dataset.slot];
       if (v === undefined) continue;
@@ -256,6 +722,7 @@ export function rows(root, name, items, decorate) {
     made.push(el);
   }
   tpl.remove();
+  arrive(made);
   return made;
 }
 
@@ -272,4 +739,33 @@ export function dropSection(root, sec, ...rowNames) {
   root.querySelector(`[data-sec="${sec}"]`)?.remove();
   for (const n of rowNames)
     root.querySelectorAll(`[data-row="${n}"]`).forEach(el => el.remove());
+}
+
+/**
+ * Markdown that a model emitted anyway, turned back into readable text.
+ *
+ * Two places show model prose: the chatbot's bubbles and the leaf checker's
+ * refusal. Both set textContent, so "- **Check the label**" reached a farmer
+ * with every asterisk and hyphen intact. Text in, text out -- no HTML is ever
+ * built from model output.
+ *
+ * Written with String.fromCharCode for the newline and the bullet: composing
+ * this file from a script twice turned \n inside a regex literal into a real
+ * line break, and the second time it shipped a SyntaxError to two pages.
+ */
+export function plainText(md) {
+  const NL = String.fromCharCode(10);
+  const BULLET = String.fromCharCode(8226, 32);
+  return String(md || '')
+    .replace(/```[\s\S]*?```/g, m => m.replace(/```/g, "").trim())
+    .replace(/^#{1,6}[ \t]*/gm, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    // The trailing lookahead allows punctuation, or "your *extension officer*."
+    // keeps its asterisks -- which is exactly how it arrives.
+    .replace(/(^|[ \t])\*([^*\r\n]+)\*(?=[ \t.,;:!?)\]]|$)/gm, '$1$2')
+    .replace(/(^|[ \t])_([^_\r\n]+)_(?=[ \t.,;:!?)\]]|$)/gm, '$1$2')
+    .replace(/^[ \t]*[-*+][ \t]+/gm, BULLET)
+    .replace(/\u2011/g, '-')
+    .replace(/(\r?\n){3,}/g, NL + NL)
+    .trim();
 }

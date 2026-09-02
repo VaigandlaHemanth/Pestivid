@@ -8,15 +8,144 @@
 //
 // predict() returns one of three states and the design has a page for each
 // side of the split:
-//   ok          -> leaf-result
-//   not_a_leaf  -> leaf-refusal
-//   uncertain   -> leaf-refusal
+//   ok          -> leaf-check
+//   not_a_leaf  -> the retake guidance on this same page
+//   uncertain   -> the same
 //
 // The refusal is the system working, so it is never styled as an error.
 import { requireUser, load, state } from './_guard.js';
 import { bind } from '../bind.js';
 import { asField, acts, press } from '../wire.js';
 import { multiStep } from '../steps.js';
+import { plainText } from '../bind.js';
+
+// A refusal shows the retake guidance that used to live on a page of its own.
+function revealRetake(on) {
+  const block = document.querySelector('[data-retake]');
+  if (block) block.style.display = on ? '' : 'none';
+}
+
+/* WHAT THIS SCREEN IS SHOWING RIGHT NOW ------------------------------------
+ * Three phases, and every block belongs to exactly one of them. Before this
+ * existed the page shipped a verdict card reading "No diagnosis yet" with the
+ * full Mancozeb spray guidance underneath it and a live "Ask about this result"
+ * beside it -- treatment for a disease nobody had named. HIG generative-ai:
+ * do not present an output before there is one.
+ *   'ask'      no photo yet. The plate is a capture surface and nothing else.
+ *   'verdict'  a name. Verdict, treatment, and questions about it.
+ *   'refused'  no name. Verdict and how to retake. No treatment, ever.
+ */
+function phase(root, which) {
+  // style.display = '' DELETES the declaration, which threw away the board's
+  // own `display: flex` and left the capture block stacked top-left. Remember
+  // what the drawing said once, and put that back.
+  const show = (sel, on) => {
+    for (const el of root.querySelectorAll(sel)) {
+      // A block the board drew as display:none has no shown value to restore,
+      // so the drawn 'none' would win forever. Fall back to the stylesheet.
+      if (el.dataset.disp == null) {
+        const drawn = el.style.display || '';
+        el.dataset.disp = drawn === 'none' ? '' : drawn;
+      }
+      el.style.display = on ? el.dataset.disp : 'none';
+    }
+  };
+  /* Name the phase on the root so a stylesheet can see it.
+   *
+   * Which phase this is decides how much of the window the plate should take.
+   * Before there is a verdict the plate IS the page -- and it was sitting at its
+   * drawn 430px with 295px of bare ground under it on a 900px window -- while
+   * after there is one, the verdict, the treatment and the questions all need
+   * that room and the plate must go back to being a picture at the top.
+   *
+   * A dataset attribute, not a class: JS sets it, so the drawn page never
+   * carries it and verify-layout goes on comparing the board against a page that
+   * matches it. */
+  root.dataset.phase = which;
+  show('[data-capture]',    which === 'ask');
+  // How much of the window the plate should take depends on which phase this is,
+  // and on what else is on screen -- both of which just changed.
+  requestAnimationFrame(() => fitPlate(root));
+  show('[data-framing]',    which !== 'verdict');
+  show('[data-verdictcard]', which !== 'ask');
+  show('[data-treatment]',  which === 'verdict');
+  show('[data-askcard]',    which === 'verdict');
+  show('[data-retake]',     which === 'refused');
+  // The filename plate over an empty viewfinder read as a photo that existed.
+  // the filename plate and the "checked on your phone" plate, wrappers and all:
+  // an emptied wrapper is still a grey rectangle sitting on the viewfinder
+  for (const sel of ['[data-bind="shot.file"]', '[data-bind="shot.where"]']) {
+    const el = root.querySelector(sel);
+    const box = el && (el.closest('[data-readout]') || el);
+    if (box) {
+      if (box.dataset.disp == null) box.dataset.disp = box.style.display || '';
+      box.style.display = which === 'ask' ? 'none' : box.dataset.disp;
+    }
+  }
+}
+
+/* THE VIEWFINDER TAKES THE ROOM THAT IS THERE.
+ *
+ * Before there is a verdict the plate IS the page, and it sat at its drawn 430px
+ * whatever the window was: 295px of bare ground under it on a 1440x900 laptop,
+ * and 101px PAST the fold on a 1024x768 one, where the framing card stops being
+ * beside the plate and goes under it. Same fixed height, opposite failures.
+ *
+ * Measured, not tabulated. The first version of this was two media queries with
+ * `calc(100dvh - 205px)` and `calc(100dvh - 439px)` in them, and those constants
+ * were only true in the two ranges they had been measured in -- a 900px-wide
+ * window fell between them and still ran 89px past the fold. There is no table
+ * of numbers here because the page can be asked directly:
+ *
+ *     slack  = the window, less where the page's content actually ends
+ *     target = the plate's drawn height, plus that slack
+ *
+ * and growing the plate by X moves the content end down by exactly X, whether
+ * the framing card is beside the plate or below it. That identity is what makes
+ * one measurement cover every width.
+ *
+ * It is NOT circular: nothing below the plate changes height when the plate
+ * does, only its position. The measurement is taken with the plate back at its
+ * drawn height, so it never reads its own last answer.
+ */
+const MIN_PLATE = 260;
+
+function fitPlate(root) {
+  const plate = root.querySelector('[data-plate]');
+  const grid = plate?.closest('.main')?.parentElement;
+  if (!plate || !grid) return;
+  // What the drawing asked for, kept so this can always start from it again.
+  if (plate.dataset.drawnmin == null) plate.dataset.drawnmin = plate.style.minHeight || '';
+
+  plate.style.height = '';
+  plate.style.minHeight = plate.dataset.drawnmin;
+  // Only the capture phase. Once there is a verdict the diagnosis, the treatment
+  // and the questions want that room, and the plate is a picture above them.
+  if (root.dataset.phase !== 'ask') return;
+
+  const drawn = plate.getBoundingClientRect().height;
+  /* Where the CONTENT ends, which is not where its container ends.
+   *
+   * Asking the grid for its own bottom edge reported no slack at all on a
+   * 1440x900 window and the plate never grew: the grid is `flex-grow: 1`, so it
+   * is already as tall as the page and the 295px of bare ground was INSIDE it,
+   * under the last card. The grid holds its items at `align-items: start`, so
+   * their own bottoms are the honest end of the page -- whichever is lowest,
+   * whether that is the plate's column or the framing card beside or below it. */
+  const items = [...grid.children].filter((e) => e.offsetParent);
+  if (!items.length) return;
+  const contentBottom = Math.max(...items.map((e) => e.getBoundingClientRect().bottom))
+    + (parseFloat(getComputedStyle(grid).paddingBottom) || 0);
+  const slack = window.innerHeight - contentBottom;
+  const target = Math.round(drawn + slack);
+  /* Below this the plate has stopped being a viewfinder. On a phone the framing
+   * card and the guidance under it are taller than the window on their own, so
+   * the honest answer there is the drawn height and a page that scrolls -- not a
+   * 180px letterbox and a page that still scrolls. */
+  if (target < MIN_PLATE) return;
+  plate.style.height = `${target}px`;
+  plate.style.minHeight = `${target}px`;
+}
 
 const KEY = 'pv.leaf';
 const MODEL_ROOT = '/model';
@@ -50,7 +179,9 @@ async function classifier(onProgress) {
 export function leaf(slug) {
   const ctx = requireUser(slug, ['farmer']);
   if (!ctx) return;
-  const wantRefusal = slug === 'leaf-refusal';
+  // One page, two verdicts. It used to location.replace() between two URLs
+  // for the same screen; a refusal is a verdict, not a destination.
+  const wantRefusal = false;
 
   load(ctx.root, async () => {
     const saved = JSON.parse(sessionStorage.getItem(KEY) || 'null');
@@ -59,7 +190,7 @@ export function leaf(slug) {
     if (saved) {
       const isRefusal = saved.status !== 'ok';
       if (isRefusal !== wantRefusal) {
-        location.replace(isRefusal ? './leaf-refusal.html' : './leaf-result.html');
+        render(saved);
         return;
       }
       render(saved);
@@ -75,7 +206,7 @@ export function leaf(slug) {
     });
 
     // No verdict yet: this page is where a photograph is taken.
-    const slot = ctx.root.querySelector('div[style*="#37322d"]');
+    const slot = ctx.root.querySelector('[data-plate]') || ctx.root.querySelector('[data-capture]')?.parentElement;
     // ---- asking about the result -------------------------------------
   // Three suggested questions, a field and a send button, all drawn and none of
   // them wired. They hand the question to the chatbot with the verdict already
@@ -126,23 +257,39 @@ export function leaf(slug) {
     picker.className = 'sr';
     ctx.root.append(picker);
 
-    const holder = document.createElement('div');
-    ctx.root.prepend(holder);
-    state(holder, 'empty', 'Take a photo of one leaf',
-      'The whole leaf in the frame with a little space around it, in even daylight. Do not zoom in — filling the frame is what makes the checker refuse.');
-    holder.firstElementChild.setAttribute('data-act', '');
-    holder.firstElementChild.addEventListener('click', () => picker.click());
+    // prepend() put the only way into this screen ABOVE the app bar, outside
+    // the drawing, which is why a farmer could not find where the photo went.
+    // The plate itself is the affordance now; this only holds the progress.
+    const holder = ctx.root.querySelector('[data-loadhold]') || (() => {
+      const d = document.createElement('div'); ctx.root.prepend(d); return d;
+    })();
+    phase(ctx.root, 'ask');
+    const choose = ctx.root.querySelector('[data-choose]');
+    if (choose) acts(choose, 'Choose a photo of one leaf', () => picker.click());
+    const plate = ctx.root.querySelector('[data-capture]')?.parentElement;
+    if (plate) acts(plate, 'Choose a photo of one leaf', () => picker.click());
 
     picker.addEventListener('change', async () => {
       const file = picker.files?.[0];
       if (!file) return;
       const preview = URL.createObjectURL(file);
+      // The photo is here, so the invitation to pick one goes.
+      const cap = ctx.root.querySelector('[data-capture]');
+      if (cap) cap.style.display = 'none';
       if (slot) {
         const img = document.createElement('img');
         img.src = preview;
         img.alt = 'The leaf you photographed';
-        img.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;';
+        /* The geometry is in loaders.css, under [data-shotimg], not inline here.
+         *
+         * It was inline, and inline beat the stylesheet that then had to share
+         * the plate with the progress panel. A mark the stylesheet can reach is
+         * the difference between "photo left, steps right" being a rule and
+         * being a fight. */
+        img.setAttribute('data-shotimg', '');
         slot.prepend(img);
+        // For as long as the checker is working, the plate holds two things.
+        slot.setAttribute('data-loading', '');
       }
       // The Multi Step Loader from design/Components.dc.html. One line of text
       // with a percentage on the end was the indeterminate-spinner argument in
@@ -158,7 +305,7 @@ export function leaf(slug) {
       steps.at(1, 0, 'Starting');
       try {
         const clf = await classifier((msg, pct) => {
-          steps.at(1, pct, pct != null ? `${msg} — ${Math.round(pct)}% of 173 MB` : msg);
+          steps.at(1, pct, pct != null ? `${msg}, ${Math.round(pct)}% of 173 MB` : msg);
         });
         steps.at(2, null, 'On this phone. Nothing is uploaded.');
         const verdict = await clf.predict(file);
@@ -166,6 +313,11 @@ export function leaf(slug) {
         sessionStorage.setItem(KEY, JSON.stringify(verdict));
         localStorage.setItem('pv.model', '1');
         steps.done();
+        // render() was only ever called on LOAD, from saved state. A fresh
+        // check stored its verdict and never drew it, so a farmer waited out a
+        // 173 MB download, picked a leaf, and the screen went on saying "No
+        // diagnosis yet". The answer existed and was never shown.
+        render(verdict);
         // The one moment in this product that has waited minutes for an answer.
         // 830ms on the bouncy spring, once, on the verdict only.
         const card = ctx.root.querySelector('[data-bind="verdict.name"]')?.closest('div[style*="background"]');
@@ -177,43 +329,88 @@ export function leaf(slug) {
           requestAnimationFrame(() => { card.style.opacity = '1'; card.style.transform = 'none'; });
         }
         const isRefusal = verdict.status !== 'ok';
-        location.replace(isRefusal ? './leaf-refusal.html' : './leaf-result.html');
+        revealRetake(isRefusal);
+        /* The download panel has nothing left to say, so it goes and the photo
+         * takes the whole plate back. Nothing did this, and the result was four
+         * ticks and "173 MB, once" still sitting on the plate underneath the
+         * filename that arrives with the verdict. */
+        steps.retire();
+        slot?.removeAttribute('data-loading');
       } catch (err) {
+        /* The panel's SLOT stays on a failure -- it is where the error goes.
+         * bare() hands the host back its drawn positioning without the cream
+         * fill, so the red box is not framed inside a leftover progress panel;
+         * data-loading stays on, so the message sits beside the photo rather
+         * than over it.
+         *
+         * The four step rows go explicitly. state() used to replace whatever was
+         * in its container and deliberately no longer does -- a failure must not
+         * delete the controls it lands beside -- so without this line the rows
+         * would sit above the error with their cream backing gone, which on this
+         * plate means #605a53 text on #37322d. */
+        steps.bare();
+        holder.replaceChildren();
         state(holder, 'failed', 'The checker did not run',
-          `${err.message} Nothing has been sent anywhere — the photo never left your phone.`);
+          `${err.message} Nothing has been sent anywhere, the photo never left your phone.`);
       }
     });
   });
 
+  /* A window that changes size is a different window. The measurement starts
+   * from the drawn height every time, so this is safe to run as often as it
+   * fires, and rAF keeps it to one per frame. */
+  let queued = false;
+  window.addEventListener('resize', () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; fitPlate(ctx.root); });
+  });
+
   function render(v) {
     const pct = v.confidence != null ? `${Math.round(v.confidence * 100)}% sure` : '';
+    const ok = v.status === 'ok';
+
+    // A REFUSAL IS A VERDICT AND HAS TO SAY SO.
+    //
+    // refusal.headline only exists inside the retake block, which is hidden
+    // until a refusal earns it -- so a refused photo rendered the verdict card
+    // as "Most likely / — / —" and then went on to show the full Mancozeb spray
+    // guidance underneath. Spray advice for a disease nobody named is the most
+    // dangerous thing this screen could do. The refusal states itself in the
+    // verdict card, and the treatment sections go.
+    const headline = v.status === 'not_a_leaf'
+      ? 'That does not look like a potato leaf'
+      : 'Not sure enough to name anything';
     bind(ctx.root, {
       shot: { file: v.file || 'your photo', where: `Checked on your phone · ${v.ms} ms` },
       verdict: {
-        name: v.status === 'ok' ? v.disease : '—',
-        note: v.status === 'ok'
+        name: ok ? v.disease : headline,
+        note: ok
           ? `${WORDS[v.disease] || ''} ${pct}${v.runner_up ? `, and it could be ${v.runner_up}` : ''}.`.trim()
-          : '',
+          : plainText(v.message) || 'Take it again with the whole leaf in frame and a little space around it.',
       },
-      refusal: { headline: v.status === 'not_a_leaf'
-        ? 'That does not look like a potato leaf'
-        : 'Not sure enough to name anything' },
+      refusal: { headline },
     });
-    // The refusal already carries the correct wording from the model, which
-    // says explicitly not to fill the frame. Use its words, not ours.
-    if (v.status !== 'ok' && v.message) {
-      const note = ctx.root.querySelector('[data-bind="refusal.headline"]')?.parentElement
-        ?.querySelector('div:not([data-bind])');
-      if (note) note.textContent = v.message;
-    }
+    phase(ctx.root, ok ? 'verdict' : 'refused');
+    // "Most likely" is a claim about a diagnosis. There is not one.
+    const kicker = ctx.root.querySelector('[data-bind="verdict.name"]')?.previousElementSibling;
+    if (kicker && !ok) kicker.textContent = 'The checker refused';
+    /* The way out, and it stays with you.
+     *
+     * Moving "Ask about this result" into the reading column -- where a question
+     * actually arises, rather than at the top of a rail 727px above the answer --
+     * left this as the only card in that rail. Sticky, so it sits beside whatever
+     * part of the diagnosis is on screen instead of being abandoned at the top of
+     * an otherwise empty column. */
     const again = document.createElement('div');
-    ctx.root.append(again);
+    again.style.cssText = 'position: sticky; top: 20px;';
+    (ctx.root.querySelector('.rail') || ctx.root).append(again);
     state(again, 'empty', 'Check another leaf', 'This clears the result and opens the camera.');
     const box = again.firstElementChild;
     box.setAttribute('data-act', '');
     box.addEventListener('click', () => {
       sessionStorage.removeItem(KEY);
-      location.replace('./leaf-result.html');
+      location.replace('./leaf-check.html');
     });
   }
 }

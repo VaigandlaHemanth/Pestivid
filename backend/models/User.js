@@ -23,6 +23,13 @@ const userSchema = new mongoose.Schema({
         // Basic email format validation (more robust validation can be added)
         match: [/\S+@\S+\.\S+/, 'Please use a valid email address']
     },
+    // The two broadcasts -- a season opening for funding, a lot coming up for
+    // sale -- can each be switched off. Direct notices (money that moved, a
+    // message to you) cannot: those are about you.
+    notices: {
+        funding: { type: Boolean, default: true },
+        listing: { type: Boolean, default: true },
+    },
     role: {
         type: String,
         required: [true, 'Role is required'],
@@ -44,7 +51,9 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'Password is required'],
-        minlength: [6, 'Password must be at least 6 characters long'] // Minimum password length
+        // Eight, matching the create-account screen and the auth routes. Six was
+        // the farmer's six-digit code, and that page no longer exists.
+        minlength: [8, 'Password must be at least 8 characters long']
         // NOTE: In a real production app, password policies should be much stronger.
     },
     createdAt: {
@@ -164,6 +173,12 @@ userSchema.methods.getPublicProfile = function() {
         role: this.role,
         phone: this.phone, // Include phone in public profile for this demo
         memberSince: this.memberSince ? this.memberSince.toISOString() : null, // Send date as ISO string
+        // Which broadcasts reach this person. Absent means on: the field was
+        // added after the demo accounts were made.
+        notices: {
+            funding: !(this.notices && this.notices.funding === false),
+            listing: !(this.notices && this.notices.listing === false),
+        },
         createdAt: this.createdAt ? this.createdAt.toISOString() : null, // Send date as ISO string
         // walletAddress: this.walletAddress, // Include wallet address if it exists
         displayIdentifier: this.name.split(' ')[0] || this._id.toString().substring(0,6) + '...', // Simple display name

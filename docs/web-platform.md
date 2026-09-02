@@ -47,7 +47,7 @@ simulated strings, and prices are denominated in a fictional unit.
 
 ```bash
 git clone <this repo>
-cd pestvid_complete_project
+cd p_pro
 
 # 1. Backend dependencies
 cd backend && npm install && cd ..
@@ -75,7 +75,7 @@ pip install -r requirements.txt
 
 ## Running
 
-**Windows:** double-click `start.bat` — the only launcher.
+**Windows:** double-click `scripts/start.bat` — the only launcher.
 
 **No MongoDB installed?** This starts an in-memory MongoDB, seeds it, and runs
 the API:
@@ -88,12 +88,12 @@ cd backend && npm run dev:mem
 
 ```bash
 cd backend && npm start          # API + frontend, port 3001
-python flask_server.py           # AI server, port 5000 (optional)
+cd ml-service && python flask_server.py   # AI server, port 5000 (optional)
 ```
 
 Then open **http://127.0.0.1:3001**.
 
-Do not open `public/index.html` from disk — `file://` breaks CORS on every
+Do not open `frontend/app/*.html` from disk — `file://` breaks CORS on every
 request. The Node server serves the frontend itself.
 
 ### Port map
@@ -120,7 +120,7 @@ rebuild.
 ## Architecture
 
 ```
-public/index.html          Vue 2 (CDN, no build step) — the entire frontend
+frontend/app/*.html        generated from design/*.dc.html by frontend/build-pages.mjs — the frontend
   └── window.__PESTVID     runtime API config, port-aware
 
 backend/                   Node 18 + Express + Mongoose

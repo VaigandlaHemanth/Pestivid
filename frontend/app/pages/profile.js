@@ -9,8 +9,12 @@
 import { requireUser, api, session, load, state } from './_guard.js';
 import { bind } from '../bind.js';
 import { appChrome } from '../chrome.js';
-import { acts, goes, press } from '../wire.js';
+import { acts, goes, press, asField } from '../wire.js';
 import { languagePicker } from '../lang.js';
+
+// The word for what someone is, for the line under their name. Not a claim
+// about what they may do -- just what they signed up as.
+const ROLE = { farmer: 'Farmer', buyer: 'Buyer', investor: 'Investor', admin: 'Pestivid team' };
 
 const ctx = requireUser('profile');
 
@@ -24,7 +28,7 @@ const SWITCHES = [
     // So the preference is stored and the screen says what it does and does
     // not do, rather than implying a queue that is not there.
     note: ['This is remembered, not enforced yet',
-           'Nothing here can hold an upload back until you have wi-fi — that needs the app to keep '
+           'Nothing here can hold an upload back until you have wi-fi, that needs the app to keep '
            + 'working after you close it, which it does not do yet. Your choice is saved for when it can.'],
   },
   {
@@ -63,13 +67,30 @@ if (ctx) {
   load(root, async () => {
     const me = await api.auth.me();
     const initial = (me.name || '?').trim()[0].toUpperCase();
-    const avatar = [...root.querySelectorAll('div')]
+    // Marked, because the nav bar now has an initial too and it comes first in
+    // document order: an unmarked lookup set the bar's and left the card's as
+    // the artboard's A.
+    const avatar = root.querySelector('[data-avatar]') || [...root.querySelectorAll('div')]
       .find(d => d.children.length === 0 && /^[A-Z]$/.test(d.textContent.trim()));
     if (avatar) avatar.textContent = initial;
     bind(root, {
       name: me.name,
-      phone: me.phone || 'No number on file',
-      where: me.location || 'No district on file',
+      // ONE LINE OF WHAT IS TRUE, replacing two of what was not.
+      //
+      // This used to bind `phone` and `where` as well. Neither ever reached the
+      // screen: [data-bind="name"] was on the DIV WRAPPING all three, so bind's
+      // `el.textContent = name` deleted the other two on the way past. And had
+      // they survived they would have read "No number on file" and "No district
+      // on file" for every account this product can create -- /auth/me does not
+      // return a phone, and User has no location field at all. Role, the address
+      // you sign in with, and the day you joined are returned, are true, and were
+      // shown nowhere.
+      who: [
+        ROLE[me.role] || me.role,
+        me.email,
+        me.memberSince && `here since ${new Date(me.memberSince)
+          .toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}`,
+      ].filter(Boolean).join(' · '),
       // the model is a local file, so its size is a fact about this handset
       model: { state: localStorage.getItem('pv.model')
         ? '173 MB downloaded · works offline'
@@ -82,6 +103,7 @@ if (ctx) {
 
     // ---- the switches ------------------------------------------------
     for (const track of root.querySelectorAll('[data-toggle]')) {
+      if (track.closest('[data-notice]')) continue;     // server-backed, wired below
       const row = track.closest('.row, .row2') || track.parentElement;
       const label = row?.querySelector('.lab')?.textContent.trim() || 'This setting';
       const spec = SWITCHES.find(s => s.match.test(label));
@@ -90,12 +112,20 @@ if (ctx) {
       // The board drew each switch in whatever state read best; the stored
       // preference decides it, and an unset one starts off.
       let on = spec ? localStorage.getItem(spec.key) === '1' : false;
+      // The whole row is the switch, so the row carries the role and the state.
+      // Leaving role="switch" on the pill after the row took over the click made
+      // it a switch with no name and no way to focus it -- worse than either.
+      const swap = (row && row !== track) ? row : track;
       const paint = () => {
         track.style.background = on ? '#016abe' : '#c3bcb6';
         if (knob) knob.style.transform = on ? 'translateX(20px)' : 'translateX(0)';
-        track.setAttribute('aria-checked', String(on));
+        swap.setAttribute('aria-checked', String(on));
       };
-      track.setAttribute('role', 'switch');
+      swap.setAttribute('role', 'switch');
+      if (swap !== track) {
+        track.removeAttribute('role');
+        track.setAttribute('aria-hidden', 'true');
+      }
       const val = row?.querySelector('.val');
       const describe = () => {
         if (spec?.zoom && val) val.textContent = on ? 'Currently larger' : 'Currently normal';
@@ -104,7 +134,11 @@ if (ctx) {
       describe();
 
       let notice = null;
-      acts(track, label, () => {
+      // A 50x30 pill is under the 44pt touch minimum and stretching it into an
+      // oval to satisfy the number would be worse. The row is the control, the
+      // way a Settings row is on a phone: the label toggles it too. `row` above
+      // is the same element -- there is no second one to declare.
+      acts(swap, label, () => {
         on = !on;
         if (spec) localStorage.setItem(spec.key, on ? '1' : '0');
         paint();
@@ -124,6 +158,49 @@ if (ctx) {
       });
     }
 
+    // ---- the broadcast switches --------------------------------------
+    // Not a localStorage preference: the server drops a muted broadcast from
+    // the list itself, so the bell, the notices page and the banner agree on
+    // every device. Only the broadcasts a role actually receives are offered --
+    // see noticeForRole -- and a farmer receives neither, so the section goes.
+    const GETS = { investor: ['funding'], buyer: ['listing'], admin: ['funding', 'listing'] };
+    const gets = GETS[me.role] || [];
+    const prefs = { funding: true, listing: true, ...(me.notices || {}) };
+    for (const row of root.querySelectorAll('[data-notice]')) {
+      const kind = row.dataset.notice;
+      if (!gets.includes(kind)) { row.remove(); continue; }
+      row.removeAttribute('data-specimen');       // drawn hidden until the role and the server were known
+      const track = row.querySelector('[data-toggle]');
+      const knob = row.querySelector('[data-knob]');
+      const label = row.querySelector('.lab')?.textContent.trim() || kind;
+      let on = prefs[kind] !== false;
+      const paint = () => {
+        if (track) track.style.background = on ? '#016abe' : '#c3bcb6';
+        if (knob) knob.style.transform = on ? 'translateX(20px)' : 'translateX(0)';
+        row.setAttribute('aria-checked', String(on));
+      };
+      row.setAttribute('role', 'switch');
+      track?.setAttribute('aria-hidden', 'true');
+      paint();
+      let busy = false, notice = null;
+      acts(row, label, async () => {
+        if (busy) return;
+        busy = true;
+        on = !on; paint();                         // on screen first
+        try {
+          const saved = await api.users.notices({ [kind]: on });
+          const u = session.user; if (u) { u.notices = { ...(u.notices || {}), ...saved }; session.set(session.token, u); }
+          notice?.replaceChildren();
+        } catch (err) {
+          on = !on; paint();                       // the server refused, so it comes back
+          if (!notice) { notice = document.createElement('div'); row.after(notice); }
+          state(notice, 'failed', 'That did not save', err.message);
+        } finally { busy = false; }
+      });
+    }
+    const noticesSec = root.querySelector('[data-sec="notices"]');
+    if (!root.querySelector('[data-notice]')) noticesSec?.remove(); else noticesSec?.removeAttribute('data-specimen');
+
     // ---- the leaf model ----------------------------------------------
     // "Remove it to free space" is 173 MB sitting on a handset that may not
     // have it to spare, so it has to work. It asks once.
@@ -133,6 +210,10 @@ if (ctx) {
       if (!localStorage.getItem('pv.model')) {
         remove.remove();                 // nothing downloaded, nothing to free
       } else {
+        // There IS something to free, so the offer can be shown. It is drawn
+        // [data-specimen] and hidden before the first paint, because until this
+        // line nothing had asked the handset whether the model was on it.
+        remove.removeAttribute('data-specimen');
         let armed = false;
         acts(remove, 'Remove the leaf checker to free space', () => {
           if (!armed) {
@@ -156,23 +237,145 @@ if (ctx) {
     const rowFor = (text) => [...root.querySelectorAll('.lab')]
       .find(d => d.textContent.trim() === text)?.closest('.row, .row2');
 
-    // Changing the code is changing the password, and there is no route for it.
-    // Saying so beats a row that swallows the tap.
-    const code = rowFor('Change your code');
-    if (code) acts(code, 'Change your code', () => {
-      let holder = code.nextElementSibling?.hasAttribute?.('data-note')
-        ? code.nextElementSibling : null;
+    // ---- changing the code -------------------------------------------
+    // This row said "there is no way to change the code in the app yet". There
+    // is: POST /auth/change-password has been there all along and api.js
+    // already wrapped it. The route demanded eight characters while
+    // registration demands six, so the one credential the product lets a
+    // farmer choose was refused by the route that changes it. Both are six now.
+    const isFarmer = ctx.user.role === 'farmer';
+    // (the wording follows the role: a farmer picks a code, others a password)
+
+    const codeRow = rowFor('Change your code');
+    if (codeRow) acts(codeRow, 'Change your code', () => {
+      if (codeRow.nextElementSibling?.hasAttribute?.('data-codeform')) {
+        codeRow.nextElementSibling.remove();
+        return;
+      }
+      const form = document.createElement('div');
+      form.setAttribute('data-codeform', '');
+      form.style.cssText = 'background: #f6f3ef; padding: 16px 18px;'
+        + ' box-shadow: inset 0 -1px 0 #c3bcb6;';
+
+      const line = (text, css) => {
+        const d = document.createElement('div');
+        d.style.cssText = css;
+        d.textContent = text;
+        return d;
+      };
+      const field = (labelText, name) => {
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'margin-top: 12px;';
+        wrap.append(line(labelText, 'font-size: 14.5px; font-weight: 600;'));
+        const box = document.createElement('div');
+        box.style.cssText = 'background: #fff; min-height: 52px; margin-top: 6px;'
+          + ' display: flex; align-items: center; padding: 0 14px;'
+          + ' box-shadow: inset 0 0 0 1px #c3bcb6;';
+        const slot = document.createElement('div');
+        slot.style.cssText = 'font-size: 17px; flex: 1 1 auto; min-width: 0;';
+        box.append(slot);
+        wrap.append(box);
+        const input = asField(slot, {
+          type: 'password', name,
+          autocomplete: name === 'current-password' ? 'current-password' : 'new-password',
+          // inputMode only, never maxLength. Capping this at six truncated
+          // "password123" to "passwo" and the route rightly said the current
+          // password was wrong -- a farmer whose credential is longer than six
+          // could not have got past this box at all.
+          inputMode: isFarmer ? 'numeric' : undefined,
+          placeholder: isFarmer ? 'Six numbers or more' : 'At least six characters',
+          label: labelText,
+        });
+        return { wrap, input };
+      };
+
+      const now = field('What you use now', 'current-password');
+      const next = field('What you want instead', 'new-password');
+      const button = line('Change it',
+        'background: #1d1a17; color: #fff; min-height: 52px; margin-top: 14px;'
+        + ' display: flex; align-items: center; justify-content: center;'
+        + ' font-size: 16px; font-weight: 600;');
+      const note = document.createElement('div');
+
+      form.append(
+        line('Six characters or more. Changing it signs you out on every other phone.',
+          'font-size: 14px; line-height: 1.5; color: #4a443d;'),
+        now.wrap, next.wrap, button, note,
+      );
+      codeRow.after(form);
+      press(root);
+
+      acts(button, 'Change it', async () => {
+        const a = now.input?.value || '';
+        const b = next.input?.value || '';
+        if (!a || !b) {
+          return state(note, 'waiting', 'Both boxes',
+            'We need the one you use now and the one you want instead.');
+        }
+        if (b.length < 6) {
+          return state(note, 'waiting', 'Six or more',
+            'Anything shorter than six characters is refused.');
+        }
+        const was = button.textContent;
+        button.textContent = 'Changing…';
+        try {
+          await api.auth.changePassword(a, b);
+          button.remove();
+          state(note, 'proved', 'Changed',
+            'Use the new one next time. Every other phone signed in as you is signed out.');
+        } catch (err) {
+          button.textContent = was;
+          state(note, 'failed', 'Not changed', err.message);
+        }
+      });
+    });
+
+    // ---- the export ---------------------------------------------------
+    // "Download everything we hold" navigated to the plots list. It downloads
+    // now, built in the browser from the same routes the screens already use,
+    // so it exposes nothing that was not already this account's to read.
+    const dlRow = rowFor('Your videos and money records');
+    if (dlRow) acts(dlRow, 'Download everything we hold', async () => {
+      let holder = dlRow.nextElementSibling?.hasAttribute?.('data-note')
+        ? dlRow.nextElementSibling : null;
       if (!holder) {
         holder = document.createElement('div');
         holder.setAttribute('data-note', '');
-        code.after(holder);
+        dlRow.after(holder);
       }
-      state(holder, 'waiting', 'Not from here yet',
-        'There is no way to change the code in the app yet. Until there is, ask us and we will '
-        + 'reset it — we would rather tell you that than open a screen that cannot finish.');
-    });
+      state(holder, 'waiting', 'Collecting it', 'Built on your phone. Nothing is sent anywhere.');
 
-    goes(rowFor('Your videos and money records'), 'plots', 'Your videos and money records');
+      const id = ctx.user._id || ctx.user.id;
+      const safe = (p) => p.catch(() => null);
+      const [me, videos, seasons, investments, purchases, notes] = await Promise.all([
+        safe(api.auth.me()),
+        safe(api.videos.mine(id)),
+        safe(api.projects.mine(id)),
+        safe(api.investments.mine(id)),
+        safe(api.purchases.asBuyer(id)),
+        safe(api.notifications.mine(id)),
+      ]);
+      const doc = {
+        exported: new Date().toISOString(),
+        about: 'Everything Pestivid holds about this account, as the app can read it.',
+        you: me, videos, seasons, investments, purchases, notifications: notes,
+      };
+      const blob = new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' });
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = href;
+      a.download = 'pestivid-'
+        + String(me?.name || 'account').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.json';
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(href), 4000);
+
+      const n = (list) => (list || []).length;
+      state(holder, 'proved', 'Downloaded',
+        n(videos) + ' videos, ' + n(seasons) + ' seasons, ' + n(investments) + ' investments and '
+        + n(purchases) + ' purchases, as a JSON file in your downloads.');
+    });
 
     const out = [...root.querySelectorAll('div')]
       .find(d => d.children.length === 0 && d.textContent.trim() === 'Sign out');

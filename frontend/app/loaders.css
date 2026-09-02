@@ -1,0 +1,338 @@
+/* ════ TWO LOADERS ══════════════════════════════════════════════════════════
+ *
+ * Chosen by the owner from uiverse.io. Both MIT; the CSS is verbatim apart from
+ * colour, which is ours, and two changes noted at the point they are made.
+ *
+ *   .pencil  "Loader" by gustavofusco  — uiverse.io/gustavofusco/rare-pug-90
+ *   .load    "Loader" by alexruix      — uiverse.io/alexruix/big-octopus-60
+ *
+ * WHY THESE LOOP, when nothing else in this product does.
+ * ------------------------------------------------------
+ * The motion rule here is "nothing loops", and it was written against
+ * decorative infinite micro-animation: a card that breathes, a dot that pulses
+ * forever, motion that says nothing and costs a compositor pass to say it.
+ *
+ * An indeterminate loader is the one thing that has to loop, because looping IS
+ * its message: work is still in flight and we cannot say how much is left. It
+ * starts when a fetch starts and it is removed when the fetch resolves, so it
+ * never runs over a settled page. verify-motion allows a loop only inside
+ * [data-loader] for exactly this reason.
+ *
+ * WHICH ONE, WHERE
+ * ----------------
+ *   the pencil  a date being WRITTEN. This product's own words are "date being
+ *               written, usually by tomorrow" -- a video waiting for the day's
+ *               hashes to land in a Bitcoin block. A pencil drawing a circle is
+ *               that sentence, so it belongs to that state and to no other.
+ *   the pill    work in flight with no figure to report: a page fetching, the
+ *               chatbot reading, a file going to storage. It says "still going"
+ *               and claims no progress it cannot measure.
+ */
+
+/* ── the pencil: a date being written ─────────────────────────────────────── */
+
+.pencil { display: block; width: 10em; height: 10em; color: var(--ink, #1d1a17); }
+.pencil--sm { width: 3.2em; height: 3.2em; }
+.pencil--xs { width: 2.2em; height: 2.2em; }
+
+.pencil__body1, .pencil__body2, .pencil__body3,
+.pencil__eraser, .pencil__eraser-skew, .pencil__point,
+.pencil__rotate, .pencil__stroke {
+  animation-duration: 3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.pencil__body1, .pencil__body2, .pencil__body3 { transform: rotate(-90deg); }
+.pencil__body1 { animation-name: pencilBody1; }
+.pencil__body2 { animation-name: pencilBody2; }
+.pencil__body3 { animation-name: pencilBody3; }
+.pencil__eraser { animation-name: pencilEraser; transform: rotate(-90deg) translate(49px, 0); }
+.pencil__eraser-skew { animation-name: pencilEraserSkew; animation-timing-function: ease-in-out; }
+.pencil__point { animation-name: pencilPoint; transform: rotate(-90deg) translate(49px, -30px); }
+.pencil__rotate { animation-name: pencilRotate; }
+.pencil__stroke { animation-name: pencilStroke; transform: translate(100px, 100px) rotate(-113deg); }
+
+@keyframes pencilBody1 {
+  from, to { stroke-dashoffset: 351.86; transform: rotate(-90deg); }
+  50% { stroke-dashoffset: 150.8; transform: rotate(-225deg); }
+}
+@keyframes pencilBody2 {
+  from, to { stroke-dashoffset: 406.84; transform: rotate(-90deg); }
+  50% { stroke-dashoffset: 174.36; transform: rotate(-225deg); }
+}
+@keyframes pencilBody3 {
+  from, to { stroke-dashoffset: 296.88; transform: rotate(-90deg); }
+  50% { stroke-dashoffset: 127.23; transform: rotate(-225deg); }
+}
+@keyframes pencilEraser {
+  from, to { transform: rotate(-45deg) translate(49px, 0); }
+  50% { transform: rotate(0deg) translate(49px, 0); }
+}
+@keyframes pencilEraserSkew {
+  from, 32.5%, 67.5%, to { transform: skewX(0); }
+  35%, 65% { transform: skewX(-4deg); }
+  37.5%, 62.5% { transform: skewX(8deg); }
+  40%, 45%, 50%, 55%, 60% { transform: skewX(-15deg); }
+  42.5%, 47.5%, 52.5%, 57.5% { transform: skewX(15deg); }
+}
+@keyframes pencilPoint {
+  from, to { transform: rotate(-90deg) translate(49px, -30px); }
+  50% { transform: rotate(-225deg) translate(49px, -30px); }
+}
+@keyframes pencilRotate {
+  from { transform: translate(100px, 100px) rotate(0); }
+  to { transform: translate(100px, 100px) rotate(720deg); }
+}
+@keyframes pencilStroke {
+  from { stroke-dashoffset: 439.82; transform: translate(100px, 100px) rotate(-113deg); }
+  50% { stroke-dashoffset: 164.93; transform: translate(100px, 100px) rotate(-113deg); }
+  75%, to { stroke-dashoffset: 439.82; transform: translate(100px, 100px) rotate(112deg); }
+}
+
+/* ── the pill: work in flight, no figure to report ────────────────────────── */
+
+.loader { width: 80px; height: 42px; position: relative; }
+
+.loader-text {
+  position: absolute;
+  top: 0;
+  padding: 0;
+  margin: 0;
+  color: var(--ink-2, #4a443d);
+  animation: loadText 3.5s ease both infinite;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+/* CHANGED FROM THE ORIGINAL, and this is the reason.
+ *
+ * The original animates `width` from 16px to 100%. Animating width runs layout
+ * on every frame, which is the one thing the performance rule in this repo
+ * forbids -- and it is avoidable here, because a stretching pill is exactly what
+ * scaleX describes. The pill is drawn at full width and squeezed down instead,
+ * with the transform origin on the left so it grows the way the original did.
+ * Same motion, no layout. */
+.load {
+  background-color: var(--action, #016abe);
+  border-radius: 50px;
+  display: block;
+  height: 14px;
+  width: 80px;
+  bottom: 0;
+  position: absolute;
+  transform-origin: 0 50%;
+  animation: loadPill 3.5s ease both infinite;
+}
+.load::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  background-color: var(--link, #01579b);
+  border-radius: inherit;
+  transform-origin: 0 50%;
+  animation: loadPillInner 3.5s ease both infinite;
+}
+
+@keyframes loadText {
+  0%   { letter-spacing: 0.02em; transform: translateX(0); }
+  40%  { letter-spacing: 0.06em; transform: translateX(26px); }
+  80%  { letter-spacing: 0.02em; transform: translateX(32px); }
+  90%  { letter-spacing: 0.06em; transform: translateX(0); }
+  100% { letter-spacing: 0.02em; transform: translateX(0); }
+}
+@keyframes loadPill {
+  0%   { transform: scaleX(0.2) translateX(0); }
+  40%  { transform: scaleX(1) translateX(0); }
+  80%  { transform: scaleX(0.2) translateX(320px); }
+  90%  { transform: scaleX(1) translateX(0); }
+  100% { transform: scaleX(0.2) translateX(0); }
+}
+@keyframes loadPillInner {
+  0%   { transform: scaleX(1) translateX(0); }
+  40%  { transform: scaleX(0.8) translateX(0); }
+  80%  { transform: scaleX(1) translateX(0); }
+  90%  { transform: scaleX(0.8) translateX(15px); }
+  100% { transform: scaleX(1) translateX(0); }
+}
+
+/* ── where a loader sits ──────────────────────────────────────────────────── */
+
+[data-loader] {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 26px 0;
+}
+[data-loader] .said {
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--ink-2, #4a443d);
+  max-width: 46ch;
+}
+
+/* Inside a card the loader stands beside a step rather than filling a page, so
+   the pencil takes its small size and the padding closes up. */
+[data-loader-slot] [data-loader] { padding: 13px 0 0; gap: 14px; align-items: center;
+                                   margin-top: 13px; box-shadow: inset 0 1px 0 #ddd7d1; }
+/* The pencil's band is full width under the button, not inside a card, so it
+   needs no hairline of its own -- it IS the bottom of the page. */
+[data-loader-slot="writing"] [data-loader] { margin-top: 18px; padding: 0;
+                                             box-shadow: none; gap: 16px; }
+/* Room to actually be a pencil.
+ *
+ * Shrunk into the timeline's 22px dot column it was a blue fragment -- the
+ * drawing hand orbits a 200-unit viewBox, so below about 60px there is nothing
+ * legible left of it. It is the one animation in this product that says
+ * something no sentence can (a date, being written, right now), and the owner
+ * picked it. It gets the space to say it. */
+[data-loader-slot] .pencil { width: 4.4em; height: 4.4em; margin-left: -6px; }
+[data-loader-slot] .loader { transform: scale(.8); transform-origin: 0 50%; }
+/* The pill carries the word "working" travelling above it, which is right on its
+   own and wrong beside a real sentence: in a card the two texts compete and the
+   loose word reads as debug output. The pill stays, the sentence says what is
+   happening. */
+[data-loader-slot] .loader-text { display: none; }
+/* ...and with the word gone, the box it needed goes too.
+ *
+ * .loader is 80x42 with the pill pinned to its BOTTOM, because at page level the
+ * word "working" travels across the top 28px. In a card that word is hidden by
+ * the rule above, so those 28px were empty and the pill hung below its own
+ * caption: measured at 14px of offset, the pill's centre at 135 against the
+ * caption's 121. It read as a stray blue mark rather than as this sentence's
+ * progress.
+ *
+ * The box becomes the pill's own height, and the pill joins the flow so the
+ * row's align-items: center can do its job. position: relative rather than
+ * static because .load::before is inset: 0 against it -- static would hand that
+ * to .loader and stretch the darker inner bar over the whole 80x42. The pill's
+ * animation is transform only, so nothing here moves it. */
+[data-loader-slot] .loader { height: 14px; }
+[data-loader-slot] .load { position: relative; bottom: auto; }
+[data-loader-slot] .said { font-size: 14.5px; max-width: none; }
+
+/* ── reduced motion ───────────────────────────────────────────────────────── */
+
+/* A spinner is the one case where dropping the travel leaves nothing behind, so
+ * the animation stops and the WORDS carry the message instead. The pencil is
+ * hidden rather than frozen: a still pencil next to "still going" reads as a
+ * picture of a pencil, not as a state. */
+@media (prefers-reduced-motion: reduce) {
+  .pencil { display: none; }
+  .pencil__body1, .pencil__body2, .pencil__body3, .pencil__eraser,
+  .pencil__eraser-skew, .pencil__point, .pencil__rotate, .pencil__stroke,
+  .loader-text, .load, .load::before { animation: none !important; }
+  .load { transform: scaleX(1); }
+  [data-loader] .said::after { content: " Still going."; }
+}
+
+/* ════ THE LEAF CHECKER'S PLATE, WHILE THE CHECKER IS COMING ════════════════
+ *
+ * Two things have to be legible at once for the minutes this takes: the photo
+ * the farmer just picked, and the four named steps of a 173 MB download.
+ *
+ * They were stacked. The photo is positioned across the whole plate, so it
+ * painted over the progress panel and left it unreadable -- and even with the
+ * panel back on top (see steps.js) it would have covered the leaf, which is the
+ * one thing a farmer wants confirmed before waiting minutes on a prepaid pack.
+ *
+ * There is no shortage of room. A portrait photograph contained in a landscape
+ * plate leaves two wide dark bars doing nothing, so the panel goes in one of
+ * them: photo left, steps right, neither on top of the other.
+ *
+ * BOTH STAY OUT OF FLOW. The first version of this made the plate a flex row --
+ * and an <img> flex item with height:auto takes its INTRINSIC size, so a
+ * 1080x1440 phone photo dragged the plate from 430px to 1476px and pushed the
+ * page 781px past the fold. Absolute children cannot resize their container, so
+ * the plate is exactly as tall while it works as it was before, and there is no
+ * jump at the moment a photo is picked.
+ *
+ * Only the runtime matches any of this: [data-shotimg] is created by _leaf.js
+ * when a photo is picked and [data-loading] is set on the plate for as long as
+ * the checker is working, so the drawn page never sees it and verify-layout
+ * still compares the board against a page that matches it.
+ */
+[data-shotimg] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* contain, not cover: the whole leaf is what is being judged, and a portrait
+     photo in a landscape plate loses its ends to a crop. */
+  object-fit: contain;
+}
+
+/* Sized, not inset.
+ *
+ * `inset: 18px 394px 18px 18px; width: auto` looks like it should work and does
+ * not: for an absolutely positioned REPLACED element, `width: auto` resolves to
+ * the INTRINSIC width (CSS 2.1 10.3.8) and `right` is then over-constrained and
+ * dropped. The photo sat at the right offset in its top-left corner and kept its
+ * full 1080x1440, spilling across the panel exactly as before. An <img> has to
+ * be given a width.
+ *
+ * 412px = the 18px left inset, the 356px panel, its 20px right inset, and 18px
+ * of air between the two. 36px = the 18px top and bottom insets. */
+[data-plate][data-loading] > [data-shotimg] {
+  top: 18px;
+  left: 18px;
+  right: auto;
+  bottom: auto;
+  width: calc(100% - 412px);
+  height: calc(100% - 36px);
+}
+/* The panel is drawn `left: 20px; right: 20px; bottom: 44px`, inline. Only the
+   left edge has to move, and !important is load-bearing: an inline declaration
+   outranks any stylesheet, which is the collision that has cost a fix four
+   times in this codebase already. */
+[data-plate][data-loading] > [data-loadhold] {
+  left: auto !important;
+  width: 356px;
+  /* border-box, or the 356 is a CONTENT width and the panel's own 17px padding
+     sits outside it -- 390px on screen against a photo sized for 356, which put
+     the photo's edge one pixel from the first letter of the panel's text. */
+  box-sizing: border-box;
+  /* Level with the photo it stands beside. The drawn `bottom: 44px` pins it to
+     the viewfinder's lower edge, which is right when it is lying OVER a capture
+     surface and wrong when it is one of two columns: on a plate that fills the
+     window it sat two thirds of the way down, against a photo centred in the
+     other half. */
+  top: 50%;
+  bottom: auto !important;
+  transform: translateY(-50%);
+}
+
+/* A narrow plate has no second column to give away, so the two stack: photo
+   above, steps below. The panel goes back INTO the flow here, with a top margin
+   that clears the photo, because a plate with `overflow: hidden` would otherwise
+   crop a panel taller than its 430px -- and on a phone the same four steps wrap
+   to well over that. In the flow, the plate grows to hold them instead.
+
+   759, not the app's usual 900: this boundary is not about phones, it is about
+   whether the plate is wide enough to hold two columns. The panel wants 356px and
+   a photo wants a few hundred, so the answer is a plate over roughly 630px --
+   and a single-column page gives the plate the window less 56px. At 820px the
+   plate is 764px wide and the stacked rule set those four short steps across
+   732px of line, which is nobody's idea of a column. 760px is a width this
+   stylesheet already turns at. */
+@media (max-width: 759px) {
+  [data-plate][data-loading] > [data-shotimg] {
+    top: 16px;
+    left: 16px;
+    right: auto;
+    bottom: auto;
+    width: calc(100% - 32px);
+    height: 220px;
+  }
+  [data-plate][data-loading] > [data-loadhold] {
+    position: static !important;
+    width: auto;
+    /* 252 = the photo's 16px top inset and its 220px height, then 16px of air. */
+    margin: 252px 16px 16px;
+    /* The vertical centring above belongs to the side-by-side layout only.
+       Left on, it dragged this panel half its own height upward -- 138px, clean
+       out of the top of the plate and back over the photo, which is the exact
+       overlap this whole layout exists to end. */
+    transform: none;
+    top: auto;
+  }
+}

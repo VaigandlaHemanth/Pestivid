@@ -1,0 +1,530 @@
+/* Making fixed-width drawings behave like pages.
+ *
+ * The artboards are drawings: each panel is pinned to one width -- 1320 for the
+ * desktop surfaces, 360 for the farmer's phone screens -- because that is what
+ * an artboard is. The generated pages inherited that literally, and measuring
+ * all 31 said so plainly: 7 overflowed a 390px phone (the landing page by
+ * 361px, so half of it was simply off-screen) and 22 rendered as a 360px sliver
+ * in the middle of a 1440px laptop window.
+ *
+ * Inline styles cannot carry a media query, and the markup must stay identical
+ * to its board or verify-layout is meaningless. So the adaptation lives here,
+ * addressed by the attribute selectors the boards already give us, and applies
+ * only away from each design's own width. At 1320 and at 360 nothing in this
+ * file fires, which is what keeps the drawings honest.
+ */
+
+/* ── the root panel ─────────────────────────────────────────────────────── */
+
+/* clip, not hidden. overflow-x: hidden makes html a scroll container, and a
+   scroll container BREAKS position: sticky for everything inside it -- which
+   silently killed the landing page's pinned column, so the left half of a
+   1440px window was empty grey for two thousand pixels of scroll. overflow-x:
+   clip crops the same overflow without creating the container. */
+html, body { max-width: 100%; overflow-x: clip; }
+
+/* A desktop panel pinned to its design width becomes a maximum instead, so it
+   can narrow without pushing the page sideways. */
+body > div[style*="width: 1320px"],
+body > div[style*="width: 1280px"],
+body > div[style*="width: 1200px"],
+body > div[style*="width: 824px"] {
+  width: 100% !important;
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* A phone panel on a laptop was a 360px column in a field of grey. It grows to
+   a comfortable measure and centres -- these are still one-column screens, so
+   the measure is what matters, not filling the window. */
+@media (min-width: 760px) {
+  /* build-pages writes the design width as a MAX-width on the wrapper, so that
+     is what has to be raised. */
+  body > div[style*="max-width: 360px"],
+  body > div[style*="max-width: 380px"] {
+    /* 860, not 620, and no shadow: a shadow makes it a phone-shaped card
+       floating on a desktop, which is the thing that reads as wrong. At 860 the
+       rows stretch and the header spans, so it reads as a page. */
+    max-width: 860px !important;
+  }
+}
+
+/* A DIALOG KEEPS ITS MEASURE ------------------------------------------------
+ *
+ * confirm-investment is drawn at 824px because it is a dialog: four rows of
+ * label-and-figure, a warning, a tickbox and one button. build-pages writes
+ * `max-width: none` on every wrapper, so on a laptop that dialog became a
+ * 1,366px white card edge to edge -- "You are sending" at the far left and
+ * "₹50,000" seventeen hundred pixels away at the far right, with the eye asked
+ * to carry one to the other across an empty page. It is the only screen in this
+ * product where money leaves somebody's account, and it read as a phone panel
+ * someone had stretched.
+ *
+ * It stays at its own width and sits on the ground, which is what the 824 in
+ * sizes.json meant. 880 rather than 824 for the breakpoint, so the card has air
+ * on both sides before it stops growing. */
+@media (min-width: 880px) {
+  [data-w="824"] {
+    max-width: 824px !important;
+    margin-top: 30px !important;
+    margin-bottom: 30px !important;
+    /* The wrapper carries min-height: 100vh so a full-bleed page fills the
+       window. A card is not a page: it left 250px of blank white under the last
+       line, inside the card, which reads as content that failed to load. */
+    min-height: 0 !important;
+  }
+}
+
+/* ── multi-column layouts, below the desktop breakpoint ─────────────────── */
+
+/* A breakpoint has to be below the design's OWN width or the page reflows while
+   its artboard does not -- which is how confirm-investment, drawn at 824px,
+   stopped matching when a 1100px rule fired on it. So: the wide boards collapse
+   below 1100, and everything else waits until 820, which is under every design
+   width in this product. */
+@media (max-width: 1100px) {
+  [data-w="1320"] [style*="grid-template-columns"],
+  [data-w="1280"] [style*="grid-template-columns"],
+  [data-w="1200"] [style*="grid-template-columns"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 820px) {
+  /* Every desktop surface in this product is a two- or three-column grid with
+     at least one fixed track. Below 1100px the tracks stop fitting, which is
+     what pushed the invest, market, orders and portfolio pages sideways. */
+  [data-surface="desk"] [style*="grid-template-columns"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  /* A fixed sidebar or rail becomes a full-width band above the content. */
+  [style*="width: 372px"], [style*="width: 380px"], [style*="width: 260px"],
+  [style*="width: 372px;"], [style*="width: 330px"] {
+    width: auto !important;
+  }
+  /* Two-up flex rows stack rather than squeeze. */
+  [style*="display: flex"][style*="gap: 20px"],
+  [style*="display: flex"][style*="gap: 28px"],
+  [style*="display: flex"][style*="gap: 26px"] {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 700px) {
+  /* Scoped to [data-surface="desk"]: these overrides exist to bring a DESKTOP
+     layout down to a phone. Applying them to a board that was already drawn at
+     360px changes a design at its own width, which is exactly what made three
+     pages stop matching their artboards. */
+  [data-surface="desk"] [style*="padding: 28px 30px"],
+  [data-surface="desk"] [style*="padding: 24px 26px"],
+  [data-surface="desk"] [style*="padding: 22px 24px"],
+  [data-surface="desk"] [style*="padding: 20px 22px"],
+  [data-surface="desk"] [style*="padding: 20px 56px"],
+  [data-surface="desk"] [style*="padding: 46px 24px"] {
+    padding: 18px 16px !important;
+  }
+  /* A measure set in ch was chosen for a wide column. */
+  [data-surface="desk"] [style*="max-width: 62ch"],
+  [data-surface="desk"] [style*="max-width: 64ch"],
+  [data-surface="desk"] [style*="max-width: 70ch"],
+  [data-surface="desk"] [style*="max-width: 92ch"],
+  [data-surface="desk"] [style*="max-width: 44ch"],
+  [data-surface="desk"] [style*="max-width: 46ch"] {
+    max-width: 100% !important;
+  }
+  /* A table with five columns is not a phone layout. Let it scroll inside its
+     own box rather than taking the page with it. */
+  table { display: block; overflow-x: auto; }
+}
+
+/* ── the landing page, which is the widest thing here ───────────────────── */
+
+@media (max-width: 900px) {
+  /* The glass nav is absolute at top: 0 over the hero, drawn 66px tall for a
+     1320px canvas. At 390px its four right-hand items wrap to a second row, the
+     bar grows to about 110px, and "Sign in" landed on top of "A field you can
+     see." So below 900px the nav joins the flow and the headline follows it. */
+  [data-page="landing"] .glass.e1 {
+    position: static !important;
+    flex-wrap: wrap;
+    row-gap: 10px;
+    padding: 14px 20px !important;
+  }
+  [data-page="landing"] .glass.e1 > div:last-child {
+    gap: 16px !important;
+    flex-wrap: wrap;
+  }
+  /* The hero's text column is placed with a hard left margin and a fixed width,
+     and no longer has to clear an absolute bar. */
+  [style*="margin: 146px 0 0 72px"] {
+    margin: 30px 20px 0 20px !important;
+    width: auto !important;
+  }
+  /* Two buttons side by side inside 350px are 165px each, and both labels broke
+     across two lines. A call to action that wraps reads as a mistake. */
+  [data-page="landing"] .e4 {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  [data-page="landing"] .e4 > div {
+    text-align: center;
+    padding: 16px 20px !important;
+  }
+  /* A 22px inset frame drawn around a 660px hero becomes, on a phone whose hero
+     is twice that tall, a hairline running down through the paragraph. */
+  [data-page="landing"] [style*="position: absolute; inset: 22px"] { display: none; }
+
+  /* The evidence band is a flex row with a 64px gap and two 28ch measures. At
+     390px that left "adoption / when farm / advice / arrives by / video," --
+     two or three words a line, for the one claim on the page that cites a
+     source. It stacks, and the citation goes under what it is citing. */
+  [data-page="landing"] .reveal > [style*="gap: 64px"] {
+    flex-direction: column;
+    gap: 22px !important;
+  }
+  [data-page="landing"] .reveal [style*="max-width: 28ch"],
+  [data-page="landing"] .reveal [style*="max-width: 34ch"] { max-width: 100% !important; }
+  /* "₹4 vs ₹38" broke after the "vs". */
+  [data-page="landing"] .reveal .num { white-space: nowrap; }
+  /* The evidence readout is pinned to the hero's bottom-right corner, which on
+     a phone is on top of the buttons. */
+  [data-bind="evidence.meta"] { display: none !important; }
+  /* Display type set for a 1320px canvas. */
+  h1[style*="font-size: 62px"], [style*="font-size: 62px"] { font-size: 40px !important; }
+  [style*="font-size: 56px"] { font-size: 36px !important; }
+  [style*="font-size: 40px"] { font-size: 30px !important; }
+  [style*="font-size: 34px"] { font-size: 27px !important; }
+  [style*="font-size: 32px"] { font-size: 26px !important; }
+  [style*="font-size: 30px"] { font-size: 25px !important; }
+}
+
+/* ── the setup screen's code strip ──────────────────────────────────────── */
+
+/* The board now draws these 62px square, which is what a code looks like. On a
+   narrow phone six of them plus gaps do not fit, so there and only there they go
+   back to sharing the width. */
+@media (max-width: 470px) {
+  [data-page="setup"] [data-codebox] {
+    width: auto !important; flex: 1 1 0 !important; }
+}
+
+/* ── the desktop nav bar on a narrow window ──────────────────────────────── */
+
+/* One white bar, 60 or 66px tall, holding the wordmark, three or four
+   destinations and the signed-in person. At 390px those overlap: "Messages" ran
+   into "Demo Buyer · buyer" on the market page, and the bar could not grow
+   because its height was fixed in the drawing. */
+@media (max-width: 820px) {
+  [data-surface="desk"] [style*="justify-content: space-between"][style*="height: 60px"],
+  [data-surface="desk"] [style*="justify-content: space-between"][style*="height: 66px"] {
+    height: auto !important;
+    min-height: 60px;
+    flex-wrap: wrap;
+    row-gap: 4px;
+    padding: 10px 16px !important;
+  }
+  /* The destinations themselves, drawn with a 24px gap for a 1320px canvas. */
+  [data-surface="desk"] [style*="justify-content: space-between"] [style*="gap: 30px"],
+  [data-surface="desk"] [style*="justify-content: space-between"] [style*="gap: 24px"] {
+    gap: 14px !important;
+    flex-wrap: wrap;
+  }
+}
+
+/* ── the laptop shell on a narrow window ────────────────────────────────── */
+
+/* Fifteen boards moved from 360px phone panels to 1320px laptop layouts, all
+   sharing three class names: .bar for the top bar, .th and .tr for a table.
+   These are the rules that fold that shell onto a phone, written once because
+   the shell is one thing. The names are prefixed so a
+   board that already owned .bar or .th keeps its own.
+
+   Without them the table's five fixed tracks forced the page 1322px wide inside
+   a 390px viewport: the date column was simply off-screen. */
+@media (max-width: 900px) {
+  /* The bar grows instead of clipping the signed-in name. */
+  [data-surface="desk"] .appbar {
+    height: auto !important;
+    min-height: 60px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding: 10px 16px !important;
+  }
+  [data-surface="desk"] .appbar > div { flex-wrap: wrap; row-gap: 4px; }
+
+  /* A column header means nothing once the rows are no longer columns. */
+  [data-surface="desk"] .colh { display: none !important; }
+
+  /* Each row becomes a card: thumbnail beside the name, everything else under
+     it, and the chevron goes because the whole row is already the target. */
+  [data-surface="desk"] .colr {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 5px 14px;
+    align-items: center;
+  }
+  [data-surface="desk"] .colr > *:nth-child(1) { flex: 0 0 auto; }
+  [data-surface="desk"] .colr > *:nth-child(2) { flex: 1 1 55%; min-width: 0; }
+  [data-surface="desk"] .colr > *:nth-child(3),
+  [data-surface="desk"] .colr > *:nth-child(4) { flex: 1 1 100%; }
+  [data-surface="desk"] .colr > *:nth-child(5) { display: none; }
+}
+
+/* ── things that must never change ──────────────────────────────────────── */
+
+/* Reduced motion is handled in tokens.css; nothing here animates. */
+
+/* ── the two conversations, on a phone ───────────────────────────────────── */
+
+/* The rule for these screens is the same at every width: the messages move and
+   the composer does not. So the column keeps its fixed height on a phone too --
+   sized to the viewport rather than to a laptop -- and the transcript goes on
+   scrolling inside it. A 656px column on an 844px phone left the composer
+   halfway up the screen with a void above it. */
+@media (max-width: 900px) {
+  /* The chat column used to be pinned here to `calc(100dvh - <chrome>)`, and the
+     chrome was counted by hand, differently at each breakpoint: 68vh, 241, 211.
+     Every one of them went stale the moment anything above the column changed
+     height -- the 241 was caught by verify-layout reporting a page 36px taller
+     than its drawing after a back link moved. The column fills what is left now,
+     with flex, which needs no number and cannot go out of date. */
+}
+
+/* ── the two conversations, at whatever height the window is ─────────────── */
+
+/* The artboard is 1320x880 and the chat column is drawn at a fixed 656px inside
+   it, which is correct for the drawing and wrong for a real machine. A
+   1366x768 laptop has about 660px of viewport, and Windows display scaling at
+   125% turns a 1080p screen into roughly 780. Both cut the composer off the
+   bottom of the screen -- the one control the page exists for.
+ 
+   So below the drawn height the column stops being a fixed 656 and becomes
+   what is actually left: viewport minus the bar, the heading and the page's own
+   padding. 830px is deliberately under both artboard heights (ask 860, thread
+   880), because verify-layout renders each page at its board's exact size and
+   this must not fire there -- the page has to match the drawing at the size it
+   was drawn.
+
+   The height is declared inline on the drawn element, so this needs
+   !important to reach it -- the same reason the phone rule above does. It is
+   safe here where a blanket min-height was not: this names one attribute, sets
+   one property, and cannot land on anything that was drawn with a real
+   dimension of its own. */
+@media (min-width: 901px) {
+  /* 205 is the bar, the heading block, and the grid's own top and bottom padding,
+     measured -- not estimated. It was 230, which left 55px of ground under the
+     composer at every height it fired at.
+
+     And it fired only below 830px, so a taller window got the drawn height and
+     nothing else -- 144px of dead ground beneath the chat on a 1080p screen,
+     which is the "fit it to the screen" this answers. It applies at every height
+     above the phone breakpoint now, and each board's DRAWN height is set to
+     exactly what this formula gives at that board's own artboard height, so
+     verify-layout -- which renders each page at its artboard size -- still finds
+     the page identical to the drawing.
+ 
+     Stretching the column into the grid row instead was tried and cannot work:
+     the page root is min-height 100vh, not height, so the flex column grows
+     with its content, the grid grows with it, and an auto-height scroll
+     container asked to fill that row reports its full transcript as its height.
+     The row feeds off the column and the column off the row. A measured
+     constant is the honest version of that.
+
+     205 became 241 when the back control moved out of the app bar and became a
+     labelled link above the heading: +44px for the link, less the 8px of top
+     padding the heading block gave back. The number is chrome above the column,
+     so anything added there has to be added here -- and verify-layout catches it
+     if it is not, which is how this one was found, one page reporting its column
+     36px taller than the drawing on both chat screens. */
+}
+
+/* ── THE CHAT FILLS THE WINDOW ───────────────────────────────────────────── */
+
+/* I capped this transcript at a 780px reading measure, which was the wrong
+ * answer to "it is not filling the page": on a 1900px window the pane is 1,507
+ * and the cap left 727 of it unused, with the composer floating in the middle.
+ *
+ * The empty ground to the left of the bubbles is not a layout fault and cannot
+ * be fixed by narrowing anything -- it is where the other person's messages go.
+ * This thread has them; they are simply above the fold, because a chat opens at
+ * the bottom.
+ *
+ * So the pane is used, and the only thing left to fix is the height: the column
+ * stopped 30px short of the bottom, which is 241 of assumed chrome against 211
+ * of real chrome. Measured, not guessed -- and if anything is ever added above
+ * the column, verify-layout catches the constant going stale, which is how the
+ * last one was found. */
+@media (min-width: 1400px) {
+}
+
+/* ── the crop mark needs no rule here ───────────────────────────────────── */
+
+/* The wheat on the harvest button lives inside a hover media query, so it never
+   renders on a touch device at all -- there is no hover to reveal it and a
+   permanent version would be decoration on a 320px control. Nothing to hide. */
+
+/* ── control size, by touch ──────────────────────────────────────────────── */
+
+/* The HIG recommends 44x44 pt for a touch target and 28x28 with a pointer
+   (accessibility.md). The bar's words and the back chevron met the pointer
+   figure and not the touch one. This only fires on a phone, so the laptop
+   artboard the layout check compares against is untouched. */
+@media (max-width: 900px) {
+  .appnav, .appnavOn, .nav, .navOn, .appbrand, .brand {
+    min-height: 44px !important; display: flex !important; align-items: center;
+  }
+  /* Width too, not just height. "Messages" was 78px and cleared 44 by accident;
+     renaming it "Chat" made it 31px wide and verify-hig failed on all fifteen
+     pages that draw the bar. A nav word's LENGTH is not a touch target, so the
+     slot carries the minimum instead of the text. */
+  /* [data-navword] is for the two boards that draw their bar without the
+     .appnav class -- invest and market -- where the same 31px word sat under
+     the same minimum and no class-based rule could reach it. */
+  .appnav, .appnavOn, .nav, .navOn, [data-navword] {
+    min-width: 44px !important; justify-content: center;
+  }
+  [data-chrome="back"], [data-chrome="mail"], [data-chrome="you"] {
+    min-width: 44px !important; min-height: 44px !important;
+  }
+}
+
+/* Every wired control reaches the 44pt touch minimum on a phone. Inline links
+   inside a sentence are unaffected: an inline box ignores min-height, which is
+   exactly the exemption WCAG 2.5.8 makes for links in running text. */
+@media (max-width: 900px) {
+  /* Width only. The height comes from the drawing -- a blanket
+     `min-height: 44px !important` here outranked an inline `min-height: 430px`
+     and collapsed the leaf checker's viewfinder to 60px. min-width clamps a
+     declared width without needing !important, so a 32px round avatar reaches
+     the touch minimum without any rule being able to stomp a real dimension. */
+  [data-chrome="you"], [data-chrome="mail"], [data-chrome="back"],
+  [data-act][style*="border-radius: 16px"], [data-act][style*="border-radius: 50%"],
+  [data-act][style*="border-radius: 17px"] {
+    min-width: 44px; min-height: 44px;
+  }
+  /* A table action link. On a phone the rows already reflow to blocks, so a
+     real touch height here costs nothing. */
+  .act[data-act], .act[data-go] { min-height: 44px; }
+}
+
+/* ── the photo, once there is an answer ─────────────────────────────────────
+ *
+ * In the capture phase the plate IS the page and takes the whole window (see
+ * fitPlate in pages/_leaf.js). Once a verdict exists it stops being the subject
+ * and becomes the evidence for one: what a farmer needs on screen is the name of
+ * the disease and what to do about it.
+ *
+ * At its capture height the answer started 641px down, below the fold on a 768px
+ * laptop -- so the page opened on a photograph the farmer had just taken and
+ * hid the thing they were waiting for. This lifts "Most likely / Fungi" to
+ * roughly 470, on screen without scrolling, and the photo is still large enough
+ * to see the leaf it is about.
+ *
+ * [data-phase] is set by _leaf.js at runtime, so the drawn page carries none of
+ * this and verify-layout goes on comparing the board with a page that matches.
+ */
+@media (min-width: 901px) {
+  [data-phase="verdict"] [data-plate],
+  [data-phase="refused"] [data-plate] {
+    height: 260px !important;
+    min-height: 260px !important;
+  }
+  /* And the rail gets the column's full height, so the one card left in it can
+     stay beside the reader.
+     The grid holds its items at `align-items: start`, so the rail was exactly as
+     tall as that single card -- and a sticky element can only travel inside its
+     own parent's box, so it stuck to nothing and scrolled away with the page
+     (measured at -509px off the top of the window at the end of the scroll).
+     Stretching the rail gives it somewhere to stick. */
+  [data-phase="verdict"] .rail,
+  [data-phase="refused"] .rail { align-self: stretch; }
+}
+
+/* ── a drawn specimen is not somebody's data ─────────────────────────────────
+ *
+ * Every bound list in this product is drawn with example rows in it, because an
+ * artboard has to show what a list looks like. The page then replaces them with
+ * the server's rows -- and measured on the notifications screen, those examples
+ * were on screen at full opacity for 126ms first: five invented notices about a
+ * "Canal plot" and a "Meena Rao" putting ₹50,000 into a "North plot", shown as
+ * if they had happened, on a product whose entire claim is that its records are
+ * real. That is the flicker on the bell, and the flash is the smaller half of
+ * the problem.
+ *
+ * The hiding has to happen before the first paint, so it is CSS and not script:
+ * the page module cannot run until its fetch resolves, which is exactly the
+ * 126ms in question.
+ *
+ * visibility, not display. The row keeps its box, so the list does not jump when
+ * the real rows land -- and, just as importantly, the geometry the board drew is
+ * the geometry the page reports, so verify-layout still compares the two
+ * meaningfully. This file is not loaded when a board is rendered, so the drawing
+ * still shows its examples, which is what a drawing is for.
+ *
+ * repeatRows() strips the mark from its template, so the real rows are visible.
+ * A list whose fetch fails shows nothing rather than fiction, which is the right
+ * way round.
+ */
+[data-specimen] { visibility: hidden; }
+
+/* ── the chat, on a phone: one pane at a time ─────────────────────────────── */
+
+/* Above 900px both panes show and the chevron messages.js adds to the thread
+   header does not exist on screen. Below it, body[data-view] picks the pane. */
+.paneback { display: none; }
+@media (max-width: 900px) {
+  .paneback { display: flex; width: 44px; height: 44px; align-items: center; justify-content: center;
+              margin-left: -12px; flex-shrink: 0; color: #605a53; }
+  body[data-page="messages"][data-view="thread"] [data-chatcol] > div:first-child { display: none !important; }
+  body[data-page="messages"]:not([data-view="thread"]) [data-chatcol] > [data-pane] { display: none !important; }
+  body[data-page="messages"][data-view="thread"] [data-chatcol] { grid-template-rows: minmax(0, 1fr) !important; }
+}
+
+/* ── money, on a phone ────────────────────────────────────────────────────── */
+
+/* A season row is one flex line -- name, figure, state, share -- drawn for
+   1320px. At 390px it wrapped each word onto its own line inside a narrow
+   column beside a wide bar. The line may wrap now, and the amber notice puts
+   its button under its words rather than beside them. */
+@media (max-width: 700px) {
+  [data-page="money"] [data-row="raise"] > div:first-child,
+  [data-page="money"] [data-row="raise-alt"] > div:first-child { flex-wrap: wrap; row-gap: 4px; }
+  [data-page="money"] [data-todoband] { flex-direction: column; align-items: stretch; gap: 14px !important; }
+  [data-page="money"] [data-todoband] [data-report] { justify-content: center; }
+}
+
+/* ── the buyer's and the investor's screens, on a phone ─────────────────── */
+
+/* orders and portfolio draw their own bar: brand, a flex-grow run of nav
+   words, bell, avatar. At 390px the run was squeezed to a hundred pixels and
+   "Lots for sale" broke into three lines stacked under each other. The run
+   takes a full row of its own under the brand and the words stay whole. */
+@media (max-width: 900px) {
+  [data-page="orders"] [style*="padding: 15px 44px"],
+  [data-page="portfolio"] [style*="padding: 15px 44px"] {
+    flex-wrap: wrap; padding: 10px 16px !important; gap: 8px 18px !important;
+  }
+  [data-page="orders"] [style*="gap: 26px; align-items: center; flex-grow: 1"],
+  [data-page="portfolio"] [style*="gap: 26px; align-items: center; flex-grow: 1"] {
+    flex-basis: 100%; order: 9; gap: 18px !important;
+  }
+  .nav, .navOn { white-space: nowrap; }
+  /* the reviewer's bar carried a sentence about the audit log beside the bell;
+     at 390px it stood in a column one word wide. The bell and avatar say who
+     is signed in; the sentence goes below 900px. */
+  [data-page="admin"] [data-bind="me.line"] { display: none; }
+}
+
+/* A five-column table at 390px is not a phone layout, and shrinking its
+   columns until every cell is one word wide was what happened. It keeps a
+   readable width and scrolls inside the block the table rule above makes of
+   it; the page itself does not move sideways. */
+@media (max-width: 700px) {
+  [data-page="orders"] table, [data-page="portfolio"] table { min-width: 720px; }
+  [data-page="orders"] [style*="padding: 24px 26px 8px"],
+  [data-page="portfolio"] [style*="padding: 24px 26px 8px"] { overflow-x: auto; }
+  /* the four flag counters wrap as a row of words, not four narrow columns */
+  [data-page="admin"] div:has(> [data-count]) { flex-wrap: wrap; gap: 6px 18px; }
+  [data-page="admin"] [data-count] { white-space: nowrap; }
+}

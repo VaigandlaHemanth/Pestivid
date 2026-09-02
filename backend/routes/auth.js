@@ -115,8 +115,8 @@ router.post('/register', async (req, res) => {
     if (!name || !email || !role || !password) {
         return res.status(400).json({ message: 'Please enter all required fields (name, email, role, password).' });
     }
-    if (password.length < 6) { // Minimum password length validation (matches schema)
-         return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+    if (password.length < 8) { // matches the schema and the create-account screen
+         return res.status(400).json({ message: 'Password must be at least 8 characters long.' });
     }
      // Validate role against enum
      if (!['farmer', 'buyer', 'investor'].includes(role)) {
@@ -280,9 +280,22 @@ router.post('/change-password', authenticateToken, async (req, res) => {
             message: 'Both currentPassword and newPassword are required.',
         });
     }
-    if (typeof newPassword !== 'string' || newPassword.length < 8) {
+    /* Eight, and eight in all three places.
+     *
+     * This comment used to argue for six: a farmer's credential WAS a six-number
+     * code, the setup-identity screen asked for exactly six digits, and a route
+     * demanding eight meant a farmer could create an account and then never
+     * change its code. That screen is retired and nothing else issues a
+     * six-digit code, so the schema (User.js, minlength 8) and registration
+     * (password.length < 8, above) both moved to eight and this route matches
+     * them. The comment did not move with them, which left the only explanation
+     * of this number arguing against the number itself.
+     *
+     * If a shorter farmer code ever comes back, all three change together. */
+    const MIN = 8;
+    if (typeof newPassword !== 'string' || newPassword.length < MIN) {
         return res.status(400).json({
-            message: 'The new password must be at least 8 characters.',
+            message: `The new password or code must be at least ${MIN} characters.`,
             code: 'password_too_short',
         });
     }

@@ -7,16 +7,16 @@
 // nothing behind it and "Ready to harvest" was a static claim printed on every
 // plot -- on the same screen that ends "Nobody has visited this field."
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, repeatRows } from '../bind.js';
+import { bind, repeatRows, showPoster, playsInline } from '../bind.js';
 import { whenShort, dateState, rupees } from '../api.js';
 import { appChrome } from '../chrome.js';
-import { goes, press } from '../wire.js';
+import { goes, press, acts } from '../wire.js';
 
 const ctx = requireUser('plot', ['farmer']);
 
 if (ctx) {
   const root = ctx.root;
-  appChrome(root, { back: 'plots', user: ctx.user });
+  appChrome(root, { back: 'home', user: ctx.user });
   press(root);
 
   load(root, async () => {
@@ -25,7 +25,21 @@ if (ctx) {
     const q = new URLSearchParams(location.search);
     const key = q.get('name');
     const all = await api.videos.mine(ctx.user._id || ctx.user.id);
-    const mine = key ? all.filter(v => (v.crop || v.location) === key) : all;
+
+    // Without ?name= this page has no plot. It used to fall back to `all` and
+    // present the farmer's whole library under the heading "4 videos on this
+    // plot" -- four different crops, called one field.
+    if (!key) {
+      // state() keeps the page header, and this header is a DRAWN specimen --
+      // "Canal plot / Two acres, potato, sown 12 June" -- so an honest empty
+      // state arrived under a plot that does not exist.
+      bind(root, { plot: { name: 'A plot', meta: 'None chosen yet',
+        stage: '', dates: '', videosLabel: '' } });
+      return state(root, 'empty', 'No plot chosen',
+        'This screen shows one plot at a time. Pick the one you want from your plots.',
+        { label: 'See my plots', go: 'home' });
+    }
+    const mine = all.filter(v => (v.crop || v.location) === key);
 
     if (!mine.length) {
       return state(root, 'empty', 'No videos on this plot',
@@ -37,7 +51,10 @@ if (ctx) {
     const written = mine.filter(v => v.anchored && v.blockHeight).length;
     bind(root, { plot: {
       name: key || first.crop || first.location || 'Plot',
-      meta: [first.location, first.crop].filter(Boolean).join(' · '),
+      // The name IS usually the crop, so listing it again under itself read
+      // "Lettuce / Sunny Acres · Lettuce".
+      meta: [first.location, first.crop].filter(Boolean)
+        .filter(v => v !== (key || first.crop)).join(' · ') || 'Where you told us it is',
       // What this page actually knows, instead of a season length nobody stores.
       stage: `${mine.length} video${mine.length === 1 ? '' : 's'} on this plot`,
       dates: `${written} of ${mine.length} date${mine.length === 1 ? '' : 's'} written`,
@@ -52,6 +69,8 @@ if (ctx) {
       return { v, when: whenShort(v.uploadTimestamp), short: s.short || s.text, kind: s.kind };
     }), (el, r) => {
       const m = el.querySelector('.m'); if (m) m.textContent = r.when;
+      // One real frame in the thumbnail, when the server could cut one.
+      showPoster(el.querySelector('.pthumb'), r.v);
       const dur = el.querySelector('.dur');
       // The chip shows a real duration or none. The artboard's 0:41 repeated on
       // every row is one invented number printed three times.
@@ -78,6 +97,19 @@ if (ctx) {
       // really is in a block.
       const tick = el.querySelector('svg[stroke="#006934"]');
       if (tick && r.kind !== 'proved') tick.remove();
+
+      /* The row plays the video, under itself.
+       *
+       * This list was the end of the road: no handler on the rows, and the
+       * buyer's "Watch it, check the date" link arrives HERE, so a person
+       * following it reached a list of dates and no way to see a field. The
+       * date and the picture belong on screen together -- that pair is the
+       * thing being checked -- so the player opens beneath the row rather
+       * than taking over the page. */
+      const player = playsInline(el, r.v);
+      if (player) {
+        acts(el, `Watch the video filed ${r.when}`, () => player.toggle());
+      }
     });
 
     // ---- the money on this plot --------------------------------------
@@ -86,7 +118,9 @@ if (ctx) {
     // reporting the harvest: nothing is paid to anybody until it happens.
     const projects = (await api.projects.mine(ctx.user._id || ctx.user.id).catch(() => [])) || [];
     const here = projects.find(p => p.title === key) || projects.find(p => !p.harvestReportedAt);
-    const money = root.querySelector('.card');
+    // .pcard, not .card: the shared laptop shell owns .railcard now and this
+    // board's own money card needed a name of its own.
+    const money = root.querySelector('.pcard');
 
     if (!here) {
       // No season is riding on this plot, so there is nothing to report and no
@@ -107,7 +141,7 @@ if (ctx) {
       const report = [...root.querySelectorAll('div')]
         .find(d => d.children.length === 0 && d.textContent.trim() === 'Report the harvest')?.parentElement;
       if (here.harvestReportedAt) report?.remove();
-      else goes(report, 'report-harvest', 'Report the harvest');
+      else goes(report, `report-harvest?project=${here._id}`, 'Report the harvest');
     }
 
     goes([...root.querySelectorAll('div')]

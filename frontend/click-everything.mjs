@@ -14,6 +14,7 @@ import { chromium } from 'playwright';
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { needs } from './_needs.mjs';
 
 const API = 'http://127.0.0.1:3001/api';
 const APP = 'http://127.0.0.1:3001/app';
@@ -21,8 +22,10 @@ const APPDIR = path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url
 
 const ROLE_OF = {
   landing: null, signin: null, signup: null, 'signin-farmer': null,
-  'setup-language': null, 'setup-identity': null,
-  invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor', 'thread-investor': 'investor',
+  setup: null,
+  invest: 'investor', portfolio: 'investor', 'confirm-investment': 'investor', // _needs.mjs resolves the FARMER's conversation, and an investor who is not
+  // a participant sees an empty thread -- which is why this page reported zero
+  // controls while its chips, its composer and its send arrow all worked.
   market: 'buyer', orders: 'buyer',
   admin: 'admin',
 };
@@ -34,11 +37,34 @@ const NO_CLICK = {
   record: 'takes the camera',
   sent: 'uploads to storage, which costs a file of the free allowance',
   signup: 'creates an account on every run',
-  'setup-identity': 'creates an account on every run',
-  'leaf-result': 'downloads 173 MB of model',
-  'leaf-refusal': 'downloads 173 MB of model',
+  setup: 'creates an account on every run',
+  'leaf-check': 'downloads 173 MB of model',
+  // payout was merged into report-harvest, so the irreversible send is here now
+  'report-harvest': 'Send these numbers reports a harvest, which is irreversible',
 };
 
+/* Some pages hold ONE control that writes and a dozen that do not, and skipping
+ * the whole page to avoid the one loses the twelve.
+ *
+ * This ran unrestricted over the market and the investment confirmation and did
+ * exactly what those screens are for: it bought things. All four seeded lots
+ * ended up sold, so the market page an owner opens now reads "No lots are for
+ * sale" -- the check that proves the page works is what emptied it. A harness
+ * that rewrites the demo it tests is not a passing check.
+ *
+ * Matched on the accessible label, which is the same string a person reads. Each
+ * one is still enumerated and still reported; it is only not pressed.
+ */
+const NO_PRESS = [
+  /^send this offer/i,           // market: buys the lot
+  /^send ₹|^send rs/i,           // confirm-investment: moves money
+  /^buy\b|^make an offer/i,
+  /^send these numbers/i,        // report-harvest, if it is ever un-skipped
+  /^ask for this money|^send the request/i,
+];
+
+// Five pages are ABOUT something and are blank without an id.
+const QUERY = await needs();
 const tokens = {};
 async function tokenFor(role) {
   if (!role) return null;
@@ -98,7 +124,7 @@ for (const slug of slugs) {
   };
 
   const page = await open();
-  await page.goto(`${APP}/${slug}.html`, { waitUntil: 'load' });
+  await page.goto(`${APP}/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
   await page.waitForTimeout(1400);
   const list = await page.evaluate(ENUMERATE);
   await page.close();
@@ -109,14 +135,20 @@ for (const slug of slugs) {
     continue;
   }
 
-  const dead = [], moved = [], broke = [];
+  const dead = [], moved = [], broke = [], held = [];
   for (let i = 0; i < list.length; i++) {
     const c = list[i];
     if (c.kind === 'field') continue;                 // fields are exercised by e2e-bind
+    // c.name, not c.label: ENUMERATE emits `name`, so matching on `label` tested
+    // undefined against every pattern and held nothing back at all.
+    if (NO_PRESS.some((re) => re.test((c.name || '').trim()))) {
+      held.push(c.name);                              // enumerated, reported, not pressed
+      continue;
+    }
     const p = await open();
     const errs = [];
     p.on('pageerror', e => errs.push(String(e).slice(0, 70)));
-    await p.goto(`${APP}/${slug}.html`, { waitUntil: 'load' });
+    await p.goto(`${APP}/${slug}.html${QUERY[slug] || ''}`, { waitUntil: 'load' });
     await p.waitForTimeout(1200);
     // A control that is already the current one is not dead when clicking it
     // changes nothing -- selecting the row you are already reading is meant to
@@ -154,7 +186,20 @@ for (const slug of slugs) {
       }, i);
     } catch { /* recorded below */ }
     await p.waitForTimeout(900);
-    const after = await p.evaluate(() => ({ url: location.pathname, html: document.body.innerHTML.length }));
+    // A control that navigates destroys the execution context, and reading the
+    // page afterwards threw and killed the whole run mid-sweep. A navigation is
+    // a RESULT here, not a failure, so wait for the new document and read that.
+    let after;
+    for (let t = 0; t < 3; t++) {
+      try {
+        after = await p.evaluate(() => ({ url: location.pathname, html: document.body.innerHTML.length }));
+        break;
+      } catch {
+        await p.waitForLoadState('load').catch(() => {});
+        await p.waitForTimeout(400);
+      }
+    }
+    if (!after) after = { url: before.url + '#gone', html: -1 };
     clicked++;
     if (errs.length) broke.push(`${c.name}: ${errs[0]}`);
     else if (after.url !== before.url) moved.push(`${c.name} -> ${after.url.split('/').pop()}`);
@@ -162,7 +207,9 @@ for (const slug of slugs) {
     await p.close();
   }
 
-  const line = [`${dead.length} dead`, `${moved.length} navigate`, broke.length ? `${broke.length} ERROR` : null]
+  const line = [`${dead.length} dead`, `${moved.length} navigate`,
+    held.length ? `${held.length} held back: ${held.join(', ')}` : null,
+    broke.length ? `${broke.length} ERROR` : null]
     .filter(Boolean).join(', ');
   console.log(`  ${slug.padEnd(20)} ${String(list.length).padStart(2)} controls  ${line}`);
   for (const d of dead) findings.push([slug, 'does nothing', d]);

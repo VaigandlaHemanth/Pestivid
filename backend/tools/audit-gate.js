@@ -40,6 +40,32 @@
  *   - a package name that appears there for the first time still fails, so
  *     "we accepted this package" cannot drift into "we accept anything under it".
  *
+ * THE SHARP OVERRIDE IN package.json IS THIS GATE WORKING.
+ *
+ * It turned red with no code change: GHSA-f88m-g3jw-g9cj was published against
+ * sharp < 0.35.0 (libvips CVE-2026-33327/33328/35590/35591), and
+ * @huggingface/transformers@3.7.5 asks for `sharp: ^0.34.1`, which cannot
+ * resolve to the fixed version. Two HIGH advisories, reachable outside
+ * opentimestamps, so the gate refused them -- correctly.
+ *
+ * The three ways out, and why the third was taken:
+ *   - accept sharp here too. No: it is not under opentimestamps, and widening
+ *     this list for the first inconvenient advisory is exactly the drift the
+ *     narrowness above exists to prevent.
+ *   - upgrade transformers. No: no published version moves off ^0.34 (4.2.0
+ *     still pins ^0.34.5), and the browser loads 3.7.5 from a CDN. The parity
+ *     test's whole premise is that both sides run the SAME version, so bumping
+ *     the server would quietly make it compare two different libraries.
+ *   - override sharp to ^0.35.4 under a transformers held at 3.7.5. Taken. The
+ *     advisory is gone because the installed copy is genuinely patched, not
+ *     because anything was excused, and test_feature_parity.mjs -- which is the
+ *     code that actually decodes images through sharp -- still agrees with the
+ *     browser to 4.5e-4 per view and 2.35% on the OOD score.
+ *
+ * transformers moved to devDependencies in the same change: only
+ * test_feature_parity.mjs imports it, so a production install was pulling sharp
+ * and libvips for a file CI runs and the server never loads.
+ *
  *     node tools/audit-gate.js
  */
 

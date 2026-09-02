@@ -4,6 +4,7 @@
 import { requireUser, api, load, state } from './_guard.js';
 import { oneByText, reason } from '../bind.js';
 import { asField, acts, press } from '../wire.js';
+import { plainText } from '../bind.js';
 
 const ctx = requireUser('ask', ['farmer', 'investor', 'buyer', 'admin']);
 // The board drew an example exchange so the bubbles could be judged. Keep the
@@ -21,7 +22,7 @@ const send = root.querySelector('[data-send]');
 // farmer who cannot read a bottle label had nothing to tap. It is not an
 // example, it is the standing fallback for every time this chat cannot answer,
 // so it is lifted out and kept above the composer where it is always reachable.
-const callPanel = root.querySelector('[data-call]')?.closest('div[style*="background: #e7e1db"]');
+const callPanel = root.querySelector('[data-call]')?.closest('[data-callpanel]');
 // the flex ROW that holds the field and the button, so the panel goes above it
 // as a sibling -- inserting into the row put it beside the input and squashed it
 const composerRow = root.querySelector('[data-send]')?.closest('div[style*="align-items: stretch"]');
@@ -29,8 +30,20 @@ const composerRow = root.querySelector('[data-send]')?.closest('div[style*="alig
 if (thread) {
   const bubbles = [...thread.querySelectorAll('.them, .me')];
   bubbles.slice(1).forEach(b => b.remove());
+  /* Before the first question there is one bubble in a column drawn for a
+   * whole conversation, and it sat at the top with four hundred pixels of
+   * nothing under it. A spacer at each end centres it instead, so the empty
+   * state reads as a conversation about to start rather than a hole -- which is
+   * what every chat does before its first message. The second spacer is
+   * removed the moment anything is said. */
+  const tail = document.createElement('div');
+  tail.setAttribute('data-spacer-end', '');
+  tail.style.flexGrow = '1';
+  thread.append(tail);
 }
-if (callPanel && composerRow?.parentElement) {
+// On the laptop board the panel is already in the rail, standing beside the
+// conversation instead of inside it, so there is nothing to lift.
+if (callPanel && !callPanel.closest('.rail') && composerRow?.parentElement) {
   callPanel.style.marginTop = '0';
   callPanel.style.marginBottom = '12px';
   composerRow.parentElement.insertBefore(callPanel, composerRow);
@@ -57,21 +70,58 @@ function bubble(kind, text, source) {
   el.style.transform = 'translateY(8px)';
   el.style.transition = 'opacity var(--t-press, 120ms) var(--e-smooth, ease),'
     + ' transform var(--t-snappy, 568ms) var(--e-snappy, ease)';
-  thread?.insertBefore(el, thread.querySelector('div[style*="flex-grow: 1"]'));
+  // The spacer is the FIRST child now, not the last: it pushes a short
+  // conversation down onto the composer and collapses once the transcript
+  // overflows. So a new bubble is appended, and inserting before the spacer
+  // would put every answer above the greeting.
+  // The opening line was centred while nothing had been said. Once something
+  // has, the transcript is a transcript: it grows from the composer upward.
+  thread?.querySelector('[data-spacer-end]')?.remove();
+  thread?.append(el);
   requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'none'; });
+  // The transcript scrolls now, so a new message can land below the fold. Keep
+  // the newest one in view -- and jump rather than glide when travel is off.
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.scrollIntoView({ block: 'end', behavior: still ? 'auto' : 'smooth' });
   return el;
 }
+
+/* Where the sentence came from -----------------------------------------------
+ * r.source is the PIPELINE name ('rag'), not a citation -- printing it put the
+ * word "rag" under an answer as though it were a document. A real citation only
+ * exists when the retrieval server was up and returned chunks, which carry a
+ * page number. When it did not, the answer is general knowledge and the screen
+ * has to say so rather than imply a document nobody quoted.
+ */
+function provenance(r) {
+  const hits = Array.isArray(r.retrieved) ? r.retrieved.filter(d => d && d.page != null) : [];
+  if (hits.length) {
+    const pages = [...new Set(hits.map(d => d.page))].slice(0, 3).join(', ');
+    return 'Government document, page ' + pages;
+  }
+  return 'General farming knowledge, not quoted from a document.';
+}
+
+// What has been said so far, so a follow-up question makes sense. The route
+// bounds it to the last eight turns; this keeps them in order.
+const said = [];
+
+// plainText is shared with the leaf checker; see app/bind.js.
+
 
 let asking = false;
 async function ask(text) {
   if (!text || asking) return;
   asking = true;
   bubble('me', text);
+  said.push({ role: 'user', content: text });
   const pending = bubble('them', 'Looking through the documents…');
   try {
-    const r = await api.ai.ask(text, []);
+    const r = await api.ai.ask(text, said.slice(0, -1));
     pending.remove();
-    bubble('them', r.answer || r.message || 'The documents do not cover that.', r.source || r.citation);
+    const answer = plainText(r.answer || r.message) || 'The documents do not cover that.';
+    said.push({ role: 'assistant', content: answer });
+    bubble('them', answer, provenance(r));
   } catch (err) {
     pending.remove();
     const [h, d] = reason(err);
@@ -82,12 +132,12 @@ async function ask(text) {
       // The board's own refusal panel already has this number as a tel: link.
       // Restating it as prose in a bubble made it dead in a second place, so
       // this scrolls to the live one instead of printing a copy.
-      const panel = root.querySelector('[data-call]')?.closest('div[style*="background: #e7e1db"]');
+      const panel = root.querySelector('[data-call]')?.closest('[data-callpanel]');
       if (panel) {
-        bubble('them', 'The Kisan Call Centre answers when we cannot. Their number is on this screen — tap it to call.');
+        bubble('them', 'The Kisan Call Centre answers when we cannot. Their number is on this screen, tap it to call.');
         panel.scrollIntoView({ block: 'center', behavior: 'smooth' });
       } else {
-        bubble('them', 'Kisan Call Centre — 1800 180 1551. Free, 6 am to 10 pm, and they speak Telugu.');
+        bubble('them', 'Kisan Call Centre, 1800 180 1551. Free, 6 am to 10 pm, and they speak Telugu.');
       }
     }
   } finally { asking = false; }

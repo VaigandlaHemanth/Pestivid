@@ -97,6 +97,32 @@ router.get('/:id/public', authenticateToken, async (req, res) => {
 // @route PUT /api/users/:id/profile
 // @desc Update the currently logged-in user's own profile
 // @access Private (Requires authentication. User must own the profile.)
+// @route PUT /api/users/me/notices
+// @desc  Switch the two broadcasts on or off for the signed-in account.
+// Body: { funding?: boolean, listing?: boolean }. Direct notices cannot be
+// switched off here: they are about this person's own money and messages.
+router.put('/me/notices', authenticateToken, async (req, res) => {
+    const set = {};
+    for (const k of ['funding', 'listing']) {
+        if (req.body[k] === undefined) continue;
+        if (typeof req.body[k] !== 'boolean') {
+            return res.status(400).json({ message: `${k} must be true or false.` });
+        }
+        set[`notices.${k}`] = req.body[k];
+    }
+    if (!Object.keys(set).length) {
+        return res.status(400).json({ message: 'Nothing to change: send funding and/or listing.' });
+    }
+    try {
+        const user = await User.findByIdAndUpdate(req.user._id, { $set: set }, { new: true });
+        if (!user) return res.status(404).json({ message: 'User not found.' });
+        res.json(user.getPublicProfile().notices);
+    } catch (err) {
+        console.error('PUT /api/users/me/notices error:', err);
+        res.status(500).json({ message: 'Server error saving the setting.' });
+    }
+});
+
 router.put('/:id/profile', authenticateToken, async (req, res) => {
     const userId = req.params.id;   // Get the user ID from the URL parameter
     const updates = req.body;       // Get the update data from the request body

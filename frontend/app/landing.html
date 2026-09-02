@@ -1,14 +1,31 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#ffffff">
-  <title>Pestivid</title>
+  <title>Pestivid — farm video evidence with a date nobody can move</title>
   <!-- generated from design/Main.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta name="description" content="Farmers film their crop. Pestivid fingerprints the file the moment it arrives and writes that fingerprint into Bitcoin, so the date cannot be changed later.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pestivid">
+  <meta property="og:title" content="Pestivid — farm video evidence with a date nobody can move">
+  <meta property="og:description" content="Farmers film their crop. Pestivid fingerprints the file the moment it arrives and writes that fingerprint into Bitcoin, so the date cannot be changed later.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Pestivid — farm video evidence with a date nobody can move">
+  <meta name="twitter:description" content="Farmers film their crop. Pestivid fingerprints the file the moment it arrives and writes that fingerprint into Bitcoin, so the date cannot be changed later.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","name":"Pestivid","description":"Farmers film their crop. Pestivid fingerprints the file the moment it arrives and writes that fingerprint into Bitcoin, so the date cannot be changed later."},{"@type":"WebSite","name":"Pestivid","inLanguage":"en-IN"}]}</script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700;800&amp;display=swap">
   <link rel="stylesheet" href="./tokens.css">
+  <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
+       at a design's own width. -->
+  <link rel="stylesheet" href="./loaders.css">
+  <link rel="stylesheet" href="./responsive.css">
   <style>
 
     body { margin: 0; }
@@ -101,7 +118,7 @@
     }
 
     /* Dark glass, for a readout that has to stay legible over a frame nobody
-       chose. Light .glass at 13% cannot carry #ded7d0 over an arbitrary photo;
+       chose. Light .glass at 13% cannot carry #ddd7d1 over an arbitrary photo;
        this can, and it does real work rather than decoration: mono text laid
        straight onto a video frame has whatever contrast that frame happens to
        give it, which is not a number anyone can promise.
@@ -129,8 +146,8 @@
     }
   </style>
 </head>
-<body data-page="landing" data-role="public" data-design-width="1320" data-design-height="3849">
-<div class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #ddd7d1; color: #1d1a17; box-sizing: border-box;">
+<body data-page="landing" data-role="public" data-design-width="1320" data-design-height="3917">
+<div data-surface="desk" data-w="1320" class="a" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;  background: #ddd7d1; color: #1d1a17; box-sizing: border-box;">
 
   <!-- ══ HERO over a field, with glass nav ══ -->
   <div style="min-height: 660px; position: relative; overflow: hidden;">
@@ -148,37 +165,37 @@
                   background: linear-gradient(180deg, rgba(169,160,148,0) 0%, rgba(169,160,148,.55) 62%, rgba(120,112,101,.75) 100%);"></div>
       <div style="position: absolute; left: 0; right: 0; top: 34%; height: 1px; background: rgba(154,145,136,.5);"></div>
       <div style="position: absolute; left: -12%; right: -12%; top: 35%; height: 14%;
-                  background: repeating-linear-gradient(177deg, #4d463e 0 5px, #3a352f 5px 11px);
+                  background: repeating-linear-gradient(177deg, #4d463e 0 5px, #37322d 5px 11px);
                   mask-image: linear-gradient(180deg, transparent 0%, #000 34%);
                   -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 34%);"></div>
       <div style="position: absolute; left: -18%; right: -18%; top: 49%; height: 20%;
-                  background: repeating-linear-gradient(178.5deg, #574f45 0 11px, #3b362f 11px 24px);"></div>
+                  background: repeating-linear-gradient(178.5deg, #574f45 0 11px, #37322d 11px 24px);"></div>
       <div style="position: absolute; left: -26%; right: -26%; top: 69%; bottom: 0;
                   background: repeating-linear-gradient(180.5deg, #625a4e 0 24px, #3d3831 24px 52px);"></div>
       <!-- a hedge line, so the horizon is not a ruler -->
       <div style="position: absolute; left: 0; right: 0; top: 30.5%; height: 4.5%;
-                  background: repeating-linear-gradient(87deg, #2b2823 0 34px, #3a3530 34px 71px);"></div>
+                  background: repeating-linear-gradient(87deg, #2b2823 0 34px, #37322d 34px 71px);"></div>
     <!-- The wash used to cover the whole frame, which flattened the rows into
          grey mush. A scrim only where the text sits keeps the headline at
          contrast and lets the field read on the right. -->
-    <div style="position: absolute; inset: 0; background: linear-gradient(100deg, rgba(24,21,18,.88) 0%, rgba(24,21,18,.74) 40%, rgba(24,21,18,.26) 70%, rgba(24,21,18,.14) 100%);"></div><div style="position: absolute; inset: 22px; border: 1px solid rgba(246,243,239,.16);"></div><div data-bind="evidence.meta" data-readout="" class="gplate" style="position: absolute; right: 40px; bottom: 34px; padding: 9px 12px; max-width: 236px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.9; color: #ded7d0; text-align: right;">VID_20260818_064410_IST.mp4<br>0:41 · 1080×1920 · 30fps<br>sha256 3f9c2a1e…d21b<br>block 881,204 · 18 Aug 2026</div></div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(100deg, rgba(24,21,18,.88) 0%, rgba(24,21,18,.74) 40%, rgba(24,21,18,.26) 70%, rgba(24,21,18,.14) 100%);"></div><div style="position: absolute; inset: 22px; border: 1px solid rgba(246,243,239,.16);"></div><div data-bind="evidence.meta" data-readout="" class="gplate" style="position: absolute; right: 40px; bottom: 34px; padding: 9px 12px; max-width: 236px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; font-size: 11px; line-height: 1.9; color: #ddd7d1; text-align: right;">VID_20260818_064410_IST.mp4 <br>0:41 · 1080×1920 · 30fps <br>sha256 3f9c2a1e…d21b <br>block 881,204 · 18 Aug 2026</div></div>
 
     <!-- glass nav -->
     <div class="glass e1" style="position: absolute; left: 0; right: 0; top: 0; border-left: none; border-right: none; border-top: none; padding: 0 44px; min-height: 66px; display: flex; align-items: center; justify-content: space-between;">
-      <div class="ots" style="font-size: 22px; font-weight: 700; letter-spacing: -0.028em; color: #fff;">Pestivid</div>
+      <div class="ots" style="font-size: 22px; font-weight: 700; letter-spacing: -0.028em; color: #fff; min-height: 44px; display: flex; align-items: center;">Pestivid</div>
       <div style="display: flex; align-items: center; gap: 26px;">
         <div class="ots" style="font-size: 15px; color: rgba(255,255,255,.94);">How it works</div>
         <div class="ots" style="font-size: 15px; color: rgba(255,255,255,.94);">For farmers</div>
         <div class="ots" style="font-size: 15px; color: rgba(255,255,255,.94);">For investors</div>
         <div style="background: #fff; padding: 9px 18px;">
-          <div style="font-size: 15px; font-weight: 600; color: #1d1a17;">Sign in</div>
+          <div style="font-size: 15px; font-weight: 600; color: #1d1a17; min-height: 44px; min-width: 44px; display: flex; align-items: center; justify-content: center;">Sign in</div>
         </div>
       </div>
     </div>
 
     <div style="position: relative; margin: 146px 0 0 72px; width: 760px;">
       <h1 class="e2 ots" style="margin: 0; font-size: 62px; font-weight: 800; letter-spacing: -0.038em; line-height: 1.02; color: #fff;">
-        A field you can see.<br>A date nobody can move.
+        A field you can see. <br>A date nobody can move.
       </h1>
       <p class="e3 ots" style="font-size: 19.5px; line-height: 1.5; margin: 22px 0 0; max-width: 530px; color: rgba(255,255,255,.96);">
         Farmers film their crop. We fingerprint the file the moment it arrives and write that fingerprint
@@ -186,11 +203,11 @@
         the season and are paid from the harvest.
       </p>
       <div class="e4" style="display: flex; gap: 12px; margin-top: 30px;">
-        <div style="background: #1d1a17; padding: 16px 28px;" class="lift2 tap">
-          <div style="font-size: 16.5px; font-weight: 600; color: #fff;">I farm, get funded</div>
+        <div style="background: #ffffff; padding: 16px 28px;" class="lift2 tap">
+          <div style="font-size: 16.5px; font-weight: 600; color: #1d1a17; min-height: 44px; display: flex; align-items: center; justify-content: center;">I farm, get funded</div>
         </div>
         <div class="glass tap" style="padding: 16px 28px;">
-          <div class="ots" style="font-size: 16.5px; font-weight: 600; color: #fff;">I want to invest</div>
+          <div class="ots" style="font-size: 16.5px; font-weight: 600; color: #fff; min-height: 44px; display: flex; align-items: center; justify-content: center;">I want to invest</div>
         </div>
       </div>
     </div>
@@ -228,7 +245,7 @@
     <div>
       <div style="font-size: 15px; color: #605a53;">What an investor actually reads</div>
       <h2 style="margin: 8px 0 0; font-size: 40px; font-weight: 700; letter-spacing: -0.032em; line-height: 1.06;">
-        We separate what is proved<br>from what you are being told.
+        We separate what is proved <br>from what you are being told.
       </h2>
       <p style="font-size: 17.5px; line-height: 1.55; margin: 18px 0 0; max-width: 52ch; color: #4a443d;">
         Most platforms give you a green tick and leave you to assume what it covers. A timestamp proves a
@@ -244,9 +261,18 @@
           </div>
         </div>
         <div style="display: flex; gap: 13px; align-items: flex-start;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c4a12" stroke-width="1.9" style="flex-shrink: 0; margin-top: 2px;"><path d="M4 5h16v11H8l-4 4z"></path></svg>
           <div>
-            <div style="font-size: 16.5px; font-weight: 700; color: #01579b;">The farmer’s word, labelled as such</div>
+<!-- THE LIMIT TIER IS NOT A CONTROL.
+           #01579b is --link, the one colour in this palette that means "press
+           this". Four places were using it for the OPPOSITE of --proved -- the
+           farmer's unchecked word, and the "this does not" half of every
+           proves/does-not pair -- because the palette had a colour for a fact
+           anybody can check and the boards had never named one for a limit.
+           There is one: --attention-ink on --attention-fill, which this product
+           already uses for "take care". A caveat in the colour of a button reads
+           as something to click, and none of these can be clicked. -->
+      <div style="font-size: 16.5px; font-weight: 700; color: #7c4a12;">The farmer’s word, labelled as such</div>
             <div style="font-size: 15.5px; line-height: 1.5; color: #4a443d; margin-top: 2px;">Acreage, crop, sowing date, and the location their phone reported.</div>
           </div>
         </div>
@@ -258,10 +284,21 @@
         <div style="padding: 16px 22px; display: flex; justify-content: space-between; align-items: baseline; box-shadow: inset 0 -1px 0 #c3bcb6;">
           <div style="font-size: 15px; font-weight: 700;">Record of evidence</div>
           <div style="font-size: 12.5px; color: #605a53;">an example, filled in</div>
-          <div class="num" style="font-size: 13px; color: #4a443d;">no. 0000418</div>
         </div>
 
+        <!-- A frame of the video the record is about. It was an empty dark
+             rectangle, which on a card labelled "an example, filled in" read as
+             an image that had failed to load. Same technique as the hero: three
+             bands of decreasing frequency read as a field running to a horizon
+             without pretending to be a photograph. -->
         <div style="height: 200px; background: #37322d; position: relative; overflow: hidden;">
+          <div style="position: absolute; left: 0; right: 0; top: 0; height: 38%;
+                      background: linear-gradient(180deg, #8d857a 0%, #9c9388 60%, #a9a094 100%);"></div>
+          <div style="position: absolute; left: 0; right: 0; top: 36%; height: 1px; background: rgba(154,145,136,.5);"></div>
+          <div style="position: absolute; left: -14%; right: -14%; top: 37%; height: 22%;
+                      background: repeating-linear-gradient(177deg, #4d463e 0 4px, #37322d 4px 9px);"></div>
+          <div style="position: absolute; left: -22%; right: -22%; top: 58%; bottom: 0;
+                      background: repeating-linear-gradient(179deg, #625a4e 0 14px, #3d3831 14px 31px);"></div>
         </div>
 
         <div style="padding: 18px 22px;">
@@ -301,12 +338,16 @@
       </div>
 
       <!-- the stamp: the one animated moment on the page -->
-      <div class="stamp" style="position: absolute; right: -22px; top: 232px; width: 132px; height: 132px; border-radius: 50%; border: 3px solid #01579b; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,253,249,.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); transform: rotate(-5.5deg);">
-        <div style="font-size: 12px; font-weight: 700; color: #01579b;">DATE PROVED</div>
-        <div class="num" style="font-size: 19px; font-weight: 800; color: #01579b; letter-spacing: -0.01em; margin-top: 2px;">18 AUG</div>
-        <div class="num" style="font-size: 12px; font-weight: 600; color: #01579b;">2026</div>
-        <div style="width: 62px; height: 2px; background: #01579b; margin-top: 6px;"></div>
-        <div style="font-size: 11px; font-weight: 600; color: #01579b; margin-top: 4px;">NOT WHOSE FIELD</div>
+      <!-- The stamp says DATE PROVED, so it wears --proved. It was in the link
+           colour, which meant the one graphic on the page making a checkable
+           claim was painted the colour of a button. "Not whose field" under it
+           is the caveat that keeps the claim honest. -->
+      <div class="stamp" style="position: absolute; right: -22px; top: 96px; width: 132px; height: 132px; border-radius: 50%; border: 3px solid #006934; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,253,249,.9); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); transform: rotate(-5.5deg);">
+        <div style="font-size: 12px; font-weight: 700; color: #006934;">DATE PROVED</div>
+        <div class="num" style="font-size: 19px; font-weight: 800; color: #006934; letter-spacing: -0.01em; margin-top: 2px;">18 AUG</div>
+        <div class="num" style="font-size: 12px; font-weight: 600; color: #006934;">2026</div>
+        <div style="width: 62px; height: 2px; background: #006934; margin-top: 6px;"></div>
+        <div style="font-size: 11px; font-weight: 600; color: #006934; margin-top: 4px;">Not whose field</div>
       </div>
     </div>
   </div>
@@ -336,7 +377,7 @@
 
       <div>
         <div style="display: contents;">
-          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: center; padding: 26px 0;">
+          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: baseline; padding: 26px 0;">
             <div class="num" style="font-size: 40px; font-weight: 700; line-height: .9; color: #605a53;">01</div>
             <div>
               <h3 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">The farmer films the plot</h3>
@@ -347,13 +388,13 @@
                 <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">That this exact file reached us unaltered, and when it did.</div>
               </div>
               <div style="margin-top: 10px; background: #f6f3ef; padding: 16px 18px;">
-                <div style="font-size: 14.5px; font-weight: 700; color: #01579b;">This does not</div>
+                <div style="font-size: 14.5px; font-weight: 700; color: #7c4a12;">This does not</div>
                 <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">Where the camera was standing. A phone’s reported location can be faked in one tap, so we label it as claimed.</div>
               </div>
             </div>
           </div>
         
-          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: center; padding: 26px 0;">
+          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: baseline; padding: 26px 0;">
             <div class="num" style="font-size: 40px; font-weight: 700; line-height: .9; color: #605a53;">02</div>
             <div>
               <h3 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">We fingerprint it and anchor the date</h3>
@@ -364,13 +405,13 @@
                 <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">That the date cannot be moved later. Not by the farmer, and not by us either.</div>
               </div>
               <div style="margin-top: 10px; background: #f6f3ef; padding: 16px 18px;">
-                <div style="font-size: 14.5px; font-weight: 700; color: #01579b;">This does not</div>
+                <div style="font-size: 14.5px; font-weight: 700; color: #7c4a12;">This does not</div>
                 <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">Anything about what the video contains. A timestamp is a clock, not a witness.</div>
               </div>
             </div>
           </div>
         
-          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: center; padding: 26px 0;">
+          <div class="step" style="min-height: 42vh; display: grid; grid-template-columns: 68px 1fr; gap: 26px; align-items: baseline; padding: 26px 0;">
             <div class="num" style="font-size: 40px; font-weight: 700; line-height: .9; color: #605a53;">03</div>
             <div>
               <h3 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.024em; line-height: 1.14;">Investors fund, the harvest pays</h3>
@@ -381,7 +422,7 @@
                 <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">That every payout traces to one reported harvest and one percentage agreed up front.</div>
               </div>
               <div style="margin-top: 10px; background: #f6f3ef; padding: 16px 18px;">
-                <div style="font-size: 14.5px; font-weight: 700; color: #01579b;">This does not</div>
+                <div style="font-size: 14.5px; font-weight: 700; color: #7c4a12;">This does not</div>
                 <div style="font-size: 15.5px; line-height: 1.5; margin-top: 3px; color: #4a443d;">That the harvest figures are true. They are the farmer’s report, which is why investors see the reported numbers and not just the result.</div>
               </div>
             </div>
@@ -397,19 +438,19 @@
       <div style="font-size: 15px; color: #605a53;">If you farm</div>
       <h3 style="margin: 7px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.026em; line-height: 1.1;">Your phone is the paperwork</h3>
       <p style="font-size: 17px; line-height: 1.55; margin: 13px 0 0; color: #4a443d;">
-        Film the plot and it saves to the handset immediately — no signal needed. It sends itself when
+        Film the plot and it saves to the handset immediately, no signal needed. It sends itself when
         you have a bar, and you always see which videos are still only on the phone.
       </p>
       <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
         <div style="display: contents;">
           <div style="display: flex; gap: 11px; align-items: flex-start;">
             <div style="width: 7px; height: 7px; background: #01579b; margin-top: 9px; flex-shrink: 0;"></div>
-            <div style="font-size: 16.5px; line-height: 1.45;">Works with no signal. It queues and sends itself.</div>
+            <div style="font-size: 16.5px; line-height: 1.45;">Works with no signal. The clip stays on your phone until you send it.</div>
           </div>
         
           <div style="display: flex; gap: 11px; align-items: flex-start;">
             <div style="width: 7px; height: 7px; background: #01579b; margin-top: 9px; flex-shrink: 0;"></div>
-            <div style="font-size: 16.5px; line-height: 1.45;">Every screen in your language, and read aloud if you want.</div>
+            <div style="font-size: 16.5px; line-height: 1.45;">Built for six Indian languages. The translations are still being written.</div>
           </div>
         
           <div style="display: flex; gap: 11px; align-items: flex-start;">
@@ -437,7 +478,7 @@
       <div style="font-size: 15px; color: #605a53;">If you invest</div>
       <h3 style="margin: 7px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.026em; line-height: 1.1;">Read it, then decide</h3>
       <p style="font-size: 17px; line-height: 1.55; margin: 13px 0 0; color: #4a443d;">
-        You are paid your principal plus your agreed share of the profit that actually materialised —
+        You are paid your principal plus your agreed share of the profit that actually materialised,
         never a rate we promised you in advance.
       </p>
 
@@ -463,16 +504,16 @@
   <!-- ══ footer ══ -->
   <div style="padding: 36px 72px 46px; background: #1d1a17; display: flex; justify-content: space-between; align-items: flex-start;">
     <div>
-      <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #ddd7d1;">Pestivid</div>
-      <div style="font-size: 14px; line-height: 1.7; margin-top: 8px; color: #ded7d0;">
+      <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #ddd7d1; min-height: 44px; display: flex; align-items: center;">Pestivid</div>
+      <div style="font-size: 14px; line-height: 1.7; margin-top: 8px; color: #ddd7d1;">
         Crop funding on evidence you can check.<br>
         Nothing on this site is agronomic or financial advice.
       </div>
     </div>
-    <div style="font-size: 13.5px; line-height: 1.8; text-align: right; color: #ded7d0;">
-      [PLACEHOLDER: registered entity]<br>
-      [PLACEHOLDER: SEBI / regulatory status]<br>
-      [PLACEHOLDER: grievance officer and contact]
+    <div style="font-size: 13.5px; line-height: 1.8; text-align: right; max-width: 46ch; color: #ddd7d1;">
+      No company is registered behind this yet, and it holds no SEBI registration.<br>
+      Money you put in is a private agreement with a farmer, not a regulated product.<br>
+      There is nobody to escalate to, which is itself a reason to commit little.
     </div>
   </div>
 

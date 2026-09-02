@@ -16,10 +16,10 @@
     .lift1 { box-shadow: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05); }
     .lbl { font-size: 13.5px; color: #605a53; letter-spacing: .01em; }
     .nav { font-size: 15.5px; color: #4a443d; display: inline-flex; align-items: center; min-height: 34px; }
-    .navOn { font-size: 15.5px; font-weight: 600; color: #1d1a17; box-shadow: inset 0 -2px 0 #012169; display: inline-flex; align-items: center; min-height: 34px; }
+    .navOn { font-size: 15.5px; font-weight: 500; color: #1d1a17; box-shadow: inset 0 -2px 0 #012169; display: inline-flex; align-items: center; min-height: 34px; }
     /* a table, deliberately. four seasons in four different states cannot be
        compared in cards — the eye needs one column per question */
-    .th { font-size: 13px; color: #605a53; text-transform: uppercase; letter-spacing: .05em;
+    .th { font-size: 13px; color: #605a53; letter-spacing: .05em;
           padding: 0 0 9px; text-align: left; font-weight: 600; }
     .td { padding: 17px 0; vertical-align: top; box-shadow: inset 0 1px 0 #e4e9ee; }
     .pill { display: inline-block; font-size: 13px; font-weight: 600; padding: 4px 9px; }
@@ -30,13 +30,17 @@
 
   <!-- same bar as the browse page, Portfolio now the live tab -->
   <div style="background: #fff; padding: 15px 44px; display: flex; align-items: center; gap: 34px; box-shadow: inset 0 -1px 0 #e0e6ec;">
-    <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
+    <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.022em; min-height: 44px; display: flex; align-items: center;">Pestivid</div>
     <div style="display: flex; gap: 26px; align-items: center; flex-grow: 1;">
       <div class="nav">Browse</div>
       <div class="navOn">Portfolio</div>
-      <div class="nav">Messages</div>
+      <div class="nav">Chat</div>
     </div>
-    <div data-readout data-bind="me.initial" style="width: 34px; height: 34px; background: #e6ebf0; border-radius: 17px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600;">C</div>
+    <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+      <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+    </div>
+    <div data-chrome="you" data-readout data-bind="me.initial" style="width: 34px; height: 34px; background: #e6ebf0; border-radius: 17px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600;">C</div>
   </div>
 
   <div style="padding: 32px 44px 44px;">
@@ -80,9 +84,9 @@
           <th class="th" style="width: 16%; text-align: right;">Back to you</th>
         </tr>
 
-        <tr>
+        <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Canal plot &mdash; potato</div>
+            <div style="font-size: 16.5px; font-weight: 600;">Canal plot, potato</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 6px;">3 dated videos</div>
           </td>
@@ -97,9 +101,9 @@
           <td class="td" style="text-align: right; font-size: 15px; color: #605a53;">Not yet</td>
         </tr>
 
-        <tr>
+        <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">North plot &mdash; potato</div>
+            <div style="font-size: 16.5px; font-weight: 600;">North plot, potato</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 6px;">3 dated videos</div>
           </td>
@@ -115,9 +119,9 @@
           <td class="td" style="text-align: right; font-size: 15px; color: #605a53;">Not yet</td>
         </tr>
 
-        <tr>
+        <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Red soil plot &mdash; groundnut</div>
+            <div style="font-size: 16.5px; font-weight: 600;">Red soil plot, groundnut</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Bhaskar Naidu &middot; Anantapur</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 6px;">3 dated videos on the record</div>
           </td>
@@ -136,9 +140,9 @@
         </tr>
 
         <!-- the row most platforms would quietly drop -->
-        <tr>
+        <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Tank bed plot &mdash; paddy</div>
+            <div style="font-size: 16.5px; font-weight: 600;">Tank bed plot, paddy</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Lakshmi Devi &middot; Nellore</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 6px;">3 dated videos on the record</div>
           </td>
@@ -160,9 +164,9 @@
 
     <div style="display: flex; gap: 20px; margin-top: 20px; align-items: stretch;">
       <div style="flex-grow: 1; background: #fff; padding: 20px 22px;" class="lift1">
-        <div style="font-size: 16px; font-weight: 700;">Why a failed season stays on this page</div>
+        <div data-bind="fail.head" style="font-size: 16px; font-weight: 700;">Why a failed season stays on this page</div>
         <div style="font-size: 14.5px; line-height: 1.55; margin-top: 5px; color: #4a443d; max-width: 92ch;">
-          It stays here permanently, in the same table and the same type size as the one that paid.
+          <span data-bind="fail.lead">It stays here permanently, in the same table and the same type size as the one that paid.</span>
           A page that shows you only the seasons that worked is not a record of what you did, it is
           an advertisement.
         </div>

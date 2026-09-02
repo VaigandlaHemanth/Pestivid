@@ -12,8 +12,8 @@
 // Every block now renders from data or is removed, and the board names its own
 // parts so the code addresses them by name rather than by position.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind, rows, slot, dropSection } from '../bind.js';
-import { rupees } from '../api.js';
+import { showPoster, bind, rows, slot, dropSection } from '../bind.js';
+import { rupees, whenShort, rupeeRange } from '../api.js';
 import { appChrome } from '../chrome.js';
 import { goes, press } from '../wire.js';
 
@@ -37,17 +37,31 @@ if (ctx) {
     const settled = all.find(p => p.harvestReportedAt);
 
     // ---- the one thing that needs them today -------------------------
-    bind(root, {
-      due: {
-        headline: due ? `${due.title} is ready to harvest` : 'Nothing needs you today',
-        line: due
-          ? 'Your investors are waiting to be paid. Tell us what you sold it for and what it cost you to grow.'
-          : 'Nobody is waiting on you.',
-      },
-    });
-    const report = [...root.querySelectorAll('div')]
-      .find(d => d.textContent.trim() === 'Report the harvest')?.closest('div[style*="background: #fff"]');
-    if (due) goes(report, 'report-harvest', 'Report the harvest');
+    /* No season waiting means no notice. It is drawn on --attention-fill, which
+     * this palette keeps for "take care", and a box in that colour saying
+     * "Nothing needs you today" is a warning about nothing -- the surest way to
+     * teach somebody to stop reading the warnings. The row simply is not there. */
+    const band = root.querySelector('[data-todoband]');
+    if (!due) band?.remove();
+    else {
+      bind(root, {
+        due: {
+          headline: `${due.title} is ready to harvest`,
+          // Shorter than the banner's line was: this is a notice beside a button,
+          // not a hero paragraph. What it costs to get wrong -- that it can only
+          // be done once -- stays.
+          line: 'Your investors are waiting to be paid. You can only do this once.',
+        },
+      });
+    }
+    // Found by its mark. This searched for a div whose inline style contained
+    // `background: #fff`, and the button stopped being white the moment the two
+    // "Report the harvest" buttons were made one button -- so it silently found
+    // nothing, and neither the wiring nor the removal happened.
+    const report = root.querySelector('[data-report]')
+      || [...root.querySelectorAll('div')]
+        .find(d => d.textContent.trim() === 'Report the harvest')?.parentElement;
+    if (due) goes(report, `report-harvest?project=${due._id}`, 'Report the harvest');
     else report?.remove();
 
     // ---- money coming in ---------------------------------------------
@@ -67,8 +81,17 @@ if (ctx) {
           // A share is a real term of the request. Shown when the request
           // states one, removed when it does not -- the artboard's "they keep
           // 60%" was sitting on a row that also said nothing was being raised.
-          share: p.investorShare != null ? `they keep ${p.investorShare}%` : null,
-          pct: Math.max(2, Math.min(100, Math.round((got / (p.amount || 1)) * 100))),
+          // "they keep 20%" on the farmer's OWN money page: the row is a season
+          // title, an amount and a share, and there is no "they" anywhere in it
+          // to point at. On the one screen about who gets paid what, the pronoun
+          // has to name somebody.
+          share: p.investorShare != null ? `investors keep ${p.investorShare}%` : null,
+          // The 2% floor exists so a tiny amount is still visible. It must not
+          // apply to nothing: a blue nub on a season with zero raised claims
+          // money arrived. Zero is drawn as zero.
+          pct: got > 0
+            ? Math.max(2, Math.min(100, Math.round((got / (p.amount || 1)) * 100)))
+            : 0,
           full,
         };
       }), (el, row) => {
@@ -89,18 +112,40 @@ if (ctx) {
     if (!lots.length) {
       dropSection(root, 'sell', 'sell');
     } else {
+      /* THE HEADING HAS TO SURVIVE THE DATA UNDER IT.
+       *
+       * "Produce you are selling" is drawn once and was never rebound, so a
+       * farmer with four lots of which three had already sold read a heading
+       * saying all four were on sale. Each row does say "Sold", which makes the
+       * heading the only untrue line in the section -- and it is the line in the
+       * largest type. */
+      const onSale = lots.filter(l => String(l.status || '') !== 'sold').length;
+      bind(root, { sell: { title:
+        onSale === lots.length ? 'Produce you are selling'
+          : onSale === 0 ? 'Produce you have sold'
+          : `Produce you listed · ${onSale} still for sale` } });
       rows(root, 'sell', lots.map(l => ({
         crop: l.crop || l.title || 'Lot',
-        price: l.pricePerQuintal != null ? rupees(l.pricePerQuintal) : null,
-        per: l.pricePerQuintal != null ? 'per quintal' : null,
-        qty: l.quantityQuintal != null ? `${l.quantityQuintal} quintal ready` : null,
+        // A Listing carries minPrice and maxPrice for the whole lot. It has no
+        // pricePerQuintal and no quantityQuintal -- the quantity field is
+        // commented out in the model -- so every one of these slots was read as
+        // null and REMOVED, and the rows showed a crop name and nothing else.
+        price: l.minPrice != null && l.maxPrice != null
+          ? rupeeRange(l.minPrice, l.maxPrice)
+          : (l.minPrice != null ? rupees(l.minPrice) : null),
+        per: l.minPrice != null ? 'for the whole lot' : null,
+        qty: l.status === 'sold' ? 'Sold' : (l.createdAt ? `Listed ${whenShort(l.createdAt)}` : null),
         // Nobody has asked is a fact; "2 buyers have asked" because the artboard
         // said so is the same kind of lie as inventing a hash.
         asked: l.enquiryCount > 0
           ? `${l.enquiryCount} buyer${l.enquiryCount === 1 ? ' has' : 's have'} asked about this`
           : null,
-      })), (el, row) => {
+      })), (el, row, i) => {
         if (row.asked) goes(slot(el, 'asked'), 'messages', 'Buyers who asked about this lot');
+        // The 62px square beside each lot was drawn to hold a frame of the video
+        // the lot was listed with, and held a flat fill instead. The listings
+        // route carries the frame now, cut server-side from the stored object.
+        showPoster(el.querySelector('[data-lotthumb]'), lots[i]);
       });
     }
 
@@ -143,8 +188,17 @@ if (ctx) {
     if (!all.length && !lots.length) {
       state(root, 'empty', 'No money has moved yet',
         'When you raise for a season or sell a lot, every figure lands on this page.',
-        { label: 'Ask for money', go: 'ask-money-video' });
+        { label: 'Ask for money', go: 'ask-money' });
     }
+    // With no settled season the rail is empty, and a 372px column of nothing
+    // beside the work is worse than no column. The main takes the width.
+    const grid = root.querySelector('div[style*="grid-template-columns: 1fr 372px"]');
+    const rail = grid?.lastElementChild;
+    if (grid && rail && !rail.textContent.trim()) {
+      rail.remove();
+      grid.style.gridTemplateColumns = 'minmax(0, 1fr)';
+    }
+
     press(root);
   });
 }

@@ -1,5 +1,5 @@
 import { requireUser, api, load, state } from './_guard.js';
-import { repeat, bind } from '../bind.js';
+import { repeat, bind, playsInline, showPoster } from '../bind.js';
 import { rupees } from '../api.js';
 import { promote, goes, press } from '../wire.js';
 
@@ -23,12 +23,15 @@ if (ctx) load(ctx.root, async () => {
 
   repeat(list, open.map(p => ({
     title: p.title,
-    meta: [p.acres && `${p.acres} acres`, p.method, p.timeline && `${p.timeline} months`].filter(Boolean).join(' · '),
+    // One dot, not two: the size and the method are one fact about the land,
+    // the length is a separate one.
+    meta: [[p.acres && `${p.acres} acre${p.acres === 1 ? '' : 's'}`, p.method].filter(Boolean).join(', '),
+           p.timeline && `${p.timeline} month${p.timeline === 1 ? '' : 's'}`].filter(Boolean).join(' · '),
     raised: rupees(p.fundedAmount || 0),
     goal: `of ${rupees(p.amount)}`,
     pct: Math.min(100, Math.round(100 * (p.fundedAmount || 0) / (p.amount || 1))) + '%',
   })), (el, row) => {
-    const bar = el.querySelector('div[style*="background: #01579b"]');
+    const bar = el.querySelector('[data-bar]');
     if (bar) bar.style.width = row.pct;
   });
 
@@ -71,36 +74,83 @@ if (ctx) load(ctx.root, async () => {
 
     // The evidence block only claims what the video record actually says. If a
     // date has not landed in a block yet, it says so instead of printing one.
+    // GET /videos/:cid/provenance answers { uploadedAt, integrity: { sha256 } }
+    // and carries NO anchor information; the block lives on
+    // GET /videos/:cid/anchor as { anchored, blockHeight }. This file read
+    // video.uploadTimestamp, video.videoFileHash, video.anchored and
+    // video.blockHeight -- none of which that response has -- so the evidence
+    // chain printed "not recorded" three times and "No fingerprint on the
+    // record" on the one panel this whole product exists to show, while the
+    // hash sat in the response it had just fetched.
     let video = null;
-    try { video = p.cid ? await api.videos.provenance(p.cid) : null; } catch { /* stated below */ }
-    const anchored = video?.anchored && video?.blockHeight;
+    let anchor = null;
+    if (p.cid) {
+      [video, anchor] = await Promise.all([
+        api.videos.provenance(p.cid).catch(() => null),
+        api.videos.anchor(p.cid).catch(() => null),
+      ]);
+    }
+    /* The plate plays the file it is a plate for.
+     *
+     * 300px of dark with a play triangle drawn on it, a duration and a scrub bar
+     * -- and nothing behind any of it. On the page whose own words are "the video
+     * is the only thing here an investor can verify without trusting you", a play
+     * button that does nothing is worse than no play button: it offers the check
+     * and then refuses it. The gateway address comes from the provenance route,
+     * which is the same public answer that carries the fingerprint. */
+    const plate = ctx.root.querySelector('[data-lotplate]');
+    if (plate) {
+      // show() runs again on every row click, so the handler is assigned rather
+      // than added -- addEventListener would stack one per click.
+      plate.onclick = null;
+      /* The frame, before anything is pressed.
+       *
+       * The plate had a play mark and a scrub strip drawn over 300px of flat
+       * dark, and pressing it fetched the file -- but an investor scanning the
+       * page saw an empty rectangle where the evidence is. The poster is one
+       * frame cut server-side from the object the hash was computed from, so it
+       * is the same file, not a picture somebody sent us. */
+      showPoster(plate, video);
+      if (video?.gateway) {
+        const player = playsInline(plate, { gateway: video.gateway }, { into: plate });
+        // promote() for the name and the role, onclick for the handler. acts()
+        // would do both -- and its addEventListener would stack a handler per
+        // row click, so one press would toggle the player open and shut again.
+        promote(plate, 'Play this video and check its date');
+        plate.onclick = () => player.toggle();
+      } else {
+        plate.removeAttribute('data-act');
+      }
+    }
+
+    const sha = video?.integrity?.sha256 || null;
+    const shortSha = sha ? `sha256 ${sha.slice(0, 8)}…${sha.slice(-4)}` : null;
+    const anchored = Boolean(anchor?.anchored && anchor?.blockHeight);
 
     bind(ctx.root, {
       lot: {
-        season: [p.crop, p.timeline && `${p.timeline} months`].filter(Boolean).join(' · '),
+        season: [p.crop, p.timeline && `${p.timeline} month${p.timeline === 1 ? '' : 's'}`].filter(Boolean).join(' · '),
         title: p.title,
         farmer,
-        since: p.acres ? `· ${p.acres} acres` : '',
+        since: p.acres ? `· ${p.acres} acre${p.acres === 1 ? '' : 's'}` : '',
         needed: rupees(needed),
         goal: `of ${rupees(p.amount)}`,
       },
       file: {
-        meta: video?.videoFileHash
-          ? `sha256 ${String(video.videoFileHash).slice(0, 8)}…${String(video.videoFileHash).slice(-4)}`
-          : 'No file record',
-        count: p.cid ? '1 of 1' : '—',
+        meta: shortSha || 'No file record',
+        count: p.cid ? '1 of 1' : 'not yet',
       },
       proved: {
         line: anchored
-          ? `This exact video file has not been altered. Its date is written into Bitcoin block ${Number(video.blockHeight).toLocaleString('en-IN')}.`
-          : 'This exact video file has not been altered. Its date has not landed in a block yet, so there is no block number to check — usually by tomorrow.',
+          ? `This exact video file has not been altered. Its date is written into Bitcoin block ${Number(anchor.blockHeight).toLocaleString('en-IN')}.`
+          : 'This exact video file has not been altered. Its date has not landed in a block yet, so there is no block number to check, usually by tomorrow.',
       },
       told: {
         ask: `Ask ${farmer.split(' ')[0]} a question`,
-        title: `${farmer} told us — nobody has checked`,
+        title: `${farmer} told us, nobody has checked`,
         body: [
           'That this is their land',
-          p.acres ? `that it is ${p.acres} acres` : null,
+          p.acres ? `that it is ${p.acres} acre${p.acres === 1 ? '' : 's'}` : null,
           p.crop ? `that it is ${p.crop.toLowerCase()}` : null,
           'and the sowing date.',
         ].filter(Boolean).join(', ') + ' A phone\u2019s reported location can be faked.',
@@ -125,26 +175,26 @@ if (ctx) load(ctx.root, async () => {
       // already says there is nothing to check.
       chain.remove();
     } else if (chain) {
+      // toLocaleString already gives "26 Aug 13:05". The .toUpperCase() only
+      // shouted it, and it was the one capitalised date in a product that writes
+      // "24 August, 10:40 pm" everywhere else.
       const when = (iso) => (iso ? new Date(iso).toLocaleString('en-IN', {
         day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false,
-      }).toUpperCase().replace(',', '') : null);
+      }).replace(',', '') : null);
       const set = (kind, time, note, head) => {
         const w = chain.querySelector(`[data-chain-when="${kind}"]`);
         const n = chain.querySelector(`[data-chain-note="${kind}"]`);
         const h = chain.querySelector(`[data-chain-head="${kind}"]`);
-        if (w) { if (time) w.textContent = time; else w.textContent = 'not recorded'; }
+        if (w) w.textContent = time == null ? 'not recorded' : time;
         if (n && note != null) n.textContent = note;
         if (h && head) h.textContent = head;
       };
-      const filmed = when(video?.uploadTimestamp);
+      const filmed = when(video?.uploadedAt);
       set('filmed', filmed, null);
-      set('hashed', filmed,
-        video?.videoFileHash
-          ? `sha256 ${String(video.videoFileHash).slice(0, 8)}…${String(video.videoFileHash).slice(-4)}`
-          : 'No fingerprint on the record');
+      set('hashed', filmed, shortSha || 'No fingerprint on the record');
       if (anchored) {
-        set('block', when(video.anchoredAt) || filmed,
-            `block ${Number(video.blockHeight).toLocaleString('en-IN')} — check it on any explorer`);
+        set('block', when(anchor.anchoredAt) || filmed,
+            `block ${Number(anchor.blockHeight).toLocaleString('en-IN')}, check it on any explorer`);
       } else {
         // The date has not landed, so the green goes: it is the one token this
         // product spends on a fact anybody can check, and there is not one yet.
@@ -152,7 +202,9 @@ if (ctx) load(ctx.root, async () => {
         if (dot) dot.style.background = '#78716a';
         const head = chain.querySelector('[data-chain-head="block"]');
         if (head) { head.style.color = '#4a443d'; head.textContent = 'Not in a block yet'; }
-        set('block', null, 'The proof job runs once a day, so usually by tomorrow.');
+        // Not "not recorded": nothing has happened yet, which is different from
+        // something happening and us failing to write it down.
+        set('block', '', 'The proof job runs once a day, so usually by tomorrow.');
       }
     }
 
@@ -172,7 +224,10 @@ if (ctx) load(ctx.root, async () => {
       askRow.onclick = async () => {
         try {
           const conv = await api.messages.open({ targetUserId: p.farmerWallet });
-          location.href = `./thread-investor.html?c=${conv._id || conv.id}`;
+          // messages.html, not thread.html: the two chat screens became one
+          // two-pane page and thread was retired. This line kept pointing at it,
+          // so the investor's one way to ask a farmer anything led to a 404.
+          location.href = `./messages.html?c=${conv._id || conv.id}`;
         } catch (err) {
           state(askRow, 'failed', 'Could not open the conversation', err.message);
         }

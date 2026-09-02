@@ -12,51 +12,184 @@
     a { color: #01579b; } a:hover { color: #013f70; }
     .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
-    .pk  { background: #eae4de; height: 62px; display: flex; align-items: center; padding: 0 17px; font-size: 17px; }
-    .pkOn{ background: #1d1a17; color: #f6f3ef; height: 62px; display: flex; align-items: center;
+    /* 56, not 62. With a real clip the subtitle under the heading carries a line
+       the artboard drew empty ("38 seconds, 1.4 MB, on your phone"), and four
+       rows of 62 put the page twenty pixels past a 1366x768 laptop. 56 is still
+       well over the 44pt touch minimum and the picker reads tighter for it. */
+    .pk  { background: #eae4de; height: 56px; display: flex; align-items: center; padding: 0 17px; font-size: 17px; }
+    .pkOn{ background: #1d1a17; color: #f6f3ef; height: 56px; display: flex; align-items: center;
            padding: 0 17px; font-size: 17px; font-weight: 600; }
     /* the four steps are a timeline, not a progress bar: three are already done
        and the fourth takes hours, which a bar would misrepresent as stuck */
     .st { display: flex; gap: 13px; align-items: flex-start; }
+    /* Round, and this is not decoration. A 22px square with a 2px ring around it
+       is a CHECKBOX -- it was read as one, and as an empty one it invited a
+       farmer to tick a step she cannot perform. A circle is what a timeline
+       node is everywhere, and it cannot be mistaken for something to fill in.
+       Round is already what this product's shape rule gives a badge. */
     .dotD { width: 22px; height: 22px; flex-shrink: 0; background: #006934; display: flex;
-            align-items: center; justify-content: center; }
+            align-items: center; justify-content: center; border-radius: 999px; }
     /* Finished, but not checkable by anybody but us -- so ink, not green. Green
        is spent only on the step that ends in a Bitcoin block. */
     .dotOk { width: 22px; height: 22px; flex-shrink: 0; background: #1d1a17; display: flex;
-             align-items: center; justify-content: center; }
-    .dotW { width: 22px; height: 22px; flex-shrink: 0; box-shadow: inset 0 0 0 2px #78716a; }
-    .line { width: 2px; background: #c3bcb6; margin: 3px 0 3px 10px; height: 20px; }
+             align-items: center; justify-content: center; border-radius: 999px; }
+
+    /* ── a step completing, and the line getting there ──────────────────────
+     *
+     * This was a static checklist. Sending swapped a class and injected a tick
+     * into three dots on the same frame, a thousand pixels away from the button
+     * that had just been pressed -- so the one moment in this product where the
+     * screen has something to report reported nothing.
+     *
+     * It is a sequence now, in the order it actually happens: the line between
+     * two steps draws downward, THEN the step it arrives at ticks, then the next
+     * line starts. Which is also the honest picture -- these are four separate
+     * events with real time between them, not one bar filling.
+     *
+     * A pending step carries its tick from the start, unshown, because a tick
+     * that is inserted into the DOM has no state to animate from. Everything
+     * here is transform, opacity and colour.
+     */
+    .dotW { width: 22px; height: 22px; flex-shrink: 0; background: transparent;
+            box-shadow: inset 0 0 0 2px #78716a; border-radius: 999px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background var(--t-smooth, 746ms) var(--e-smooth, ease),
+                        box-shadow var(--t-smooth, 746ms) var(--e-smooth, ease); }
+    .dotW .tick { opacity: 0; transform: scale(.4);
+                  transition: opacity var(--t-press, 120ms) var(--e-smooth, ease),
+                              transform var(--t-bouncy, 830ms) var(--e-bouncy, ease); }
+    .dotW[data-done]   { background: #1d1a17; box-shadow: none; }
+    .dotW[data-proved] { background: #006934; box-shadow: none; }
+    .dotW[data-done] .tick, .dotW[data-proved] .tick { opacity: 1; transform: none; }
+
+    .line { width: 2px; background: #c3bcb6; margin: 3px 0 3px 10px; height: 20px;
+            position: relative; }
+    /* Drawn at full length and squeezed to nothing from the top, so advancing it
+       is one scaleY: no layout on any frame, and it fills downward, the way the
+       eye is already travelling. */
+    .line i { position: absolute; inset: 0; display: block; background: #1d1a17;
+              transform: scaleY(0); transform-origin: 50% 0;
+              transition: transform var(--t-smooth, 746ms) var(--e-smooth, ease); }
+    .line[data-on] i { transform: scaleY(1); }
+
+    /* Travel is what goes. The tick still arrives and the line still fills --
+       they just do it without the journey, because the state is the message. */
+    @media (prefers-reduced-motion: reduce) {
+      .line i { transition: none; }
+      .dotW .tick { transform: none;
+                    transition: opacity var(--t-press, 120ms) var(--e-smooth, ease); }
+    }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    /* A nav item was a 20px-tall word: under the 28x28 pointer minimum and
+       well under 44x44 by touch, which is the HIG recommended control size.
+       The bar centres its items, so giving them a real height moves nothing
+       and makes the whole word-plus-air pressable. */
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .railcard  { color: #1d1a17; padding: 20px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .railh { font-size: 15px; font-weight: 600; }
+    .railp { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; }
+    .rail  { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    /* The back link: in the content above the heading, naming its destination.
+       44px of tap height for a phone, taken as padding so the text still sits
+       tight to the heading it belongs to. */
+    /* The way out: an icon-only chevron, 44x44 of target under a 21px glyph,
+       the same control profile.html carries. The word stays in the document
+       for anyone who cannot see the arrow, drawn off-screen rather than deleted.
+       It sits ON the surface, beside the heading, and is grey, not blue: a
+       blue word at weight 600 competed with the heading from every position
+       it was tried in (design/taste-references.md). */
+    .backlink { display: inline-flex; align-items: center; justify-content: center;
+                align-self: flex-start; width: 44px; height: 44px; margin-left: -11px;
+                color: #605a53; text-decoration: none; flex-shrink: 0; }
+    .backlink:hover { color: #1d1a17; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+          overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   </style>
 </helmet>
 
-<div data-page="sent" class="f" style="width: 360px; min-height: 900px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+<div data-page="sent" class="f" style="width: 1320px; min-height: 880px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
-  <div style="background: #f6f3ef; padding: 15px 20px 14px; flex-shrink: 0;">
-    <div data-title style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">That is saved</div>
-    <div data-bind="clip.line" class="m" style="font-size: 14.5px; color: #605a53; margin-top: 1px;">41 seconds &middot; 9.8 MB &middot; on your phone</div>
-  </div>
-
-  <div style="flex-grow: 1;">
-
-    <!-- one question, asked once, while they still remember which plot they walked -->
-    <div style="padding: 20px 20px 0;">
-      <div style="font-size: 18px; font-weight: 700;">Which plot was that?</div>
-      <div style="font-size: 15px; line-height: 1.5; color: #4a443d; margin-top: 4px;">
-        We ask now because in a week nobody remembers which field a video was.
+  <div class="appbar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div class="appbrand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="appnav">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnav">Chat</div>
+        </div>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 13px;">
-        <div class="pkOn">Canal plot</div>
-        <div class="pk">North plot</div>
-        <div class="pk">Back field</div>
-        <div class="pk" style="color: #01579b; font-weight: 600;">A plot not in this list</div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial style="font-size: 13px; font-weight: 500;">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagehold" style="background: #f6f3ef; padding: 12px 28px 8px; display: flex; align-items: center; gap: 14px;">
+      <!-- BACK AND THE HEADING ON ONE ROW, divided by a hairline. This is the
+           chat rail's geometry, and the rail is the one place in this product
+           where the way out never read as detached: it sits BESIDE the header,
+           not above it, with the rail's own right edge (inset -1px 0 0 #ddd7d1)
+           drawn between the two. Everywhere else the back link had a whole row
+           to itself over the title, which is why it read as something dropped
+           on the page rather than part of its header. Same row, same place, on
+           every screen, so "how do I get out" has one answer. An <a href> so it
+           can still be middle-clicked; chrome.js writes the real word. -->
+      <a data-chrome="back" href="./record.html" class="backlink" title="Back"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg><span data-backword class="sr">Film your field</span></a>
+      <div style="display: flex; flex-direction: column;">
+        <h1 data-title class="pageh" style="margin: 0;">That is saved</h1>
+        <div data-bind="clip.line" class="pagesub"></div>
       </div>
     </div>
 
-    <!-- what happens next, in real time units, because the wait is hours -->
-    <div style="padding: 24px 20px 0;">
-      <div style="font-size: 18px; font-weight: 700;">What happens to it</div>
 
-      <div style="background: #f6f3ef; padding: 17px 18px; margin-top: 11px;">
+      <div style="flex-grow: 1; background: #f6f3ef; display: grid; grid-template-columns: 1fr 372px; align-items: start;">
+      <div class="main">
+<div style="flex-grow: 1;">
+
+    <!-- ══ what you have to know, side by side ══
+         Stacked, this screen came to 1100px: press send at the bottom of it and
+         the timeline that answers is below the fold, which is exactly the
+         complaint -- the button in one place and the progress in another. Two
+         columns brings the whole page inside a 768px laptop, so the press and
+         the answer are one glance apart. -->
+    <div style="padding: 20px 28px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+
+      <!-- one question, asked once, while they still remember which plot they walked -->
+      <div data-specimen data-picker>
+        <div style="font-size: 18px; font-weight: 700;">Which plot was that?</div>
+        <div style="font-size: 15px; line-height: 1.5; color: #4a443d; margin-top: 4px;">
+          We ask now because in a week nobody remembers which field a video was.
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 13px;">
+          <div class="pkOn">Canal plot</div>
+          <div class="pk">North plot</div>
+          <div class="pk">Back field</div>
+          <div class="pk" style="color: #01579b; font-weight: 600;">A plot not in this list</div>
+        </div>
+      </div>
+
+      <!-- what happens next, in real time units, because the wait is hours -->
+      <div>
+        <div style="font-size: 18px; font-weight: 700;">What happens to it</div>
+        <div data-pipeline data-loader-slot="working" style="background: #f6f3ef; padding: 17px 18px; margin-top: 11px;">
         <div class="st">
           <div class="dotOk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
           <div>
@@ -64,36 +197,40 @@
             <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Done. You can close the app.</div>
           </div>
         </div>
-        <div class="line"></div>
+        <div class="line"><i></i></div>
         <div class="st">
-          <div class="dotW"></div>
+          <div class="dotW"><svg class="tick" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
           <div>
             <div style="font-size: 16px; font-weight: 600;">Sent to us</div>
             <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">When you next have wi-fi. On its own.</div>
           </div>
         </div>
-        <div class="line"></div>
+        <div class="line"><i></i></div>
         <div class="st">
-          <div class="dotW"></div>
+          <div class="dotW"><svg class="tick" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
           <div>
             <div style="font-size: 16px; font-weight: 600;">Fingerprinted the moment it arrives</div>
             <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">A few seconds. Nobody can change the file after this without it showing.</div>
           </div>
         </div>
-        <div class="line"></div>
+        <div class="line"><i></i></div>
         <div class="st">
-          <div class="dotW"></div>
+          <div class="dotW"><svg class="tick" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
           <div>
             <div style="font-size: 16px; font-weight: 600;">Its date written into Bitcoin</div>
-            <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Usually by tomorrow. We send it off straight away and the proof comes back on a once-a-day run. We will tell you when it is done.</div>
+            <div style="font-size: 14.5px; color: #605a53; margin-top: 1px;">Usually by tomorrow. We will tell you when it is done.</div>
           </div>
+        </div>
         </div>
       </div>
     </div>
 
-    <!-- said before they commit, not in a settings page afterwards -->
-    <div style="padding: 18px 20px 0;">
-      <div style="background: #f2e6cd; padding: 15px 16px;">
+    <!-- said before they commit, not in a settings page afterwards. Marked,
+         because once it IS sent this sentence is no longer a warning about a
+         choice -- there is no choice left -- and it goes, along with the bin
+         beside it. -->
+    <div data-warn-delete style="padding: 18px 20px 0;">
+      <div style="background: #f2e6cd; padding: 14px 16px;">
         <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">You cannot delete it later</div>
         <div style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
           Once it is sent, it stays. That is the whole reason its date is worth anything to somebody
@@ -101,22 +238,54 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <div style="flex-shrink: 0; background: #f6f3ef; padding: 14px 20px 18px;">
-    <div style="background: #016abe; height: 60px; display: flex; align-items: center; justify-content: center;">
-      <div style="font-size: 18px; font-weight: 700; color: #fff;">Keep it and send</div>
+    <!-- ══ the two decisions ══
+         These lived in the rail, at the top right, while the timeline they set
+         running lived at the bottom left: press one and the answer appeared
+         somewhere you were not looking. A control belongs at the end of the
+         thing it commits, with the consequence directly under it. -->
+    <div style="padding: 18px 20px 0; display: flex; gap: 12px; align-items: stretch;">
+      <div data-keep style="flex-grow: 1; background: #016abe; min-height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+        <div style="font-size: 18px; font-weight: 700; color: #fff;">Keep it and send</div>
+      </div>
+      <div data-bin style="width: 236px; min-height: 60px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1.5px #a71930; border-radius: 8px;">
+        <div style="font-size: 16px; font-weight: 600; color: #a71930;">Throw this one away</div>
+      </div>
     </div>
-    <div style="height: 52px; margin-top: 10px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1.5px #a71930;">
-      <div style="font-size: 16px; font-weight: 600; color: #a71930;">Throw this one away</div>
+
+    <!-- Where the pencil goes once it is sent: full width, directly under the
+         button that was just pressed, in the room the delete warning above
+         vacates at the same moment. Empty until then, and 0px tall, so the
+         drawing and the page agree. -->
+    <div data-loader-slot="writing" style="padding: 0 20px;"></div>
+
+  </div>
+      </div>
+      <div class="rail">
+<!-- True until the second it is pressed, so this card is marked and sent.js
+           rewrites it rather than leaving it standing as a contradiction beside
+           a timeline reporting the opposite. -->
+      <div data-rail-phone class="railcard">
+        <div class="railh">Nothing has left your phone yet</div>
+        <div class="railp">
+          Until you press send, this video is on this device and nowhere else. Throwing it away
+          deletes it here and tells nobody it existed.
+        </div>
+      </div>
+      <div class="railcard">
+        <div class="railh">Why the date is the whole product</div>
+        <div class="railp">
+          Our server fingerprints the file the second it arrives, and the day&#8217;s fingerprints go into
+          one Bitcoin block. That is the part somebody putting money into your season can check
+          without having to trust us &#8212; or you.
+        </div>
+      </div>
+      </div>
     </div>
-  </div>
 
 
-  <!-- everything below this line needs a scroll on a 360x800 handset -->
-  <div data-fold style="position: absolute; left: 0; right: 0; top: 800px; height: 0; border-top: 1px dashed rgba(167,25,48,.45); pointer-events: none;">
-    <div style="position: absolute; right: 0; top: -8px; background: rgba(167,25,48,.82); color: #fff; font: 600 9.5px/1 system-ui, sans-serif; letter-spacing: .06em; padding: 3px 5px;">FOLD</div>
-  </div>
+
+  
 </div>
 </x-dc>
 

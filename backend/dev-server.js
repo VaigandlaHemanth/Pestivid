@@ -34,8 +34,33 @@ const FRESH = process.argv.includes('--fresh');
 const MONGO_PORT = 27017;
 
 // Stable secret so tokens issued before a restart still validate afterwards.
-const DEV_JWT_SECRET = process.env.JWT_SECRET
-    || require('crypto').randomBytes(48).toString('base64');  // dev-only: rotates each restart
+//
+// It did not do that. The line under this comment read `randomBytes(48)` with a
+// trailing note saying "rotates each restart", which is the opposite of what the
+// comment above it promised -- and the code won. Every restart invalidated every
+// token that had been issued, so each tab open at the time 401'd on its next call
+// and was bounced to the sign-in screen. Restarting the server to pick up a code
+// change should not sign anybody out.
+//
+// The secret now lives beside the database it goes with: same directory, same
+// lifetime, thrown away by the same --fresh. Still dev-only, still overridable.
+const SECRET_PATH = path.join(DB_PATH, '.jwt-secret');
+function devSecret() {
+    if (process.env.JWT_SECRET) return process.env.JWT_SECRET;
+    try {
+        const kept = fs.readFileSync(SECRET_PATH, 'utf8').trim();
+        if (kept) return kept;
+    } catch { /* first run, or --fresh just removed it */ }
+    const made = require('crypto').randomBytes(48).toString('base64');
+    try {
+        fs.mkdirSync(DB_PATH, { recursive: true });
+        fs.writeFileSync(SECRET_PATH, made, { mode: 0o600 });
+    } catch (e) {
+        console.warn(`Could not keep the dev JWT secret (${e.message}); sessions will end at restart.`);
+    }
+    return made;
+}
+const DEV_JWT_SECRET = devSecret();
 
 let mongod;
 

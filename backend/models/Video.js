@@ -111,6 +111,20 @@ const videoSchema = new mongoose.Schema({
         },
     },
 
+    /* One frame of the video, as a JPEG data URI, cut from the bytes WE fetched
+     * back and hashed. See services/videoPoster.js for why the browser is not
+     * allowed to supply this: an unverified image sitting next to a verified
+     * hash, looking like a frame of it, would undo the one claim this product
+     * makes. About 8-40 KB of base64; the service refuses anything over 120 KB
+     * rather than bloating the document, and a missing poster is only the grey
+     * placeholder the lists drew before.
+     */
+    poster: {
+        type: String,
+        maxlength: [200000, 'Poster is too large to store.'],
+        select: false,          // never in a list unless a route asks for it
+    },
+
     videoFileHash: { // SHA256 hash of the video file for integrity verification
         type: String,
         trim: true

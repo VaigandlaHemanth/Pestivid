@@ -1,3 +1,5 @@
+import { deskNav } from './chrome.js';
+import { session, anchoring, anchoringReady } from './api.js';
 // Shared conduct for every generated page.
 //
 // The markup is cut from the artboards and must not be edited, so behaviour is
@@ -104,6 +106,54 @@ export function fill(root, data) {
  * inherited the div's letter-spacing, so a password placeholder came out spaced
  * like a display heading. Both are fixed here rather than in five page modules.
  */
+/* ════ MONEY GROUPS ITSELF ══════════════════════════════════════════════════
+ *
+ * The harvest form drew "2,58,400" on the artboard and answered a bare "945000"
+ * the moment somebody typed -- two figures on one screen formatted two ways, and
+ * the one the farmer was responsible for was the unformatted one. The same trap
+ * was live on ask-money, whose "How much do you need?" specimen reads
+ * "5,00,000".
+ *
+ * So it is not a thing a page has to remember. If the SPECIMEN is grouped, the
+ * field groups: asField sees the comma in the placeholder and wires it. Any new
+ * money box gets it by being drawn with a grouped specimen, and verify-forms
+ * holds the same rule from the outside.
+ *
+ * en-IN is lakh grouping -- three digits then pairs -- which is what rupees()
+ * already uses for every printed figure in this product.
+ */
+export const digitsOnly = (v) => String(v).replace(/[^\d]/g, '');
+export const grouped = (v) => {
+  const d = digitsOnly(v).replace(/^0+(?=\d)/, '');
+  return d ? Number(d).toLocaleString('en-IN') : '';
+};
+
+/* Reformatting rewrites the whole value, which sends the caret to the end. Fine
+ * while typing at the end, wrong the moment somebody corrects a digit in the
+ * middle. So the position is kept in DIGITS -- the one unit the commas cannot
+ * move -- and mapped back afterwards.
+ */
+export function groupLive(input) {
+  if (!input || input.__grouped) return input;
+  input.__grouped = true;
+  input.addEventListener('input', () => {
+    const before = input.value;
+    const caret = input.selectionStart ?? before.length;
+    const digitsBefore = digitsOnly(before.slice(0, caret)).length;
+    const next = grouped(before);
+    if (next === before) return;
+    input.value = next;
+    let seen = 0, pos = next.length;
+    for (let i = 0; i < next.length; i++) {
+      if (/\d/.test(next[i])) seen++;
+      if (seen === digitsBefore) { pos = i + 1; break; }
+    }
+    if (digitsBefore === 0) pos = 0;
+    try { input.setSelectionRange(pos, pos); } catch { /* not a text input */ }
+  });
+  return input;
+}
+
 export function asField(el, opts = {}) {
   // Two guidelines, applied once here instead of at thirty call sites:
   // a field with no autocomplete makes the browser guess, and a placeholder
@@ -114,8 +164,16 @@ export function asField(el, opts = {}) {
   // to type, which is worse than no ellipsis at all.
   const specimen = /^[\d\s+•·.,₹-]+$/.test(opts.placeholder || '');
   if (opts.placeholder && !specimen && !/[…:]$/.test(opts.placeholder)) opts.placeholder += '…';
-  // A code, an address or a phone number is not prose; do not underline it red.
-  if (/code|otp|phone|tel|email|offer|amount|reply|question/.test(String(opts.name || opts.type || ''))) {
+  /* A code, an address, a name or an amount is not prose; do not underline it red.
+   *
+   * This read `opts.name || opts.type`, so the NAME won and the type was never
+   * looked at. The sign-in field is `{ type: 'email', name: 'who' }` -- "who"
+   * matches nothing in this list, so the one email box in the product kept its
+   * spellchecker and the address you typed got a red underline. Both are
+   * considered now, and so is the autocomplete hint, which is the third place a
+   * field says what it holds. */
+  const kind = `${opts.name || ''} ${opts.type || ''} ${opts.autocomplete || ''}`;
+  if (/code|otp|phone|tel|email|username|offer|amount|reply|question|price|acres/.test(kind)) {
     opts.spellcheck = false;
   }
   if (!el) return null;
@@ -139,6 +197,43 @@ export function asField(el, opts = {}) {
     opts.multiline ? 'resize: vertical' : '',
   ].filter(Boolean).join('; ') + ';';
   el.replaceChildren(input);
+
+  // A grouped specimen is a promise about the value. Kept here so no page has to
+  // remember, and so a new money box gets it just by being drawn with commas.
+  if (/\d,\d\d/.test(input.placeholder || '')) groupLive(input);
+
+  // The tap target is the BOX, not the text slot inside it.
+  //
+  // `el` is the drawn text node -- 21px tall inside a field that looks 48px --
+  // so the input landed as a sliver in the middle of it and a finger aimed at
+  // the top or bottom third of the field hit nothing. That is what "I cannot
+  // type in that text box" was. The drawn geometry is not moved, because
+  // verify-layout compares it: instead the visible box focuses the input, the
+  // same way the six-digit code strip already does.
+  // Found by SIZE, walking up a few levels: a field box is taller than its text
+  // slot and still field-sized. A selector on background colour matched the
+  // whole 269px footer band instead, and put a text cursor on it.
+  const mine = el.getBoundingClientRect().height;
+  let box = null;
+  for (let n = el.parentElement, hop = 0; n && hop < 4; n = n.parentElement, hop++) {
+    const h = n.getBoundingClientRect().height;
+    if (h > mine + 4 && h <= Math.max(96, mine * 4)) { box = n; break; }
+    if (h > Math.max(96, mine * 4)) break;
+  }
+  if (box) {
+    // Named, not inferred. `cursor: text` is an INHERITED property, so every
+    // descendant of the box computes to it and a walk looking for it matches the
+    // input's own parent -- which is the 17px sliver, not the 56px box.
+    box.setAttribute('data-fieldbox', '');
+    box.style.cursor = 'text';
+    box.addEventListener('mousedown', (e) => {
+      if (e.target === input || input.contains(e.target)) return;
+      // A control inside the box -- a Show link, a send arrow -- keeps its click.
+      if (e.target.closest?.('[data-act]') && !box.matches('[data-act]')) return;
+      e.preventDefault();
+      input.focus();
+    });
+  }
   return input;
 }
 
@@ -161,7 +256,7 @@ export function deClaimProps(root) {
   // ONLY of prop tokens, the whole run goes and one honest line takes its
   // place. A token sitting inside a real sentence is still swapped in place.
   const PROP = /VID_\d{8}_\d{6}_IST\.mp4|IMG_\d{8}_\d{4}_IST\.jpg|sha256\s+[0-9a-f]{4,}(?:…|\.\.\.)?[0-9a-f]*|[0-9a-f]{8}…[0-9a-f]{4}|bafybeih…?[0-9a-z]*|[Bb]lock\s*(?:9xx,xxx|[\d,]{4,})|8(?:81|78),\d{3}|1080×1920|30fps|10\.1 MB|no\.\s*0{3,}\d+/g;
-  const FILLER = /^[\s·,.\-–|/]*$/;
+  const FILLER = /^[\s·,.\-, |/]*$/;
 
   const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes = [];
@@ -192,11 +287,36 @@ export function deClaimProps(root) {
     const box = el.getBoundingClientRect();
     const holder = el.closest('[style*="overflow: hidden"]');
     if (box.width < 190 || (holder && holder.getBoundingClientRect().width < 190)) {
+      // A LABELLED value must not be removed, for the same reason a bound one
+      // must not: it orphans the label. The landing page's "Record of evidence"
+      // lost its Fingerprint value that way -- a card whose entire argument is
+      // the fingerprint, showing the word and then nothing. So when the holder
+      // has a sibling that carries text, it gets the short honest value; only a
+      // lone decoration is removed.
+      const labelled = [...(el.parentElement?.children || [])]
+        .some(sib => sib !== el && sib.textContent.trim());
+      if (labelled) {
+        el.textContent = SHORT_VALUE(el.textContent);
+        el.setAttribute('data-declaimed', '');
+        continue;
+      }
       el.remove();
       continue;
     }
     el.textContent = 'The file, its fingerprint and the block its date went into';
     el.setAttribute('data-declaimed', '');
+  }
+
+  // What a stripped prop says when it is a VALUE beside its own label, where
+  // "its fingerprint" next to "Fingerprint" would be a tautology and a sentence
+  // would not fit. It says what will be there instead of pretending it is.
+  function SHORT_VALUE(v) {
+    if (/sha256|[0-9a-f]{8}…/i.test(v)) return 'computed on our server';
+    if (/^\s*[Bb]lock/.test(v)) return 'once its date lands';
+    if (/^VID_/.test(v)) return 'the file we received';
+    if (/^IMG_/.test(v)) return 'the photo you took';
+    if (/bafybeih/.test(v)) return 'pinned on IPFS';
+    return 'filled in from the real record';
   }
 
   function IN_SENTENCE(m) {
@@ -218,9 +338,48 @@ export function deClaimProps(root) {
  * so marking and promoting happen together here.
  * ------------------------------------------------------------------ */
 
+/* The painted box, not the word inside it.
+ *
+ * Half the boards draw a button as a filled div with a bare label div inside,
+ * and a module marks the LABEL -- so "Continue" was a 77x24 control sitting in
+ * the middle of a 568x60 blue rectangle, and clicking the rectangle anywhere
+ * except the seven characters of the word did nothing at all. That is a dead
+ * button as far as a user is concerned, and the HIG minimum control size
+ * (28x28 with a pointer, 44x44 by touch) is the measure that catches it.
+ *
+ * Climbs ONE level, and only when there is no ambiguity: the parent is painted
+ * or ringed, it is bigger, it holds nothing but this label, and it is not
+ * already a control itself. A list row with several children is left alone.
+ */
+function paintedTarget(el) {
+  const up = el.parentElement;
+  if (!up || up.matches('[data-act], [data-go], a[href], button')) return el;
+  // A parent that holds the label plus a decorative glyph is still one button.
+  // What disqualifies it is another CONTROL or other text.
+  const siblings = [...up.children].filter(n => n !== el);
+  if (siblings.some(n => n.matches('[data-act], [data-go], a[href], button, input'))) return el;
+  if ((up.textContent || '').trim() !== (el.textContent || '').trim()) return el;
+  const mine = el.getBoundingClientRect();
+  const theirs = up.getBoundingClientRect();
+  if (theirs.height <= mine.height + 3 && theirs.width <= mine.width + 3) return el;
+  if (theirs.height > 96) return el;
+  const cs = getComputedStyle(up);
+  const bg = cs.backgroundColor || '';
+  const painted = bg && bg !== 'transparent' && !/rgba\(0, 0, 0, 0\)/.test(bg);
+  const ringed = cs.boxShadow && cs.boxShadow !== 'none';
+  const own = getComputedStyle(el).backgroundColor;
+  if (own && own !== bg && !/rgba\(0, 0, 0, 0\)/.test(own)) return el;
+  // An UNPAINTED parent counts too when it holds nothing but these words: a
+  // market row is a 59px band with a 26px label in it, and the dead 33px was
+  // the part of the row a thumb actually lands on.
+  if (!painted && !ringed && theirs.height < mine.height + 12) return el;
+  return up;
+}
+
 /** Promote one element that has just been marked as a control. */
 export function promote(el, name) {
   if (!el) return null;
+  el = paintedTarget(el);
   el.setAttribute('data-act', el.dataset.act || '');
   if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
   if (!el.hasAttribute('tabindex')) el.tabIndex = 0;
@@ -248,18 +407,20 @@ function containIfNested(el) {
  *  44px glyph in a 76px row leaves most of what looks pressable dead. */
 export function goes(el, dest, name) {
   if (!el) return null;
-  el.dataset.go = dest;
-  promote(el, name);
-  containIfNested(el);
+  const target = promote(el, name);
+  target.dataset.go = dest;
+  containIfNested(target);
   return el;
 }
 
 /** A control that does something here. */
 export function acts(el, name, fn) {
   if (!el) return null;
-  promote(el, name);
-  containIfNested(el);
-  el.addEventListener('click', fn);
+  // promote() may hand the role to the painted box around a bare label. The
+  // handler has to go on the same element, or the padding stays dead.
+  const target = promote(el, name);
+  containIfNested(target);
+  target.addEventListener('click', fn);
   return el;
 }
 
@@ -300,6 +461,25 @@ function hideDecoration(root) {
   }
 }
 
+/* When the server is not writing dates, no screen may promise one by tomorrow.
+ * The promise is drawn into several boards as plain prose, so it is corrected
+ * the way deClaimProps corrects invented proof: by walking the text. */
+function deAnchorClaims(root) {
+  const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walk.nextNode()) nodes.push(walk.currentNode);
+  for (const n of nodes) {
+    const v = n.nodeValue;
+    if (!/usually by tomorrow|within a day/i.test(v)) continue;
+    n.nodeValue = v
+      .replace(/are usually written into a Bitcoin block within a day/i, 'will be written into a Bitcoin block once this server is set to write dates')
+      .replace(/,\s*usually by tomorrow/gi, ', once this server is set to write dates')
+      .replace(/Usually by tomorrow/g, 'Not on this server yet')
+      .replace(/usually by tomorrow/gi, 'once this server is set to write dates')
+      .replace(/within a day/gi, 'once this server is set to write dates');
+  }
+}
+
 export function wire(slug) {
   const root = document.querySelector('body > div');
   if (!root) return;
@@ -314,6 +494,12 @@ export function wire(slug) {
   heading(root);
   hideDecoration(root);
   watchControls(root);
+  // The desktop header, wired here rather than per page. Only seven of the
+  // twenty-four pages called appChrome, and invest.js -- the investor's first
+  // screen -- wired no navigation at all, so Portfolio and Messages were plain
+  // text an investor could not click.
+  deskNav(root, session.user);
+  anchoringReady.then(() => { if (anchoring.known && !anchoring.enabled) deAnchorClaims(root); });
   document.documentElement.dataset.ready = slug;
   return root;
 }

@@ -17,7 +17,7 @@ if (root) {
       // lakhs, because that is how the figure is spoken about here
       const lakh = (n) => n >= 100000 ? `₹${(n / 100000).toFixed(1)}L` : rupees(n);
       bind(root, { funded: lakh(raised) });
-      const bar = root.querySelector('div[style*="background: #01579b"][style*="height: 100%"]')
+      const bar = root.querySelector('[data-bar]')
         || root.querySelector('div[style*="height: 8px"] > div');
       if (bar) {
         bar.style.transformOrigin = 'left';
@@ -26,12 +26,12 @@ if (root) {
     } catch {
       // A marketing page that cannot reach the API should still read fine, so
       // the figure goes blank rather than the page shouting about it.
-      bind(root, { funded: '—' });
+      bind(root, { funded: 'not yet' });
     }
   })();
 
   // the two calls to action are the only controls here
-  for (const [label, to] of [['I farm — get funded', 'setup-language'],
+  for (const [label, to] of [['I farm, get funded', 'signup'],
                              ['I want to invest', 'signin'],
                              ['Sign in', 'signin']]) {
     const el = [...root.querySelectorAll('div')]

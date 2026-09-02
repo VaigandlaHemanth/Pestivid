@@ -159,3 +159,327 @@ body[data-role="public"] { background: var(--ground); }
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+/* ════ THE SHAPE RULE ═══════════════════════════════════════════════════════
+ *
+ * Measured before writing this: 57 filled controls at 0px radius, 18 at 16px,
+ * 2 at 17px, and nine different button heights with nothing connecting them.
+ * Hard-square buttons beside round avatars, and every button a different size,
+ * is what made the product read as unfinished.
+ *
+ * ONE documented rule, and it follows what the thing IS:
+ *
+ *   paper is square      a panel, a card, a table row, a band. These are sheets
+ *                        of evidence. Radius 0, and they stay 0.
+ *   objects are rounded  anything you press or type into. 8px, so it reads as a
+ *                        thing sitting on the paper rather than a hole cut in it.
+ *   portraits are round  an avatar and a count badge, and nothing else.
+ *
+ * Keyed on the locked palette, because a filled control in this product is one
+ * of four fills and nothing else paints itself those colours.
+ */
+:root {
+  --r-control: 8px;
+  --r-round: 999px;
+}
+
+[data-act][style*="background: #016abe"],
+[data-act][style*="background: #1d1a17"],
+[data-act][style*="background: #012169"],
+[data-act][style*="background: #e7e1db"],
+[data-go][style*="background: #016abe"],
+[data-go][style*="background: #1d1a17"],
+[data-go][style*="background: #e7e1db"],
+[data-fieldbox], .chip, .lang, .langOn, .tap, .btn {
+  border-radius: var(--r-control);
+}
+/* An icon tile and a video thumbnail are objects sitting on the paper too, so
+ * they follow the same rule. Hard-square tiles beside rounded buttons was the
+ * remaining half of the inconsistency. */
+.ic, .tile, .pthumb, .thumb, [data-tile], [data-viewfinder] {
+  border-radius: var(--r-control);
+  overflow: hidden;
+}
+/* A media surface that fills its own band is paper, not an object. */
+[data-viewfinder], [data-capture] { border-radius: var(--r-control); }
+
+/* the pill switch and the round chrome keep being round */
+[data-toggle], [data-chrome="you"], [data-readout].num,
+[style*="border-radius: 50%"] { border-radius: var(--r-round); }
+
+/* ════ HOVER ════════════════════════════════════════════════════════════════
+ *
+ * Every control had press feedback and no hover. On a laptop, where the pointer
+ * arrives before the click, that is the difference between a button and a
+ * coloured rectangle. Colour and shadow only: no travel, so nothing shifts
+ * under the cursor, and it costs no layout.
+ */
+@media (hover: hover) and (pointer: fine) {
+  [data-act]:hover, [data-go]:hover {
+    transition: box-shadow var(--t-press, 120ms) var(--e-smooth, ease),
+                opacity var(--t-press, 120ms) var(--e-smooth, ease);
+  }
+  /* a filled control deepens */
+  [data-act][style*="background: #016abe"]:hover,
+  [data-go][style*="background: #016abe"]:hover,
+  [data-act][style*="background: #1d1a17"]:hover,
+  [data-go][style*="background: #1d1a17"]:hover {
+    box-shadow: inset 0 0 0 999px rgba(0, 0, 0, .14);
+  }
+  /* a quiet control lifts off the paper instead */
+  [data-act][style*="background: #e7e1db"]:hover,
+  [data-go][style*="background: #e7e1db"]:hover,
+  .chip:hover, .lang:hover, .btn:hover {
+    box-shadow: inset 0 0 0 1px #b9b1a9;
+  }
+  /* a whole row that is a link says so along its leading edge */
+  .n:hover, .nu:hover, .row:hover, .row2:hover, .colr:hover {
+    box-shadow: inset 3px 0 0 #016abe;
+  }
+}
+
+/* ════ FOCUS ════════════════════════════════════════════════════════════════
+ *
+ * Eleven inputs across five pages showed nothing at all when focused. On a
+ * laptop-first product that means Tab does not work: a keyboard user cannot see
+ * where they are. WCAG 2.4.7, and the HIG's keyboard guidance says the same.
+ *
+ * outline, not border or padding, because outline is drawn outside the box and
+ * changes no geometry. 3px so it reads on the dark surfaces too (the camera
+ * deck, the dark bands), and offset so it does not sit on the fill.
+ */
+:focus-visible {
+  outline: 3px solid #016abe;
+  outline-offset: 2px;
+}
+/* An input is a transparent 21px sliver inside the drawn box. Ringing the
+ * sliver points at the text rather than at the field, so the BOX takes the ring
+ * and the sliver gives its own up. */
+[data-fieldbox]:has(:focus-visible) {
+  outline: 3px solid #016abe;
+  outline-offset: 2px;
+}
+[data-fieldbox] :focus-visible { outline: none; }
+
+/* ════ PLACEHOLDER ══════════════════════════════════════════════════════════
+ *
+ * This was Chrome's default #757575, which nobody chose: 3.23:1 on the ground
+ * and 4.17:1 on the surface, both under the 4.5:1 a placeholder needs. #605a53
+ * is the product's own secondary grey and clears 4.5 on all four fills a field
+ * is drawn on (4.77 on the ground, 6.81 on white).
+ */
+/* A PLACEHOLDER IS A HINT, NEVER AN ENTRY.
+ *
+ * The money fields inherit their input's weight, so every one of them drew its
+ * placeholder at 700: "9,32,000" and "2,58,400" on the harvest report, "48,000"
+ * on an offer to a farmer, "5,00,000" on a request for funding. Bold, 21px, and
+ * a plausible amount -- indistinguishable at a glance from a figure somebody had
+ * typed, on the one form whose own rail says "This cannot be undone. Once you
+ * send it, each person is told their amount and the season is closed."
+ *
+ * The colour was already right and it was not enough; weight is what made them
+ * read as answers. The VALUE stays bold, because a value should be. */
+::placeholder { color: #605a53; opacity: 1; font-weight: 400; }
+
+/* ════ THE TORN EDGE, and why it is gone ════════════════════════════════════
+ *
+ * satyamchaudharydev's "Button" (uiverse.io/satyamchaudharydev/hot-fox-63, MIT)
+ * raises a torn paper edge out of the fill on hover. It was chosen because this
+ * product's whole language is sheets of evidence, and it was wrong twice.
+ *
+ * First on the ink primary, where a 17% white wash over #1d1a17 composites to a
+ * flat hueless #464340 and read as a smudge. That was fixed by restricting it to
+ * the blue.
+ *
+ * Then on the blue, where it read as CRACKED GLASS -- and this failure is
+ * structural, not a matter of tuning. The polygon vertices are PERCENTAGES, so
+ * the shape stretches with the button. On the original's small control the
+ * vertices are close together and the outline is a fine rip; on "Report the
+ * harvest" at 250px, and on the full-width primaries this product uses, the same
+ * percentages spread into long straight facets meeting at sharp angles. No torn
+ * paper makes that geometry. A shape that only holds at one aspect ratio cannot
+ * be a component treatment here, where a button is whatever width its column is.
+ *
+ * So both primaries take the one hover every other filled control takes: the
+ * deepen above. One treatment per component, and the harvest imagery the effect
+ * was reaching for now lives where imagery belongs -- see THE CROP MARK below.
+ */
+
+/* ════ THE CROP MARK ════════════════════════════════════════════════════════
+ *
+ * A row of grain ears growing out of the bottom edge of the harvest button, in
+ * the button's own blue. The owner's idea, replacing the torn edge in the place
+ * the torn edge occupied.
+ *
+ * WHY IT WORKS WHERE THE TORN EDGE DID NOT. The torn edge was one polygon whose
+ * vertices are percentages, so it stretched with the button and its fine rip
+ * became long flat facets -- cracked glass. This is a TILE that repeats along
+ * the x axis, so its ears are the same size on a 250px button and a 900px one.
+ * Width-independence is structural here rather than something to tune.
+ *
+ * ONLY THIS BUTTON, and that is the point. It is scoped to the harvest card, not
+ * to "any blue button": wheat on "Keep it and send" would be decoration, and
+ * decoration on every primary is what the one-treatment-per-component rule
+ * exists to stop. The card is about a harvest, so the button in it may say so.
+ * The card appears on home and on money, and both get it, so it is consistent by
+ * construction rather than by discipline.
+ *
+ * THE DRAWING is the ear already drawn for this product, filled rather than
+ * stroked because a 1.3px outline scaled into a 22px band disappears while a
+ * solid lobe does not. Three other drawings were tried and thrown away: paired
+ * ellipses up a stem (read as a lattice pylon), and a tapered spike with fanned
+ * awns (read as a dandelion). Both failed for the same reason -- at this size
+ * only solid mass reads, never fine detail.
+ *
+ * THE MASK is not decoration either, and neither is the 13%. The tile repeats
+ * from the left edge, so which ear lands under the label depends on the button's
+ * width; on the 226px harvest button an ear sat against the R of "Report". Two
+ * things stop that mattering. The mask clears the middle 40%, so the label sits
+ * on plain blue. And the fill is low enough that even where an ear does reach
+ * the text, white on the lightened blue still clears 4.5:1 -- at 22% it did not,
+ * and 16.5px bold is NOT large text by WCAG (that starts at 18.66px bold), so
+ * 3:1 would not have been enough. Measured, not calculated: see _card.cjs.
+ *
+ * White at 13% over #016abe stays BLUE -- the same material, lighter -- which is
+ * why this works on the blue and is not attempted on the ink primary, where the
+ * same wash goes to a hueless grey.
+ */
+@media (hover: hover) and (pointer: fine) {
+  [data-todoband] [data-act], [data-todoband] [data-go] {
+    position: relative;
+    /* the clip that makes the parked band invisible */
+    overflow: hidden;
+  }
+  [data-todoband] [data-act]::after,
+  [data-todoband] [data-go]::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    background-repeat: repeat-x;
+    background-position: bottom left;
+    /* It RISES, and it does it with transform.
+     *
+     * The first version animated `height` from 0. That works and it is against
+     * the rule in this repo -- height is a layout property, and the fact that
+     * this is an out-of-flow pseudo-element only limits the damage rather than
+     * removing it. It is also the same mistake loaders.css already documents
+     * about animating width instead of scaleX.
+     *
+     * So the band is drawn at full height and parked one full band BELOW the
+     * button's bottom edge, where the button's own overflow: hidden clips it to
+     * nothing. Hover brings it to translateY(0). Nothing at rest, wheat rising
+     * on hover, no layout on any frame -- and it is a genuine reveal rather than
+     * a stretch, which scaleY would have been. */
+    height: 62%;
+    transform: translateY(100%);
+    background-size: 130px 38px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='38' viewBox='0 0 130 38'><g transform='translate(0 6) scale(1.15) rotate(-5 12 23)'><path d='M12 23V7' fill='none' stroke='%23fff' stroke-opacity='0.13' stroke-width='1.1' stroke-linecap='round'/><g fill='%23fff' fill-opacity='0.13'><path d='M12 11C9.4 11 8.3 9.5 8.3 7.7 10.6 7.7 12 9.2 12 11z'/><path d='M12 11c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 15c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 15c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 19c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 19c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 7.2c-1.3-.9-1.4-2.6-.7-4.2 1.3.9 1.4 2.6.7 4.2z'/><path d='M12 7.2c1.3-.9 1.4-2.6.7-4.2-1.3.9-1.4 2.6-.7 4.2z'/></g></g><g transform='translate(32 11) scale(1.0) rotate(4 12 23)'><path d='M12 23V7' fill='none' stroke='%23fff' stroke-opacity='0.13' stroke-width='1.1' stroke-linecap='round'/><g fill='%23fff' fill-opacity='0.13'><path d='M12 11C9.4 11 8.3 9.5 8.3 7.7 10.6 7.7 12 9.2 12 11z'/><path d='M12 11c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 15c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 15c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 19c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 19c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 7.2c-1.3-.9-1.4-2.6-.7-4.2 1.3.9 1.4 2.6.7 4.2z'/><path d='M12 7.2c1.3-.9 1.4-2.6.7-4.2-1.3.9-1.4 2.6-.7 4.2z'/></g></g><g transform='translate(58 3) scale(1.25) rotate(-2 12 23)'><path d='M12 23V7' fill='none' stroke='%23fff' stroke-opacity='0.13' stroke-width='1.1' stroke-linecap='round'/><g fill='%23fff' fill-opacity='0.13'><path d='M12 11C9.4 11 8.3 9.5 8.3 7.7 10.6 7.7 12 9.2 12 11z'/><path d='M12 11c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 15c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 15c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 19c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 19c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 7.2c-1.3-.9-1.4-2.6-.7-4.2 1.3.9 1.4 2.6.7 4.2z'/><path d='M12 7.2c1.3-.9 1.4-2.6.7-4.2-1.3.9-1.4 2.6-.7 4.2z'/></g></g><g transform='translate(90 9) scale(1.1) rotate(6 12 23)'><path d='M12 23V7' fill='none' stroke='%23fff' stroke-opacity='0.13' stroke-width='1.1' stroke-linecap='round'/><g fill='%23fff' fill-opacity='0.13'><path d='M12 11C9.4 11 8.3 9.5 8.3 7.7 10.6 7.7 12 9.2 12 11z'/><path d='M12 11c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 15c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 15c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 19c-2.6 0-3.7-1.5-3.7-3.3 2.3 0 3.7 1.5 3.7 3.3z'/><path d='M12 19c2.6 0 3.7-1.5 3.7-3.3-2.3 0-3.7 1.5-3.7 3.3z'/><path d='M12 7.2c-1.3-.9-1.4-2.6-.7-4.2 1.3.9 1.4 2.6.7 4.2z'/><path d='M12 7.2c1.3-.9 1.4-2.6.7-4.2-1.3.9-1.4 2.6-.7 4.2z'/></g></g></svg>");
+    /* the label sits on plain blue, whatever the button's width */
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 14%, transparent 30%,
+                                        transparent 70%, #000 86%, #000 100%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 14%, transparent 30%,
+                                transparent 70%, #000 86%, #000 100%);
+    /* the product's own release easing, not a number invented here */
+    transition: transform var(--t-release, 260ms) var(--e-snappy, ease);
+  }
+  /* it comes up on hover and stays up while the pointer is there */
+  [data-todoband] [data-act]:hover::after,
+  [data-todoband] [data-go]:hover::after { transform: translateY(0); }
+  /* the label and the arrow are always above it */
+  [data-todoband] [data-act] > *, [data-todoband] [data-go] > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* Travel is what goes, not the state. The wheat still appears on hover -- that
+   is the information -- it just appears rather than growing. The hover rule
+   above already says 62%, so this only has to stop the animation. */
+@media (prefers-reduced-motion: reduce) {
+  [data-todoband] [data-act]::after,
+  [data-todoband] [data-go]::after { transition: none; }
+}
+
+/* ════ THE PRINTED OFFSET, and why it is not here ═══════════════════════════
+ *
+ * short-panther-37 (D3OXY, uiverse.io) uses a hard offset shadow with no blur,
+ * which reads as ink printed slightly off-register. It looked like a good match
+ * for a product whose panels are sheets of paper, so it was tried on the record
+ * of evidence -- the one surface that really is a printed record.
+ *
+ * It does not belong, and the reason is a rule this product already follows.
+ * A shadow here is tinted to the background hue (.lift1 is two layers of
+ * rgba(28,26,23,.05-.06) on the warm ground) precisely so that no pure-black
+ * drop lands on a light surface. A 5px solid --ink offset is that pure-black
+ * drop. Shipping both would be two shadow languages on one card; shipping only
+ * the offset would break the rule to borrow a look.
+ *
+ * The torn edge above is from the same family of ideas and DOES belong, because
+ * it is a hover on a control rather than a shadow on a sheet.
+ */
+
+/* ════ EVERY EDGE VISIBLE ═══════════════════════════════════════════════════
+ *
+ * The warm palette has eight steps inside a 1.4:1 total range, so a fill can sit
+ * on another fill at 1.06:1 and be, to the eye, the same colour. verify-hig
+ * reported clean the whole time, because it measures TEXT on a background and
+ * the text was always fine. What was not fine was finding the card.
+ *
+ * Measured on the real pages, 28 pairings under 1.20:1 with nothing drawing the
+ * boundary. The worst was #f2e6cd on #ddd7d1 at 1.154 -- the amber attention
+ * band, which is how this product says "you can only do this once". A warning
+ * you cannot find is not a warning.
+ *
+ * The palette is the owner's and it is not repainted here. Instead the boundary
+ * is drawn: a 1px hairline in #c3bcb6, which is 1.53:1 against the surface and
+ * 1.32:1 against the ground, so it reads on both. inset, so it costs no layout.
+ */
+[style*="background: #f2e6cd"],
+[style*="background: #eae4de"],
+[style*="background: #e7e1db"],
+.chip, .lang, .langOn {
+  box-shadow: inset 0 0 0 1px #c3bcb6;
+}
+
+/* A control that is switched off is SUPPOSED to recede, so #c9ced4 on the ground
+   at 1.11:1 is the disabled button doing its job. It keeps no hairline. */
+[aria-disabled="true"][style*="background: #c9ced4"],
+.tap[style*="background: #c9ced4"] { box-shadow: none; }
+
+/* The cool family is deliberate -- --page-cool is the investor/buyer/admin
+ * ground -- but a cool tint on white is 1.03-1.18:1, so the edge still has to be
+ * drawn. --rule-cool exists for exactly this and is used here rather than the
+ * warm hairline, which would read as a warm line on a cool sheet. */
+[style*="background: #f3f6f9"], [style*="background: #f7f8f9"],
+[style*="background: #eef1f3"], [style*="background: #e8edf2"],
+[style*="background: #eef0f4"], [style*="background: #f7e9e6"] {
+  box-shadow: inset 0 0 0 1px var(--rule-cool, #e4e9ee);
+}
+/* the alarm tint is warm, so it takes a warm line */
+[style*="background: #f7e9e6"] { box-shadow: inset 0 0 0 1px #e0b4ac; }
+
+/* ── a field that is switched off has to LOOK switched off ─────────────────
+ *
+ * report-harvest disables the revenue box when the farmer ticks "the crop
+ * failed, there was nothing to sell" -- the figure is kept rather than wiped,
+ * because losing what you typed for ticking a box is its own bug -- and the box
+ * went on rendering that figure in full-strength ink at opacity 1. So the screen
+ * read "I sold it for 4,50,000" directly above "there was nothing to sell", with
+ * nothing to say which one counted. Typing was refused and the refusal was
+ * invisible: state in the DOM and not on the screen.
+ *
+ * !important is load-bearing. wire.js builds every field with `all: unset` and
+ * then writes an explicit colour into the element's own style attribute, so an
+ * inline declaration outranks any rule here. Same collision as the drawn panel
+ * in loaders.css.
+ *
+ * #605a53 on #f6f3ef is 6.36:1 -- comfortably past AA for body text, and clearly
+ * weaker than the #1d1a17 a live field uses, which is the whole point.
+ *
+ * The fields are built by wire.js at runtime, so no drawn page carries an input
+ * at all and verify-layout never sees this rule.
+ */
+input:disabled, textarea:disabled {
+  color: var(--ink-3, #605a53) !important;
+}

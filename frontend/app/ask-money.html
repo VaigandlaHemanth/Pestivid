@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
+  <title>Ask for money · Pestivid</title>
+  <!-- generated from design/AskMoney.dc.html by frontend/build-pages.mjs -- do not edit -->
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta name="robots" content="noindex, follow">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600;700&amp;display=swap">
+  <link rel="stylesheet" href="./tokens.css">
+  <!-- After tokens, because it adapts what the boards pin. Nothing in it fires
+       at a design's own width. -->
+  <link rel="stylesheet" href="./loaders.css">
+  <link rel="stylesheet" href="./responsive.css">
+  <style>
+
+    body { margin: 0; }
+    a { color: #01579b; } a:hover { color: #013f70; }
+    .a { font-family: 'Anek Latin', system-ui, sans-serif; }
+    .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
+    .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
+    .ph  { width: 360px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column;
+           box-sizing: border-box; }
+    .hd  { background: #f6f3ef; padding: 14px 18px 13px; flex-shrink: 0; }
+    .stp { font-size: 13px; color: #605a53; letter-spacing: .04em; }
+    .cap { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 9px; max-width: 45ch; }
+    .lb  { font-size: 16px; font-weight: 600; }
+    .bx  { background: #f6f3ef; height: 58px; margin-top: 7px; display: flex; align-items: center;
+           padding: 0 15px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 18px; font-weight: 600; }
+    .cp  { min-height: 44px; box-sizing: border-box; padding: 10px 14px; font-size: 15px;
+           background: #eae4de; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .cpOn{ min-height: 44px; box-sizing: border-box; padding: 10px 14px; font-size: 15px;
+           background: #1d1a17; color: #f6f3ef; font-weight: 600; display: flex; align-items: center;
+           justify-content: center; text-align: center; }
+    .hint{ font-size: 13.5px; line-height: 1.45; margin-top: 6px; color: #605a53; }
+    /* the three tiers of the investor page, reused verbatim so the farmer can see
+       which of her answers becomes which kind of claim */
+    .tier{ padding: 18px 20px; box-shadow: inset 0 0 0 1px #c3bcb6; }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    /* A nav item was a 20px-tall word: under the 28x28 pointer minimum and
+       well under 44x44 by touch, which is the HIG recommended control size.
+       The bar centres its items, so giving them a real height moves nothing
+       and makes the whole word-plus-air pressable. */
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .railcard  { color: #1d1a17; padding: 20px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .railh { font-size: 15px; font-weight: 600; }
+    .railp { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; }
+    .rail  { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    /* The back link: in the content above the heading, naming its destination.
+       44px of tap height for a phone, taken as padding so the text still sits
+       tight to the heading it belongs to. */
+    /* The way out: an icon-only chevron, 44x44 of target under a 21px glyph,
+       the same control profile.html carries. The word stays in the document
+       for anyone who cannot see the arrow, drawn off-screen rather than deleted.
+       It sits ON the surface, beside the heading, and is grey, not blue: a
+       blue word at weight 600 competed with the heading from every position
+       it was tried in (design/taste-references.md). */
+    .backlink { display: inline-flex; align-items: center; justify-content: center;
+                align-self: flex-start; width: 44px; height: 44px; margin-left: -11px;
+                color: #605a53; text-decoration: none; flex-shrink: 0; }
+    .backlink:hover { color: #1d1a17; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+          overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  </style>
+</head>
+<body data-page="ask-money" data-role="farmer" data-design-width="1320" data-design-height="980">
+<div data-surface="desk" data-w="1320" class="f" style="box-sizing: border-box; width: 100%; max-width: none; margin-left: auto; margin-right: auto; min-height: 100vh; font-weight: 400; font-style: normal; letter-spacing: normal; color: rgb(29, 26, 23); text-align: start; font-variant-numeric: normal; font-feature-settings: normal; -webkit-font-smoothing: auto;   background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+        <div class="appbar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div class="appbrand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="appnav">My plots</div>
+          <div class="appnavOn">Money</div>
+          <div class="appnav">Chat</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen="" data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial="" style="font-size: 13px; font-weight: 500;">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="pagehold" style="background: #f6f3ef; padding: 12px 28px 8px; display: flex; align-items: center; gap: 14px;">
+      <!-- BACK AND THE HEADING ON ONE ROW, divided by a hairline. This is the
+           chat rail's geometry, and the rail is the one place in this product
+           where the way out never read as detached: it sits BESIDE the header,
+           not above it, with the rail's own right edge (inset -1px 0 0 #ddd7d1)
+           drawn between the two. Everywhere else the back link had a whole row
+           to itself over the title, which is why it read as something dropped
+           on the page rather than part of its header. Same row, same place, on
+           every screen, so "how do I get out" has one answer. An <a href> so it
+           can still be middle-clicked; chrome.js writes the real word. -->
+      <a data-chrome="back" href="./money.html" class="backlink" title="Back"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg><span data-backword="" class="sr">Money</span></a>
+      <h1 data-title="" class="pageh" style="margin: 0;">Ask for money</h1>
+    </div>
+
+
+            <div style="flex-grow: 1; background: #f6f3ef; display: grid; grid-template-columns: 1fr 340px; align-items: start;">
+      <div class="main">
+<div data-step="1" style="flex-grow: 1; padding: 20px 28px 30px;">
+          <div data-stepq="" style="font-size: 19px; font-weight: 700;">Which field is this for?</div>
+          <div style="height: 14px;"></div>
+          <div data-bind="step1.hint" style="font-size: 15px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
+            Pick a video of it. You cannot ask for money without one.
+          </div>
+
+          <div style="display: flex; flex-direction: column; margin-top: 14px; box-shadow: inset 0 1px 0 #ddd7d1;">
+            <div data-specimen="" data-vidrow="" style="background: #f6f3ef; padding: 12px 13px; display: flex; gap: 12px; align-items: center; box-shadow: inset 0 0 0 2px #1d1a17;">
+              <div data-thumb="" style="width: 62px; height: 46px; background: #37322d; flex-shrink: 0; position: relative; overflow: hidden;"></div>
+              <div style="flex-grow: 1;">
+                <div class="m" style="font-size: 15.5px; font-weight: 600;">Canal plot · 18 August</div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.8"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+                  <div class="m" style="font-size: 13px; color: #006934; font-weight: 600;">Date proved</div>
+                </div>
+              </div>
+            </div>
+            <div data-specimen="" data-vidrow="" style="background: #f6f3ef; padding: 12px 13px; display: flex; gap: 12px; align-items: center; box-shadow: inset 0 -1px 0 #ddd7d1;">
+              <div data-thumb="" style="width: 62px; height: 46px; background: #37322d; flex-shrink: 0; position: relative; overflow: hidden;"></div>
+              <div style="flex-grow: 1;">
+                <div class="m" style="font-size: 15.5px; font-weight: 600;">Canal plot · 11 August</div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.8"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
+                  <div class="m" style="font-size: 13px; color: #006934; font-weight: 600;">Date proved</div>
+                </div>
+              </div>
+            </div>
+            <!-- not selectable yet, and told why rather than just dimmed. The bar is
+                 that we have hashed and analysed the file, NOT that its Bitcoin
+                 date has landed: that arrives later and is not what the server
+                 checks. See services/videoEligibility.js. -->
+            <div data-specimen="" style="background: #eae4de; padding: 12px 13px; display: flex; gap: 12px; align-items: center; box-shadow: inset 0 -1px 0 #ddd7d1;">
+              <div style="width: 62px; height: 46px; background: #4a443d; flex-shrink: 0;"></div>
+              <div style="flex-grow: 1;">
+                <div class="m" style="font-size: 15.5px; font-weight: 600; color: #4a443d;">Canal plot · today</div>
+                <div style="font-size: 13px; color: #4a443d; margin-top: 2px;">We are still checking this one, usually a minute</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <div class="lb">What are you growing?</div>
+            <div class="bx" style="max-width: 360px;">Potato</div>
+          </div>
+          <div style="margin-top: 15px;">
+            <!-- The unit belongs where the eye is. asField replaces the drawn box
+                 below -- which read "2 acres" -- with an input whose placeholder is
+                 just "2", so the word acres left the screen entirely: it appears
+                 nowhere on this page. The aria-label already said "How much land, in
+                 acres", so a screen reader was told the unit and the eye was not,
+                 and later screens go on to assert "2 acres" about whatever was
+                 typed. India measures land in guntas and bighas as readily as acres;
+                 a bare number box is how a farmer records the wrong field size
+                 without ever being told which unit was assumed. -->
+            <div class="lb">How much land, in acres?</div>
+            <div class="bx m" style="max-width: 220px;">2 acres</div>
+          </div>
+
+        </div>
+<div data-step="2" style="flex-grow: 1; padding: 20px 28px 30px; display: none;">
+          <div data-stepq="" style="font-size: 19px; font-weight: 700;">How much do you need?</div>
+          <div style="height: 14px;"></div>
+          <div class="lb">Amount</div>
+          <div data-bind="amount" class="bx m" style="height: 64px; font-size: 23px; font-weight: 700; box-shadow: inset 0 0 0 2px #1d1a17;">₹5,00,000</div>
+          <div class="hint">Seed, fertiliser, labour, water, transport for the whole season.</div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">Until when?</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+              <div class="cp" data-chip="timeline">4 months</div>
+              <div class="cpOn" data-chip="timeline">6 months</div>
+              <div class="cp" data-chip="timeline">9 months</div>
+              <div class="cp" data-chip="timeline">Other</div>
+            </div>
+            <div class="hint">Harvest is due about a month before this. Investors see the date, not the number of months.</div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">How are you growing it?</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+              <div class="cpOn" data-chip="method">Normal, with sprays</div>
+              <div class="cp" data-chip="method">No sprays at all</div>
+              <div class="cp" data-chip="method">Water beds</div>
+              <div class="cp" data-chip="method">Fish and plants</div>
+              <div class="cp" data-chip="method">Building the soil back</div>
+            </div>
+            <div class="hint">Plain words on purpose. Nobody standing in a field calls it conventional or regenerative.</div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <div class="lb">Anything they should know?</div>
+            <div style="background: #f6f3ef; min-height: 96px; margin-top: 7px; padding: 13px 15px; box-shadow: inset 0 0 0 1px #c3bcb6; font-size: 15.5px; line-height: 1.5; color: #4a443d;">
+              Canal water has been steady this year. Last Rabi I sold 40 quintal off this plot.
+            </div>
+            <div class="hint">Optional, and short is fine. Say what happened last year rather than what you hope for this one.</div>
+          </div>
+        </div>
+<div data-step="3" style="flex-grow: 1; padding: 20px 28px 30px; display: none;">
+          <div data-stepq="" style="font-size: 19px; font-weight: 700;">How do they get paid?</div>
+          <div style="height: 14px;"></div>
+          <!-- two cards, each carrying its own failure case. this is the one
+               question on which a farmer can lose their land. -->
+          <div data-methodcard="" style="background: #f6f3ef; padding: 15px 16px; box-shadow: inset 0 0 0 2px #1d1a17;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <div style="width: 20px; height: 20px; flex-shrink: 0; background: #1d1a17; border-radius: 10px; margin-top: 2px;"></div>
+              <div>
+                <div style="font-size: 17px; font-weight: 700;">Share the profit</div>
+                <div style="font-size: 14.5px; line-height: 1.55; margin-top: 4px; color: #4a443d;">
+                  They take a share of whatever is left after your costs. <span style="font-weight: 700;">If the
+                  crop fails there is no profit, and you owe them nothing.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div data-methodcard="" style="background: #f6f3ef; padding: 15px 16px; margin-top: 10px; box-shadow: inset 0 0 0 1px #c3bcb6;">
+            <div style="display: flex; align-items: flex-start; gap: 10px;">
+              <div style="width: 20px; height: 20px; flex-shrink: 0; box-shadow: inset 0 0 0 2px #78716a; border-radius: 10px; margin-top: 2px;"></div>
+              <div>
+                <div style="font-size: 17px; font-weight: 700;">Pay the whole amount back</div>
+                <div style="font-size: 14.5px; line-height: 1.55; margin-top: 4px; color: #4a443d;">
+                  You return the <span data-bind="terms.amount">₹5,00,000</span> whatever happens.
+                  <span style="font-weight: 700; color: #a71930;">If the crop fails you still owe it.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div data-share="" style="margin-top: 18px;">
+            <div class="lb">What share of the profit?</div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <div class="cp">40%</div>
+              <div class="cp">50%</div>
+              <div class="cpOn">60%</div>
+              <div class="cp">70%</div>
+            </div>
+            <div class="hint">You keep the rest, plus the <span data-bind="terms.amount">₹5,00,000</span> they gave you.</div>
+          </div>
+
+          <!-- the required roi field, handled so it cannot read as a promise -->
+          <div style="background: #f2e6cd; padding: 15px 16px; margin-top: 18px;">
+            <div style="font-size: 15.5px; font-weight: 700; color: #7c4a12;">What do you think they will get back?</div>
+            <div style="margin-top: 9px;">
+              <div data-bind="roi.value" class="m" style="font-size: 15.5px; font-weight: 700;">34%</div>
+              <div data-bind="roi.basis" style="font-size: 14.5px; line-height: 1.5; margin-top: 2px; color: #4a443d;">worked out from your own last season</div>
+            </div>
+            <div style="font-size: 14px; line-height: 1.55; margin-top: 8px; color: #4a443d;">
+              <span data-bind="roi.source">You sold ₹9,32,000 and spent ₹2,58,400 last Rabi, and we filled this in from those numbers so it is not a figure pulled from the air.</span>
+              <span style="font-weight: 700;">It will be
+              shown as your guess, never as a promise, and nobody will be paid on it.</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 22px; display: flex;">
+          <div style="background: #016abe; min-height: 58px; box-sizing: border-box; padding: 0 46px; display: flex; align-items: center; justify-content: center;">
+            <div data-next="" style="font-size: 17px; font-weight: 700; color: #fff;">Next</div>
+          </div>
+        </div>
+      </div>
+      <div class="rail">
+        <div class="railcard">
+          <div class="railh">One of these is checkable</div>
+          <div class="railp">
+            The video is the only thing on this page an investor can verify without trusting you: we
+            hashed the bytes and put the hash in a Bitcoin block. Every other line here is your word,
+            and their screen will say so.
+          </div>
+        </div>
+        <div class="railcard">
+          <div class="railh">Nothing is sent yet</div>
+          <div class="railp">
+            You can leave this and come back. It goes out only when you press the last button, and
+            you will see exactly what an investor sees before that.
+          </div>
+        </div>
+      </div>
+    </div>
+
+      </div>
+<script type="module" src="./pages/ask-money.js"></script>
+</body>
+</html>

@@ -17,13 +17,13 @@
     .lift1 { box-shadow: 0 1px 2px rgba(29,26,23,.06), 0 3px 10px rgba(29,26,23,.05); }
     .lbl { font-size: 13.5px; color: #605a53; }
     .nav { font-size: 15.5px; color: #4a443d; display: inline-flex; align-items: center; min-height: 34px; }
-    .navOn { font-size: 15.5px; font-weight: 600; color: #1d1a17; box-shadow: inset 0 -2px 0 #012169; display: inline-flex; align-items: center; min-height: 34px; }
-    .th { font-size: 13px; color: #605a53; text-transform: uppercase; letter-spacing: .05em;
+    .navOn { font-size: 15.5px; font-weight: 500; color: #1d1a17; box-shadow: inset 0 -2px 0 #012169; display: inline-flex; align-items: center; min-height: 34px; }
+    .th { font-size: 13px; color: #605a53; letter-spacing: .05em;
           padding: 0 0 9px; text-align: left; font-weight: 600; }
     .td { padding: 16px 0; vertical-align: top; box-shadow: inset 0 1px 0 #e4e9ee; }
     .pill { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 4px 9px; }
     /* something that reads as a link has to be reachable like one */
-    .act  { display: inline-flex; align-items: center; min-height: 26px; font-size: 13.5px;
+    .act  { display: inline-flex; align-items: center; min-height: 28px; font-size: 13.5px;
             font-weight: 600; color: #01579b; }
     .act:hover { color: #013f70; }
   </style>
@@ -32,19 +32,33 @@
 <div data-page="orders" class="a" style="width: 1320px; background: #f3f6f9; color: #1d1a17; box-sizing: border-box;">
 
   <div style="background: #fff; padding: 15px 44px; display: flex; align-items: center; gap: 34px; box-shadow: inset 0 -1px 0 #e0e6ec;">
-    <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.022em;">Pestivid</div>
+    <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.022em; min-height: 44px; display: flex; align-items: center;">Pestivid</div>
     <div style="display: flex; gap: 26px; align-items: center; flex-grow: 1;">
       <div class="nav">Lots for sale</div>
-      <div data-title class="navOn">What you bought</div>
-      <div class="nav">Messages</div>
+      <!-- A plain nav slot. This was
+           `<h1 data-title class="navOn">What you bought</h1>` -- the bar's nav
+           item and the page's declared heading and an h1, one element doing all
+           three, and it cost three things at once. relabel() scans div/span/a, so
+           it found two slots where a buyer wants three, bailed, and left this bar
+           saying "Lots for sale" and "What you bought" while market.html beside it
+           said "Buy produce" and "My orders" for those very same two destinations.
+           wire.js takes [data-title] as the page's heading, so the heading was a
+           nav word. And the real h1 below says the same four words again, which
+           put two h1s on one screen. -->
+      <div class="nav">What you bought</div>
+      <div class="nav">Chat</div>
     </div>
-    <div data-readout data-bind="me.initial" style="width: 34px; height: 34px; background: #e6ebf0; border-radius: 17px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600;">D</div>
+    <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+      <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+    </div>
+    <div data-chrome="you" data-readout data-bind="me.initial" style="width: 34px; height: 34px; background: #e6ebf0; border-radius: 17px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600;">D</div>
   </div>
 
   <div style="padding: 32px 44px 44px;">
 
     <div data-bind="buyer.line" class="lbl">Deccan Cold Storage &middot; buyer since March 2026</div>
-    <h1 style="margin: 4px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.03em;">What you bought</h1>
+    <h1 data-title style="margin: 4px 0 0; font-size: 30px; font-weight: 700; letter-spacing: -0.03em;">What you bought</h1>
 
     <div style="display: grid; grid-template-columns: minmax(168px, max-content) minmax(248px, max-content) 1fr; margin-top: 26px; align-items: start; box-shadow: inset 0 1px 0 #1d1a17, inset 0 -1px 0 #e4e9ee;">
       <div style="padding: 18px 26px 18px 0;">
@@ -61,7 +75,7 @@
         <div style="font-size: 15px; font-weight: 700;">We record the sale, not the delivery</div>
         <div style="font-size: 14px; line-height: 1.5; margin-top: 4px; color: #4a443d;">
           There is no dispatched, no in transit, no delivered on this page, because we do not know
-          any of those things. If a lot did not arrive, that is between you and the farmer &mdash; we
+          any of those things. If a lot did not arrive, that is between you and the farmer, we
           hold no evidence either way and cannot take a side.
         </div>
       </div>
@@ -77,20 +91,20 @@
           <th class="th" style="width: 21%;">Pesticide, as declared</th>
         </tr>
 
-        <tr>
+        <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Potato &mdash; 40 quintal</div>
-            <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
+            <div style="font-size: 16.5px; font-weight: 600;">Potato, 40 quintal</div>
+            <div data-who style="font-size: 14px; color: #605a53; margin-top: 2px;">Alice Farmer &middot; Kadapa</div>
           </td>
           <td class="td">
             <div class="m" style="font-size: 18px; font-weight: 700;">&#8377;49,500</div>
-            <div data-asked class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">She asked &#8377;44,000&ndash;&#8377;52,000</div>
+            <div data-asked class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">She asked &#8377;44,000-&#8377;52,000</div>
           </td>
           <td class="td m" style="font-size: 15px;">12 Aug 2026</td>
           <td class="td">
             <div style="display: flex; align-items: center; gap: 5px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.6"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
-              <div class="m" style="font-size: 14px; color: #006934; font-weight: 600;">18 Jul, block 878,410</div>
+              <div data-dated class="m" style="font-size: 14px; color: #006934; font-weight: 600;">18 Jul, block 878,410</div>
             </div>
             <div class="act" style="margin-top: 5px;">Watch it &middot; check the date</div>
           </td>
@@ -99,14 +113,14 @@
           </td>
         </tr>
 
-        <tr>
+        <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Tomato &mdash; 90 crate</div>
+            <div style="font-size: 16.5px; font-weight: 600;">Tomato, 90 crate</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Suresh Babu &middot; Madanapalle</div>
           </td>
           <td class="td">
             <div class="m" style="font-size: 18px; font-weight: 700;">&#8377;1,22,000</div>
-            <div class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">He asked &#8377;1,10,000&ndash;&#8377;1,35,000</div>
+            <div class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">He asked &#8377;1,10,000-&#8377;1,35,000</div>
           </td>
           <td class="td m" style="font-size: 15px;">28 Jul 2026</td>
           <td class="td">
@@ -125,14 +139,14 @@
           </td>
         </tr>
 
-        <tr>
+        <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Groundnut &mdash; 60 quintal</div>
+            <div style="font-size: 16.5px; font-weight: 600;">Groundnut, 60 quintal</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Bhaskar Naidu &middot; Anantapur</div>
           </td>
           <td class="td">
             <div class="m" style="font-size: 18px; font-weight: 700;">&#8377;94,500</div>
-            <div class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">He asked &#8377;88,000&ndash;&#8377;99,000</div>
+            <div class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">He asked &#8377;88,000-&#8377;99,000</div>
           </td>
           <td class="td m" style="font-size: 15px;">3 Jul 2026</td>
           <td class="td">
@@ -148,21 +162,21 @@
         </tr>
 
         <!-- the row that tells a buyer something they will not want to hear -->
-        <tr>
+        <tr data-specimen>
           <td class="td">
-            <div style="font-size: 16.5px; font-weight: 600;">Onion &mdash; 75 quintal</div>
+            <div style="font-size: 16.5px; font-weight: 600;">Onion, 75 quintal</div>
             <div style="font-size: 14px; color: #605a53; margin-top: 2px;">Lakshmi Devi &middot; Kurnool</div>
           </td>
           <td class="td">
             <div class="m" style="font-size: 18px; font-weight: 700;">&#8377;1,20,000</div>
-            <div class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">She asked &#8377;1,15,000&ndash;&#8377;1,30,000</div>
+            <div class="m" style="font-size: 13.5px; color: #605a53; margin-top: 2px;">She asked &#8377;1,15,000-&#8377;1,30,000</div>
           </td>
           <td class="td m" style="font-size: 15px;">19 Jun 2026</td>
           <td class="td">
             <div data-readout class="pill" style="background: #f7e9e6; color: #a71930;">Matched another farmer</div>
             <div style="font-size: 13.5px; line-height: 1.45; margin-top: 5px; color: #4a443d;">
               94% of its frames match footage another farmer sent in May. The date on this file is
-              still sound &mdash; whose field it shows is now in doubt.
+              still sound, whose field it shows is now in doubt.
             </div>
           </td>
           <td class="td" style="font-size: 14.5px; line-height: 1.45;">
@@ -176,9 +190,12 @@
 
       <!-- the receipt. every field on it is one the server actually stores. -->
       <div style="width: 560px; background: #fff; padding: 24px 26px;" class="lift1">
-        <div style="display: flex; justify-content: space-between; align-items: baseline;">
-          <div data-bind="receipt.head" style="font-size: 17px; font-weight: 700;">Receipt &mdash; potato, 12 August</div>
-          <div class="act">Download</div>
+        <!-- gap and flex-shrink: the panel is 560px wide but sits in a grid
+             track that squeezes it, and space-between alone let a long receipt
+             title butt straight up against "Download" with no space at all. -->
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 18px;">
+          <div data-bind="receipt.head" style="font-size: 17px; font-weight: 700;">Receipt, potato, 12 August</div>
+          <div class="act" style="flex-shrink: 0;">Download</div>
         </div>
         <div style="margin-top: 16px;">
           <div style="display: flex; justify-content: space-between; padding: 9px 0; box-shadow: inset 0 -1px 0 #eef2f5;">

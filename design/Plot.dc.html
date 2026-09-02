@@ -12,12 +12,14 @@
     a { color: #01579b; } a:hover { color: #013f70; }
     .f { font-family: system-ui, "Anek Latin", "Noto Sans", sans-serif; }
     .m { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'zero' 1; }
-    .sec { font-size: 15px; color: #605a53; padding: 20px 20px 8px; }
-    .card { background: #f6f3ef; padding: 16px 20px; }
+    /* Section labels group with space, not an edge (profile.html). */
+    .sec { font-size: 12px; font-weight: 500; letter-spacing: .06em; color: #605a53; padding: 28px 28px 8px; }
+    .pcard { padding: 0 28px 18px; }
     /* a video row on a plot: thumbnail, date, and the one fact that matters —
        whether its date is now beyond changing */
-    .vid { background: #f6f3ef; padding: 13px 20px; display: flex; gap: 13px; align-items: center; }
-    .th  { width: 66px; height: 50px; flex-shrink: 0; background: #37322d; position: relative; }
+    /* One surface, a hairline between rows: no zebra, no box. */
+    .vid { padding: 12px 28px; display: flex; gap: 13px; align-items: center; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .pthumb  { width: 66px; height: 50px; flex-shrink: 0; background: #37322d; position: relative; }
     .dur { position: absolute; bottom: 3px; right: 3px; background: rgba(29,26,23,.82); color: #f6f3ef;
            font-size: 11px; padding: 1px 4px; font-variant-numeric: tabular-nums; }
     /* Press, declared here so the artboard shows the behaviour rather than
@@ -31,112 +33,173 @@
       .tap { transition: none; }
       .tap:active { transform: none; opacity: .72; }
     }
+
+    /* -- the shell, identical on every farmer board -----------------------
+       The same 60px white bar invest, market, orders, portfolio and admin
+       already carry. The farmer used to get a phone header on a 360px panel,
+       so the product read as two products: a desktop app for the people with
+       money and a stretched phone for the person doing the work.
+       responsive.css folds .appbar, .colh and .colr onto a phone once, for all
+       fifteen, which only works because they really are the same classes. */
+    .appbar   { background: #fff; color: #1d1a17; padding: 0 28px; height: 60px; display: flex; align-items: center;
+             justify-content: space-between; flex-shrink: 0; }
+    /* A nav item was a 20px-tall word: under the 28x28 pointer minimum and
+       well under 44x44 by touch, which is the HIG recommended control size.
+       The bar centres its items, so giving them a real height moves nothing
+       and makes the whole word-plus-air pressable. */
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .railcard  { color: #1d1a17; padding: 20px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .railh { font-size: 15px; font-weight: 600; }
+    .railp { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; }
+    .rail  { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
+    .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
+    /* The back link: in the content above the heading, naming its destination.
+       44px of tap height for a phone, taken as padding so the text still sits
+       tight to the heading it belongs to. */
+    /* The way out: an icon-only chevron, 44x44 of target under a 21px glyph,
+       the same control profile.html carries. The word stays in the document
+       for anyone who cannot see the arrow, drawn off-screen rather than deleted.
+       It sits ON the surface, beside the heading, and is grey, not blue: a
+       blue word at weight 600 competed with the heading from every position
+       it was tried in (design/taste-references.md). */
+    .backlink { display: inline-flex; align-items: center; justify-content: center;
+                align-self: flex-start; width: 44px; height: 44px; margin-left: -11px;
+                color: #605a53; text-decoration: none; flex-shrink: 0; }
+    .backlink:hover { color: #1d1a17; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+          overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .main  { display: flex; flex-direction: column; }
+    .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </helmet>
 
-<div data-page="plot" class="f" style="width: 360px; min-height: 1040px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
+<div data-page="plot" class="f" style="width: 1320px; min-height: 940px; background: #ddd7d1; color: #1d1a17; display: flex; flex-direction: column; box-sizing: border-box; position: relative;">
 
-  <div style="background: #f6f3ef; padding: 15px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-    <div data-chrome="back" style="width: 44px; height: 44px; margin-left: -11px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2.2"><path d="M15 18l-6-6 6-6"></path></svg></div>
-    <div>
-      <div data-title data-bind="plot.name" style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Canal plot</div>
-      <div data-bind="plot.meta" style="font-size: 14.5px; color: #605a53;">Two acres &middot; potato &middot; sown 12 June</div>
+  <div class="appbar">
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div class="appbrand">Pestivid</div>
+        <div style="display: flex; gap: 24px; align-items: baseline;">
+          <div class="appnavOn">My plots</div>
+          <div class="appnav">Money</div>
+          <div class="appnav">Chat</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div data-chrome="mail" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#37322d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M10.3 19a2 2 0 0 0 3.4 0"></path></svg>
+          <div data-specimen data-readout class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
+        </div>
+        <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div data-initial style="font-size: 13px; font-weight: 500;">A</div>
+        </div>
+      </div>
     </div>
-  </div>
+    <div class="pagehold" style="background: #f6f3ef; padding: 12px 28px 8px; display: flex; align-items: center; gap: 14px;">
+      <!-- BACK AND THE HEADING ON ONE ROW, divided by a hairline. This is the
+           chat rail's geometry, and the rail is the one place in this product
+           where the way out never read as detached: it sits BESIDE the header,
+           not above it, with the rail's own right edge (inset -1px 0 0 #ddd7d1)
+           drawn between the two. Everywhere else the back link had a whole row
+           to itself over the title, which is why it read as something dropped
+           on the page rather than part of its header. Same row, same place, on
+           every screen, so "how do I get out" has one answer. An <a href> so it
+           can still be middle-clicked; chrome.js writes the real word. -->
+      <a data-chrome="back" href="./home.html" class="backlink" title="Back"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg><span data-backword class="sr">My plots</span></a>
+      <div style="display: flex; flex-direction: column;">
+        <h1 data-title data-bind="plot.name" class="pageh" style="margin: 0;">Canal plot</h1>
+        <div data-bind="plot.meta" class="pagesub"></div>
+      </div>
+    </div>
 
-  <div style="flex-grow: 1;">
+
+  <div style="flex-grow: 1; background: #f6f3ef; display: flex; flex-direction: column;">
 
     <!-- where the season is. a bar, because a week number alone means nothing -->
-    <div style="background: #eae4de; padding: 17px 20px;">
+        <div style="flex-grow: 1; background: #f6f3ef; display: grid; grid-template-columns: 1fr 372px; align-items: start;">
+      <div class="main">
+<div style="padding: 20px 28px 18px; box-shadow: inset 0 -1px 0 #ddd7d1;">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <div data-bind="plot.stage" class="m" style="font-size: 16px; font-weight: 600;">3 videos on this plot</div>
+        <div data-bind="plot.stage" class="m" style="font-size: 16px; font-weight: 500;">3 videos on this plot</div>
         <div data-bind="plot.dates" class="m" style="font-size: 15px; color: #605a53;">2 of 3 dates written</div>
       </div>
-      <div style="height: 10px; background: #d3ccc5; margin-top: 9px; display: flex;">
+      <div style="height: 6px; background: #ddd7d1; margin-top: 10px; display: flex;">
         <div data-progress style="width: 100%; background: #1d1a17; transform-origin: left; transform: scaleX(.66);"></div>
       </div>
     </div>
-
-    <!-- the thing an investor is actually buying: a dated trail -->
-    <div data-bind="plot.videosLabel" class="sec">Videos of this plot</div>
-
-    <div class="vid">
-      <div class="th"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:41</div></div>
+<div data-bind="plot.videosLabel" class="sec">Videos of this plot</div>
+<div data-specimen class="vid">
+      <div class="pthumb"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:41</div></div>
       <div style="flex-grow: 1;">
-        <div class="m" style="font-size: 16px; font-weight: 600;">18 August, 6:44 am</div>
+        <div class="m" style="font-size: 16px; font-weight: 500;">18 August, 6:44 am</div>
         <div style="display: flex; align-items: center; gap: 5px; margin-top: 3px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.6"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
-          <div class="m" style="font-size: 14px; color: #006934; font-weight: 600;">Date stamped &middot; block 881,204</div>
+          <div class="m" style="font-size: 14px; color: #006934; font-weight: 500;">Date stamped &middot; block 881,204</div>
         </div>
       </div>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
     </div>
-
-    <div class="vid" style="background: #eae4de;">
-      <div class="th"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:36</div></div>
+<div data-specimen class="vid">
+      <div class="pthumb"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:36</div></div>
       <div style="flex-grow: 1;">
-        <div class="m" style="font-size: 16px; font-weight: 600;">11 August, 7:02 am</div>
+        <div class="m" style="font-size: 16px; font-weight: 500;">11 August, 7:02 am</div>
         <div style="display: flex; align-items: center; gap: 5px; margin-top: 3px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#006934" stroke-width="2.6"><path d="M4.5 12.5l5 5L19.5 7"></path></svg>
-          <div class="m" style="font-size: 14px; color: #006934; font-weight: 600;">Date stamped &middot; block 880,161</div>
+          <div class="m" style="font-size: 14px; color: #006934; font-weight: 500;">Date stamped &middot; block 880,161</div>
         </div>
       </div>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
     </div>
-
-    <!-- waiting, and told how long. the wait is the product working, not a fault -->
-    <div class="vid">
-      <div class="th"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:29</div></div>
+<div data-specimen class="vid">
+      <div class="pthumb"><div data-mark style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="1.9"><path d="M4 6h16v12H4z"></path><path d="M10 9.5l5 2.5-5 2.5z" fill="#78716a"></path></svg></div><div data-readout class="dur">0:29</div></div>
       <div style="flex-grow: 1;">
-        <div class="m" style="font-size: 16px; font-weight: 600;">Today, 8:12 am</div>
+        <div class="m" style="font-size: 16px; font-weight: 500;">Today, 8:12 am</div>
         <div style="font-size: 14px; color: #4a443d; margin-top: 3px;">On our server &middot; date being written, usually by tomorrow</div>
       </div>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716a" stroke-width="2.1" style="flex-shrink: 0;"><path d="M9 6l6 6-6 6"></path></svg>
     </div>
-
-    <div style="padding: 14px 20px 0;">
-      <div class="tap" style="background: #f6f3ef; box-shadow: inset 0 0 0 1.5px #1d1a17; height: 58px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+<div style="padding: 20px 28px 0;">
+      <div class="tap" style="background: #f6f3ef; box-shadow: inset 0 0 0 1.5px #1d1a17; height: 56px; display: flex; align-items: center; justify-content: center; gap: 10px;">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1d1a17" stroke-width="2"><path d="M3 7.5h3.2l1.4-2h6.8l1.4 2H21v12H3z"></path><circle cx="12" cy="13" r="3.6"></circle></svg>
-        <div style="font-size: 17px; font-weight: 600; color: #1d1a17;">Record another one here</div>
+        <div style="font-size: 16px; font-weight: 600; color: #1d1a17;">Record another one here</div>
       </div>
     </div>
-
-    <!-- money, on this plot only. the same numbers the Money screen totals up -->
-    <div class="sec">Money on this plot</div>
-    <div class="card">
+      </div>
+      <div class="rail">
+<div class="sec">Money on this plot</div>
+<div class="pcard">
       <div style="display: flex; justify-content: space-between; align-items: baseline;">
         <div style="font-size: 16px;">Raised</div>
-        <div class="m" style="font-size: 21px; font-weight: 700;">&#8377;5,00,000</div>
+        <div class="m" style="font-size: 20px; font-weight: 600;">&#8377;5,00,000</div>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px;">
         <div style="font-size: 16px;">Four investors keep</div>
-        <div class="m" style="font-size: 17px; font-weight: 600;">60% of the profit</div>
+        <div class="m" style="font-size: 16px; font-weight: 600;">60% of the profit</div>
       </div>
-      <div style="height: 1px; background: #dcd6c9; margin: 13px 0;"></div>
+      <div style="height: 1px; background: #ddd7d1; margin: 13px 0;"></div>
       <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
         They are waiting on you to report what you sold it for. Nothing is paid until you do.
       </div>
-      <div class="tap" style="background: #016abe; height: 56px; margin-top: 13px; display: flex; align-items: center; justify-content: center;">
-        <div style="font-size: 17px; font-weight: 700; color: #fff;">Report the harvest</div>
+      <div class="tap" style="background: #016abe; height: 52px; margin-top: 16px; display: flex; align-items: center; justify-content: center;">
+        <div style="font-size: 16px; font-weight: 600; color: #fff;">Report the harvest</div>
       </div>
     </div>
-
-    <!-- the limit of the claim, on the page that makes the claim -->
-    <div style="padding: 18px 20px 0;">
-      <div style="background: #eae4de; padding: 14px 15px;">
+<div style="padding: 8px 0 0;">
+      <div style="background: #f2e6cd; padding: 16px 28px;">
         <div style="font-size: 15px; line-height: 1.5; color: #4a443d;">
           <span style="font-weight: 700;">Nobody has visited this field.</span> The acres, the crop and the
           sowing date are what you told us. We only stand behind the dates on the videos.
         </div>
       </div>
     </div>
+      </div>
+    </div>
+
   </div>
 
 
-  <!-- everything below this line needs a scroll on a 360x800 handset -->
-  <div data-fold style="position: absolute; left: 0; right: 0; top: 800px; height: 0; border-top: 1px dashed rgba(167,25,48,.45); pointer-events: none;">
-    <div style="position: absolute; right: 0; top: -8px; background: rgba(167,25,48,.82); color: #fff; font: 600 9.5px/1 system-ui, sans-serif; letter-spacing: .06em; padding: 3px 5px;">FOLD</div>
-  </div>
+  
 </div>
 </x-dc>
 

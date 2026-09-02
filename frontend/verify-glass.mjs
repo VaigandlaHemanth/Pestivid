@@ -11,7 +11,7 @@ const login = async (role) => (await fetch('http://127.0.0.1:3001/api/auth/login
   method: 'POST', headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ email: `demo.${role}@pestivid.sim`, password: 'password123' }) })).json();
 
-for (const [slug, role] of [['leaf-result','farmer'], ['market','buyer'], ['invest','investor'], ['landing',null]]) {
+for (const [slug, role] of [['leaf-check','farmer'], ['market','buyer'], ['invest','investor'], ['landing',null]]) {
   const p = await b.newPage({ viewport: { width: 1440, height: 1000 } });
   if (role) { const s = await login(role);
     await p.addInitScript(([t,u]) => { localStorage.setItem('pv.token',t); localStorage.setItem('pv.user',u); },

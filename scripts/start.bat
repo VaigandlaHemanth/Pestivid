@@ -7,15 +7,19 @@ REM  servers across ports 3000/3001/3002/5000/8080, and the README documented a
 REM  sixth. This is the single canonical entry point.
 REM
 REM  PORT MAP (the only one):
-REM    3001  Node/Express API  +  serves public/ as static files
+REM    3001  Node/Express API  +  serves frontend/ as static files
 REM    5000  Flask AI server   (optional - disease detection and RAG chat)
 REM
-REM  The frontend is served BY the API on 3001, so window.__PESTVID resolves to
-REM  same-origin /api and /ml. Open http://127.0.0.1:3001 - do NOT open
-REM  public/index.html off disk, because file:// breaks CORS on every request.
+REM  The frontend is served BY the API on 3001, so the pages call same-origin
+REM  /api. Open http://127.0.0.1:3001 - do NOT open frontend/app/*.html off
+REM  disk, because file:// breaks module loading and CORS on every request.
+REM
+REM  This file lives in scripts/, so everything below runs from the repo root.
+REM  It used to cd into scripts/ itself and then look for backend\.env there,
+REM  which does not exist, so the launcher aborted on every machine.
 REM ============================================================================
 setlocal
-cd /d "%~dp0"
+cd /d "%~dp0.."
 title PestVid
 
 echo.
@@ -48,7 +52,7 @@ if not exist "backend\node_modules" (
 
 REM ---- API + frontend on 3001 ----
 echo  [1/2] Starting Node API + frontend on http://127.0.0.1:3001 ...
-start "PestVid API" cmd /k "cd /d %~dp0backend && npm start"
+start "PestVid API" /D "%CD%\backend" cmd /k "npm start"
 timeout /t 4 /nobreak >nul
 
 REM ---- Flask AI on 5000 (optional) ----
@@ -58,7 +62,9 @@ if errorlevel 1 (
     echo        Disease detection and RAG chat will report 503, by design.
 ) else (
     echo  [2/2] Starting Flask AI server on http://127.0.0.1:5000 ...
-    start "PestVid AI" cmd /k "cd /d %~dp0 && python flask_server.py"
+    REM The AI server lives in ml-service/, not at the root: this used to run
+    REM `python flask_server.py` from the root and fail with "No such file".
+    start "PestVid AI" /D "%CD%\ml-service" cmd /k "python flask_server.py"
 )
 
 timeout /t 2 /nobreak >nul

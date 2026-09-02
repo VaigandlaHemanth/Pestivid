@@ -9,7 +9,7 @@
 // single flow: the button that leads here is ink on Invest, and this one turned
 // blue.
 import { requireUser, api, load, state } from './_guard.js';
-import { bind } from '../bind.js';
+import { showPoster, bind } from '../bind.js';
 import { rupees } from '../api.js';
 import { acts, goes, press } from '../wire.js';
 
@@ -34,11 +34,36 @@ if (ctx) {
     bind(root, {
       lot: {
         title: p.title,
-        meta: [p.farmerName, p.acres && `${p.acres} acres`, p.crop].filter(Boolean).join(' · '),
+        meta: [p.farmerName, p.acres && `${p.acres} acre${p.acres === 1 ? '' : 's'}`, p.crop].filter(Boolean).join(' · '),
         needed: rupees(Math.max(0, (p.amount || 0) - (p.fundedAmount || 0))),
+        // These two were not bound at all -- the artboard's "60%" and
+        // "Harvest reported, about 7 weeks" were shown to an investor about to
+        // send money into a season whose real share is whatever the farmer
+        // agreed. Two of the four figures on this screen were decoration.
+        share: p.investorShare != null ? `${p.investorShare}%` : 'not stated',
+        when: p.settlementMode === 'full_repayment'
+          ? 'Harvest reported, the whole amount comes back'
+          : (p.timeline
+            ? `Harvest reported, about ${p.timeline} month${p.timeline === 1 ? '' : 's'}`
+            : 'When the harvest is reported'),
       },
       amount: rupees(amount),
     });
+
+    /* THE SEASON'S FRAME, ON THE SCREEN WHERE THE MONEY LEAVES.
+     *
+     * A 132x96 dark rectangle sat beside the season's name here, drawn to hold a
+     * frame and holding nothing, on the one page in this product where somebody
+     * commits money. The frame comes from the public record route -- the same
+     * answer that carries the file's fingerprint -- so it is a frame of the file
+     * that was hashed, not a picture anybody sent us. If the record has no frame
+     * the drawn placeholder simply stays, which is honest; nothing is invented
+     * to fill it. */
+    const shot = root.querySelector('[data-seasonshot]');
+    if (shot && p.cid) {
+      const v = await api.videos.provenance(p.cid).catch(() => null);
+      showPoster(shot, v);
+    }
 
     // The acknowledgement. The whole row is the control, so the sentence is part
     // of the target rather than decoration beside it.
