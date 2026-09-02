@@ -242,7 +242,9 @@ export function noticeDestination(n, role) {
   // An admin's notices are the queue they exist to act on.
   if (role === 'admin') return n?.itemType ? 'admin' : null;
   switch (n?.itemType) {
-    case 'Message': return 'messages';
+    // Straight into the conversation. Older notices carry a message id here
+    // and fall back to the first thread, which is what messages.js did anyway.
+    case 'Message': return n.itemId ? `messages?c=${n.itemId}` : 'messages';
     case 'FundingRequest':
       return role === 'investor' ? 'invest' : role === 'farmer' ? 'money' : null;
     case 'Investment':

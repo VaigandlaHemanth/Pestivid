@@ -155,7 +155,7 @@ export function banner(n, opts = {}) {
   el.setAttribute('role', 'button');
   el.tabIndex = 0;
   el.setAttribute('aria-label', `${TITLE[kind] || 'Pestivid'}: ${n.message || n.title || ''}.`
-    + (dest ? ` Opens ${dest}.` : ' Press to mark as read.'));
+    + (dest ? ` Opens ${String(dest).split('?')[0]}.` : ' Press to mark as read.'));
   const stroke = STROKE[kind] || '#f6f3ef';
   el.innerHTML = `
     <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${GLYPH[kind] || GLYPH.bell}</svg></div>
@@ -213,7 +213,12 @@ export function banner(n, opts = {}) {
     if (gone) return;
     opts.onOpen?.(n);
     leave();
-    if (dest) location.href = `./${dest}.html`;
+    if (dest) {
+      // a destination may carry a query -- messages?c=<conversation> -- and
+      // the extension belongs on the slug, not on the end of the whole string
+      const [slug, q] = String(dest).split('?');
+      location.href = `./${slug}.html${q ? '?' + q : ''}`;
+    }
   };
   el.querySelector('.x').addEventListener('click', (e) => { e.stopPropagation(); leave(); });
   el.querySelector('.x').addEventListener('pointerdown', (e) => e.stopPropagation());
@@ -311,16 +316,22 @@ export function watchNotices(root, user) {
         if (newest) store()?.setItem(seenKey(uid), String(newest));
         return;
       }
-      const fresh = list
+      /* What ARRIVED is everything newer than this tab's baseline, read or not.
+       * A page that shows arrivals in place -- the chat, the notices list --
+       * wants all of them: pressing the banner in another tab marks the notice
+       * read within a second, and keying the chat on "unread" made it skip the
+       * very message that banner was about. Only the BANNER cares about read
+       * state: a notice already read somewhere is not announced again. */
+      const arrived = list
         .filter(n => (Date.parse(n.timestamp || n.createdAt || 0) || 0) > seen)
-        .filter(n => !n.read && !n.isRead && !shown.has(String(n._id)))
+        .filter(n => !shown.has(String(n._id)))
         .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));   // oldest first, so the newest ends on top
       if (newest > seen) store()?.setItem(seenKey(uid), String(newest));
-      if (!fresh.length) return;
-      fresh.forEach(n => shown.add(String(n._id)));
+      if (!arrived.length) return;
+      arrived.forEach(n => shown.add(String(n._id)));
 
-      for (const fn of listeners) { try { fn(fresh); } catch (e) { console.error(e); } }
-      const loud = fresh.filter(n => !quiet(n));
+      for (const fn of listeners) { try { fn(arrived); } catch (e) { console.error(e); } }
+      const loud = arrived.filter(n => !n.read && !n.isRead && !quiet(n));
       if (!loud.length) return;
 
       /* Three at most on screen. More than that at once -- the first sign-in of

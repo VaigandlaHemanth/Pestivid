@@ -356,7 +356,12 @@ router.post('/conversations/:conversationId/messages', authenticateToken, async 
                   // rather than a field. Straight quotes and three dots were both
                   // showing on screen.
                   message: `${senderDisplayName} wrote: “${savedMessage.text.slice(0, 60).trim()}${savedMessage.text.length > 60 ? '…' : ''}”`,
-                   itemId: savedMessage._id, // Link to the message document
+                   // The CONVERSATION, not the message. A notice is a door, and the
+                   // screen behind this one is the conversation the message sits in;
+                   // nothing opens a single message. With the message id here the
+                   // banner and the notices row could only land on the chat page and
+                   // leave the person to find the thread themselves.
+                   itemId: conversation._id,
                    itemType: 'Message',
                    read: false, // Initially unread for the receiver
               });
