@@ -382,7 +382,7 @@ jobs:
           # 1079 vs 1038). Every other byte was identical. So a hunk made only of
           # those two measured lines is ignored; any change to markup, style or
           # text still fails.
-          git diff --exit-code -I 'data-design-height="[0-9]+"' -I '"h": [0-9]+' \n            -- frontend/app frontend/robots.txt || {
+          git diff --exit-code -I 'data-design-height="[0-9]+"' -I '"h": [0-9]+' -- frontend/app frontend/robots.txt || {
             echo
             echo 'The committed pages are NOT what the boards produce.'
             echo 'A clone of this commit gets an app that does not match design/.'
