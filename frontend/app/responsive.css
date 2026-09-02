@@ -493,3 +493,38 @@ body > div[style*="width: 824px"] {
   [data-page="money"] [data-todoband] { flex-direction: column; align-items: stretch; gap: 14px !important; }
   [data-page="money"] [data-todoband] [data-report] { justify-content: center; }
 }
+
+/* ── the buyer's and the investor's screens, on a phone ─────────────────── */
+
+/* orders and portfolio draw their own bar: brand, a flex-grow run of nav
+   words, bell, avatar. At 390px the run was squeezed to a hundred pixels and
+   "Lots for sale" broke into three lines stacked under each other. The run
+   takes a full row of its own under the brand and the words stay whole. */
+@media (max-width: 900px) {
+  [data-page="orders"] [style*="padding: 15px 44px"],
+  [data-page="portfolio"] [style*="padding: 15px 44px"] {
+    flex-wrap: wrap; padding: 10px 16px !important; gap: 8px 18px !important;
+  }
+  [data-page="orders"] [style*="gap: 26px; align-items: center; flex-grow: 1"],
+  [data-page="portfolio"] [style*="gap: 26px; align-items: center; flex-grow: 1"] {
+    flex-basis: 100%; order: 9; gap: 18px !important;
+  }
+  .nav, .navOn { white-space: nowrap; }
+  /* the reviewer's bar carried a sentence about the audit log beside the bell;
+     at 390px it stood in a column one word wide. The bell and avatar say who
+     is signed in; the sentence goes below 900px. */
+  [data-page="admin"] [data-bind="me.line"] { display: none; }
+}
+
+/* A five-column table at 390px is not a phone layout, and shrinking its
+   columns until every cell is one word wide was what happened. It keeps a
+   readable width and scrolls inside the block the table rule above makes of
+   it; the page itself does not move sideways. */
+@media (max-width: 700px) {
+  [data-page="orders"] table, [data-page="portfolio"] table { min-width: 720px; }
+  [data-page="orders"] [style*="padding: 24px 26px 8px"],
+  [data-page="portfolio"] [style*="padding: 24px 26px 8px"] { overflow-x: auto; }
+  /* the four flag counters wrap as a row of words, not four narrow columns */
+  [data-page="admin"] div:has(> [data-count]) { flex-wrap: wrap; gap: 6px 18px; }
+  [data-page="admin"] [data-count] { white-space: nowrap; }
+}
