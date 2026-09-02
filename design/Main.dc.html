@@ -465,8 +465,13 @@ class Component extends DCLogic {
           notproves: 'That the harvest figures are true. They are the farmer’s report, which is why investors see the reported numbers and not just the result.' },
       ],
       farmerPoints: [
-        { t: 'Works with no signal. It queues and sends itself.' },
-        { t: 'Every screen in your language, and read aloud if you want.' },
+        // Not "queues and sends itself": nothing re-sends a clip after the page is
+        // closed. The clip stays on the handset until it is sent, which is true.
+        { t: 'Works with no signal. The clip stays on your phone until you send it.' },
+        // Read-aloud was removed (nobody recorded the voice) and the translations
+        // do not exist yet; the profile screen says so. The public page must not
+        // promise either.
+        { t: 'Built for six Indian languages. The translations are still being written.' },
         { t: 'A free leaf check that says when it is unsure instead of guessing.' },
         { t: 'If a video gets queried, you get told why and you get to reply.' },
       ],
