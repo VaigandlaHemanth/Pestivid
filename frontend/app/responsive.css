@@ -467,3 +467,29 @@ body > div[style*="width: 824px"] {
  * way round.
  */
 [data-specimen] { visibility: hidden; }
+
+/* ── the chat, on a phone: one pane at a time ─────────────────────────────── */
+
+/* Above 900px both panes show and the chevron messages.js adds to the thread
+   header does not exist on screen. Below it, body[data-view] picks the pane. */
+.paneback { display: none; }
+@media (max-width: 900px) {
+  .paneback { display: flex; width: 44px; height: 44px; align-items: center; justify-content: center;
+              margin-left: -12px; flex-shrink: 0; color: #605a53; }
+  body[data-page="messages"][data-view="thread"] [data-chatcol] > div:first-child { display: none !important; }
+  body[data-page="messages"]:not([data-view="thread"]) [data-chatcol] > [data-pane] { display: none !important; }
+  body[data-page="messages"][data-view="thread"] [data-chatcol] { grid-template-rows: minmax(0, 1fr) !important; }
+}
+
+/* ── money, on a phone ────────────────────────────────────────────────────── */
+
+/* A season row is one flex line -- name, figure, state, share -- drawn for
+   1320px. At 390px it wrapped each word onto its own line inside a narrow
+   column beside a wide bar. The line may wrap now, and the amber notice puts
+   its button under its words rather than beside them. */
+@media (max-width: 700px) {
+  [data-page="money"] [data-row="raise"] > div:first-child,
+  [data-page="money"] [data-row="raise-alt"] > div:first-child { flex-wrap: wrap; row-gap: 4px; }
+  [data-page="money"] [data-todoband] { flex-direction: column; align-items: stretch; gap: 14px !important; }
+  [data-page="money"] [data-todoband] [data-report] { justify-content: center; }
+}

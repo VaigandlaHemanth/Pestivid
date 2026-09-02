@@ -171,8 +171,24 @@ if (ctx) {
 
     /* Opening one. No page load: the URL is corrected so the conversation can
      * still be linked to and reloaded, and only the right pane is rebuilt. */
-    const open = async (t) => {
+    /* ONE PANE AT A TIME ON A PHONE. Below 900px the two panes stack, and the
+     * screenshot at 390px showed the whole list, then the thread's header, then a
+     * sliver of transcript with the composer -- two screens fighting for one.
+     * body[data-view] says which pane is showing; responsive.css hides the
+     * other under 900px and does nothing above it. A person picked by hand,
+     * or a conversation named in the URL, opens the thread; a chevron in the
+     * thread's header goes back to the people. */
+    const head = root.querySelector('[data-threadhead]');
+    if (head && !head.querySelector('.paneback')) {
+      const back = document.createElement('div');
+      back.className = 'paneback';
+      back.innerHTML = '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg>';
+      acts(back, 'Back to the people', () => { document.body.dataset.view = 'people'; });
+      head.prepend(back);
+    }
+    const open = async (t, byHand = false) => {
       current = t;
+      document.body.dataset.view = (byHand || want) ? 'thread' : 'people';
       paintPeople();
       history.replaceState(null, '', `./messages.html?c=${t._id}`);
       bind(root, { other: {
@@ -209,7 +225,7 @@ if (ctx) {
     };
 
     const wirePeople = () => people.forEach((el, i) => acts(el, `Open the conversation with ${threads[i].otherName || 'them'}`,
-      () => { if (String(threads[i]._id) !== String(current._id)) open(threads[i]); }));
+      () => { if (String(threads[i]._id) !== String(current._id)) open(threads[i], true); else document.body.dataset.view = 'thread'; }));
     wirePeople();
 
     // ---- writing ---------------------------------------------------------
