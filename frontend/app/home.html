@@ -35,33 +35,36 @@
        well under 44x44 by touch, which is the HIG recommended control size.
        The bar centres its items, so giving them a real height moves nothing
        and makes the whole word-plus-air pressable. */
-    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
     .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
-    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
 
     /* ── the rail cards ───────────────────────────────────────────────────
        .row and .lab keep their names because home.js finds every destination
        by its label and its closest('.row'). The rows are cards on a laptop
        rather than list items on a phone, but they are the same elements. */
-    .row { background: #fff; padding: 18px 20px; display: flex; align-items: flex-start; gap: 15px; }
-    .lab { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
-    .nat { font-size: 14.5px; line-height: 1.45; color: #605a53; margin-top: 3px; }
+    /* NO CARDS. The rail is the second column of the same surface, a hairline
+       down its left edge and one under each row -- the construction profile
+       and money already use. */
+    .row { padding: 18px 28px; display: flex; align-items: flex-start; gap: 15px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .lab { font-size: 16px; font-weight: 500; }
+    .nat { font-size: 14px; line-height: 1.45; color: #605a53; margin-top: 3px; }
     .ic  { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center;
            justify-content: center; background: #e7e1db; }
-    .menu { display: flex; flex-direction: column; gap: 16px; }
-    .row.first { padding: 20px; }
-    .row.first .lab { font-size: 20px; font-weight: 700; letter-spacing: -0.016em; }
+    .menu { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
+    .row.first { padding: 20px 28px; }
+    .row.first .lab { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
 
     /* the plots table: the reason this is a laptop page and not a menu. A
        phone made you open a plot to find out whether its date had landed. */
     .colh { display: grid; grid-template-columns: 82px 1fr 150px 196px 34px; gap: 16px;
-          padding: 12px 20px; font-size: 11.5px; font-weight: 600; letter-spacing: .05em;
-          color: #605a53; box-shadow: inset 0 -1px 0 #e4e9ee; }
+          padding: 12px 28px; font-size: 11.5px; font-weight: 500; letter-spacing: .05em;
+          color: #605a53; box-shadow: inset 0 -1px 0 #ddd7d1; }
     .colr { display: grid; grid-template-columns: 82px 1fr 150px 196px 34px; gap: 16px;
-          padding: 14px 20px; align-items: center; box-shadow: inset 0 -1px 0 #e4e9ee; }
+          padding: 14px 28px; align-items: center; box-shadow: inset 0 -1px 0 #ddd7d1; }
     .thumb { width: 82px; height: 56px; background: #37322d; position: relative; overflow: hidden; }
     .dur { position: absolute; left: 6px; bottom: 5px; font-size: 11px; color: #ddd7d1; }
-    .cell { font-size: 15.5px; font-weight: 600; }
+    .cell { font-size: 15.5px; font-weight: 500; }
     .csub { font-size: 13.5px; color: #605a53; margin-top: 2px; }
     .st { display: flex; align-items: center; gap: 7px; font-size: 14px; color: #4a443d; }
 
@@ -104,12 +107,12 @@
         </div>
         <div data-bind="whoWhere" style="font-size: 14px; color: #605a53;">Alice Farmer</div>
         <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
-          <div data-initial="" style="font-size: 13px; font-weight: 600;">A</div>
+          <div data-initial="" style="font-size: 13px; font-weight: 500;">A</div>
         </div>
       </div>
     </div>
 
-    <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 26px 28px 30px;">
+    <div style="flex-grow: 1; background: #f6f3ef; display: grid; grid-template-columns: 1fr 372px; align-items: start;">
 
       <!-- ══ the work ══ -->
       <div>
@@ -117,7 +120,7 @@
         <!-- The one thing that needs doing today. It keeps the dark band it had
              on the phone, because a black band on a grey page is the loudest
              thing this palette can say without inventing a colour. -->
-        <div data-todoband="" style="background: #1d1a17; padding: 24px 26px; position: relative; overflow: hidden;">
+        <div data-todoband="" style="background: #1d1a17; padding: 24px 28px; position: relative; overflow: hidden;">
           <div style="font-size: 15px; color: #c4bdb6;">Needs you today</div>
           <h1 data-bind="todo.headline" data-title="" style="font-size: 27px; font-weight: 700; letter-spacing: -0.026em; color: #f6f3ef; line-height: 1.16; margin-top: 4px;">
             Canal plot is ready to harvest
@@ -127,7 +130,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 14px; margin-top: 18px;">
             <div data-harvestcta="" style="background: #016abe; min-height: 52px; padding: 0 26px; display: flex; align-items: center; gap: 10px;">
-              <div style="font-size: 16.5px; font-weight: 700; color: #fff;">Report the harvest</div>
+              <div style="font-size: 16px; font-weight: 600; color: #fff;">Report the harvest</div>
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg>
             </div>
           </div>
@@ -144,15 +147,15 @@
          one has now absorbed. A link to where you already are is not a link. The
          count stays, and the sentence plots.html used to carry about batching
          comes with it, because it is the honest part of that page. -->
-    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 26px;">
-      <div style="font-size: 17px; font-weight: 700;">Your plots</div>
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin: 26px 28px 0;">
+      <div style="font-size: 16px; font-weight: 600;">Your plots</div>
       <div data-bind="plots.waiting" class="nat m" style="text-align: right;">8 videos filed</div>
     </div>
-    <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; max-width: 62ch;">
+    <div style="font-size: 14px; line-height: 1.5; color: #4a443d; margin: 4px 28px 0; max-width: 62ch;">
       All of these are with us and being batched. Their dates are usually written into a Bitcoin block within a day.
     </div>
 
-        <div class="lift1" style="background: #fff; margin-top: 12px;">
+        <div style="margin-top: 12px; box-shadow: inset 0 1px 0 #ddd7d1;">
           <div class="colh">
             <div></div><div>Plot</div><div>Filed</div><div>Where the date is</div><div></div>
           </div>

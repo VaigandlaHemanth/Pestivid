@@ -104,22 +104,31 @@
        well under 44x44 by touch, which is the HIG recommended control size.
        The bar centres its items, so giving them a real height moves nothing
        and makes the whole word-plus-air pressable. */
-    .appbrand { font-size: 21px; font-weight: 700; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
+    .appbrand { font-size: 21px; font-weight: 600; letter-spacing: -0.025em;  min-height: 44px; display: flex; align-items: center;}
     .appnav   { font-size: 15px; color: #605a53;  min-height: 44px; display: flex; align-items: center;}
-    .appnavOn { font-size: 15px; font-weight: 600; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
-    .railcard  { background: #fff; color: #1d1a17; padding: 20px; }
-    .railh { font-size: 16.5px; font-weight: 700; }
-    .railp { font-size: 14.5px; line-height: 1.5; color: #4a443d; margin-top: 5px; }
-    .rail  { display: flex; flex-direction: column; gap: 16px; }
+    .appnavOn { font-size: 15px; font-weight: 500; padding-bottom: 3px; box-shadow: inset 0 -2px 0 #1d1a17;  min-height: 44px; display: flex; align-items: center;}
+    .railcard  { color: #1d1a17; padding: 20px 28px; box-shadow: inset 0 -1px 0 #ddd7d1; }
+    .railh { font-size: 15px; font-weight: 600; }
+    .railp { font-size: 14px; line-height: 1.5; color: #4a443d; margin-top: 4px; }
+    .rail  { display: flex; flex-direction: column; box-shadow: inset 1px 0 0 #ddd7d1; align-self: stretch; }
     .pageh { font-size: 27px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.14; }
     .main  { display: flex; flex-direction: column; }
     .pair  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     /* The back link: in the content above the heading, naming its destination.
        44px of tap height for a phone, taken as padding so the text still sits
        tight to the heading it belongs to. */
-    .backlink { display: inline-flex; align-items: center; align-self: flex-start;
-                gap: 6px; min-height: 44px; margin-left: -2px; font-size: 14.5px;
-                font-weight: 600; color: #01579b; text-decoration: none; }
+    /* The way out: an icon-only chevron, 44x44 of target under a 21px glyph,
+       the same control profile.html carries. The word stays in the document
+       for anyone who cannot see the arrow, drawn off-screen rather than deleted.
+       It sits ON the surface, beside the heading, and is grey, not blue: a
+       blue word at weight 600 competed with the heading from every position
+       it was tried in (design/taste-references.md). */
+    .backlink { display: inline-flex; align-items: center; justify-content: center;
+                align-self: flex-start; width: 44px; height: 44px; margin-left: -11px;
+                color: #605a53; text-decoration: none; flex-shrink: 0; }
+    .backlink:hover { color: #1d1a17; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+          overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   </style>
 </head>
 <body data-page="sent" data-role="farmer" data-design-width="1320" data-design-height="880">
@@ -140,11 +149,11 @@
           <div data-specimen="" data-readout="" class="num" style="position: absolute; top: 4px; right: 3px; min-width: 17px; height: 17px; background: #a71930; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 17px; border-radius: 9px;">2</div>
         </div>
         <div data-chrome="you" style="width: 32px; height: 32px; background: #e1e6ec; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
-          <div data-initial="" style="font-size: 13px; font-weight: 600;">A</div>
+          <div data-initial="" style="font-size: 13px; font-weight: 500;">A</div>
         </div>
       </div>
     </div>
-    <div class="pagehold" style="padding: 11px 28px; display: flex; align-items: center; gap: 17px;">
+    <div class="pagehold" style="background: #f6f3ef; padding: 12px 28px 8px; display: flex; align-items: center; gap: 14px;">
       <!-- BACK AND THE HEADING ON ONE ROW, divided by a hairline. This is the
            chat rail's geometry, and the rail is the one place in this product
            where the way out never read as detached: it sits BESIDE the header,
@@ -154,8 +163,7 @@
            on the page rather than part of its header. Same row, same place, on
            every screen, so "how do I get out" has one answer. An <a href> so it
            can still be middle-clicked; chrome.js writes the real word. -->
-      <a data-chrome="back" href="./record.html" class="backlink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#01579b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg><span data-backword="">Film your field</span></a>
-      <div style="width: 1px; align-self: stretch; background: #c3bcb6;"></div>
+      <a data-chrome="back" href="./record.html" class="backlink" title="Back"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5 L8 12 L16 19.5"></path></svg><span data-backword="" class="sr">Film your field</span></a>
       <div style="display: flex; flex-direction: column;">
         <h1 data-title="" class="pageh" style="margin: 0;">That is saved</h1>
         <div data-bind="clip.line" class="pagesub"></div>
@@ -163,7 +171,7 @@
     </div>
 
 
-      <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 372px; gap: 26px; padding: 20px 28px 22px; align-items: start;">
+      <div style="flex-grow: 1; background: #f6f3ef; display: grid; grid-template-columns: 1fr 372px; align-items: start;">
       <div class="main">
 <div style="flex-grow: 1;">
 
@@ -173,7 +181,7 @@
          complaint -- the button in one place and the progress in another. Two
          columns brings the whole page inside a 768px laptop, so the press and
          the answer are one glance apart. -->
-    <div style="padding: 20px 20px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+    <div style="padding: 20px 28px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
 
       <!-- one question, asked once, while they still remember which plot they walked -->
       <div data-specimen="" data-picker="">
