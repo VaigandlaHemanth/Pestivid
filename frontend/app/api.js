@@ -198,6 +198,63 @@ export const api = {
 export const rupees = (n) => n == null ? 'not yet'
   : '₹' + Math.round(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
+/* A lot's price is a RANGE the farmer will accept, and four screens printed it
+ * as "₹26,000, ₹34,000" -- two figures joined by a comma, which reads as two
+ * prices, or as one price with a stray thousand. One dash, one figure. */
+export const rupeeRange = (lo, hi) => {
+  if (lo == null && hi == null) return 'not yet';
+  if (lo == null || hi == null || Number(lo) === Number(hi)) return rupees(lo ?? hi);
+  return `${rupees(lo)} – ${rupees(hi)}`;
+};
+
+/* Which glyph a notice wears, and where pressing it goes.
+ *
+ * Shared by the notices page and the banner that shows a notice the moment it
+ * arrives, so the two cannot disagree about what a notice IS.
+ *
+ * The server names the event in `type`, and that is what decides. The words
+ * were being matched by regex instead, so "Bob sent you a message" wore the
+ * paperwork glyph and "Charlie put ₹50,000 into your season" did too: neither
+ * sentence contained the verb the pattern was waiting for. The words are only a
+ * fallback now, for rows written before the types were consistent. */
+export function noticeKind(n) {
+  switch (n?.type) {
+    case 'message': return 'person';
+    case 'investment': case 'funding': case 'purchase': case 'sale': case 'payout': return 'money';
+    case 'listing': return 'listing';
+    case 'warning': case 'error': return 'wrong';
+    case 'success': return 'proved';
+    default: break;
+  }
+  const txt = `${n?.title || ''} ${n?.message || ''}`.toLowerCase();
+  if (/\bwrote\b|asked you|sent you a message/.test(txt)) return 'person';
+  if (/\bblock\b/.test(txt) || /date .*(landed|written)/.test(txt)) return 'proved';
+  if (/bought|paid|funded|put .* into|asking for money|investor/.test(txt)) return 'money';
+  if (/listed|listing/.test(txt)) return 'listing';
+  if (/failed|queried|problem|cannot|refus/.test(txt)) return 'wrong';
+  return 'listing';
+}
+
+/* Where a notice leads, when it leads anywhere. Only pairs that really exist: a
+ * screen that shows the thing the notice is about, to the role reading it.
+ * Anything else is null, and a caller shows no chevron and goes nowhere. */
+export function noticeDestination(n, role) {
+  // An admin's notices are the queue they exist to act on.
+  if (role === 'admin') return n?.itemType ? 'admin' : null;
+  switch (n?.itemType) {
+    case 'Message': return 'messages';
+    case 'FundingRequest':
+      return role === 'investor' ? 'invest' : role === 'farmer' ? 'money' : null;
+    case 'Investment':
+      return role === 'investor' ? 'portfolio' : role === 'farmer' ? 'money' : null;
+    case 'Listing':
+      if (role === 'buyer') return n.type === 'purchase' ? 'orders' : 'market';
+      if (role === 'farmer') return n.type === 'purchase' ? 'money' : 'home';
+      return null;
+    default: return null;
+  }
+}
+
 /* Whose notice is this?
  *
  * A global notification is one document every user can see, and the notices

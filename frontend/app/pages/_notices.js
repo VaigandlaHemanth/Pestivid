@@ -14,7 +14,8 @@ import { requireUser, api, load, state } from './_guard.js';
 import { appChrome } from '../chrome.js';
 import { acts, press } from '../wire.js';
 import { repeatRows, arrive } from '../bind.js';
-import { whenShort, noticeForRole } from '../api.js';
+import { whenShort, noticeForRole, noticeKind, noticeDestination } from '../api.js';
+import { onNotice } from '../notify.js';
 
 /* Which glyph a row wears.
  *
@@ -36,47 +37,18 @@ function glyphSet(root) {
   return out;
 }
 
+/* The kind decides the glyph, and the server's `type` decides the kind -- see
+ * noticeKind in api.js, which the arrival banner shares so the two agree. It
+ * used to be a regex over the sentence, and "Bob sent you a message" wore the
+ * paperwork glyph because the pattern was waiting for the word "wrote". */
 function kindOf(r) {
   if (r.go) return 'person';
-  const txt = `${r.head} ${r.body}`.toLowerCase();
-  // Somebody wrote to you. r.go marks a conversation ROW on the messages page;
-  // on the notices page the same event arrives as a notice, and it was wearing
-  // the document glyph -- so "Demo wrote: what price are you asking" was filed
-  // as paperwork.
-  if (/\bwrote\b|asked you|wrote to you/.test(txt)) return 'person';
-  if (/\bblock\b/.test(txt) || /date .*(landed|written)/.test(txt)) return 'proved';
-  if (/bought|paid|funded|asking for money|investor/.test(txt)) return 'money';
-  if (/listed|listing/.test(txt)) return 'listing';
-  if (/failed|queried|problem|cannot|refus/.test(txt)) return 'wrong';
-  return 'listing';
+  return noticeKind({ type: r.type, title: r.head, message: r.body });
 }
 
-/* Where a notice leads, when it leads anywhere.
- *
- * Only pairs that really exist: a screen that shows the thing the notice is
- * about, to the role reading it. Everything else has no destination and says so
- * by having no chevron, so you can tell before you press rather than after --
- * pressing one of those marks it read and leaves you where you are, which is
- * what a notification centre is supposed to do.
- */
-function destination(n, role) {
-  // An admin's notices are the queue they exist to act on, so all of them lead
-  // to the one screen that lets them. Without this every row on the admin's
-  // notices page was a dead end.
-  if (role === 'admin') return n.itemType ? 'admin' : null;
-  switch (n.itemType) {
-    case 'Message': return 'messages';
-    case 'FundingRequest':
-      return role === 'investor' ? 'invest' : role === 'farmer' ? 'money' : null;
-    case 'Investment':
-      return role === 'investor' ? 'portfolio' : role === 'farmer' ? 'money' : null;
-    case 'Listing':
-      if (role === 'buyer') return n.type === 'purchase' ? 'orders' : 'market';
-      if (role === 'farmer') return n.type === 'purchase' ? 'money' : 'home';
-      return null;
-    default: return null;
-  }
-}
+/* Where a notice leads, when it leads anywhere. Shared with the banner; a row
+ * with nowhere to go has no chevron, so you can tell before you press. */
+const destination = noticeDestination;
 
 /**
  * @param slug  the page this runs on. Only 'notifications' now: the
@@ -119,14 +91,20 @@ export function notices(slug, kind = 'notices') {
     /* One kind of row now. This module used to serve the conversations list as
      * well ('people'), until the chat became a two-pane page of its own -- so
      * that branch described a page that no longer exists and has gone with it. */
-    const items = notes.map(n => ({
+    const asRow = (n) => ({
       id: n._id,
+      type: n.type,
       head: n.title || n.message,
       body: n.title ? (n.message || '') : '',
       when: whenShort(n.timestamp || n.createdAt),
       unread: !n.read,
       opens: destination(n, role),
-    }));
+    });
+    const items = notes.map(asRow);
+    // The drawn row, kept before the list consumes it: a notice that arrives
+    // while this page is open is cut from the same template.
+    const rowTpl = ctx.root.querySelector('.n, .nu')?.cloneNode(true) || null;
+    rowTpl?.removeAttribute('data-specimen');
     say(unreadOf());
 
     if (!items.length) {
@@ -214,7 +192,30 @@ export function notices(slug, kind = 'notices') {
       });
     };
 
-    arrive(repeatRows(ctx.root, '.n, .nu', items, painter) || []);
+    const made = repeatRows(ctx.root, '.n, .nu', items, painter) || [];
+    arrive(made);
+
+    /* A notice that lands while you are looking at the list joins it at the
+     * top, in place. Everywhere else it is a banner (notify.js); here the list
+     * IS the answer, so a banner over it would say the same thing twice. */
+    onNotice((fresh) => {
+      const first = ctx.root.querySelector('.n, .nu');
+      if (!rowTpl || !first) return;
+      const add = fresh.filter(n => noticeForRole(n, role)
+        && !notes.some(o => String(o._id) === String(n._id)));
+      if (!add.length) return;
+      const els = [];
+      for (const n of add.reverse()) {
+        notes.unshift(n);
+        const el = rowTpl.cloneNode(true);
+        painter(el, asRow(n));
+        ctx.root.querySelector('.n, .nu').before(el);
+        els.push(el);
+      }
+      arrive(els);
+      say(unreadOf());
+      paintAllRef.fn?.();
+    });
 
     /* ---- clearing all of them -----------------------------------------
      * Marking eight rows one at a time is not a feature. The rows settle in
@@ -222,6 +223,7 @@ export function notices(slug, kind = 'notices') {
      * same frame reads as the list being wiped rather than caught up on.
      */
     const markAll = ctx.root.querySelector('[data-markall]');
+    const paintAllRef = { fn: null };
     if (markAll && kind === 'notices') {
       /* When there is nothing unread this control used to relabel itself to
        * "Nothing unread" -- which put those two words on the page twice, once as
@@ -259,6 +261,8 @@ export function notices(slug, kind = 'notices') {
       };
       // At load, nothing unread means the control was never wanted at all.
       if (!unreadOf()) markAll.remove(); else paintAll();
+      // A notice arriving later can make it wanted again, if it still exists.
+      paintAllRef.fn = () => { if (markAll.isConnected) paintAll(); };
       acts(markAll, 'Mark all as read', async () => {
         const rows = [...ctx.root.querySelectorAll('.nu')];
         if (!rows.length) return;

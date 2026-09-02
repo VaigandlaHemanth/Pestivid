@@ -22,6 +22,7 @@ import { bind, rows, arrive } from '../bind.js';
 import { whenShort, dayMonth } from '../api.js';
 import { acts, asField, press } from '../wire.js';
 import { appChrome } from '../chrome.js';
+import { onNotice } from '../notify.js';
 
 // Under the name at the top of a thread. What they do here, not what they are
 // permitted to do to you.
@@ -137,6 +138,7 @@ if (ctx) {
     const want = new URLSearchParams(location.search).get('c');
     let current = threads.find(t => String(t._id) === String(want)) || threads[0];
     let sending = false;
+    const rendered = new Set();     // ids of the messages on screen
 
     const paintChips = () => {
       if (!chipGroup) return;
@@ -148,12 +150,13 @@ if (ctx) {
       chipGroup.style.display = show ? '' : 'none';
     };
 
-    const people = rows(root, 'person', threads.map(t => ({
+    const personRow = (t) => ({
       initial: (String(t.otherName || '?').trim()[0] || '?').toUpperCase(),
       name: t.otherName || 'A message',
       snippet: (t.lastMessageSnippet || '').replace(/\.{3,}$/, '…') || 'No messages yet',
       when: whenShort(t.lastMessageTimestamp).replace(/^Today, /, ''),
-    })));
+    });
+    let people = rows(root, 'person', threads.map(personRow));
 
     const paintPeople = () => {
       people.forEach((el, i) => {
@@ -187,6 +190,8 @@ if (ctx) {
 
       [...tape.querySelectorAll('.them, .me, .day')].forEach(el => el.remove());
       const msgs = (await api.messages.inThread(t._id).catch(() => [])) || [];
+      rendered.clear();
+      msgs.forEach(m => rendered.add(String(m._id)));
       if (!msgs.length) {
         const first = addBubble({ mine: false, text: 'Nothing said yet. Write the first message.',
                                  time: '', day: '' }, false);
@@ -203,8 +208,9 @@ if (ctx) {
       if (idx >= 0) { threads[idx].unread = false; threads[idx].unreadCount = 0; }
     };
 
-    people.forEach((el, i) => acts(el, `Open the conversation with ${threads[i].otherName || 'them'}`,
+    const wirePeople = () => people.forEach((el, i) => acts(el, `Open the conversation with ${threads[i].otherName || 'them'}`,
       () => { if (String(threads[i]._id) !== String(current._id)) open(threads[i]); }));
+    wirePeople();
 
     // ---- writing ---------------------------------------------------------
     const composer = root.querySelector('[data-reply]');
@@ -224,6 +230,8 @@ if (ctx) {
       toBottom(true);
       try {
         const saved = await api.messages.send(current._id, { text });
+        const sid = saved?._id || saved?.message?._id;
+        if (sid) rendered.add(String(sid));
         const ts = saved?.timestamp || saved?.message?.timestamp || now;
         if (el) { paint(el, { mine: true, text, time: clock(ts), read: false }); el.style.opacity = '1'; }
         // the left-hand row is the record of what was last said
@@ -262,6 +270,48 @@ if (ctx) {
     }
 
     if (spacer) spacer.remove();     // the pane is a fixed height; nothing to push
+    /* Somebody wrote while this page is open. notify.js polls for arrivals and
+     * hands a message here instead of raising a banner over the chat: the
+     * bubble appears where a reply belongs, and the row on the left catches up.
+     * Before this, a reply only appeared on reload or when you switched away
+     * and back. */
+    onNotice(async (fresh) => {
+      if (!fresh.some(n => n.type === 'message')) return;
+      const latest = await api.messages.threads(me).catch(() => null);
+      if (!Array.isArray(latest)) return;
+      const known = new Set(threads.map(t => String(t._id)));
+      if (latest.some(t => !known.has(String(t._id)))) {
+        // Somebody who has never written before. The list is rebuilt from the
+        // same drawn row; the open conversation stays open.
+        threads.splice(0, threads.length, ...latest);
+        current = threads.find(t => String(t._id) === String(current._id)) || current;
+        people = rows(root, 'person', threads.map(personRow));
+        wirePeople();
+        paintPeople();
+      } else {
+        for (const lt of latest) {
+          const i = threads.findIndex(t => String(t._id) === String(lt._id));
+          if (i < 0) continue;
+          Object.assign(threads[i], lt);
+          const r = personRow(lt);
+          const snip = people[i]?.querySelector('[data-slot="snippet"]');
+          const when = people[i]?.querySelector('[data-slot="when"]');
+          if (snip) snip.textContent = r.snippet;
+          if (when) when.textContent = r.when;
+        }
+      }
+      // Only what is not already on screen arrives, from below, like a reply.
+      const msgs = (await api.messages.inThread(current._id).catch(() => [])) || [];
+      const news = msgs.filter(m => !rendered.has(String(m._id)));
+      if (!news.length) return;
+      news.forEach(m => { rendered.add(String(m._id)); addBubble(row(m), true); });
+      toBottom(true);
+      paintChips();
+      await api.messages.markRead(current._id).catch(() => {});
+      const i = threads.indexOf(current);
+      if (i >= 0) { threads[i].unread = false; threads[i].unreadCount = 0; }
+    });
+
     await open(current);
     press(root);
   });

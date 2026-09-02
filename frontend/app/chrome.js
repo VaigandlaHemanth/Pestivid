@@ -5,7 +5,7 @@
 // than repeat that in every page module, the boards now mark the three roles
 // (data-chrome="back" | "mail" | "you") and this wires whichever are present.
 import { goes, acts } from './wire.js';
-import { api, noticeForRole } from './api.js';
+import { watchNotices } from './notify.js';
 
 /**
  * @param root  the page root from wire()/requireUser()
@@ -317,31 +317,14 @@ export function deskNav(root, user) {
     goes(bell, 'notifications', 'What has happened');
   }
 
-  const badge = root.querySelector('.appbar [data-readout], [data-chrome="mail"] [data-readout]');
-  const id = user && (user._id || user.id);
-  if (badge && id) {
-    // No unread-count route, so this counts unread notifications -- which is
-    // where the envelope goes. No count, no badge: a red dot that always says
-    // something is waiting teaches people to ignore it.
-    api.notifications.mine(id)
-      .then((list) => {
-        // The same filter the notices page applies, or the badge counts
-        // broadcasts this reader will never be shown.
-        const n = (list || [])
-          .filter(x => noticeForRole(x, user?.role))
-          .filter(x => !x.read && !x.isRead).length;
-        if (n > 0) {
-          badge.textContent = n > 9 ? '9+' : String(n);
-          // Drawn as "2" in nineteen boards and hidden before the first paint,
-          // because until this fetch answers nobody knows whether anything is
-          // waiting. A red 2 that appears on every page load and then corrects
-          // itself is the flicker; it is also a count of nothing.
-          badge.removeAttribute('data-specimen');
-        } else badge.remove();
-      })
-      .catch(() => badge.remove());
-  } else if (badge) {
-    badge.remove();
-  }
+  /* The badge, and the banner a new notice arrives as.
+   *
+   * This used to fetch the list once and write the count, so the number was
+   * true at page load and stale ever after -- and nothing anywhere told you a
+   * notice had just happened. notify.js polls, keeps the count honest, and
+   * shows each arrival at the top right. It also owns hiding the drawn "2"
+   * until the first answer, for the reason that used to sit here: a red 2 on
+   * every page load that then corrects itself is a count of nothing. */
+  watchNotices(root, user);
 }
 

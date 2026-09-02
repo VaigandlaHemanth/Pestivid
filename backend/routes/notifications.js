@@ -43,6 +43,13 @@ router.get('/user/:userId', authenticateToken, async (req, res) => {
                 { global: true },       // platform-wide broadcast
             ],
         };
+        // ?after=<ISO date>: only what arrived since then. A page that polls
+        // for arrivals has no use for the whole history it already holds. A
+        // date that does not parse is ignored rather than guessed at.
+        if (req.query.after !== undefined) {
+            const after = new Date(String(req.query.after));
+            if (!Number.isNaN(after.getTime())) filter.timestamp = { $gt: after };
+        }
 
         const notifications = await Notification.find(filter)
                                                .sort({ timestamp: -1 })
